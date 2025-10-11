@@ -62,7 +62,7 @@ const SignupSuccess = () => {
           <div className="mt-6">
             <Link
               to="/"
-              className="block w-full bg-blue-600 text-white font-medium py-2 rounded-lg text-center hover:bg-blue-700 transition"
+              className="block w-full bg-white border border-gray-300 text-black font-medium py-2 rounded-lg text-center hover:bg-blue-50 transition"
             >
               Back to Home
             </Link>

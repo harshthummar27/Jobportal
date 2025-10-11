@@ -1,6 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Shield, Users, Briefcase, CheckCircle, Lock, Target } from "lucide-react";
+import Header from "../Components/Header";
+import Footer from "../Components/Footer";
 
 // Simple Tailwind button replacement for Shadcn UI Button
 const Button = ({ children, variant = "primary", size = "md", className = "", ...props }) => {
@@ -26,24 +28,9 @@ const Landing = () => {
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900">
       {/* Header */}
-      <header className="border-b bg-white sticky top-0 z-50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <Shield className="h-8 w-8 text-indigo-600" />
-              <span className="text-2xl font-bold">VettedPool</span>
-            </div>
-            <div className="flex items-center gap-4">
-              <Link to="/login">
-                <Button variant="ghost">Login</Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
-
+      <Header />
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-indigo-600 to-indigo-500 text-white py-20">
+      <section className="bg-[#073d96] from-indigo-600 to-indigo-500 text-white py-20">
         <div className="max-w-5xl mx-auto px-4 text-center">
           <h1 className="text-5xl font-bold mb-4">VettedPool</h1>
           <p className="text-2xl font-medium mb-8">
@@ -83,7 +70,7 @@ const Landing = () => {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white p-8 rounded-lg shadow border">
+            <div className="bg-white p-8 rounded-lg shadow border-gray-900">
               <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
                 <Lock className="h-6 w-6 text-indigo-600" />
               </div>
@@ -94,7 +81,7 @@ const Landing = () => {
               </p>
             </div>
 
-            <div className="bg-white p-8 rounded-lg shadow border">
+            <div className="bg-white p-8 rounded-lg shadow border-gray-900">
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
                 <CheckCircle className="h-6 w-6 text-green-600" />
               </div>
@@ -105,7 +92,7 @@ const Landing = () => {
               </p>
             </div>
 
-            <div className="bg-white p-8 rounded-lg shadow border">
+            <div className="bg-white p-8 rounded-lg shadow border-gray-900">
               <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
                 <Target className="h-6 w-6 text-purple-600" />
               </div>
@@ -130,12 +117,12 @@ const Landing = () => {
             {/* For Candidates */}
             <div>
               <div className="flex items-center gap-3 mb-6">
-                <Users className="h-8 w-8 text-indigo-600" />
+                <Users className="h-8 w-8 text-[#06327a]" />
                 <h3 className="text-2xl font-bold">For Candidates</h3>
               </div>
               <ul className="space-y-6">
                 <li className="flex gap-3">
-                  <div className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-semibold flex-shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-[#06327a] text-white flex items-center justify-center font-semibold flex-shrink-0">
                     1
                   </div>
                   <div>
@@ -146,7 +133,7 @@ const Landing = () => {
                   </div>
                 </li>
                 <li className="flex gap-3">
-                  <div className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-semibold flex-shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-[#06327a] text-white flex items-center justify-center font-semibold flex-shrink-0">
                     2
                   </div>
                   <div>
@@ -157,7 +144,7 @@ const Landing = () => {
                   </div>
                 </li>
                 <li className="flex gap-3">
-                  <div className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-semibold flex-shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-[#06327a] text-white flex items-center justify-center font-semibold flex-shrink-0">
                     3
                   </div>
                   <div>
@@ -173,12 +160,12 @@ const Landing = () => {
             {/* For Recruiters */}
             <div>
               <div className="flex items-center gap-3 mb-6">
-                <Briefcase className="h-8 w-8 text-purple-600" />
+                <Briefcase className="h-8 w-8 text-[#06b5d0]" />
                 <h3 className="text-2xl font-bold">For Recruiters</h3>
               </div>
               <ul className="space-y-6">
                 <li className="flex gap-3">
-                  <div className="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-semibold flex-shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-[#06b5d0] text-white flex items-center justify-center font-semibold flex-shrink-0">
                     1
                   </div>
                   <div>
@@ -189,7 +176,7 @@ const Landing = () => {
                   </div>
                 </li>
                 <li className="flex gap-3">
-                  <div className="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-semibold flex-shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-[#06b5d0] text-white flex items-center justify-center font-semibold flex-shrink-0">
                     2
                   </div>
                   <div>
@@ -200,7 +187,7 @@ const Landing = () => {
                   </div>
                 </li>
                 <li className="flex gap-3">
-                  <div className="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-semibold flex-shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-[#06b5d0] text-white flex items-center justify-center font-semibold flex-shrink-0">
                     3
                   </div>
                   <div>
@@ -217,7 +204,7 @@ const Landing = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-indigo-600 text-white text-center">
+      <section className="py-20 bg-[#06b5d0] text-white text-center">
         <div className="max-w-4xl mx-auto px-4">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">Ready to Get Started?</h2>
           <p className="text-xl mb-8 opacity-90">
@@ -227,7 +214,7 @@ const Landing = () => {
             <Button
               size="lg"
               variant="secondary"
-              className="bg-white text-indigo-600 hover:bg-indigo-50 text-lg"
+              className="bg-white text-white hover:bg-indigo-50 text-lg"
             >
               Create Your Account
             </Button>
@@ -236,7 +223,7 @@ const Landing = () => {
       </section>
 
       {/* Footer */}
-      <footer className="border-t bg-white py-12">
+      {/* <footer className="border-t bg-white py-12">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
@@ -277,7 +264,8 @@ const Landing = () => {
             <p>&copy; {new Date().getFullYear()} TalentSecure. All rights reserved.</p>
           </div>
         </div>
-      </footer>
+      </footer> */}
+      <Footer />
     </div>
   );
 };

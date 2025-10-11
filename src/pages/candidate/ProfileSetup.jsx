@@ -83,23 +83,23 @@ const ProfileSetup = () => {
           {step === 1 && (
             <div className="space-y-4">
               <div>
-                <label className="block text-gray-700">Full Name *</label>
+                <label className="block text-black font-medium">Full Name *</label>
                 <input
                   type="text"
                   placeholder="John Doe"
                   value={formData.fullName}
                   onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                  className="mt-1 block w-full border border-gray-300 rounded px-3 py-2"
+                  className="mt-1 block w-full text-gray-800 border border-gray-300 rounded px-3 py-2"
                 />
               </div>
               <div>
-                <label className="block text-gray-700">Phone Number *</label>
+                <label className="block text-black font-medium">Phone Number *</label>
                 <input
                   type="tel"
                   placeholder="+1 (555) 123-4567"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="mt-1 block w-full border border-gray-300 rounded px-3 py-2"
+                  className="mt-1 block w-full border text-gray-800 border-gray-300 rounded px-3 py-2"
                 />
               </div>
             </div>
@@ -109,21 +109,21 @@ const ProfileSetup = () => {
             <div className="space-y-4">
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-gray-700">City *</label>
+                  <label className="block text-black font-medium">City *</label>
                   <input
                     type="text"
                     placeholder="New York"
                     value={formData.city}
                     onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                    className="mt-1 block w-full border border-gray-300 rounded px-3 py-2"
+                    className="mt-1 block w-full border text-gray-700 border-gray-300 rounded px-3 py-2"
                   />
                 </div>
                 <div>
-                  <label className="block text-gray-700">State *</label>
+                  <label className="block text-black font-medium">State *</label>
                   <select
                     value={formData.state}
                     onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                    className="mt-1 block w-full border border-gray-300 rounded px-3 py-2"
+                    className="mt-1 block w-full text-gray-700 border border-gray-300 rounded px-3 py-2"
                   >
                     <option value="">Select state</option>
                     <option value="ny">New York</option>
@@ -148,17 +148,17 @@ const ProfileSetup = () => {
           {step === 3 && (
             <div className="space-y-4">
               <div>
-                <label className="block text-gray-700">Desired Job Role *</label>
+                <label className="block text-black font-medium">Desired Job Role *</label>
                 <input
                   type="text"
                   placeholder="Software Engineer"
                   value={formData.desiredRole}
                   onChange={(e) => setFormData({ ...formData, desiredRole: e.target.value })}
-                  className="mt-1 block w-full border border-gray-300 rounded px-3 py-2"
+                  className="mt-1 block w-full text-gray-700 border border-gray-300 rounded px-3 py-2"
                 />
               </div>
               <div>
-                <label className="block text-gray-700">Skills</label>
+                <label className="block text-black font-medium">Skills</label>
                 <div className="flex gap-2 mt-1">
                   <input
                     type="text"
@@ -166,7 +166,7 @@ const ProfileSetup = () => {
                     value={currentSkill}
                     onChange={(e) => setCurrentSkill(e.target.value)}
                     onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), handleAddSkill())}
-                    className="border border-gray-300 rounded px-3 py-2 flex-1"
+                    className="border border-gray-300 text-gray-700 rounded px-3 py-2 flex-1"
                   />
                   <button
                     type="button"
@@ -194,11 +194,11 @@ const ProfileSetup = () => {
           {step === 4 && (
             <div className="space-y-4">
               <div>
-                <label className="block text-gray-700">Visa Status *</label>
+                <label className="block text-black font-medium">Visa Status *</label>
                 <select
                   value={formData.visaStatus}
                   onChange={(e) => setFormData({ ...formData, visaStatus: e.target.value })}
-                  className="mt-1 block w-full border border-gray-300 rounded px-3 py-2"
+                  className="mt-1 block text-gray-700 w-full border border-gray-300 rounded px-3 py-2"
                 >
                   <option value="">Select visa status</option>
                   <option value="citizen">US Citizen</option>
@@ -215,7 +215,7 @@ const ProfileSetup = () => {
             <button
               onClick={handleBack}
               disabled={step === 1}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded disabled:opacity-50"
+              className="px-4 py-2 text-white rounded disabled:opacity-50"
             >
               Back
             </button>

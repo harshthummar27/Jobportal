@@ -1,7 +1,8 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
 import { Shield, CheckCircle, DollarSign, UserCheck, Clock } from "lucide-react";
+import Header from "../Components/Header";
+import Footer from "../Components/Footer";
 
 const Button = ({ children, variant = "primary", size = "md", className = "", ...props }) => {
   const base = "inline-flex items-center justify-center font-medium rounded-md transition-all focus:outline-none focus:ring-2 focus:ring-offset-2";
@@ -26,7 +27,7 @@ const RecruiterInfo = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="border-b bg-white">
+      {/* <header className="border-b bg-white">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <Link to="/" className="flex items-center gap-2">
             <Shield className="h-8 w-8 text-indigo-600" />
@@ -38,9 +39,9 @@ const RecruiterInfo = () => {
             </Link>
           </div>
         </div>
-      </header>
-
-      <div className="container mx-auto px-4 py-12 max-w-5xl">
+      </header> */}
+      <Header />
+      <div className="container  mx-auto px-4 py-12 max-w-5xl">
         {/* Welcome Section */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-6">Hello Recruiters!</h1>
@@ -53,7 +54,7 @@ const RecruiterInfo = () => {
         </div>
 
         {/* Benefits */}
-        <div className="bg-white rounded-xl shadow p-6 mb-8">
+        <div className="bg-white text-black rounded-xl shadow p-6 mb-8">
           <h2 className="text-2xl font-bold mb-6">Why Choose VettedPool?</h2>
           <div className="space-y-4">
             <div className="flex items-start gap-3">
@@ -76,7 +77,7 @@ const RecruiterInfo = () => {
         </div>
 
         {/* How It Works */}
-        <div className="bg-white rounded-xl shadow p-6 mb-8">
+        <div className="bg-white rounded-xl shadow p-6 mb-8 text-black">
           <h2 className="text-2xl font-bold mb-6">Start Recruiting in Just 5 Steps</h2>
           <div className="space-y-4">
             {[
@@ -87,7 +88,7 @@ const RecruiterInfo = () => {
               { step: 5, title: "Arrange Interview & Hire", desc: "Schedule interviews with selected candidates and make your hire." },
             ].map((item) => (
               <div key={item.step} className="flex items-start gap-3">
-                <div className="h-8 w-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold flex-shrink-0">
+                <div className="h-8 w-8 rounded-full bg-[#06327a] text-white flex items-center justify-center font-bold flex-shrink-0">
                   {item.step}
                 </div>
                 <div>
@@ -115,6 +116,7 @@ const RecruiterInfo = () => {
           </Link>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

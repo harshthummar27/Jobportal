@@ -1,7 +1,8 @@
 import React from "react";
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import Header from "../Components/Header";
+import Footer from "../Components/Footer";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -31,15 +32,16 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center p-4">
+    <>
+      <Header />
+    <div className=" bg-gradient-to-r from-indigo-50 to-indigo-100 flex items-center justify-center p-3">
       <div className="w-full max-w-md">
         {/* Header */}
-        <div className="text-center mb-8">
+        {/* <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 mb-4">
-            {/* Logo icon */}
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-10 w-10 text-white"
+              className="h-10 w-10 text-blue-900"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -51,12 +53,12 @@ const Login = () => {
                 d="M12 11c0 1.105-.895 2-2 2s-2-.895-2-2 .895-2 2-2 2 .895 2 2zM2 12s3-7 10-7 10 7 10 7-3 7-10 7S2 12 2 12z"
               />
             </svg>
-            <span className="text-3xl font-bold text-white">TalentSecure</span>
+            <span className="text-3xl font-bold text-blue-700">TalentSecure</span>
           </Link>
-        </div>
+        </div> */}
 
         {/* Card */}
-        <div className="bg-white rounded-xl shadow-xl p-8">
+        <div className="bg-white rounded-xl shadow-xl p-8 ">
           <h2 className="text-2xl font-bold mb-2 text-gray-800 text-center">
             Welcome Back
           </h2>
@@ -67,14 +69,14 @@ const Login = () => {
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-gray-700 font-medium mb-1">
+              <label htmlFor="email" className="block text-black font-medium mb-1">
                 Email
               </label>
               <input
                 id="email"
                 type="email"
                 placeholder="you@example.com"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full text-gray-700 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -83,14 +85,14 @@ const Login = () => {
 
             {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-gray-700 font-medium mb-1">
+              <label htmlFor="password" className="block text-black font-medium mb-1">
                 Password
               </label>
               <input
                 id="password"
                 type="password"
                 placeholder="••••••••"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-4 text-gray-700 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -121,6 +123,8 @@ const Login = () => {
         </div>
       </div>
     </div>
+    <Footer />
+    </>
   );
 };
 

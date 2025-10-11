@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Shield } from "lucide-react";
+import Header from "../Components/Header";
+import Footer from "../Components/Footer";
 
 // Simple custom Input component
 const Input = ({ className = "", ...props }) => (
@@ -61,7 +63,10 @@ const Signup = () => {
   };
 
   return (
+    <>
+   <Header />
     <div className="min-h-screen bg-gradient-to-r from-indigo-50 to-indigo-100 flex items-center justify-center p-4">
+       
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 mb-4">
@@ -70,13 +75,13 @@ const Signup = () => {
           </Link>
         </div>
 
-        <Card>
-          <h2 className="text-2xl font-bold mb-2">Create Account</h2>
+        <Card className="text-black">
+          <h2 className="text-2xl font-bold mb-2 text-black">Create Account</h2>
           <p className="text-gray-500 mb-4">Join VettedPool and get started today</p>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4 ">
             <div className="space-y-2">
-              <label className="block font-medium">I am a...</label>
+              <label className="block font-medium text-gray-800">I am a...</label>
               <div className="flex items-center gap-2">
                 <input
                   type="radio"
@@ -85,7 +90,7 @@ const Signup = () => {
                   checked={role === "candidate"}
                   onChange={() => setRole("candidate")}
                 />
-                <label htmlFor="candidate" className="cursor-pointer">
+                <label htmlFor="candidate" className="cursor-pointer text-gray-800">
                   Job Seeker / Candidate
                 </label>
               </div>
@@ -97,14 +102,14 @@ const Signup = () => {
                   checked={role === "recruiter"}
                   onChange={() => setRole("recruiter")}
                 />
-                <label htmlFor="recruiter" className="cursor-pointer">
+                <label htmlFor="recruiter" className="cursor-pointer text-gray-800">
                   Recruiter / Hiring Manager
                 </label>
               </div>
             </div>
 
             <div>
-              <label className="block font-medium mb-1" htmlFor="email">Email</label>
+              <label className="block font-medium mb-1 text-gray-800" htmlFor="email">Email</label>
               <Input
                 id="email"
                 type="email"
@@ -116,7 +121,7 @@ const Signup = () => {
             </div>
 
             <div>
-              <label className="block font-medium mb-1" htmlFor="password">Password</label>
+              <label className="block font-medium mb-1 text-gray-800" htmlFor="password">Password</label>
               <Input
                 id="password"
                 type="password"
@@ -128,7 +133,7 @@ const Signup = () => {
             </div>
 
             <div>
-              <label className="block font-medium mb-1" htmlFor="confirmPassword">Confirm Password</label>
+              <label className="block font-medium mb-1 text-gray-800" htmlFor="confirmPassword">Confirm Password</label>
               <Input
                 id="confirmPassword"
                 type="password"
@@ -151,6 +156,8 @@ const Signup = () => {
         </Card>
       </div>
     </div>
+    <Footer />
+    </>
   );
 };
 

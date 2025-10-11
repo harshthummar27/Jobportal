@@ -1,8 +1,9 @@
 import React from "react";
 import { useState } from "react";
-
 import { Link } from "react-router-dom";
 import { Search, Users, Star, Clock, FileText, Download } from "lucide-react";
+import Header from "../../Components/Header";
+import Footer from "../../Components/Footer";
 
 const mockShortlisted = [
   {
@@ -39,6 +40,7 @@ const RecruiterDashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
+      <Header />
       <header className="border-b bg-white shadow">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div>
@@ -171,6 +173,7 @@ const RecruiterDashboard = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

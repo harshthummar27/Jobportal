@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import React from "react";
 import { User, Briefcase, Settings, FileText, CheckCircle, Clock } from "lucide-react";
+import Header from "../../Components/Header";
+import Footer from "../../Components/Footer";
 
 const CandidateDashboard = () => {
   // Mock data - in real app, replace with API call
@@ -15,7 +17,7 @@ const CandidateDashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="border-b bg-white shadow">
+      {/* <header className="border-b bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-gray-900">Candidate Dashboard</h1>
           <div className="flex items-center gap-4">
@@ -25,7 +27,8 @@ const CandidateDashboard = () => {
             </button>
           </div>
         </div>
-      </header>
+      </header> */}
+      <Header />
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Status Overview */}
@@ -142,6 +145,7 @@ const CandidateDashboard = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

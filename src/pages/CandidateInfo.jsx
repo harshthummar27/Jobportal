@@ -11,6 +11,8 @@ import {
   Clock,
   XCircle,
 } from "lucide-react";
+import Header from "../Components/Header";
+import Footer from "../Components/Footer";
 
 // Simple reusable Tailwind Button
 const Button = ({ children, variant = "primary", size = "md", className = "", ...props }) => {
@@ -41,7 +43,7 @@ const CandidateInfo = () => {
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900">
       {/* Header */}
-      <header className="border-b bg-white sticky top-0 z-50 shadow-sm">
+      {/* <header className="border-b bg-white sticky top-0 z-50 shadow-sm">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <Link to="/" className="flex items-center gap-2">
             <Shield className="h-8 w-8 text-indigo-600" />
@@ -53,8 +55,8 @@ const CandidateInfo = () => {
             </Link>
           </div>
         </div>
-      </header>
-
+      </header> */}
+      <Header />
       {/* Main Section */}
       <div className="container mx-auto px-4 py-12 max-w-5xl">
         {/* Intro */}
@@ -182,6 +184,7 @@ const CandidateInfo = () => {
           </Link>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };
