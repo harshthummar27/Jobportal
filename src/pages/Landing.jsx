@@ -1,24 +1,42 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Shield, Users, Briefcase, CheckCircle, Lock, Target } from "lucide-react";
+import {
+  Shield,
+  Users,
+  Briefcase,
+  CheckCircle,
+  Lock,
+  Target,
+} from "lucide-react";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
 
 // Simple Tailwind button replacement for Shadcn UI Button
-const Button = ({ children, variant = "primary", size = "md", className = "", ...props }) => {
-  const base = "inline-flex items-center justify-center font-medium rounded-md transition-all focus:outline-none focus:ring-2 focus:ring-offset-2";
+const Button = ({
+  children,
+  variant = "primary",
+  size = "md",
+  className = "",
+  ...props
+}) => {
+  const base =
+    "inline-flex items-center justify-center font-medium rounded-md transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 cursor-pointer";
   const variants = {
-    primary: "bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500",
-    secondary: "bg-white text-indigo-600 border border-indigo-600 hover:bg-indigo-50 focus:ring-indigo-500",
-    ghost: "text-gray-700 hover:text-indigo-600",
+    primary:
+      "bg-[#032a6b] text-white hover:bg-indigo-800 focus:ring-indigo-500",
+    secondary:
+      "bg-white text-indigo-900 hover:bg-indigo-50 focus:ring-indigo-500",
   };
   const sizes = {
     sm: "px-3 py-1.5 text-sm",
-    md: "px-4 py-2 text-base",
+    md: "px-5 py-2 text-base",
     lg: "px-6 py-3 text-lg",
   };
   return (
-    <button className={`${base} ${variants[variant]} ${sizes[size]} ${className}`} {...props}>
+    <button
+      className={`${base} ${variants[variant]} ${sizes[size]} ${className}`}
+      {...props}
+    >
       {children}
     </button>
   );
@@ -38,11 +56,12 @@ const Landing = () => {
           </p>
           <p className="text-lg mb-12 max-w-2xl mx-auto opacity-90">
             Access thoroughly vetted candidates ready for immediate placement.
-            Save time and ensure quality with our comprehensive screening process.
+            Save time and ensure quality with our comprehensive screening
+            process.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/candidate-info">
-              <Button size="lg" className="text-lg px-8 py-6">
+              <Button size="lg" variant="primary" className="text-lg px-8 py-2">
                 <Users className="mr-2 h-5 w-5" /> For Candidates
               </Button>
             </Link>
@@ -50,7 +69,7 @@ const Landing = () => {
               <Button
                 size="lg"
                 variant="secondary"
-                className="text-lg px-8 py-6 bg-white text-indigo-600 hover:bg-indigo-50"
+                className="text-lg px-8 py-2 bg-white text-indigo-600 hover:bg-indigo-50"
               >
                 <Briefcase className="mr-2 h-5 w-5" /> For Recruiters
               </Button>
@@ -65,7 +84,8 @@ const Landing = () => {
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4">Why TalentSecure?</h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              A revolutionary platform designed for privacy, quality, and efficiency in recruitment.
+              A revolutionary platform designed for privacy, quality, and
+              efficiency in recruitment.
             </p>
           </div>
 
@@ -74,10 +94,12 @@ const Landing = () => {
               <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
                 <Lock className="h-6 w-6 text-indigo-600" />
               </div>
-              <h3 className="text-2xl font-semibold mb-3">Complete Anonymity</h3>
+              <h3 className="text-2xl font-semibold mb-3">
+                Complete Anonymity
+              </h3>
               <p className="text-gray-600">
-                Candidates remain anonymous with unique code numbers. No direct contact
-                information shared until both parties agree.
+                Candidates remain anonymous with unique code numbers. No direct
+                contact information shared until both parties agree.
               </p>
             </div>
 
@@ -85,10 +107,12 @@ const Landing = () => {
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
                 <CheckCircle className="h-6 w-6 text-green-600" />
               </div>
-              <h3 className="text-2xl font-semibold mb-3">Pre-Vetted Quality</h3>
+              <h3 className="text-2xl font-semibold mb-3">
+                Pre-Vetted Quality
+              </h3>
               <p className="text-gray-600">
-                Every candidate is pre-interviewed and screened. Access only verified, qualified
-                professionals ready to work.
+                Every candidate is pre-interviewed and screened. Access only
+                verified, qualified professionals ready to work.
               </p>
             </div>
 
@@ -96,10 +120,12 @@ const Landing = () => {
               <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
                 <Target className="h-6 w-6 text-purple-600" />
               </div>
-              <h3 className="text-2xl font-semibold mb-3">Advanced Filtering</h3>
+              <h3 className="text-2xl font-semibold mb-3">
+                Advanced Filtering
+              </h3>
               <p className="text-gray-600">
-                Search by skills, location, experience, visa status, and more. Find exactly who you
-                need, when you need them.
+                Search by skills, location, experience, visa status, and more.
+                Find exactly who you need, when you need them.
               </p>
             </div>
           </div>
@@ -128,7 +154,8 @@ const Landing = () => {
                   <div>
                     <h4 className="font-semibold">Create Your Profile</h4>
                     <p className="text-gray-600">
-                      Complete registration with your skills, experience, and preferences.
+                      Complete registration with your skills, experience, and
+                      preferences.
                     </p>
                   </div>
                 </li>
@@ -139,7 +166,8 @@ const Landing = () => {
                   <div>
                     <h4 className="font-semibold">Get Pre-Interviewed</h4>
                     <p className="text-gray-600">
-                      Our team validates your credentials and conducts initial screening.
+                      Our team validates your credentials and conducts initial
+                      screening.
                     </p>
                   </div>
                 </li>
@@ -150,7 +178,8 @@ const Landing = () => {
                   <div>
                     <h4 className="font-semibold">Receive Opportunities</h4>
                     <p className="text-gray-600">
-                      We connect you with recruiters while keeping your identity protected.
+                      We connect you with recruiters while keeping your identity
+                      protected.
                     </p>
                   </div>
                 </li>
@@ -182,7 +211,8 @@ const Landing = () => {
                   <div>
                     <h4 className="font-semibold">Search & Filter</h4>
                     <p className="text-gray-600">
-                      Use advanced filters to find pre-vetted candidates that match your needs.
+                      Use advanced filters to find pre-vetted candidates that
+                      match your needs.
                     </p>
                   </div>
                 </li>
@@ -193,7 +223,8 @@ const Landing = () => {
                   <div>
                     <h4 className="font-semibold">Select Candidates</h4>
                     <p className="text-gray-600">
-                      Choose candidates and we'll coordinate interviews on your behalf.
+                      Choose candidates and we'll coordinate interviews on your
+                      behalf.
                     </p>
                   </div>
                 </li>
@@ -206,15 +237,18 @@ const Landing = () => {
       {/* CTA Section */}
       <section className="py-20 bg-[#06b5d0] text-white text-center">
         <div className="max-w-4xl mx-auto px-4">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">Ready to Get Started?</h2>
+          <h2 className="text-4xl md:text-5xl font-bold mb-6">
+            Ready to Get Started?
+          </h2>
           <p className="text-xl mb-8 opacity-90">
-            Join thousands of professionals and companies who trust TalentSecure for their recruitment needs.
+            Join thousands of professionals and companies who trust TalentSecure
+            for their recruitment needs.
           </p>
           <Link to="/signup">
             <Button
               size="lg"
               variant="secondary"
-              className="bg-white text-white hover:bg-indigo-50 text-lg"
+              className="bg-white hover:bg-indigo-50 text-lg"
             >
               Create Your Account
             </Button>

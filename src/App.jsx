@@ -11,7 +11,13 @@ import CandidateDashboard from "./pages/candidate/CandidateDashboard";
 import CandidateProfile from "./pages/recruiter/CandidateProfile";
 import RecruiterDashboard from "./pages/recruiter/RecruiterDashboard";
 import CandidateSearch from "./pages/recruiter/CandidateSearch";
+import SuperAdminDashboard from "./pages/superadmin/SuperAdminDashboard";
+import PendingCandidates from "./pages/superadmin/PendingCandidates";
+import ApprovedCandidates from "./pages/superadmin/ApprovedCandidates";
+import Recruiters from "./pages/superadmin/Recruiters";
+import InternalTeam from "./pages/superadmin/InternalTeam";
 import NotFound from "./pages/NotFound";
+import SuperAdminLayout from "./Components/SuperAdminLayout";
 // import NotFound from "./pages/NotFound";
 
 export default function App() {
@@ -28,6 +34,14 @@ export default function App() {
       <Route path="/recruiter/search" element={<CandidateSearch />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/recruiter/candidate/:code" element={<CandidateProfile />} />
+      
+      {/* Super Admin Routes */}
+      <Route path="/superadmin/dashboard" element={<SuperAdminLayout><SuperAdminDashboard /></SuperAdminLayout>} />
+      <Route path="/superadmin/pending-candidates" element={<SuperAdminLayout><PendingCandidates /></SuperAdminLayout>} />
+      <Route path="/superadmin/approved-candidates" element={<SuperAdminLayout><ApprovedCandidates /></SuperAdminLayout>} />
+      <Route path="/superadmin/recruiters" element={<SuperAdminLayout><Recruiters /></SuperAdminLayout>} />
+      <Route path="/superadmin/internal-team" element={<SuperAdminLayout><InternalTeam /></SuperAdminLayout>} />
+      
       <Route path="*" element={<NotFound />} />
       {/* <Route path="*" element={<NotFound />} /> */}
     </Routes>

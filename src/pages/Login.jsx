@@ -13,19 +13,27 @@ const Login = () => {
     e.preventDefault();
 
     if (email && password) {
+      let role = "candidate";
+      let redirectPath = "/candidate/dashboard";
+
+      // Determine role based on email
+      if (email.includes("recruiter")) {
+        role = "recruiter";
+        redirectPath = "/recruiter/search";
+      } else if (email.includes("admin") || email.includes("superadmin")) {
+        role = "superadmin";
+        redirectPath = "/superadmin/dashboard";
+      }
+
       const userData = {
         email,
-        role: email.includes("recruiter") ? "recruiter" : "candidate",
+        role,
       };
 
       localStorage.setItem("user", JSON.stringify(userData));
       alert("Welcome back! You've successfully logged in.");
 
-      navigate(
-        userData.role === "recruiter"
-          ? "/recruiter/search"
-          : "/candidate/dashboard"
-      );
+      navigate(redirectPath);
     } else {
       alert("Please fill all fields");
     }
@@ -119,6 +127,12 @@ const Login = () => {
                 Sign up
               </Link>
             </p>
+            <div className="mt-4 p-3 bg-gray-50 rounded-lg text-xs text-gray-500">
+              <p className="font-medium mb-1">Demo Login Roles:</p>
+              <p>• <strong>admin@vettedpool.com</strong> - Super Admin</p>
+              <p>• <strong>recruiter@company.com</strong> - Recruiter</p>
+              <p>• <strong>candidate@email.com</strong> - Candidate</p>
+            </div>
           </div>
         </div>
       </div>
