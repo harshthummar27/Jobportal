@@ -254,7 +254,7 @@ const Login = () => {
                   <p className="text-sm text-gray-600">
                     Don't have an account?{" "}
                     <Link
-                      to="/signup"
+                      to={selectedRole === "recruiter" ? "/recruiter/register" : "/signup"}
                       className="text-indigo-600 hover:text-indigo-700 font-semibold hover:underline transition-colors"
                     >
                       Sign up here
