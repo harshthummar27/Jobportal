@@ -1,8 +1,7 @@
 import { Link } from "react-router-dom";
 import React from "react";
 import { User, Briefcase, Settings, FileText, CheckCircle, Clock } from "lucide-react";
-import Header from "../../Components/Header";
-import Footer from "../../Components/Footer";
+import DashboardHeader from "../../Components/DashboardHeader";
 
 const CandidateDashboard = () => {
   // Mock data - in real app, replace with API call
@@ -28,7 +27,7 @@ const CandidateDashboard = () => {
           </div>
         </div>
       </header> */}
-      <Header />
+      <DashboardHeader />
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Status Overview */}
@@ -145,7 +144,6 @@ const CandidateDashboard = () => {
           </div>
         </div>
       </div>
-      <Footer />
     </div>
   );
 };

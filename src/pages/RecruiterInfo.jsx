@@ -81,10 +81,10 @@ const RecruiterInfo = () => {
           <h2 className="text-2xl font-bold mb-6">Start Recruiting in Just 5 Steps</h2>
           <div className="space-y-4">
             {[
-              { step: 1, title: "Free Sign Up", desc: "Register your company—no payment required. In some cases, verification will be necessary." },
-              { step: 2, title: "Portal Access Granted", desc: "Within 24 hours of sign up, you will be granted access to the portal." },
-              { step: 3, title: "Search and Select Candidates", desc: "Use our advanced filters to find the perfect match for your role." },
-              { step: 4, title: "Make Contract", desc: "Sign a contract with us only for that specific job role." },
+              { step: 1, title: "Complete Registration", desc: "Register your company with email verification—no payment required." },
+              { step: 2, title: "Setup Your Profile", desc: "Complete your company profile and hiring preferences." },
+              { step: 3, title: "Accept Agreement", desc: "Review and accept our recruiter service agreement." },
+              { step: 4, title: "Search & Select Candidates", desc: "Use our advanced filters to find the perfect match for your role." },
               { step: 5, title: "Arrange Interview & Hire", desc: "Schedule interviews with selected candidates and make your hire." },
             ].map((item) => (
               <div key={item.step} className="flex items-start gap-3">
@@ -108,7 +108,7 @@ const RecruiterInfo = () => {
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link to="/signup?role=recruiter">
+          <Link to="/recruiter/register">
             <Button size="lg">Sign Up Now</Button>
           </Link>
           <Link to="/login">
