@@ -244,13 +244,13 @@ const Landing = () => {
             Join thousands of professionals and companies who trust TalentSecure
             for their recruitment needs.
           </p>
-          <Link to="/signup">
+          <Link to="/login">
             <Button
               size="lg"
               variant="secondary"
               className="bg-white hover:bg-indigo-50 text-lg"
             >
-              Create Your Account
+              Get Started
             </Button>
           </Link>
         </div>
@@ -272,7 +272,7 @@ const Landing = () => {
             <div>
               <h4 className="font-semibold mb-4">For Candidates</h4>
               <ul className="space-y-2 text-sm text-gray-600">
-                <li><Link to="/signup?role=candidate" className="hover:text-indigo-600">Create Profile</Link></li>
+                <li><Link to="/candidate/register" className="hover:text-indigo-600">Create Profile</Link></li>
                 <li><Link to="#" className="hover:text-indigo-600">How It Works</Link></li>
                 <li><Link to="#" className="hover:text-indigo-600">Privacy Policy</Link></li>
               </ul>
@@ -280,7 +280,7 @@ const Landing = () => {
             <div>
               <h4 className="font-semibold mb-4">For Recruiters</h4>
               <ul className="space-y-2 text-sm text-gray-600">
-                <li><Link to="/signup?role=recruiter" className="hover:text-indigo-600">Get Access</Link></li>
+                <li><Link to="/recruiter/register" className="hover:text-indigo-600">Get Access</Link></li>
                 <li><Link to="#" className="hover:text-indigo-600">Search Talent</Link></li>
                 <li><Link to="#" className="hover:text-indigo-600">Terms of Service</Link></li>
               </ul>

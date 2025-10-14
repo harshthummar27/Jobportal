@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { 
   Building, 
@@ -24,6 +24,11 @@ const RecruiterProfile = () => {
   const [errors, setErrors] = useState({});
   const [logoFile, setLogoFile] = useState(null);
   const [logoPreview, setLogoPreview] = useState(null);
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const [formData, setFormData] = useState({
     // Company Details
@@ -171,11 +176,15 @@ const RecruiterProfile = () => {
   const handleNext = () => {
     if (validateStep(currentStep)) {
       setCurrentStep(currentStep + 1);
+      // Scroll to top when changing steps
+      window.scrollTo(0, 0);
     }
   };
 
   const handlePrevious = () => {
     setCurrentStep(currentStep - 1);
+    // Scroll to top when changing steps
+    window.scrollTo(0, 0);
   };
 
   const handleSubmit = async (e) => {

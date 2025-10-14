@@ -67,4 +67,40 @@ button:focus-visible {
   }
 }
 @import "tailwindcss";
+
+/* Professional scroll behavior - prevents flash */
+html {
+  scroll-behavior: auto; /* Disable smooth scrolling globally */
+}
+
+/* Ensure pages start from top without flash */
+body {
+  scroll-behavior: auto;
+}
+
+/* Custom scrollbar styling for professional look */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #c1c1c1 #f1f1f1;
+}
   

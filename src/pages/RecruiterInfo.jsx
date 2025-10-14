@@ -111,7 +111,7 @@ const RecruiterInfo = () => {
           <Link to="/recruiter/register">
             <Button size="lg">Sign Up Now</Button>
           </Link>
-          <Link to="/login">
+          <Link to="/recruiter/login">
             <Button size="lg" variant="outline">Already Registered? Login</Button>
           </Link>
         </div>

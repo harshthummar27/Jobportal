@@ -1,17 +1,27 @@
 import React from "react";
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { User, Building2, Users, Shield, Eye, EyeOff, ArrowRight } from "lucide-react";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
 
 const Login = () => {
+  const location = useLocation();
   const [selectedRole, setSelectedRole] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
+  // Auto-select role based on URL path
+  useEffect(() => {
+    if (location.pathname === "/candidate/login") {
+      setSelectedRole("candidate");
+    } else if (location.pathname === "/recruiter/login") {
+      setSelectedRole("recruiter");
+    }
+  }, [location.pathname]);
 
   const userTypes = [
     {
@@ -254,7 +264,9 @@ const Login = () => {
                   <p className="text-sm text-gray-600">
                     Don't have an account?{" "}
                     <Link
-                      to={selectedRole === "recruiter" ? "/recruiter/register" : "/signup"}
+                      to={selectedRole === "candidate" ? "/candidate/register" : 
+                           selectedRole === "recruiter" ? "/recruiter/register" : 
+                           "/signup"}
                       className="text-indigo-600 hover:text-indigo-700 font-semibold hover:underline transition-colors"
                     >
                       Sign up here

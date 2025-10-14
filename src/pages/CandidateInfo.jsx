@@ -174,10 +174,10 @@ const CandidateInfo = () => {
 
         {/* Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link to="/signup?role=candidate">
+          <Link to="/candidate/register">
             <Button size="lg">Sign Up Now</Button>
           </Link>
-          <Link to="/login">
+          <Link to="/candidate/login">
             <Button size="lg" variant="outline">
               Already Registered? Login
             </Button>
