@@ -118,17 +118,17 @@ const CandidateVerification = () => {
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
       <Header />
       
-      <div className="pt-16 pb-8">
+      <div className="pt-8 pb-8">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="text-center mb-6">
             <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full mb-3">
               <Mail className="h-6 w-6 text-white" />
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+            <h4 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
               Verify Your Email
-            </h1>
-            <p className="text-base sm:text-lg text-gray-600">
+            </h4>
+            <p className="text-base sm:text-sm text-gray-600">
               We've sent a verification code to your email address
             </p>
           </div>

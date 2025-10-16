@@ -22,7 +22,7 @@ const CandidateDashboard = () => {
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Candidate Dashboard</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 mt-7">Candidate Dashboard</h1>
               <p className="text-gray-600">Welcome back! Here's your job search overview</p>
             </div>
             <div className="flex items-center gap-3">

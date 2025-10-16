@@ -716,17 +716,17 @@ const RecruiterProfile = () => {
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
       <Header />
       
-      <div className="pt-20 pb-12">
+      <div className="pt-8 pb-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full mb-4">
-              <Building className="h-8 w-8 text-white" />
+            <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full mb-2">
+              <Building className="h-7 w-7 text-white" />
             </div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
+            <h4 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
               Complete Your Profile
-            </h1>
-            <p className="text-lg text-gray-600">
+            </h4>
+            <p className="text-sm text-gray-600">
               Set up your recruiter profile to get started
             </p>
           </div>

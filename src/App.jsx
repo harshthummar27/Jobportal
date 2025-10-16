@@ -4,7 +4,6 @@ import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import CandidateInfo from "./pages/CandidateInfo";
 import RecruiterInfo from "./pages/RecruiterInfo";
-import SignupSuccess from "./pages/SignupSuccess";
 import ProfileSetup from "./pages/candidate/ProfileSetup";
 import CandidateRegistration from "./pages/candidate/CandidateRegistration";
 import CandidateVerification from "./pages/candidate/CandidateVerification";
@@ -27,7 +26,18 @@ import Recruiters from "./pages/superadmin/Recruiters";
 import InternalTeam from "./pages/superadmin/InternalTeam";
 import NotFound from "./pages/NotFound";
 import SuperAdminLayout from "./Components/SuperAdminLayout";
+import InternalTeamLayout from "./Components/InternalTeamLayout";
 import ScrollToTop from "./Components/ScrollToTop";
+
+// Internal Team Pages
+import InternalTeamDashboard from "./pages/internalteam/InternalTeamDashboard";
+import CandidateSelections from "./pages/internalteam/CandidateSelections";
+import InterviewScheduling from "./pages/internalteam/InterviewScheduling";
+import OfferManagement from "./pages/internalteam/OfferManagement";
+import ScreeningBlocking from "./pages/internalteam/ScreeningBlocking";
+import BlockedCandidates from "./pages/internalteam/BlockedCandidates";
+import Communication from "./pages/internalteam/Communication";
+import ActivityLog from "./pages/internalteam/ActivityLog";
 // import NotFound from "./pages/NotFound";
 
 export default function App() {
@@ -39,7 +49,6 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/candidate-info" element={<CandidateInfo />} />
         <Route path="/recruiter-info" element={<RecruiterInfo />} />
-        <Route path="/signup-success" element={<SignupSuccess />} />
         <Route path="/candidate/profile-setup" element={<ProfileSetup />} />
         <Route path="/candidate/dashboard" element={<CandidateDashboard />} />
         
@@ -70,6 +79,16 @@ export default function App() {
         <Route path="/superadmin/approved-candidates" element={<SuperAdminLayout><ApprovedCandidates /></SuperAdminLayout>} />
         <Route path="/superadmin/recruiters" element={<SuperAdminLayout><Recruiters /></SuperAdminLayout>} />
         <Route path="/superadmin/internal-team" element={<SuperAdminLayout><InternalTeam /></SuperAdminLayout>} />
+        
+        {/* Internal Team Routes */}
+        <Route path="/internal-team/dashboard" element={<InternalTeamLayout><InternalTeamDashboard /></InternalTeamLayout>} />
+        <Route path="/internal-team/candidate-selections" element={<InternalTeamLayout><CandidateSelections /></InternalTeamLayout>} />
+        <Route path="/internal-team/interview-scheduling" element={<InternalTeamLayout><InterviewScheduling /></InternalTeamLayout>} />
+        <Route path="/internal-team/offer-management" element={<InternalTeamLayout><OfferManagement /></InternalTeamLayout>} />
+        <Route path="/internal-team/screening-blocking" element={<InternalTeamLayout><ScreeningBlocking /></InternalTeamLayout>} />
+        <Route path="/internal-team/blocked-candidates" element={<InternalTeamLayout><BlockedCandidates /></InternalTeamLayout>} />
+        <Route path="/internal-team/communication" element={<InternalTeamLayout><Communication /></InternalTeamLayout>} />
+        <Route path="/internal-team/activity-log" element={<InternalTeamLayout><ActivityLog /></InternalTeamLayout>} />
         
         <Route path="*" element={<NotFound />} />
         {/* <Route path="*" element={<NotFound />} /> */}
