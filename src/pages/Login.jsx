@@ -119,21 +119,34 @@ const Login = () => {
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center p-4">
-        <div className="w-full max-w-6xl">
-          {/* Header Section */}
-          <div className="text-center mb-8">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Welcome to <span className="text-indigo-600">VettedPool</span>
-            </h1>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Choose your role to access the platform and continue your journey
-            </p>
-          </div>
+      <div className="min-h-screen bg-[#fafaff] text-[#1e2749] overflow-x-hidden">
+        {/* Background Elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-20 left-10 w-32 h-32 bg-[#e4d9ff] rounded-full opacity-20 animate-pulse"></div>
+          <div className="absolute top-40 right-20 w-24 h-24 bg-[#30343f] rounded-full opacity-15 animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute bottom-20 left-1/4 w-20 h-20 bg-[#e4d9ff] rounded-full opacity-25 animate-pulse" style={{ animationDelay: '2s' }}></div>
+        </div>
+
+        <div className="relative flex items-center justify-center min-h-screen p-4">
+          <div className="w-full max-w-6xl">
+            {/* Header Section */}
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center px-4 py-2 rounded-full bg-[#e4d9ff] text-[#273469] text-sm font-medium mb-6">
+                <Shield className="h-4 w-4 mr-2" />
+                Secure Access Portal
+              </div>
+              <h1 className="text-6xl lg:text-7xl font-black mb-6 text-[#1e2749] leading-tight">
+                Welcome to
+                <span className="block text-[#273469]">VettedPool</span>
+              </h1>
+              <p className="text-xl lg:text-2xl text-[#30343f] max-w-3xl mx-auto leading-relaxed">
+                Choose your role to access the platform and continue your journey
+              </p>
+            </div>
 
           {/* User Type Selection - Only show when no role is selected */}
           {!selectedRole && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
               {userTypes.map((userType) => {
                 const IconComponent = userType.icon;
                 
@@ -141,16 +154,16 @@ const Login = () => {
                   <button
                     key={userType.id}
                     onClick={() => setSelectedRole(userType.id)}
-                    className="relative p-6 rounded-xl border-2 border-gray-200 bg-white hover:border-gray-300 hover:shadow-md transition-all duration-300 transform hover:scale-105"
+                    className="relative p-8 rounded-2xl border-2 border-[#e4d9ff] bg-white hover:border-[#273469] hover:shadow-lg transition-all duration-300 group"
                   >
                     <div className="text-center">
-                      <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 ${userType.bgColor} ${userType.textColor}`}>
-                        <IconComponent className="w-8 h-8" />
+                      <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#273469] mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <IconComponent className="w-8 h-8 text-white" />
                       </div>
-                      <h3 className="text-lg font-semibold mb-2 text-gray-900">
+                      <h3 className="text-xl font-bold mb-3 text-[#1e2749]">
                         {userType.title}
                       </h3>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-[#30343f] leading-relaxed">
                         {userType.description}
                       </p>
                     </div>
@@ -162,13 +175,13 @@ const Login = () => {
 
           {/* Login Form - Show when role is selected */}
           {selectedRole && (
-            <div className="max-w-md mx-auto">
-              <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+            <div className="max-w-lg mx-auto">
+              <div className="bg-white rounded-2xl shadow-2xl p-10 border-2 border-[#e4d9ff]">
                 {/* Back Button */}
-                <div className="mb-6">
+                <div className="mb-8">
                   <button
                     onClick={() => setSelectedRole("")}
-                    className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
+                    className="flex items-center gap-2 text-[#30343f] hover:text-[#1e2749] transition-colors"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -177,33 +190,31 @@ const Login = () => {
                   </button>
                 </div>
 
-                <div className="text-center mb-6">
-                  <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 bg-gradient-to-r ${
-                    userTypes.find(t => t.id === selectedRole)?.color
-                  } text-white`}>
+                <div className="text-center mb-8">
+                  <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl mb-6 bg-[#273469]">
                     {React.createElement(userTypes.find(t => t.id === selectedRole)?.icon, {
-                      className: "w-8 h-8"
+                      className: "w-10 h-10 text-white"
                     })}
                   </div>
-                  <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                  <h2 className="text-4xl font-black text-[#1e2749] mb-3">
                     Sign in as {userTypes.find(t => t.id === selectedRole)?.title}
                   </h2>
-                  <p className="text-gray-600">
+                  <p className="text-[#30343f] text-lg">
                     {userTypes.find(t => t.id === selectedRole)?.description}
                   </p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-8">
                   {/* Email */}
                   <div>
-                    <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label htmlFor="email" className="block text-lg font-bold text-[#1e2749] mb-3">
                       Email Address
                     </label>
                     <input
                       id="email"
                       type="email"
                       placeholder="Enter your email"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
+                      className="w-full px-6 py-4 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f]"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
@@ -212,7 +223,7 @@ const Login = () => {
 
                   {/* Password */}
                   <div>
-                    <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label htmlFor="password" className="block text-lg font-bold text-[#1e2749] mb-3">
                       Password
                     </label>
                     <div className="relative">
@@ -220,7 +231,7 @@ const Login = () => {
                         id="password"
                         type={showPassword ? "text" : "password"}
                         placeholder="Enter your password"
-                        className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
+                        className="w-full px-6 py-4 pr-14 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f]"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
@@ -228,9 +239,9 @@ const Login = () => {
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#30343f] hover:text-[#1e2749] transition-colors"
                       >
-                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                        {showPassword ? <EyeOff className="w-6 h-6" /> : <Eye className="w-6 h-6" />}
                       </button>
                     </div>
                   </div>
@@ -239,35 +250,35 @@ const Login = () => {
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className={`w-full flex items-center justify-center gap-2 py-3 px-6 rounded-lg font-semibold text-white transition-all duration-200 ${
+                    className={`w-full flex items-center justify-center gap-3 py-4 px-8 rounded-xl font-bold text-lg text-white transition-all duration-300 transform hover:scale-105 active:scale-95 ${
                       isLoading
-                        ? 'bg-gray-400 cursor-not-allowed'
-                        : `bg-gradient-to-r ${userTypes.find(t => t.id === selectedRole)?.color} ${userTypes.find(t => t.id === selectedRole)?.hoverColor} shadow-lg hover:shadow-xl`
+                        ? 'bg-[#30343f] cursor-not-allowed'
+                        : 'bg-[#273469] hover:bg-[#1e2749] shadow-lg hover:shadow-xl'
                     }`}
                   >
                     {isLoading ? (
                       <>
-                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                         Signing in...
                       </>
                     ) : (
                       <>
                         Sign In
-                        <ArrowRight className="w-5 h-5" />
+                        <ArrowRight className="w-6 h-6" />
                       </>
                     )}
                   </button>
                 </form>
 
                 {/* Footer */}
-                <div className="mt-6 text-center">
-                  <p className="text-sm text-gray-600">
+                <div className="mt-8 text-center">
+                  <p className="text-[#30343f]">
                     Don't have an account?{" "}
                     <Link
                       to={selectedRole === "candidate" ? "/candidate/register" : 
                            selectedRole === "recruiter" ? "/recruiter/register" : 
                            "/signup"}
-                      className="text-indigo-600 hover:text-indigo-700 font-semibold hover:underline transition-colors"
+                      className="text-[#273469] hover:text-[#1e2749] font-bold hover:underline transition-colors"
                     >
                       Sign up here
                     </Link>
@@ -279,25 +290,21 @@ const Login = () => {
 
           {/* Demo Credentials - Show when role is selected */}
           {selectedRole && (
-            <div className="max-w-md mx-auto mt-6">
-              <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
-                <h4 className="text-sm font-semibold text-gray-900 mb-3 text-center">
+            <div className="max-w-lg mx-auto mt-8">
+              <div className="bg-[#f2edff] rounded-xl p-6 border-2 border-[#e4d9ff]">
+                <h4 className="text-lg font-bold text-[#1e2749] mb-4 text-center">
                   Demo Credentials for {userTypes.find(t => t.id === selectedRole)?.title}
                 </h4>
                 <div className="text-center">
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <div className={`w-3 h-3 rounded-full ${
-                      selectedRole === 'candidate' ? 'bg-blue-500' :
-                      selectedRole === 'recruiter' ? 'bg-purple-500' :
-                      selectedRole === 'internalteam' ? 'bg-green-500' : 'bg-red-500'
-                    }`}></div>
-                    <span className="text-sm font-medium text-gray-700">
+                  <div className="flex items-center justify-center gap-3 mb-3">
+                    <div className="w-4 h-4 rounded-full bg-[#273469]"></div>
+                    <span className="text-[#30343f] font-medium">
                       {selectedRole === 'candidate' ? 'candidate@email.com' :
                        selectedRole === 'recruiter' ? 'recruiter@company.com' :
                        selectedRole === 'internalteam' ? 'team@vettedpool.com' : 'admin@vettedpool.com'}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-[#30343f]">
                     Password: Use any password for demo purposes
                   </p>
                 </div>
@@ -307,43 +314,52 @@ const Login = () => {
 
           {/* Demo Credentials - Show when no role is selected */}
           {!selectedRole && (
-            <div className="max-w-2xl mx-auto mt-8">
-              <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 text-center">
+            <div className="max-w-4xl mx-auto mt-12">
+              <div className="bg-white rounded-2xl p-8 border-2 border-[#e4d9ff] shadow-lg">
+                <h3 className="text-2xl font-bold text-[#1e2749] mb-6 text-center">
                   Demo Credentials
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                      <span className="font-medium">Candidate:</span>
-                      <span className="text-gray-600">candidate@email.com</span>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3 p-3 bg-[#f2edff] rounded-xl">
+                      <div className="w-4 h-4 rounded-full bg-[#273469]"></div>
+                      <div>
+                        <span className="font-bold text-[#1e2749]">Candidate:</span>
+                        <span className="text-[#30343f] ml-2">candidate@email.com</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
-                      <span className="font-medium">Recruiter:</span>
-                      <span className="text-gray-600">recruiter@company.com</span>
+                    <div className="flex items-center gap-3 p-3 bg-[#f2edff] rounded-xl">
+                      <div className="w-4 h-4 rounded-full bg-[#273469]"></div>
+                      <div>
+                        <span className="font-bold text-[#1e2749]">Recruiter:</span>
+                        <span className="text-[#30343f] ml-2">recruiter@company.com</span>
+                      </div>
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                      <span className="font-medium">Internal Team:</span>
-                      <span className="text-gray-600">team@vettedpool.com</span>
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3 p-3 bg-[#f2edff] rounded-xl">
+                      <div className="w-4 h-4 rounded-full bg-[#273469]"></div>
+                      <div>
+                        <span className="font-bold text-[#1e2749]">Internal Team:</span>
+                        <span className="text-[#30343f] ml-2">team@vettedpool.com</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                      <span className="font-medium">Super Admin:</span>
-                      <span className="text-gray-600">admin@vettedpool.com</span>
+                    <div className="flex items-center gap-3 p-3 bg-[#f2edff] rounded-xl">
+                      <div className="w-4 h-4 rounded-full bg-[#273469]"></div>
+                      <div>
+                        <span className="font-bold text-[#1e2749]">Super Admin:</span>
+                        <span className="text-[#30343f] ml-2">admin@vettedpool.com</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-                <p className="text-xs text-gray-500 text-center mt-4">
+                <p className="text-[#30343f] text-center mt-6">
                   Password: Use any password for demo purposes
                 </p>
               </div>
             </div>
           )}
+          </div>
         </div>
       </div>
       <Footer />

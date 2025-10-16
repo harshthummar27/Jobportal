@@ -1,20 +1,23 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Shield, CheckCircle, DollarSign, UserCheck, Clock } from "lucide-react";
+import { Shield, CheckCircle, DollarSign, UserCheck, Clock, ArrowLeft, Sparkles, Users, Briefcase } from "lucide-react";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
 
+// Modern Button Component
 const Button = ({ children, variant = "primary", size = "md", className = "", ...props }) => {
-  const base = "inline-flex items-center justify-center font-medium rounded-md transition-all focus:outline-none focus:ring-2 focus:ring-offset-2";
+  const base = "inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 cursor-pointer transform hover:scale-105 active:scale-95";
   const variants = {
-    primary: "bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500",
-    outline: "bg-white text-indigo-600 border border-indigo-600 hover:bg-indigo-50 focus:ring-indigo-500",
-    ghost: "text-gray-700 hover:text-indigo-600",
+    primary: "bg-[#273469] text-white hover:bg-[#1e2749] focus:ring-[#273469] shadow-lg hover:shadow-xl",
+    secondary: "bg-[#e4d9ff] text-[#273469] hover:bg-[#fafaff] focus:ring-[#e4d9ff] border-2 border-[#273469]",
+    accent: "bg-[#30343f] text-white hover:bg-[#1e2749] focus:ring-[#30343f]",
+    outline: "bg-transparent text-[#273469] border-2 border-[#273469] hover:bg-[#273469] hover:text-white focus:ring-[#273469]",
   };
   const sizes = {
-    sm: "px-3 py-1.5 text-sm",
-    md: "px-4 py-2 text-base",
-    lg: "px-6 py-3 text-lg",
+    sm: "px-4 py-2 text-sm",
+    md: "px-6 py-3 text-base",
+    lg: "px-8 py-4 text-lg",
+    xl: "px-10 py-5 text-xl",
   };
   return (
     <button className={`${base} ${variants[variant]} ${sizes[size]} ${className}`} {...props}>
@@ -25,95 +28,158 @@ const Button = ({ children, variant = "primary", size = "md", className = "", ..
 
 const RecruiterInfo = () => {
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      {/* <header className="border-b bg-white">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <Link to="/" className="flex items-center gap-2">
-            <Shield className="h-8 w-8 text-indigo-600" />
-            <span className="text-2xl font-bold text-gray-900">VettedPool</span>
-          </Link>
-          <div className="flex items-center gap-4">
-            <Link to="/login">
-              <Button variant="ghost">Login</Button>
+    <div className="min-h-screen bg-[#fafaff] text-[#1e2749] overflow-x-hidden">
+      <Header />
+      
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-32 h-32 bg-[#e4d9ff] rounded-full opacity-20 animate-pulse"></div>
+        <div className="absolute top-40 right-20 w-24 h-24 bg-[#30343f] rounded-full opacity-15 animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-20 left-1/4 w-20 h-20 bg-[#e4d9ff] rounded-full opacity-25 animate-pulse" style={{ animationDelay: '2s' }}></div>
+      </div>
+      
+      <div className="relative pt-24 pb-20 lg:pt-32 lg:pb-32">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center px-4 py-2 rounded-full bg-[#e4d9ff] text-[#273469] text-sm font-medium mb-6">
+              <Sparkles className="h-4 w-4 mr-2" />
+              For Recruiters
+            </div>
+            
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <h1 className="text-2xl lg:text-3xl font-black text-[#1e2749]">
+                Hello Recruiters!
+              </h1>
+            </div>
+            
+            <p className="text-lg lg:text-xl text-[#30343f] max-w-3xl mx-auto leading-relaxed mb-4">
+              Are you ready to hire pre-interviewed top talent which saves your time by half and at surprisingly <strong className="text-[#273469]">7% of annual package?</strong>
+            </p>
+            <p className="text-base lg:text-lg text-[#30343f] max-w-2xl mx-auto">
+              VettedPool has a pool of candidates who are humanly interviewed and skill-tested just to ensure you get authentic candidates.
+            </p>
+          </div>
+
+          {/* Back Button */}
+          <div className="mb-8">
+            <Link 
+              to="/" 
+              className="inline-flex items-center gap-2 text-[#30343f] hover:text-[#1e2749] transition-colors duration-300"
+            >
+              <ArrowLeft className="h-5 w-5" />
+              <span className="font-medium">Back to Home</span>
             </Link>
           </div>
-        </div>
-      </header> */}
-      <Header />
-      <div className="container  mx-auto px-4 py-12 max-w-5xl">
-        {/* Welcome Section */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-6">Hello Recruiters!</h1>
-          <p className="text-xl text-gray-600 mb-4">
-            Are you ready to hire pre-interviewed top talent which saves your time by half and at surprisingly <strong className="text-indigo-600">7% of annual package?</strong>
-          </p>
-          <p className="text-lg text-gray-900">
-            VettedPool has a pool of candidates who are humanly interviewed and skill-tested just to ensure you get authentic candidates.
-          </p>
-        </div>
 
-        {/* Benefits */}
-        <div className="bg-white text-black rounded-xl shadow p-6 mb-8">
-          <h2 className="text-2xl font-bold mb-6">Why Choose VettedPool?</h2>
-          <div className="space-y-4">
-            <div className="flex items-start gap-3">
-              <DollarSign className="h-5 w-5 text-green-600 mt-1 flex-shrink-0" />
-              <p><strong>No Advance Payment:</strong> Pay only after placement—no upfront costs.</p>
-            </div>
-            <div className="flex items-start gap-3">
-              <Shield className="h-5 w-5 text-indigo-600 mt-1 flex-shrink-0" />
-              <p><strong>45 Days Free Replacement Guarantee:</strong> If a candidate leaves within 45 days, we'll replace them for free.</p>
-            </div>
-            <div className="flex items-start gap-3">
-              <UserCheck className="h-5 w-5 text-indigo-500 mt-1 flex-shrink-0" />
-              <p><strong>Humanly Vetted:</strong> Every candidate is personally interviewed and skill-tested by our technical team.</p>
-            </div>
-            <div className="flex items-start gap-3">
-              <Clock className="h-5 w-5 text-indigo-600 mt-1 flex-shrink-0" />
-              <p><strong>Save Time:</strong> Reduce your hiring time by half with pre-screened candidates.</p>
-            </div>
-          </div>
-        </div>
-
-        {/* How It Works */}
-        <div className="bg-white rounded-xl shadow p-6 mb-8 text-black">
-          <h2 className="text-2xl font-bold mb-6">Start Recruiting in Just 5 Steps</h2>
-          <div className="space-y-4">
-            {[
-              { step: 1, title: "Complete Registration", desc: "Register your company with email verification—no payment required." },
-              { step: 2, title: "Setup Your Profile", desc: "Complete your company profile and hiring preferences." },
-              { step: 3, title: "Accept Agreement", desc: "Review and accept our recruiter service agreement." },
-              { step: 4, title: "Search & Select Candidates", desc: "Use our advanced filters to find the perfect match for your role." },
-              { step: 5, title: "Arrange Interview & Hire", desc: "Schedule interviews with selected candidates and make your hire." },
-            ].map((item) => (
-              <div key={item.step} className="flex items-start gap-3">
-                <div className="h-8 w-8 rounded-full bg-[#06327a] text-white flex items-center justify-center font-bold flex-shrink-0">
-                  {item.step}
+          {/* Benefits */}
+          <div className="bg-white rounded-2xl shadow-2xl border-2 border-[#e4d9ff] overflow-hidden mb-12">
+            <div className="p-6 sm:p-8 lg:p-10">
+              <h2 className="text-2xl font-bold text-[#1e2749] mb-8 flex items-center gap-3">
+                <div className="w-10 h-10 bg-[#e4d9ff] rounded-xl flex items-center justify-center">
+                  <Shield className="h-5 w-5 text-[#273469]" />
                 </div>
-                <div>
-                  <h3 className="font-semibold mb-1">{item.title}</h3>
-                  <p className="text-gray-600">{item.desc}</p>
+                Why Choose VettedPool?
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-[#f2edff] p-4 rounded-xl border-l-4 border-green-500">
+                  <div className="flex items-start gap-3">
+                    <DollarSign className="h-5 w-5 text-green-600 flex-shrink-0 mt-1" />
+                    <div>
+                      <h3 className="font-semibold text-[#1e2749] mb-1">No Advance Payment</h3>
+                      <p className="text-[#30343f] text-sm leading-relaxed">Pay only after placement—no upfront costs.</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="bg-[#f2edff] p-4 rounded-xl border-l-4 border-[#e4d9ff]">
+                  <div className="flex items-start gap-3">
+                    <Shield className="h-5 w-5 text-[#273469] flex-shrink-0 mt-1" />
+                    <div>
+                      <h3 className="font-semibold text-[#1e2749] mb-1">45 Days Free Replacement Guarantee</h3>
+                      <p className="text-[#30343f] text-sm leading-relaxed">If a candidate leaves within 45 days, we'll replace them for free.</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="bg-[#f2edff] p-4 rounded-xl border-l-4 border-[#e4d9ff]">
+                  <div className="flex items-start gap-3">
+                    <UserCheck className="h-5 w-5 text-[#273469] flex-shrink-0 mt-1" />
+                    <div>
+                      <h3 className="font-semibold text-[#1e2749] mb-1">Humanly Vetted</h3>
+                      <p className="text-[#30343f] text-sm leading-relaxed">Every candidate is personally interviewed and skill-tested by our technical team.</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="bg-[#f2edff] p-4 rounded-xl border-l-4 border-[#e4d9ff]">
+                  <div className="flex items-start gap-3">
+                    <Clock className="h-5 w-5 text-[#273469] flex-shrink-0 mt-1" />
+                    <div>
+                      <h3 className="font-semibold text-[#1e2749] mb-1">Save Time</h3>
+                      <p className="text-[#30343f] text-sm leading-relaxed">Reduce your hiring time by half with pre-screened candidates.</p>
+                    </div>
+                  </div>
                 </div>
               </div>
-            ))}
+            </div>
           </div>
-        </div>
 
-        <div className="text-center mb-8">
-          <p className="text-lg font-medium text-gray-900">
-            At VettedPool, we are committed to our services with transparency.
-          </p>
-        </div>
+          {/* How It Works */}
+          <div className="bg-white rounded-2xl shadow-2xl border-2 border-[#e4d9ff] overflow-hidden mb-12">
+            <div className="p-6 sm:p-8 lg:p-10">
+              <h2 className="text-2xl font-bold text-[#1e2749] mb-8 flex items-center gap-3">
+                <div className="w-10 h-10 bg-[#e4d9ff] rounded-xl flex items-center justify-center">
+                  <CheckCircle className="h-5 w-5 text-[#273469]" />
+                </div>
+                Start Recruiting in Just 5 Steps
+              </h2>
+              <div className="space-y-6">
+                {[
+                  { step: 1, title: "Complete Registration", desc: "Register your company with email verification—no payment required." },
+                  { step: 2, title: "Setup Your Profile", desc: "Complete your company profile and hiring preferences." },
+                  { step: 3, title: "Accept Agreement", desc: "Review and accept our recruiter service agreement." },
+                  { step: 4, title: "Search & Select Candidates", desc: "Use our advanced filters to find the perfect match for your role." },
+                  { step: 5, title: "Arrange Interview & Hire", desc: "Schedule interviews with selected candidates and make your hire." },
+                ].map((item) => (
+                  <div key={item.step} className="bg-[#f2edff] p-4 rounded-xl border-l-4 border-[#e4d9ff]">
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-xl bg-[#273469] text-white flex items-center justify-center font-bold flex-shrink-0">
+                        {item.step}
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-[#1e2749] mb-1">{item.title}</h3>
+                        <p className="text-[#30343f] text-sm leading-relaxed">{item.desc}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
 
-        {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link to="/recruiter/register">
-            <Button size="lg">Sign Up Now</Button>
-          </Link>
-          <Link to="/recruiter/login">
-            <Button size="lg" variant="outline">Already Registered? Login</Button>
-          </Link>
+          {/* Commitment Statement */}
+          <div className="text-center mb-12">
+            <p className="text-lg font-medium text-[#30343f]">
+              At VettedPool, we are committed to our services with transparency.
+            </p>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-6 justify-center">
+            <Link to="/recruiter/register">
+              <Button size="lg" className="group">
+                <Users className="mr-3 h-5 w-5 group-hover:rotate-12 transition-transform duration-300" />
+                Sign Up Now
+              </Button>
+            </Link>
+            <Link to="/recruiter/login">
+              <Button size="lg" variant="outline" className="group">
+                <Briefcase className="mr-3 h-5 w-5 group-hover:rotate-12 transition-transform duration-300" />
+                Already Registered? Login
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
       <Footer />

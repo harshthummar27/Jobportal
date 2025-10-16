@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Mail, CheckCircle, AlertCircle, ArrowLeft, RefreshCw, Clock } from "lucide-react";
+import { Mail, CheckCircle, AlertCircle, ArrowLeft, RefreshCw, Clock, Sparkles } from "lucide-react";
 import Header from "../../Components/Header";
 
 const EmailVerification = () => {
@@ -86,21 +86,28 @@ const EmailVerification = () => {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50">
+      <div className="min-h-screen bg-[#fafaff] text-[#1e2749] overflow-x-hidden">
         <Header />
         
-        <div className="pt-20 pb-12">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 left-10 w-32 h-32 bg-[#e4d9ff] rounded-full opacity-20 animate-pulse"></div>
+          <div className="absolute top-40 right-20 w-24 h-24 bg-[#30343f] rounded-full opacity-15 animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute bottom-20 left-1/4 w-20 h-20 bg-[#e4d9ff] rounded-full opacity-25 animate-pulse" style={{ animationDelay: '2s' }}></div>
+        </div>
+        
+        <div className="relative pt-24 pb-20 lg:pt-32 lg:pb-32">
           <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-6">
                 <CheckCircle className="h-10 w-10 text-green-600" />
               </div>
               
-              <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+              <h1 className="text-3xl sm:text-4xl font-bold text-[#1e2749] mb-4">
                 Email Verified!
               </h1>
               
-              <p className="text-lg text-gray-600 mb-8">
+              <p className="text-lg text-[#30343f] mb-8">
                 Your email has been successfully verified. Redirecting to profile setup...
               </p>
               
@@ -115,57 +122,80 @@ const EmailVerification = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+    <div className="min-h-screen bg-[#fafaff] text-[#1e2749] overflow-x-hidden">
       <Header />
       
-      <div className="pt-8 pb-12">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-32 h-32 bg-[#e4d9ff] rounded-full opacity-20 animate-pulse"></div>
+        <div className="absolute top-40 right-20 w-24 h-24 bg-[#30343f] rounded-full opacity-15 animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-20 left-1/4 w-20 h-20 bg-[#e4d9ff] rounded-full opacity-25 animate-pulse" style={{ animationDelay: '2s' }}></div>
+      </div>
+      
+      <div className="relative pt-24 pb-20 lg:pt-32 lg:pb-32">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full mb-2">
-              <Mail className="h-7 w-7 text-white" />
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center px-4 py-2 rounded-full bg-[#e4d9ff] text-[#273469] text-sm font-medium mb-6">
+              <Sparkles className="h-4 w-4 mr-2" />
+              Email Verification
             </div>
-            <h4 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
-              Verify Your Email
-            </h4>
-            <p className="text-sm text-gray-600">
+            
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <h1 className="text-2xl lg:text-3xl font-black text-[#1e2749]">
+                Verify Your Email
+              </h1>
+            </div>
+            
+            <p className="text-lg lg:text-xl text-[#30343f] max-w-2xl mx-auto leading-relaxed">
               We've sent a verification code to your email address
             </p>
           </div>
 
+          {/* Back Button */}
+          <div className="mb-8">
+            <Link 
+              to="/recruiter/register" 
+              className="inline-flex items-center gap-2 text-[#30343f] hover:text-[#1e2749] transition-colors duration-300"
+            >
+              <ArrowLeft className="h-5 w-5" />
+              <span className="font-medium">Back to Registration</span>
+            </Link>
+          </div>
+
           {/* Verification Form */}
-          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-2xl border-2 border-[#e4d9ff] overflow-hidden">
             <div className="p-6 sm:p-8 lg:p-10">
               {/* Email Display */}
               <div className="text-center mb-8">
-                <div className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-700 px-4 py-2 rounded-lg">
+                <div className="inline-flex items-center gap-2 bg-[#f2edff] text-[#273469] px-4 py-2 rounded-lg border border-[#e4d9ff]">
                   <Mail className="h-4 w-4" />
                   <span className="font-medium">{email}</span>
                 </div>
-                <p className="text-sm text-gray-500 mt-2">
+                <p className="text-sm text-[#30343f] mt-2">
                   Check your inbox and spam folder for the verification code
                 </p>
               </div>
 
-              <form onSubmit={handleVerification} className="space-y-6">
+              <form onSubmit={handleVerification} className="space-y-8">
                 {/* Verification Code Input */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-semibold text-[#1e2749] mb-3">
                     Verification Code
                   </label>
                   <input
                     type="text"
                     value={verificationCode}
                     onChange={handleCodeChange}
-                    className={`w-full px-4 py-4 text-center text-2xl font-mono border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
-                      error ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                    className={`w-full px-6 py-4 text-center text-2xl font-mono border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] ${
+                      error ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
                     }`}
                     placeholder="000000"
                     maxLength={6}
                     autoComplete="one-time-code"
                   />
                   {error && (
-                    <p className="mt-2 text-sm text-red-600 flex items-center gap-1">
+                    <p className="mt-2 text-sm text-red-600 flex items-center gap-2">
                       <AlertCircle className="h-4 w-4" />
                       {error}
                     </p>
@@ -176,7 +206,7 @@ const EmailVerification = () => {
                 <button
                   type="submit"
                   disabled={isVerifying || verificationCode.length !== 6}
-                  className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-4 px-6 rounded-lg font-semibold text-lg hover:from-indigo-700 hover:to-purple-700 focus:ring-4 focus:ring-indigo-200 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="w-full flex items-center justify-center gap-3 py-4 px-8 rounded-xl font-bold text-lg text-white transition-all duration-300 transform hover:scale-105 active:scale-95 bg-[#273469] hover:bg-[#1e2749] shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                 >
                   {isVerifying ? (
                     <>
@@ -193,14 +223,14 @@ const EmailVerification = () => {
               </form>
 
               {/* Resend Code */}
-              <div className="mt-6 text-center">
-                <p className="text-sm text-gray-600 mb-3">
+              <div className="mt-8 text-center">
+                <p className="text-sm text-[#30343f] mb-3">
                   Didn't receive the code?
                 </p>
                 <button
                   onClick={handleResendCode}
                   disabled={isResending || countdown > 0}
-                  className="text-indigo-600 hover:text-indigo-500 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 mx-auto"
+                  className="text-[#273469] hover:text-[#1e2749] font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 mx-auto transition-colors duration-300"
                 >
                   {isResending ? (
                     <>
@@ -222,19 +252,19 @@ const EmailVerification = () => {
               </div>
 
               {/* Demo Code Notice */}
-              <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="mt-8 p-4 bg-[#f2edff] border-2 border-[#e4d9ff] rounded-xl">
                 <div className="flex items-start gap-3">
                   <div className="flex-shrink-0">
-                    <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
-                      <span className="text-blue-600 text-xs font-bold">!</span>
+                    <div className="w-6 h-6 bg-[#273469] rounded-full flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">!</span>
                     </div>
                   </div>
                   <div>
-                    <h4 className="text-sm font-medium text-blue-900 mb-1">
+                    <h4 className="text-sm font-semibold text-[#1e2749] mb-1">
                       Demo Mode
                     </h4>
-                    <p className="text-sm text-blue-700">
-                      For testing purposes, use the verification code: <span className="font-mono font-bold">123456</span>
+                    <p className="text-sm text-[#30343f]">
+                      For testing purposes, use the verification code: <span className="font-mono font-bold text-[#273469]">123456</span>
                     </p>
                   </div>
                 </div>
@@ -242,33 +272,25 @@ const EmailVerification = () => {
             </div>
           </div>
 
-          {/* Back Button */}
-          <div className="mt-8 text-center">
-            <Link
-              to="/recruiter/register"
-              className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 font-medium"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Back to Registration
-            </Link>
-          </div>
-
           {/* Help Section */}
-          <div className="mt-12 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          <div className="mt-16 bg-white rounded-2xl shadow-lg border-2 border-[#e4d9ff] p-6">
+            <h3 className="text-xl font-bold text-[#1e2749] mb-6 flex items-center gap-3">
+              <div className="w-8 h-8 bg-[#e4d9ff] rounded-xl flex items-center justify-center">
+                <AlertCircle className="h-4 w-4 text-[#273469]" />
+              </div>
               Need Help?
             </h3>
-            <div className="space-y-3 text-sm text-gray-600">
+            <div className="space-y-4 text-sm text-[#30343f]">
               <div className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-indigo-600 rounded-full mt-2 flex-shrink-0"></div>
+                <div className="w-2 h-2 bg-[#273469] rounded-full mt-2 flex-shrink-0"></div>
                 <p>Check your spam or junk mail folder if you don't see the email</p>
               </div>
               <div className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-indigo-600 rounded-full mt-2 flex-shrink-0"></div>
+                <div className="w-2 h-2 bg-[#273469] rounded-full mt-2 flex-shrink-0"></div>
                 <p>The verification code expires in 10 minutes</p>
               </div>
               <div className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-indigo-600 rounded-full mt-2 flex-shrink-0"></div>
+                <div className="w-2 h-2 bg-[#273469] rounded-full mt-2 flex-shrink-0"></div>
                 <p>Contact support if you continue to have issues</p>
               </div>
             </div>

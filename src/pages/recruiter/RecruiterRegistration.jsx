@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, Mail, Lock, User, Building, Phone, CheckCircle, AlertCircle } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, User, Building, Phone, CheckCircle, AlertCircle, ArrowLeft, Sparkles, Users, Briefcase } from "lucide-react";
 import Header from "../../Components/Header";
 
 const RecruiterRegistration = () => {
@@ -124,39 +124,67 @@ const RecruiterRegistration = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+    <div className="min-h-screen bg-[#fafaff] text-[#1e2749] overflow-x-hidden">
       <Header />
       
-      <div className="pt-8 pb-12">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-32 h-32 bg-[#e4d9ff] rounded-full opacity-20 animate-pulse"></div>
+        <div className="absolute top-40 right-20 w-24 h-24 bg-[#30343f] rounded-full opacity-15 animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-20 left-1/4 w-20 h-20 bg-[#e4d9ff] rounded-full opacity-25 animate-pulse" style={{ animationDelay: '2s' }}></div>
+      </div>
+      
+      <div className="relative pt-24 pb-20 lg:pt-32 lg:pb-32">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
-          <div className="text-center mb-5">
-            <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full mb-2">
-              <Building className="h-7 w-7 text-white" />
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center px-4 py-2 rounded-full bg-[#e4d9ff] text-[#273469] text-sm font-medium mb-6">
+              <Sparkles className="h-4 w-4 mr-2" />
+              Join VettedPool
             </div>
-            <h4 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
-              Join as a Recruiter
-            </h4>
-            <p className="text-sm text-gray-600 max-w-2xl mx-auto">
+            
+            <div className="flex items-center justify-center gap-3 mb-6">
+              {/* <div className="w-12 h-12 bg-[#273469] rounded-2xl flex items-center justify-center">
+                <Building className="h-6 w-6 text-white" />
+              </div> */}
+              <h1 className="text-2xl lg:text-3xl font-black text-[#1e2749]">
+                Recruiter Registration
+              </h1>
+            </div>
+            
+            <p className="text-lg lg:text-xl text-[#30343f] max-w-2xl mx-auto leading-relaxed">
               Access pre-vetted candidates and streamline your hiring process with our professional network
             </p>
           </div>
 
+          {/* Back Button */}
+          <div className="mb-8">
+            <Link 
+              to="/recruiter-info" 
+              className="inline-flex items-center gap-2 text-[#30343f] hover:text-[#1e2749] transition-colors duration-300"
+            >
+              <ArrowLeft className="h-5 w-5" />
+              <span className="font-medium">Back to Recruiter Info</span>
+            </Link>
+          </div>
+
           {/* Registration Form */}
-          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-2xl border-2 border-[#e4d9ff] overflow-hidden">
             <div className="p-6 sm:p-8 lg:p-10">
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-8">
                 {/* Personal Information */}
-                <div className="space-y-6">
-                  <div className="border-b border-gray-200 pb-6">
-                    <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                      <User className="h-5 w-5 text-indigo-600" />
+                <div className="space-y-8">
+                  <div className="border-b border-[#e4d9ff] pb-8">
+                    <h2 className="text-2xl font-bold text-[#1e2749] mb-6 flex items-center gap-3">
+                      <div className="w-10 h-10 bg-[#e4d9ff] rounded-xl flex items-center justify-center">
+                        <User className="h-5 w-5 text-[#273469]" />
+                      </div>
                       Personal Information
                     </h2>
                     
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-semibold text-[#1e2749] mb-3">
                           First Name *
                         </label>
                         <input
@@ -164,13 +192,13 @@ const RecruiterRegistration = () => {
                           name="firstName"
                           value={formData.firstName}
                           onChange={handleInputChange}
-                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
-                            errors.firstName ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                          className={`w-full px-6 py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] ${
+                            errors.firstName ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
                           }`}
                           placeholder="Enter your first name"
                         />
                         {errors.firstName && (
-                          <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                          <p className="mt-2 text-sm text-red-600 flex items-center gap-2">
                             <AlertCircle className="h-4 w-4" />
                             {errors.firstName}
                           </p>
@@ -178,7 +206,7 @@ const RecruiterRegistration = () => {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-semibold text-[#1e2749] mb-3">
                           Last Name *
                         </label>
                         <input
@@ -186,13 +214,13 @@ const RecruiterRegistration = () => {
                           name="lastName"
                           value={formData.lastName}
                           onChange={handleInputChange}
-                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
-                            errors.lastName ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                          className={`w-full px-6 py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] ${
+                            errors.lastName ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
                           }`}
                           placeholder="Enter your last name"
                         />
                         {errors.lastName && (
-                          <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                          <p className="mt-2 text-sm text-red-600 flex items-center gap-2">
                             <AlertCircle className="h-4 w-4" />
                             {errors.lastName}
                           </p>
@@ -200,26 +228,26 @@ const RecruiterRegistration = () => {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-semibold text-[#1e2749] mb-3">
                           Email Address *
                         </label>
                         <div className="relative">
-                          <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                          <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#30343f]" />
                           <input
                             type="email"
                             name="email"
                             value={formData.email}
                             onChange={handleInputChange}
-                            className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
-                              errors.email ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                            className={`w-full pl-12 pr-6 py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] ${
+                              errors.email ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
                             }`}
                             placeholder="your.email@company.com"
                           />
                         </div>
                         {errors.email && (
-                          <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                          <p className="mt-2 text-sm text-red-600 flex items-center gap-2">
                             <AlertCircle className="h-4 w-4" />
                             {errors.email}
                           </p>
@@ -227,24 +255,24 @@ const RecruiterRegistration = () => {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-semibold text-[#1e2749] mb-3">
                           Phone Number *
                         </label>
                         <div className="relative">
-                          <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                          <Phone className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#30343f]" />
                           <input
                             type="tel"
                             name="phone"
                             value={formData.phone}
                             onChange={handleInputChange}
-                            className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
-                              errors.phone ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                            className={`w-full pl-12 pr-6 py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] ${
+                              errors.phone ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
                             }`}
                             placeholder="+1 (555) 123-4567"
                           />
                         </div>
                         {errors.phone && (
-                          <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                          <p className="mt-2 text-sm text-red-600 flex items-center gap-2">
                             <AlertCircle className="h-4 w-4" />
                             {errors.phone}
                           </p>
@@ -254,15 +282,17 @@ const RecruiterRegistration = () => {
                   </div>
 
                   {/* Company Information */}
-                  <div className="border-b border-gray-200 pb-6">
-                    <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                      <Building className="h-5 w-5 text-indigo-600" />
+                  <div className="border-b border-[#e4d9ff] pb-8">
+                    <h2 className="text-2xl font-bold text-[#1e2749] mb-6 flex items-center gap-3">
+                      <div className="w-10 h-10 bg-[#e4d9ff] rounded-xl flex items-center justify-center">
+                        <Building className="h-5 w-5 text-[#273469]" />
+                      </div>
                       Company Information
                     </h2>
                     
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       <div className="sm:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-semibold text-[#1e2749] mb-3">
                           Company Name *
                         </label>
                         <input
@@ -270,13 +300,13 @@ const RecruiterRegistration = () => {
                           name="companyName"
                           value={formData.companyName}
                           onChange={handleInputChange}
-                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
-                            errors.companyName ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                          className={`w-full px-6 py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] ${
+                            errors.companyName ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
                           }`}
                           placeholder="Enter your company name"
                         />
                         {errors.companyName && (
-                          <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                          <p className="mt-2 text-sm text-red-600 flex items-center gap-2">
                             <AlertCircle className="h-4 w-4" />
                             {errors.companyName}
                           </p>
@@ -284,15 +314,15 @@ const RecruiterRegistration = () => {
                       </div>
 
                       <div className="sm:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-semibold text-[#1e2749] mb-3">
                           Company Size *
                         </label>
                         <select
                           name="companySize"
                           value={formData.companySize}
                           onChange={handleInputChange}
-                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
-                            errors.companySize ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                          className={`w-full px-6 py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] ${
+                            errors.companySize ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
                           }`}
                         >
                           <option value="">Select company size</option>
@@ -303,7 +333,7 @@ const RecruiterRegistration = () => {
                           ))}
                         </select>
                         {errors.companySize && (
-                          <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                          <p className="mt-2 text-sm text-red-600 flex items-center gap-2">
                             <AlertCircle className="h-4 w-4" />
                             {errors.companySize}
                           </p>
@@ -314,38 +344,40 @@ const RecruiterRegistration = () => {
 
                   {/* Security */}
                   <div>
-                    <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                      <Lock className="h-5 w-5 text-indigo-600" />
+                    <h2 className="text-2xl font-bold text-[#1e2749] mb-6 flex items-center gap-3">
+                      <div className="w-10 h-10 bg-[#e4d9ff] rounded-xl flex items-center justify-center">
+                        <Lock className="h-5 w-5 text-[#273469]" />
+                      </div>
                       Security
                     </h2>
                     
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-semibold text-[#1e2749] mb-3">
                           Password *
                         </label>
                         <div className="relative">
-                          <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                          <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#30343f]" />
                           <input
                             type={showPassword ? "text" : "password"}
                             name="password"
                             value={formData.password}
                             onChange={handleInputChange}
-                            className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
-                              errors.password ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                            className={`w-full pl-12 pr-14 py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] ${
+                              errors.password ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
                             }`}
                             placeholder="Create a strong password"
                           />
                           <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#30343f] hover:text-[#1e2749] transition-colors duration-300"
                           >
                             {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                           </button>
                         </div>
                         {errors.password && (
-                          <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                          <p className="mt-2 text-sm text-red-600 flex items-center gap-2">
                             <AlertCircle className="h-4 w-4" />
                             {errors.password}
                           </p>
@@ -353,31 +385,31 @@ const RecruiterRegistration = () => {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-semibold text-[#1e2749] mb-3">
                           Confirm Password *
                         </label>
                         <div className="relative">
-                          <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                          <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#30343f]" />
                           <input
                             type={showConfirmPassword ? "text" : "password"}
                             name="confirmPassword"
                             value={formData.confirmPassword}
                             onChange={handleInputChange}
-                            className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
-                              errors.confirmPassword ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                            className={`w-full pl-12 pr-14 py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] ${
+                              errors.confirmPassword ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
                             }`}
                             placeholder="Confirm your password"
                           />
                           <button
                             type="button"
                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#30343f] hover:text-[#1e2749] transition-colors duration-300"
                           >
                             {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                           </button>
                         </div>
                         {errors.confirmPassword && (
-                          <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                          <p className="mt-2 text-sm text-red-600 flex items-center gap-2">
                             <AlertCircle className="h-4 w-4" />
                             {errors.confirmPassword}
                           </p>
@@ -388,47 +420,47 @@ const RecruiterRegistration = () => {
                 </div>
 
                 {/* Terms and Conditions */}
-                <div className="space-y-4">
-                  <div className="flex items-start gap-3">
+                <div className="space-y-6">
+                  <div className="flex items-start gap-4">
                     <input
                       type="checkbox"
                       name="agreeToTerms"
                       checked={formData.agreeToTerms}
                       onChange={handleInputChange}
-                      className="mt-1 h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                      className="mt-1 h-5 w-5 text-[#273469] focus:ring-[#273469] border-[#e4d9ff] rounded"
                     />
-                    <label className="text-sm text-gray-700">
+                    <label className="text-sm text-[#30343f] leading-relaxed">
                       I agree to the{" "}
-                      <Link to="/terms" className="text-indigo-600 hover:text-indigo-500 font-medium">
+                      <Link to="/terms" className="text-[#273469] hover:text-[#1e2749] font-semibold transition-colors duration-300">
                         Terms and Conditions
                       </Link>{" "}
                       and{" "}
-                      <Link to="/privacy" className="text-indigo-600 hover:text-indigo-500 font-medium">
+                      <Link to="/privacy" className="text-[#273469] hover:text-[#1e2749] font-semibold transition-colors duration-300">
                         Privacy Policy
                       </Link>
                     </label>
                   </div>
                   {errors.agreeToTerms && (
-                    <p className="text-sm text-red-600 flex items-center gap-1">
+                    <p className="text-sm text-red-600 flex items-center gap-2">
                       <AlertCircle className="h-4 w-4" />
                       {errors.agreeToTerms}
                     </p>
                   )}
 
-                  <div className="flex items-start gap-3">
+                  <div className="flex items-start gap-4">
                     <input
                       type="checkbox"
                       name="agreeToPrivacy"
                       checked={formData.agreeToPrivacy}
                       onChange={handleInputChange}
-                      className="mt-1 h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                      className="mt-1 h-5 w-5 text-[#273469] focus:ring-[#273469] border-[#e4d9ff] rounded"
                     />
-                    <label className="text-sm text-gray-700">
+                    <label className="text-sm text-[#30343f] leading-relaxed">
                       I consent to receive communications about candidate matches and platform updates
                     </label>
                   </div>
                   {errors.agreeToPrivacy && (
-                    <p className="text-sm text-red-600 flex items-center gap-1">
+                    <p className="text-sm text-red-600 flex items-center gap-2">
                       <AlertCircle className="h-4 w-4" />
                       {errors.agreeToPrivacy}
                     </p>
@@ -437,7 +469,7 @@ const RecruiterRegistration = () => {
 
                 {/* Submit Error */}
                 {errors.submit && (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                  <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4">
                     <p className="text-sm text-red-600 flex items-center gap-2">
                       <AlertCircle className="h-4 w-4" />
                       {errors.submit}
@@ -449,7 +481,7 @@ const RecruiterRegistration = () => {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-4 px-6 rounded-lg font-semibold text-lg hover:from-indigo-700 hover:to-purple-700 focus:ring-4 focus:ring-indigo-200 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="w-full flex items-center justify-center gap-3 py-4 px-8 rounded-xl font-bold text-lg text-white transition-all duration-300 transform hover:scale-105 active:scale-95 bg-[#273469] hover:bg-[#1e2749] shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                 >
                   {isLoading ? (
                     <>
@@ -466,9 +498,9 @@ const RecruiterRegistration = () => {
 
                 {/* Login Link */}
                 <div className="text-center">
-                  <p className="text-gray-600">
+                  <p className="text-[#30343f]">
                     Already have an account?{" "}
-                    <Link to="/recruiter/login" className="text-indigo-600 hover:text-indigo-500 font-medium">
+                    <Link to="/recruiter/login" className="text-[#273469] hover:text-[#1e2749] font-semibold transition-colors duration-300">
                       Sign in here
                     </Link>
                   </p>
@@ -478,29 +510,29 @@ const RecruiterRegistration = () => {
           </div>
 
           {/* Benefits */}
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center p-6 bg-white rounded-xl shadow-sm border border-gray-100">
-              <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mb-4">
-                <User className="h-6 w-6 text-blue-600" />
+          <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center p-6 bg-white rounded-2xl shadow-lg border-2 border-[#e4d9ff] hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+              <div className="inline-flex items-center justify-center w-12 h-12 bg-[#e4d9ff] rounded-2xl mb-4">
+                <User className="h-6 w-6 text-[#273469]" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Pre-vetted Candidates</h3>
-              <p className="text-gray-600">Access to thoroughly screened and qualified professionals</p>
+              <h3 className="text-lg font-bold text-[#1e2749] mb-2">Pre-vetted Candidates</h3>
+              <p className="text-[#30343f] leading-relaxed text-sm">Access to thoroughly screened and qualified professionals</p>
             </div>
             
-            <div className="text-center p-6 bg-white rounded-xl shadow-sm border border-gray-100">
-              <div className="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mb-4">
-                <Building className="h-6 w-6 text-green-600" />
+            <div className="text-center p-6 bg-white rounded-2xl shadow-lg border-2 border-[#e4d9ff] hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+              <div className="inline-flex items-center justify-center w-12 h-12 bg-[#e4d9ff] rounded-2xl mb-4">
+                <Building className="h-6 w-6 text-[#273469]" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Streamlined Process</h3>
-              <p className="text-gray-600">Reduce time-to-hire with our efficient matching system</p>
+              <h3 className="text-lg font-bold text-[#1e2749] mb-2">Streamlined Process</h3>
+              <p className="text-[#30343f] leading-relaxed text-sm">Reduce time-to-hire with our efficient matching system</p>
             </div>
             
-            <div className="text-center p-6 bg-white rounded-xl shadow-sm border border-gray-100">
-              <div className="inline-flex items-center justify-center w-12 h-12 bg-purple-100 rounded-full mb-4">
-                <CheckCircle className="h-6 w-6 text-purple-600" />
+            <div className="text-center p-6 bg-white rounded-2xl shadow-lg border-2 border-[#e4d9ff] hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+              <div className="inline-flex items-center justify-center w-12 h-12 bg-[#e4d9ff] rounded-2xl mb-4">
+                <CheckCircle className="h-6 w-6 text-[#273469]" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Quality Guarantee</h3>
-              <p className="text-gray-600">All candidates are verified and ready for immediate placement</p>
+              <h3 className="text-lg font-bold text-[#1e2749] mb-2">Quality Guarantee</h3>
+              <p className="text-[#30343f] leading-relaxed text-sm">All candidates are verified and ready for immediate placement</p>
             </div>
           </div>
         </div>

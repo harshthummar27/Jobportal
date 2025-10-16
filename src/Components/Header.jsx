@@ -4,7 +4,7 @@ import { Shield } from "lucide-react";
 
 const Header = () => {
   return (
-    <header className="border-b border-gray-100 bg-white sticky top-0 z-50 shadow-sm">
+    <header className="border-b border-gray-100 bg-white fixed top-0 left-0 right-0 z-50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
           {/* {logo  add hear} */}
@@ -19,7 +19,7 @@ const Header = () => {
           <div className="flex items-center gap-4">
             <Link
               to="/login"
-              className="px-4 py-2 rounded-md bg-indigo-200 font-medium hover:bg-indigo-300 transition"
+              className="px-4 py-2 rounded-md bg-[#273469] text-white font-medium hover:bg-[#1e2749] transition"
             >
               Login
             </Link>
