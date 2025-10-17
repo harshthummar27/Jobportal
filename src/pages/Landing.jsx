@@ -30,6 +30,7 @@ import {
   Minus,
   X,
   Menu,
+  ChevronLeft,
 } from "lucide-react";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
@@ -150,6 +151,132 @@ const AnimatedCounter = ({ end, duration = 2000, suffix = "" }) => {
   );
 };
 
+// Mobile Slider Component
+const MobileSlider = ({ children, className = "" }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+  const sliderRef = useRef(null);
+  const autoPlayRef = useRef(null);
+  
+  const items = React.Children.toArray(children);
+  const totalItems = items.length;
+
+  // Auto-play functionality
+  useEffect(() => {
+    const startAutoPlay = () => {
+      autoPlayRef.current = setInterval(() => {
+        setCurrentIndex((prev) => (prev + 1) % totalItems);
+      }, 4000); // Change slide every 4 seconds
+    };
+
+    const stopAutoPlay = () => {
+      if (autoPlayRef.current) {
+        clearInterval(autoPlayRef.current);
+        autoPlayRef.current = null;
+      }
+    };
+
+    startAutoPlay();
+
+    // Pause auto-play on hover/touch
+    const sliderElement = sliderRef.current;
+    if (sliderElement) {
+      sliderElement.addEventListener('mouseenter', stopAutoPlay);
+      sliderElement.addEventListener('mouseleave', startAutoPlay);
+      sliderElement.addEventListener('touchstart', stopAutoPlay);
+      sliderElement.addEventListener('touchend', () => {
+        setTimeout(startAutoPlay, 2000); // Resume after 2 seconds
+      });
+    }
+
+    return () => {
+      stopAutoPlay();
+      if (sliderElement) {
+        sliderElement.removeEventListener('mouseenter', stopAutoPlay);
+        sliderElement.removeEventListener('mouseleave', startAutoPlay);
+        sliderElement.removeEventListener('touchstart', stopAutoPlay);
+        sliderElement.removeEventListener('touchend', startAutoPlay);
+      }
+    };
+  }, [totalItems]);
+
+  // Touch handlers for mobile swipe
+  const handleTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isLeftSwipe && currentIndex < totalItems - 1) {
+      setCurrentIndex(currentIndex + 1);
+    }
+    if (isRightSwipe && currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+    }
+  };
+
+  const goToSlide = (index) => {
+    setCurrentIndex(index);
+  };
+
+  return (
+    <div className={`relative ${className}`}>
+      {/* Desktop Grid View */}
+      <div className="hidden md:grid md:grid-cols-3 gap-8">
+        {children}
+      </div>
+
+      {/* Mobile Slider View */}
+      <div className="md:hidden">
+        <div 
+          ref={sliderRef}
+          className="relative overflow-hidden rounded-2xl"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
+          <div 
+            className="flex transition-transform duration-300 ease-in-out"
+            style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+          >
+            {items.map((item, index) => (
+              <div key={index} className="w-full flex-shrink-0 px-4">
+                {item}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Navigation Dots - Bottom */}
+        <div className="flex justify-center mt-6 space-x-2">
+          {items.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => goToSlide(index)}
+              className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                index === currentIndex 
+                  ? 'bg-[#273469] scale-125' 
+                  : 'bg-[#e4d9ff] hover:bg-[#273469] hover:scale-110'
+              }`}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Landing = () => {
   const [isVisible, setIsVisible] = useState({});
 
@@ -180,16 +307,16 @@ const Landing = () => {
       <Header />
       
       {/* Hero Section - Asymmetrical Design */}
-      <section className="relative pt-24 pb-20 lg:pt-32 lg:pb-32 overflow-hidden">
+      <section className="relative pt-20 pb-16 md:pt-24 md:pb-20 lg:pt-32 lg:pb-32 overflow-hidden">
         {/* Background Elements */}
         <div className="absolute inset-0">
-          <div className="absolute top-20 left-10 w-32 h-32 bg-[#e4d9ff] rounded-full opacity-20 animate-pulse"></div>
-          <div className="absolute top-40 right-20 w-24 h-24 bg-[#30343f] rounded-full opacity-15 animate-pulse" style={{ animationDelay: '1s' }}></div>
-          <div className="absolute bottom-20 left-1/4 w-20 h-20 bg-[#e4d9ff] rounded-full opacity-25 animate-pulse" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute top-10 left-5 md:top-20 md:left-10 w-16 h-16 md:w-32 md:h-32 bg-[#e4d9ff] rounded-full opacity-20 animate-pulse"></div>
+          <div className="absolute top-20 right-10 md:top-40 md:right-20 w-12 h-12 md:w-24 md:h-24 bg-[#30343f] rounded-full opacity-15 animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute bottom-10 left-1/4 md:bottom-20 w-10 h-10 md:w-20 md:h-20 bg-[#e4d9ff] rounded-full opacity-25 animate-pulse" style={{ animationDelay: '2s' }}></div>
         </div>
 
         <div className="relative max-w-7xl mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
             {/* Left Side - Content */}
             <div 
               className={`transform transition-all duration-1000 ${
@@ -198,37 +325,37 @@ const Landing = () => {
               data-animate
               id="hero"
             >
-              <div className="inline-flex items-center px-4 py-2 rounded-full bg-[#e4d9ff] text-[#273469] text-sm font-medium mb-6">
-                <Sparkles className="h-4 w-4 mr-2" />
+              <div className="inline-flex items-center px-3 py-2 md:px-4 rounded-full bg-[#e4d9ff] text-[#273469] text-xs md:text-sm font-medium mb-4 md:mb-6">
+                <Sparkles className="h-3 w-3 md:h-4 md:w-4 mr-2" />
                 Trusted by 500+ Companies
               </div>
               
-              <h1 className="text-6xl lg:text-8xl font-black mb-6 text-[#1e2749] leading-tight">
+              <h1 className="text-4xl md:text-6xl lg:text-8xl font-black mb-4 md:mb-6 text-[#1e2749] leading-tight">
                 Vetted
                 <span className="block text-[#273469]">Pool</span>
               </h1>
               
-              <p className="text-xl lg:text-2xl mb-8 text-[#30343f] leading-relaxed">
+              <p className="text-lg md:text-xl lg:text-2xl mb-6 md:mb-8 text-[#30343f] leading-relaxed">
                 Pre-screened. Pre-interviewed. 
                 <span className="text-[#273469] font-semibold"> Prepped for you.</span>
               </p>
               
-              <p className="text-lg mb-10 text-[#30343f] leading-relaxed">
+              <p className="text-base md:text-lg mb-8 md:mb-10 text-[#30343f] leading-relaxed">
                 Access thoroughly vetted candidates ready for immediate placement.
                 Save time and ensure quality with our comprehensive screening process.
               </p>
               
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link to="/candidate-info">
-                  <Button size="lg" variant="primary" className="group">
-                    <Users className="mr-3 h-5 w-5 group-hover:rotate-12 transition-transform duration-300" />
+              <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
+                <Link to="/candidate-info" className="w-full sm:w-auto">
+                  <Button size="lg" variant="primary" className="group w-full sm:w-auto">
+                    <Users className="mr-2 md:mr-3 h-4 w-4 md:h-5 md:w-5 group-hover:rotate-12 transition-transform duration-300" />
                     For Candidates
-                    <ArrowRight className="ml-3 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
+                    <ArrowRight className="ml-2 md:ml-3 h-4 w-4 md:h-5 md:w-5 group-hover:translate-x-1 transition-transform duration-300" />
                   </Button>
                 </Link>
-                <Link to="/recruiter-info">
-                  <Button size="lg" variant="outline" className="group">
-                    <Briefcase className="mr-3 h-5 w-5 group-hover:rotate-12 transition-transform duration-300" />
+                <Link to="/recruiter-info" className="w-full sm:w-auto">
+                  <Button size="lg" variant="outline" className="group w-full sm:w-auto">
+                    <Briefcase className="mr-2 md:mr-3 h-4 w-4 md:h-5 md:w-5 group-hover:rotate-12 transition-transform duration-300" />
                     For Recruiters
                   </Button>
                 </Link>
@@ -244,44 +371,44 @@ const Landing = () => {
             >
               <div className="relative">
                 {/* Main Card */}
-                <div className="bg-white p-8 rounded-2xl shadow-2xl border-2 border-[#e4d9ff] transform rotate-3 hover:rotate-0 transition-transform duration-500">
-                  <div className="flex items-center gap-4 mb-6">
-                    <div className="w-12 h-12 bg-[#273469] rounded-xl flex items-center justify-center">
-                      <CheckCircle className="h-6 w-6 text-white" />
+                <div className="bg-white p-6 md:p-8 rounded-2xl shadow-2xl border-2 border-[#e4d9ff] transform rotate-3 hover:rotate-0 transition-transform duration-500">
+                  <div className="flex items-center gap-3 md:gap-4 mb-4 md:mb-6">
+                    <div className="w-10 h-10 md:w-12 md:h-12 bg-[#273469] rounded-xl flex items-center justify-center">
+                      <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-white" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold text-[#1e2749]">Quality Assured</h3>
-                      <p className="text-[#30343f]">Pre-vetted candidates</p>
+                      <h3 className="text-lg md:text-xl font-bold text-[#1e2749]">Quality Assured</h3>
+                      <p className="text-sm md:text-base text-[#30343f]">Pre-vetted candidates</p>
                     </div>
                   </div>
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3">
+                  <div className="space-y-3 md:space-y-4">
+                    <div className="flex items-center gap-2 md:gap-3">
                       <div className="w-2 h-2 bg-[#273469] rounded-full"></div>
-                      <span className="text-[#30343f]">Technical screening</span>
+                      <span className="text-sm md:text-base text-[#30343f]">Technical screening</span>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 md:gap-3">
                       <div className="w-2 h-2 bg-[#273469] rounded-full"></div>
-                      <span className="text-[#30343f]">Background verification</span>
+                      <span className="text-sm md:text-base text-[#30343f]">Background verification</span>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 md:gap-3">
                       <div className="w-2 h-2 bg-[#273469] rounded-full"></div>
-                      <span className="text-[#30343f]">Reference checks</span>
+                      <span className="text-sm md:text-base text-[#30343f]">Reference checks</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Floating Cards */}
-                <div className="absolute -top-4 -right-4 bg-[#e4d9ff] p-4 rounded-xl shadow-lg transform -rotate-12 hover:rotate-0 transition-transform duration-500">
-                  <div className="flex items-center gap-2">
-                    <Lock className="h-5 w-5 text-[#273469]" />
-                    <span className="text-[#273469] font-semibold">Secure</span>
+                <div className="absolute -top-2 -right-2 md:-top-4 md:-right-4 bg-[#e4d9ff] p-3 md:p-4 rounded-xl shadow-lg transform -rotate-12 hover:rotate-0 transition-transform duration-500">
+                  <div className="flex items-center gap-1 md:gap-2">
+                    <Lock className="h-4 w-4 md:h-5 md:w-5 text-[#273469]" />
+                    <span className="text-[#273469] font-semibold text-sm md:text-base">Secure</span>
                   </div>
                 </div>
 
-                <div className="absolute -bottom-4 -left-4 bg-[#30343f] p-4 rounded-xl shadow-lg transform rotate-12 hover:rotate-0 transition-transform duration-500">
-                  <div className="flex items-center gap-2">
-                    <Zap className="h-5 w-5 text-white" />
-                    <span className="text-white font-semibold">Fast</span>
+                <div className="absolute -bottom-2 -left-2 md:-bottom-4 md:-left-4 bg-[#30343f] p-3 md:p-4 rounded-xl shadow-lg transform rotate-12 hover:rotate-0 transition-transform duration-500">
+                  <div className="flex items-center gap-1 md:gap-2">
+                    <Zap className="h-4 w-4 md:h-5 md:w-5 text-white" />
+                    <span className="text-white font-semibold text-sm md:text-base">Fast</span>
                   </div>
                 </div>
               </div>
@@ -291,134 +418,134 @@ const Landing = () => {
       </section>
 
       {/* Stats Section - Diagonal Layout */}
-      <section className="py-20 bg-[#273469] relative overflow-hidden">
+      <section className="py-16 md:py-20 bg-[#273469] relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-[#273469] to-[#1e2749] transform -skew-y-1"></div>
         <div className="relative max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 text-center">
             <FloatingCard delay={100}>
               <div className="text-white">
-                <div className="text-5xl font-black mb-2">
+                <div className="text-3xl md:text-5xl font-black mb-1 md:mb-2">
                   <AnimatedCounter end={5000} suffix="+" />
                 </div>
-                <p className="text-[#e4d9ff] font-medium">Vetted Candidates</p>
+                <p className="text-[#e4d9ff] font-medium text-sm md:text-base">Vetted Candidates</p>
               </div>
             </FloatingCard>
             <FloatingCard delay={200}>
               <div className="text-white">
-                <div className="text-5xl font-black mb-2">
+                <div className="text-3xl md:text-5xl font-black mb-1 md:mb-2">
                   <AnimatedCounter end={98} suffix="%" />
                 </div>
-                <p className="text-[#e4d9ff] font-medium">Success Rate</p>
+                <p className="text-[#e4d9ff] font-medium text-sm md:text-base">Success Rate</p>
               </div>
             </FloatingCard>
             <FloatingCard delay={300}>
               <div className="text-white">
-                <div className="text-5xl font-black mb-2">
+                <div className="text-3xl md:text-5xl font-black mb-1 md:mb-2">
                   <AnimatedCounter end={24} suffix="hrs" />
                 </div>
-                <p className="text-[#e4d9ff] font-medium">Avg. Placement</p>
+                <p className="text-[#e4d9ff] font-medium text-sm md:text-base">Avg. Placement</p>
               </div>
             </FloatingCard>
             <FloatingCard delay={400}>
               <div className="text-white">
-                <div className="text-5xl font-black mb-2">
+                <div className="text-3xl md:text-5xl font-black mb-1 md:mb-2">
                   <AnimatedCounter end={150} suffix="+" />
                 </div>
-                <p className="text-[#e4d9ff] font-medium">Companies</p>
+                <p className="text-[#e4d9ff] font-medium text-sm md:text-base">Companies</p>
               </div>
             </FloatingCard>
           </div>
         </div>
       </section>
 
-      {/* Features Section - Hexagonal Grid */}
-      <section className="py-24 bg-[#fafaff]">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-20">
-            <h2 className="text-5xl lg:text-6xl font-black mb-6 text-[#1e2749]">
+      {/* Features Section - Hexagonal Grid with Mobile Slider */}
+      <section className="py-12 md:py-18 bg-[#fafaff]">
+        <div className="max-w-5xl mx-auto px-4">
+          <div className="text-center mb-10 md:mb-15">
+            <h2 className="text-2xl md:text-3xl lg:text-5xl font-black mb-3 md:mb-4 text-[#1e2749]">
               Why Choose
-              <span className="block text-[#273469]">VettedPool?</span>
+              <span className=" text-[#273469]"> VettedPool?</span>
             </h2>
-            <p className="text-xl text-[#30343f] max-w-3xl mx-auto">
+            <p className="text-sm md:text-base text-[#30343f] max-w-3xl mx-auto">
               A revolutionary platform designed for privacy, quality, and efficiency in recruitment.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <MobileSlider>
             <FloatingCard delay={100}>
-              <div className="bg-white p-8 rounded-2xl shadow-lg border-2 border-[#e4d9ff] hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 group">
-                <div className="w-16 h-16 bg-[#e4d9ff] rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <Lock className="h-8 w-8 text-[#273469]" />
+              <div className="bg-white p-6 md:p-8 rounded-2xl shadow-lg border-2 border-[#e4d9ff] hover:shadow-xl transition-all duration-500 transform hover:-translate-y-1 group h-full">
+                <div className="w-12 h-12 md:w-16 md:h-16 bg-[#e4d9ff] rounded-2xl flex items-center justify-center mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <Lock className="h-6 w-6 md:h-7 md:w-7 text-[#273469]" />
                 </div>
-                <h3 className="text-2xl font-bold mb-4 text-[#1e2749]">Complete Anonymity</h3>
-                <p className="text-[#30343f] leading-relaxed">
+                <h3 className="text-xl md:text-2xl font-bold mb-2 text-[#1e2749]">Complete Anonymity</h3>
+                <p className="text-[#30343f] text-sm md:text-base leading-relaxed">
                   Candidates remain anonymous with unique code numbers. No direct contact information shared until both parties agree.
                 </p>
               </div>
             </FloatingCard>
 
             <FloatingCard delay={200}>
-              <div className="bg-white p-8 rounded-2xl shadow-lg border-2 border-[#e4d9ff] hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 group">
-                <div className="w-16 h-16 bg-[#e4d9ff] rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <CheckCircle className="h-8 w-8 text-[#273469]" />
+              <div className="bg-white p-6 md:p-8 rounded-2xl shadow-lg border-2 border-[#e4d9ff] hover:shadow-xl transition-all duration-500 transform hover:-translate-y-1 group h-full">
+                <div className="w-12 h-12 md:w-16 md:h-16 bg-[#e4d9ff] rounded-2xl flex items-center justify-center mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <CheckCircle className="h-6 w-6 md:h-7 md:w-7 text-[#273469]" />
                 </div>
-                <h3 className="text-2xl font-bold mb-4 text-[#1e2749]">Pre-Vetted Quality</h3>
-                <p className="text-[#30343f] leading-relaxed">
+                <h3 className="text-xl md:text-2xl font-bold mb-2 text-[#1e2749]">Pre-Vetted Quality</h3>
+                <p className="text-[#30343f] text-sm md:text-base leading-relaxed">
                   Every candidate is pre-interviewed and screened. Access only verified, qualified professionals ready to work.
                 </p>
               </div>
             </FloatingCard>
 
             <FloatingCard delay={300}>
-              <div className="bg-white p-8 rounded-2xl shadow-lg border-2 border-[#e4d9ff] hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 group">
-                <div className="w-16 h-16 bg-[#e4d9ff] rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <Target className="h-8 w-8 text-[#273469]" />
+              <div className="bg-white p-6 md:p-8 rounded-2xl shadow-lg border-2 border-[#e4d9ff] hover:shadow-xl transition-all duration-500 transform hover:-translate-y-1 group h-full">
+                <div className="w-12 h-12 md:w-16 md:h-16 bg-[#e4d9ff] rounded-2xl flex items-center justify-center mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <Target className="h-6 w-6 md:h-7 md:w-7 text-[#273469]" />
                 </div>
-                <h3 className="text-2xl font-bold mb-4 text-[#1e2749]">Advanced Filtering</h3>
-                <p className="text-[#30343f] leading-relaxed">
+                <h3 className="text-xl md:text-2xl font-bold mb-2 text-[#1e2749]">Advanced Filtering</h3>
+                <p className="text-[#30343f] text-sm md:text-base leading-relaxed">
                   Search by skills, location, experience, visa status, and more. Find exactly who you need, when you need them.
                 </p>
               </div>
             </FloatingCard>
-          </div>
+          </MobileSlider>
         </div>
       </section>
 
       {/* How It Works - Timeline Design */}
-      <section className="py-24 bg-white">
+      <section className="py-12 md:py-18 bg-white">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-20">
-            <h2 className="text-5xl lg:text-6xl font-black mb-6 text-[#1e2749]">
+          <div className="text-center mb-10 md:mb-15">
+            <h2 className="text-2xl md:text-3xl lg:text-5xl font-black mb-3 md:mb-4 text-[#1e2749]">
               How It
-              <span className="block text-[#273469]">Works</span>
+              <span className=" text-[#273469]"> Works</span>
             </h2>
-            <p className="text-xl text-[#30343f] max-w-3xl mx-auto">
+            <p className="text-sm md:text-base text-[#30343f] max-w-3xl mx-auto">
               Simple steps to connect the right talent with the right opportunities
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-16">
+          <div className="grid lg:grid-cols-2 gap-8 md:gap-16">
             {/* For Candidates */}
             <FloatingCard delay={200}>
               <div className="relative">
-                <div className="bg-[#fafaff] p-8 rounded-2xl border-2 border-[#e4d9ff] shadow-lg">
-                   <div className="flex items-center gap-4 mb-8">
-                     <div className="w-12 h-12 bg-[#273469] rounded-2xl flex items-center justify-center">
-                       <Users className="h-6 w-6 text-white" />
+                <div className="bg-[#fafaff] p-6 md:p-8 rounded-2xl border-2 border-[#e4d9ff] shadow-lg">
+                   <div className="flex items-center gap-3 md:gap-4 mb-6 md:mb-8">
+                     <div className="w-10 h-10 md:w-12 md:h-12 bg-[#273469] rounded-2xl flex items-center justify-center">
+                       <Users className="h-5 w-5 md:h-6 md:w-6 text-white" />
                      </div>
-                     <h3 className="text-3xl font-bold text-[#1e2749]">For Candidates</h3>
+                     <h3 className="text-2xl md:text-3xl font-bold text-[#1e2749]">For Candidates</h3>
                    </div>
                   
-                   <div className="space-y-4">
+                   <div className="space-y-3 md:space-y-4">
                      {/* Step 1 */}
-                     <div className="bg-[#f2edff] p-4 rounded-xl">
-                       <div className="flex gap-3">
-                         <div className="w-10 h-10 rounded-xl bg-white border border-gray-300 text-[#273469] flex items-center justify-center font-bold text-sm flex-shrink-0">
+                     <div className="bg-[#f2edff] p-3 md:p-4 rounded-xl">
+                       <div className="flex gap-2 md:gap-3">
+                         <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-white border border-gray-300 text-[#273469] flex items-center justify-center font-bold text-xs md:text-sm flex-shrink-0">
                            1
                          </div>
-                         <div className="flex-1 border-l border-gray-300 pl-3">
-                           <h4 className="text-lg font-bold mb-1 text-[#1e2749]">Create Your Profile</h4>
-                           <p className="text-[#30343f] text-sm leading-relaxed">
+                         <div className="flex-1 border-l border-gray-300 pl-2 md:pl-3">
+                           <h4 className="text-base md:text-lg font-bold mb-1 text-[#1e2749]">Create Your Profile</h4>
+                           <p className="text-[#30343f] text-xs md:text-sm leading-relaxed">
                              Complete registration with your skills, experience, and preferences.
                            </p>
                          </div>
@@ -426,14 +553,14 @@ const Landing = () => {
                      </div>
                      
                      {/* Step 2 */}
-                     <div className="bg-[#f2edff] p-4 rounded-xl">
-                       <div className="flex gap-3">
-                         <div className="w-10 h-10 rounded-xl bg-white border border-gray-300 text-[#273469] flex items-center justify-center font-bold text-sm flex-shrink-0">
+                     <div className="bg-[#f2edff] p-3 md:p-4 rounded-xl">
+                       <div className="flex gap-2 md:gap-3">
+                         <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-white border border-gray-300 text-[#273469] flex items-center justify-center font-bold text-xs md:text-sm flex-shrink-0">
                            2
                          </div>
-                         <div className="flex-1 border-l border-gray-300 pl-3">
-                           <h4 className="text-lg font-bold mb-1 text-[#1e2749]">Get Pre-Interviewed</h4>
-                           <p className="text-[#30343f] text-sm leading-relaxed">
+                         <div className="flex-1 border-l border-gray-300 pl-2 md:pl-3">
+                           <h4 className="text-base md:text-lg font-bold mb-1 text-[#1e2749]">Get Pre-Interviewed</h4>
+                           <p className="text-[#30343f] text-xs md:text-sm leading-relaxed">
                              Our team validates your credentials and conducts initial screening.
                            </p>
                          </div>
@@ -441,14 +568,14 @@ const Landing = () => {
                      </div>
                      
                      {/* Step 3 */}
-                     <div className="bg-[#f2edff] p-4 rounded-xl">
-                       <div className="flex gap-3">
-                         <div className="w-10 h-10 rounded-xl bg-white border border-gray-300 text-[#273469] flex items-center justify-center font-bold text-sm flex-shrink-0">
+                     <div className="bg-[#f2edff] p-3 md:p-4 rounded-xl">
+                       <div className="flex gap-2 md:gap-3">
+                         <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-white border border-gray-300 text-[#273469] flex items-center justify-center font-bold text-xs md:text-sm flex-shrink-0">
                            3
                          </div>
-                         <div className="flex-1 border-l border-gray-300 pl-3">
-                           <h4 className="text-lg font-bold mb-1 text-[#1e2749]">Receive Opportunities</h4>
-                           <p className="text-[#30343f] text-sm leading-relaxed">
+                         <div className="flex-1 border-l border-gray-300 pl-2 md:pl-3">
+                           <h4 className="text-base md:text-lg font-bold mb-1 text-[#1e2749]">Receive Opportunities</h4>
+                           <p className="text-[#30343f] text-xs md:text-sm leading-relaxed">
                              We connect you with recruiters while keeping your identity protected.
                            </p>
                          </div>
@@ -462,24 +589,24 @@ const Landing = () => {
             {/* For Recruiters */}
             <FloatingCard delay={400}>
               <div className="relative">
-                <div className="bg-[#fafaff] p-8 rounded-2xl border-2 border-[#e4d9ff] shadow-lg">
-                   <div className="flex items-center gap-4 mb-8">
-                     <div className="w-12 h-12 bg-[#30343f] rounded-2xl flex items-center justify-center">
-                       <Briefcase className="h-6 w-6 text-white" />
+                <div className="bg-[#fafaff] p-6 md:p-8 rounded-2xl border-2 border-[#e4d9ff] shadow-lg">
+                   <div className="flex items-center gap-3 md:gap-4 mb-6 md:mb-8">
+                     <div className="w-10 h-10 md:w-12 md:h-12 bg-[#30343f] rounded-2xl flex items-center justify-center">
+                       <Briefcase className="h-5 w-5 md:h-6 md:w-6 text-white" />
                      </div>
-                     <h3 className="text-3xl font-bold text-[#1e2749]">For Recruiters</h3>
+                     <h3 className="text-2xl md:text-3xl font-bold text-[#1e2749]">For Recruiters</h3>
                    </div>
                   
-                   <div className="space-y-4">
+                   <div className="space-y-3 md:space-y-4">
                      {/* Step 1 */}
-                     <div className="bg-[#f2edff] p-4 rounded-xl">
-                       <div className="flex gap-3">
-                         <div className="w-10 h-10 rounded-xl bg-white border border-gray-300 text-[#273469] flex items-center justify-center font-bold text-sm flex-shrink-0">
+                     <div className="bg-[#f2edff] p-3 md:p-4 rounded-xl">
+                       <div className="flex gap-2 md:gap-3">
+                         <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-white border border-gray-300 text-[#273469] flex items-center justify-center font-bold text-xs md:text-sm flex-shrink-0">
                            1
                          </div>
-                         <div className="flex-1 border-l border-gray-300 pl-3">
-                           <h4 className="text-lg font-bold mb-1 text-[#1e2749]">Sign Agreement</h4>
-                           <p className="text-[#30343f] text-sm leading-relaxed">
+                         <div className="flex-1 border-l border-gray-300 pl-2 md:pl-3">
+                           <h4 className="text-base md:text-lg font-bold mb-1 text-[#1e2749]">Sign Agreement</h4>
+                           <p className="text-[#30343f] text-xs md:text-sm leading-relaxed">
                              Complete registration and sign our recruitment agreement.
                            </p>
                          </div>
@@ -487,14 +614,14 @@ const Landing = () => {
                      </div>
                      
                      {/* Step 2 */}
-                     <div className="bg-[#f2edff] p-4 rounded-xl">
-                       <div className="flex gap-3">
-                         <div className="w-10 h-10 rounded-xl bg-white border border-gray-300 text-[#273469] flex items-center justify-center font-bold text-sm flex-shrink-0">
+                     <div className="bg-[#f2edff] p-3 md:p-4 rounded-xl">
+                       <div className="flex gap-2 md:gap-3">
+                         <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-white border border-gray-300 text-[#273469] flex items-center justify-center font-bold text-xs md:text-sm flex-shrink-0">
                            2
                          </div>
-                         <div className="flex-1 border-l border-gray-300 pl-3">
-                           <h4 className="text-lg font-bold mb-1 text-[#1e2749]">Search & Filter</h4>
-                           <p className="text-[#30343f] text-sm leading-relaxed">
+                         <div className="flex-1 border-l border-gray-300 pl-2 md:pl-3">
+                           <h4 className="text-base md:text-lg font-bold mb-1 text-[#1e2749]">Search & Filter</h4>
+                           <p className="text-[#30343f] text-xs md:text-sm leading-relaxed">
                             Use advanced filters to find pre-vetted candidates that match your needs.
                            </p>
                          </div>
@@ -502,14 +629,14 @@ const Landing = () => {
                      </div>
                      
                      {/* Step 3 */}
-                     <div className="bg-[#f2edff] p-4 rounded-xl">
-                       <div className="flex gap-3">
-                         <div className="w-10 h-10 rounded-xl bg-white border border-gray-300 text-[#273469] flex items-center justify-center font-bold text-sm flex-shrink-0">
+                     <div className="bg-[#f2edff] p-3 md:p-4 rounded-xl">
+                       <div className="flex gap-2 md:gap-3">
+                         <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-white border border-gray-300 text-[#273469] flex items-center justify-center font-bold text-xs md:text-sm flex-shrink-0">
                            3
                          </div>
-                         <div className="flex-1 border-l border-gray-300 pl-3">
-                           <h4 className="text-lg font-bold mb-1 text-[#1e2749]">Select Candidates</h4>
-                           <p className="text-[#30343f] text-sm leading-relaxed">
+                         <div className="flex-1 border-l border-gray-300 pl-2 md:pl-3">
+                           <h4 className="text-base md:text-lg font-bold mb-1 text-[#1e2749]">Select Candidates</h4>
+                           <p className="text-[#30343f] text-xs md:text-sm leading-relaxed">
                              Choose candidates and we'll coordinate interviews on your behalf.
                            </p>
                          </div>
@@ -523,119 +650,119 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Testimonials - Card Stack Design */}
-      <section className="py-24 bg-[#fafaff]">
+      {/* Testimonials - Card Stack Design with Mobile Slider */}
+      <section className="py-12 md:py-18 bg-[#fafaff]">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-20">
-            <h2 className="text-5xl lg:text-6xl font-black mb-6 text-[#1e2749]">
+          <div className="text-center mb-10 md:mb-15">
+            <h2 className="text-2xl md:text-3xl lg:text-5xl font-black mb-3 md:mb-4 text-[#1e2749]">
               What Our Users
-              <span className="block text-[#273469]">Say</span>
+              <span className="text-[#273469]"> Say</span>
             </h2>
-            <p className="text-xl text-[#30343f] max-w-3xl mx-auto">
+            <p className="text-sm md:text-base text-[#30343f] max-w-3xl mx-auto">
               Trusted by thousands of professionals and companies worldwide
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <MobileSlider>
             <FloatingCard delay={100}>
-              <div className="bg-white p-8 rounded-2xl border-2 border-[#e4d9ff] shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 h-full">
+              <div className="bg-white p-6 md:p-8 rounded-2xl border-2 border-[#e4d9ff] shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-1 h-full">
                 <div className="flex items-center mb-4">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 text-[#273469] fill-current" />
+                    <Star key={i} className="h-4 w-4 md:h-5 md:w-5 text-[#273469] fill-current" />
                   ))}
                 </div>
-                <p className="text-[#30343f] mb-6 leading-relaxed italic">
+                <p className="text-[#30343f] mb-6 leading-relaxed italic text-sm md:text-base">
                   "VettedPool has revolutionized our hiring process. The quality of candidates is exceptional, and the time saved is incredible."
                 </p>
                 <div className="flex items-center">
-                  <div className="w-12 h-12 bg-[#273469] rounded-full flex items-center justify-center mr-4 text-white font-bold">
+                  <div className="w-10 h-10 md:w-12 md:h-12 bg-[#273469] rounded-full flex items-center justify-center mr-3 md:mr-4 text-white font-bold text-sm md:text-base">
                     JS
                   </div>
                   <div>
-                    <p className="font-semibold text-[#1e2749]">John Smith</p>
-                    <p className="text-[#30343f] text-sm">HR Director, TechCorp</p>
+                    <p className="font-semibold text-[#1e2749] text-sm md:text-base">John Smith</p>
+                    <p className="text-[#30343f] text-xs md:text-sm">HR Director, TechCorp</p>
                   </div>
                 </div>
               </div>
             </FloatingCard>
 
             <FloatingCard delay={200}>
-              <div className="bg-white p-8 rounded-2xl border-2 border-[#e4d9ff] shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 h-full">
+              <div className="bg-white p-6 md:p-8 rounded-2xl border-2 border-[#e4d9ff] shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 h-full">
                 <div className="flex items-center mb-4">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 text-[#273469] fill-current" />
+                    <Star key={i} className="h-4 w-4 md:h-5 md:w-5 text-[#273469] fill-current" />
                   ))}
                 </div>
-                <p className="text-[#30343f] mb-6 leading-relaxed italic">
+                <p className="text-[#30343f] mb-6 leading-relaxed italic text-sm md:text-base">
                   "As a candidate, I love the privacy and quality of opportunities. The pre-screening process is thorough and professional."
                 </p>
                 <div className="flex items-center">
-                  <div className="w-12 h-12 bg-[#273469] rounded-full flex items-center justify-center mr-4 text-white font-bold">
+                  <div className="w-10 h-10 md:w-12 md:h-12 bg-[#273469] rounded-full flex items-center justify-center mr-3 md:mr-4 text-white font-bold text-sm md:text-base">
                     MJ
                   </div>
                   <div>
-                    <p className="font-semibold text-[#1e2749]">Maria Johnson</p>
-                    <p className="text-[#30343f] text-sm">Software Engineer</p>
+                    <p className="font-semibold text-[#1e2749] text-sm md:text-base">Maria Johnson</p>
+                    <p className="text-[#30343f] text-xs md:text-sm">Software Engineer</p>
                   </div>
                 </div>
               </div>
             </FloatingCard>
 
             <FloatingCard delay={300}>
-              <div className="bg-white p-8 rounded-2xl border-2 border-[#e4d9ff] shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 h-full">
+              <div className="bg-white p-6 md:p-8 rounded-2xl border-2 border-[#e4d9ff] shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 h-full">
                 <div className="flex items-center mb-4">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 text-[#273469] fill-current" />
+                    <Star key={i} className="h-4 w-4 md:h-5 md:w-5 text-[#273469] fill-current" />
                   ))}
                 </div>
-                <p className="text-[#30343f] mb-6 leading-relaxed italic">
+                <p className="text-[#30343f] mb-6 leading-relaxed italic text-sm md:text-base">
                   "The platform's filtering capabilities are outstanding. We found the perfect candidate in just 24 hours!"
                 </p>
                 <div className="flex items-center">
-                  <div className="w-12 h-12 bg-[#273469] rounded-full flex items-center justify-center mr-4 text-white font-bold">
+                  <div className="w-10 h-10 md:w-12 md:h-12 bg-[#273469] rounded-full flex items-center justify-center mr-3 md:mr-4 text-white font-bold text-sm md:text-base">
                     DW
                   </div>
                   <div>
-                    <p className="font-semibold text-[#1e2749]">David Wilson</p>
-                    <p className="text-[#30343f] text-sm">CTO, StartupXYZ</p>
+                    <p className="font-semibold text-[#1e2749] text-sm md:text-base">David Wilson</p>
+                    <p className="text-[#30343f] text-xs md:text-sm">CTO, StartupXYZ</p>
                   </div>
                 </div>
               </div>
             </FloatingCard>
-          </div>
+          </MobileSlider>
         </div>
       </section>
 
       {/* CTA Section - Geometric Design */}
-      <section className="py-24 bg-[#1e2749] relative overflow-hidden">
+      <section className="py-12 md:py-18 bg-[#1e2749] relative overflow-hidden">
         <div className="absolute inset-0">
-          <div className="absolute top-10 left-10 w-32 h-32 bg-[#e4d9ff] rounded-full opacity-10 animate-pulse"></div>
-          <div className="absolute bottom-10 right-10 w-24 h-24 bg-[#e4d9ff] rounded-full opacity-15 animate-pulse" style={{ animationDelay: '2s' }}></div>
-          <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-[#e4d9ff] rounded-full opacity-20 animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute top-5 left-5 md:top-10 md:left-10 w-16 h-16 md:w-32 md:h-32 bg-[#e4d9ff] rounded-full opacity-10 animate-pulse"></div>
+          <div className="absolute bottom-5 right-5 md:bottom-10 md:right-10 w-12 h-12 md:w-24 md:h-24 bg-[#e4d9ff] rounded-full opacity-15 animate-pulse" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute top-1/2 left-1/4 w-8 h-8 md:w-16 md:h-16 bg-[#e4d9ff] rounded-full opacity-20 animate-pulse" style={{ animationDelay: '1s' }}></div>
         </div>
         
         <div className="relative max-w-5xl mx-auto px-4 text-center">
           <FloatingCard delay={100}>
-            <div className="bg-white p-12 rounded-3xl shadow-2xl border-4 border-[#e4d9ff]">
-              <h2 className="text-5xl lg:text-6xl font-black mb-6 text-[#1e2749]">
+            <div className="bg-white p-6 md:p-12 rounded-2xl md:rounded-3xl shadow-2xl border-2 md:border-4 border-[#e4d9ff]">
+              <h2 className="text-3xl md:text-5xl lg:text-6xl font-black mb-4 md:mb-6 text-[#1e2749] leading-tight">
                 Ready to Get
                 <span className="block text-[#273469]">Started?</span>
               </h2>
-              <p className="text-xl lg:text-2xl mb-10 text-[#30343f] max-w-3xl mx-auto leading-relaxed">
+              <p className="text-base md:text-xl lg:text-2xl mb-6 md:mb-10 text-[#30343f] max-w-3xl mx-auto leading-relaxed">
                 Join thousands of professionals and companies who trust VettedPool
                 for their recruitment needs.
               </p>
-              <div className="flex flex-col sm:flex-row gap-6 justify-center">
-                <Link to="/login">
-                  <Button size="xl" variant="primary" className="group">
-                    <Rocket className="mr-3 h-6 w-6 group-hover:rotate-12 transition-transform duration-300" />
+              <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center">
+                <Link to="/login" className="w-full sm:w-auto">
+                  <Button size="lg" variant="primary" className="group w-full sm:w-auto">
+                    <Rocket className="mr-2 md:mr-3 h-5 w-5 md:h-6 md:w-6 group-hover:rotate-12 transition-transform duration-300" />
                     Get Started Now
-                    <ArrowRight className="ml-3 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
+                    <ArrowRight className="ml-2 md:ml-3 h-4 w-4 md:h-5 md:w-5 group-hover:translate-x-1 transition-transform duration-300" />
                   </Button>
                 </Link>
-                <Link to="/candidate-info">
-                  <Button size="xl" variant="outline" className="group">
-                    <Users className="mr-3 h-6 w-6 group-hover:rotate-12 transition-transform duration-300" />
+                <Link to="/candidate-info" className="w-full sm:w-auto">
+                  <Button size="lg" variant="outline" className="group w-full sm:w-auto">
+                    <Users className="mr-2 md:mr-3 h-5 w-5 md:h-6 md:w-6 group-hover:rotate-12 transition-transform duration-300" />
                     Learn More
                   </Button>
                 </Link>

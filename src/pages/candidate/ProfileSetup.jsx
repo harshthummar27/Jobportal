@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { 
   User, 
@@ -20,7 +20,8 @@ import {
   DollarSign,
   Calendar,
   Languages,
-  Users
+  Users,
+  Sparkles
 } from "lucide-react";
 import Header from "../../Components/Header";
 
@@ -466,97 +467,104 @@ const ProfileSetup = () => {
   };
 
   const renderStep1 = () => (
-    <div className="space-y-6">
-      <div className="text-center mb-4">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Basic Information</h2>
-        <p className="text-sm sm:text-base text-gray-600">Your personal details (hidden from recruiters)</p>
+    <div className="space-y-6 md:space-y-8">
+      <div className="text-center mb-4 md:mb-6">
+        <h2 className="text-lg md:text-2xl font-bold text-[#1e2749] mb-2 flex items-center justify-center gap-2 md:gap-3">
+          <div className="w-8 h-8 md:w-10 md:h-10 bg-[#e4d9ff] rounded-xl flex items-center justify-center">
+            <User className="h-4 w-4 md:h-5 md:w-5 text-[#273469]" />
+          </div>
+          Basic Information
+        </h2>
+        <p className="text-sm md:text-base text-[#30343f]">Your personal details (hidden from recruiters)</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
         <div className="sm:col-span-2">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
             Full Name *
           </label>
           <div className="relative">
-            <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <User className="absolute left-3 md:left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-[#30343f]" />
             <input
               type="text"
               name="fullName"
               value={formData.fullName}
               onChange={handleInputChange}
-              className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
-                errors.fullName ? 'border-red-300 bg-red-50' : 'border-gray-300'
+              className={`w-full pl-10 md:pl-12 pr-4 md:pr-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+                errors.fullName ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
               }`}
               placeholder="Enter your full name"
             />
           </div>
           {errors.fullName && (
-            <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
-              <AlertCircle className="h-4 w-4" />
+            <p className="mt-2 text-xs md:text-sm text-red-600 flex items-center gap-2">
+              <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
               {errors.fullName}
             </p>
           )}
         </div>
 
-              <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+        <div>
+          <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
             Contact Email *
           </label>
           <div className="relative">
-            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <input
+            <Mail className="absolute left-3 md:left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-[#30343f]" />
+            <input
               type="email"
               name="contactEmail"
               value={formData.contactEmail}
               onChange={handleInputChange}
-              className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
-                errors.contactEmail ? 'border-red-300 bg-red-50' : 'border-gray-300'
+              className={`w-full pl-10 md:pl-12 pr-4 md:pr-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+                errors.contactEmail ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
               }`}
               placeholder="your.email@example.com"
-                />
-              </div>
+            />
+          </div>
           {errors.contactEmail && (
-            <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
-              <AlertCircle className="h-4 w-4" />
+            <p className="mt-2 text-xs md:text-sm text-red-600 flex items-center gap-2">
+              <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
               {errors.contactEmail}
             </p>
           )}
         </div>
 
-              <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+        <div>
+          <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
             Phone Number *
           </label>
           <div className="relative">
-            <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <input
-                  type="tel"
+            <Phone className="absolute left-3 md:left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-[#30343f]" />
+            <input
+              type="tel"
               name="phone"
               value={formData.phone}
               onChange={handleInputChange}
-              className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
-                errors.phone ? 'border-red-300 bg-red-50' : 'border-gray-300'
+              className={`w-full pl-10 md:pl-12 pr-4 md:pr-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+                errors.phone ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
               }`}
-                  placeholder="+1 (555) 123-4567"
-                />
-              </div>
+              placeholder="+1 (555) 123-4567"
+            />
+          </div>
           {errors.phone && (
-            <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
-              <AlertCircle className="h-4 w-4" />
+            <p className="mt-2 text-xs md:text-sm text-red-600 flex items-center gap-2">
+              <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
               {errors.phone}
             </p>
           )}
         </div>
       </div>
 
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <div className="flex items-start gap-3">
-          <Shield className="h-5 w-5 text-blue-600 mt-0.5" />
+      <div className="bg-[#f2edff] border-2 border-[#e4d9ff] rounded-xl p-4 md:p-6">
+        <div className="flex items-start gap-3 md:gap-4">
+          <div className="w-8 h-8 md:w-10 md:h-10 bg-[#e4d9ff] rounded-xl flex items-center justify-center flex-shrink-0">
+            <Shield className="h-4 w-4 md:h-5 md:w-5 text-[#273469]" />
+          </div>
           <div>
-            <h4 className="text-sm font-medium text-blue-900 mb-1">
+            <h4 className="text-sm md:text-base font-semibold text-[#1e2749] mb-2">
               Privacy Protected
             </h4>
-            <p className="text-sm text-blue-700">
+            <p className="text-xs md:text-sm text-[#30343f] leading-relaxed">
               Your full name, contact email, and phone number will be hidden from recruiters. 
               Only your candidate code and professional details will be visible.
             </p>
@@ -567,40 +575,45 @@ const ProfileSetup = () => {
   );
 
   const renderStep2 = () => (
-    <div className="space-y-6">
-      <div className="text-center mb-4">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Location & Preferences</h2>
-        <p className="text-sm sm:text-base text-gray-600">Where you are and where you'd like to work</p>
+    <div className="space-y-6 md:space-y-8">
+      <div className="text-center mb-4 md:mb-6">
+        <h2 className="text-lg md:text-2xl font-bold text-[#1e2749] mb-2 flex items-center justify-center gap-2 md:gap-3">
+          <div className="w-8 h-8 md:w-10 md:h-10 bg-[#e4d9ff] rounded-xl flex items-center justify-center">
+            <MapPin className="h-4 w-4 md:h-5 md:w-5 text-[#273469]" />
+          </div>
+          Location & Preferences
+        </h2>
+        <p className="text-sm md:text-base text-[#30343f]">Where you are and where you'd like to work</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
                 <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
             City *
           </label>
           <div className="relative">
-            <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-gray-400" />
                   <input
                     type="text"
               name="city"
               value={formData.city}
               onChange={handleInputChange}
-              className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
-                errors.city ? 'border-red-300 bg-red-50' : 'border-gray-300'
+              className={`w-full pl-9 md:pl-10 pr-3 md:pr-4 py-2 md:py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+                errors.city ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
               }`}
                     placeholder="New York"
                   />
                 </div>
           {errors.city && (
-            <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
-              <AlertCircle className="h-4 w-4" />
+            <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
+              <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
               {errors.city}
             </p>
           )}
         </div>
 
                 <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
             State *
           </label>
           <input
@@ -608,21 +621,21 @@ const ProfileSetup = () => {
             name="state"
                     value={formData.state}
             onChange={handleInputChange}
-            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
-              errors.state ? 'border-red-300 bg-red-50' : 'border-gray-300'
+            className={`w-full px-3 md:px-4 py-2 md:py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+              errors.state ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
             }`}
             placeholder="NY"
           />
           {errors.state && (
-            <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
-              <AlertCircle className="h-4 w-4" />
+            <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
+              <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
               {errors.state}
             </p>
           )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
             Country *
           </label>
           <input
@@ -630,14 +643,14 @@ const ProfileSetup = () => {
             name="country"
             value={formData.country}
             onChange={handleInputChange}
-            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
-              errors.country ? 'border-red-300 bg-red-50' : 'border-gray-300'
+            className={`w-full px-3 md:px-4 py-2 md:py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+              errors.country ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
             }`}
             placeholder="United States"
           />
           {errors.country && (
-            <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
-              <AlertCircle className="h-4 w-4" />
+            <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
+              <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
               {errors.country}
             </p>
           )}
@@ -650,13 +663,13 @@ const ProfileSetup = () => {
           name="willingToRelocate"
                   checked={formData.willingToRelocate}
           onChange={handleInputChange}
-          className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+          className="h-3 w-3 md:h-4 md:w-4 text-[#273469] focus:ring-[#273469] border-[#e4d9ff] rounded"
         />
-        <label className="text-sm text-gray-700">I'm willing to relocate</label>
+        <label className="text-xs md:text-sm text-gray-700">I'm willing to relocate</label>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
           Preferred Locations
         </label>
         <div className="flex gap-2 mb-2">
@@ -665,22 +678,22 @@ const ProfileSetup = () => {
             value={currentPreferredLocation}
             onChange={(e) => setCurrentPreferredLocation(e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addPreferredLocation())}
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            className="flex-1 px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
             placeholder="Add preferred location"
           />
           <button
             type="button"
             onClick={addPreferredLocation}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+            className="px-3 md:px-4 py-2 bg-[#273469] text-white rounded-xl hover:bg-[#1e2749] transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
           >
-            <Plus className="h-4 w-4" />
+            <Plus className="h-3 w-3 md:h-4 md:w-4" />
           </button>
         </div>
         <div className="flex flex-wrap gap-2">
           {formData.preferredLocations.map((location) => (
             <span
               key={location}
-              className="inline-flex items-center gap-1 bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm"
+              className="inline-flex items-center gap-1 bg-indigo-100 text-indigo-800 px-2 md:px-3 py-1 rounded-full text-xs md:text-sm"
             >
               {location}
               <button
@@ -688,7 +701,7 @@ const ProfileSetup = () => {
                 onClick={() => removePreferredLocation(location)}
                 className="hover:text-indigo-600"
               >
-                <X className="h-3 w-3" />
+                <X className="h-2 w-2 md:h-3 md:w-3" />
               </button>
             </span>
           ))}
@@ -698,14 +711,19 @@ const ProfileSetup = () => {
   );
 
   const renderStep3 = () => (
-    <div className="space-y-6">
-      <div className="text-center mb-4">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Job Preferences</h2>
-        <p className="text-sm sm:text-base text-gray-600">What kind of opportunities are you looking for?</p>
+    <div className="space-y-6 md:space-y-8">
+      <div className="text-center mb-4 md:mb-6">
+        <h2 className="text-lg md:text-2xl font-bold text-[#1e2749] mb-2 flex items-center justify-center gap-2 md:gap-3">
+          <div className="w-8 h-8 md:w-10 md:h-10 bg-[#e4d9ff] rounded-xl flex items-center justify-center">
+            <Briefcase className="h-4 w-4 md:h-5 md:w-5 text-[#273469]" />
+          </div>
+          Job Preferences
+        </h2>
+        <p className="text-sm md:text-base text-[#30343f]">What kind of opportunities are you looking for?</p>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
           Desired Job Roles *
         </label>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -722,22 +740,22 @@ const ProfileSetup = () => {
                 value={role}
                 checked={formData.desiredJobRoles.includes(role)}
                 onChange={handleInputChange}
-                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                className="h-3 w-3 md:h-4 md:w-4 text-[#273469] focus:ring-[#273469] border-[#e4d9ff] rounded"
               />
-              <span className="text-sm text-gray-700">{role}</span>
+              <span className="text-xs md:text-sm text-gray-700">{role}</span>
             </label>
           ))}
         </div>
         {errors.desiredJobRoles && (
-          <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
-            <AlertCircle className="h-4 w-4" />
+          <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
+            <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
             {errors.desiredJobRoles}
           </p>
         )}
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
           Preferred Industries *
         </label>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -752,22 +770,22 @@ const ProfileSetup = () => {
                 value={industry}
                 checked={formData.preferredIndustries.includes(industry)}
                 onChange={handleInputChange}
-                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                className="h-3 w-3 md:h-4 md:w-4 text-[#273469] focus:ring-[#273469] border-[#e4d9ff] rounded"
               />
-              <span className="text-sm text-gray-700">{industry}</span>
+              <span className="text-xs md:text-sm text-gray-700">{industry}</span>
             </label>
           ))}
         </div>
         {errors.preferredIndustries && (
-          <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
-            <AlertCircle className="h-4 w-4" />
+          <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
+            <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
             {errors.preferredIndustries}
           </p>
         )}
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
           Employment Types *
         </label>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -779,15 +797,15 @@ const ProfileSetup = () => {
                 value={type}
                 checked={formData.employmentTypes.includes(type)}
                 onChange={handleInputChange}
-                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                className="h-3 w-3 md:h-4 md:w-4 text-[#273469] focus:ring-[#273469] border-[#e4d9ff] rounded"
               />
-              <span className="text-sm text-gray-700">{type}</span>
+              <span className="text-xs md:text-sm text-gray-700">{type}</span>
             </label>
           ))}
         </div>
         {errors.employmentTypes && (
-          <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
-            <AlertCircle className="h-4 w-4" />
+          <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
+            <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
             {errors.employmentTypes}
           </p>
         )}
@@ -796,23 +814,28 @@ const ProfileSetup = () => {
   );
 
   const renderStep4 = () => (
-    <div className="space-y-6">
-      <div className="text-center mb-4">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Experience & Details</h2>
-        <p className="text-sm sm:text-base text-gray-600">Your professional background and preferences</p>
+    <div className="space-y-6 md:space-y-8">
+      <div className="text-center mb-4 md:mb-6">
+        <h2 className="text-lg md:text-2xl font-bold text-[#1e2749] mb-2 flex items-center justify-center gap-2 md:gap-3">
+          <div className="w-8 h-8 md:w-10 md:h-10 bg-[#e4d9ff] rounded-xl flex items-center justify-center">
+            <Award className="h-4 w-4 md:h-5 md:w-5 text-[#273469]" />
+          </div>
+          Experience & Details
+        </h2>
+        <p className="text-sm md:text-base text-[#30343f]">Your professional background and preferences</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
             Total Years of Experience *
           </label>
           <select
             name="totalYearsExperience"
             value={formData.totalYearsExperience}
             onChange={handleInputChange}
-            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
-              errors.totalYearsExperience ? 'border-red-300 bg-red-50' : 'border-gray-300'
+            className={`w-full px-3 md:px-4 py-2 md:py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] text-sm md:text-base ${
+              errors.totalYearsExperience ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
             }`}
           >
             <option value="">Select experience</option>
@@ -823,23 +846,23 @@ const ProfileSetup = () => {
             <option value="10+">10+ years</option>
           </select>
           {errors.totalYearsExperience && (
-            <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
-              <AlertCircle className="h-4 w-4" />
+            <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
+              <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
               {errors.totalYearsExperience}
             </p>
           )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
             Visa Status *
           </label>
           <select
             name="visaStatus"
             value={formData.visaStatus}
             onChange={handleInputChange}
-            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
-              errors.visaStatus ? 'border-red-300 bg-red-50' : 'border-gray-300'
+            className={`w-full px-3 md:px-4 py-2 md:py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] text-sm md:text-base ${
+              errors.visaStatus ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
             }`}
           >
             <option value="">Select visa status</option>
@@ -850,23 +873,23 @@ const ProfileSetup = () => {
             ))}
           </select>
           {errors.visaStatus && (
-            <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
-              <AlertCircle className="h-4 w-4" />
+            <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
+              <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
               {errors.visaStatus}
             </p>
           )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
             Job Seeking Status *
           </label>
           <select
             name="jobSeekingStatus"
             value={formData.jobSeekingStatus}
             onChange={handleInputChange}
-            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
-              errors.jobSeekingStatus ? 'border-red-300 bg-red-50' : 'border-gray-300'
+            className={`w-full px-3 md:px-4 py-2 md:py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] text-sm md:text-base ${
+              errors.jobSeekingStatus ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
             }`}
           >
             <option value="">Select status</option>
@@ -877,39 +900,39 @@ const ProfileSetup = () => {
             ))}
           </select>
           {errors.jobSeekingStatus && (
-            <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
-              <AlertCircle className="h-4 w-4" />
+            <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
+              <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
               {errors.jobSeekingStatus}
             </p>
           )}
         </div>
 
               <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
             Desired Annual Package (USD)
           </label>
           <div className="relative">
-            <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-gray-400" />
                 <input
               type="number"
               name="desiredAnnualPackage"
               value={formData.desiredAnnualPackage}
               onChange={handleInputChange}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+              className="w-full pl-9 md:pl-10 pr-3 md:pr-4 py-2 md:py-3 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
               placeholder="80000"
                 />
               </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
             Availability to Join
           </label>
           <select
             name="availabilityToJoin"
             value={formData.availabilityToJoin}
             onChange={handleInputChange}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+            className="w-full px-3 md:px-4 py-2 md:py-3 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] text-sm md:text-base"
           >
             <option value="">Select availability</option>
             {availabilityOptions.map((option) => (
@@ -921,14 +944,14 @@ const ProfileSetup = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
             Relocation Willingness
           </label>
           <select
             name="relocationWillingness"
             value={formData.relocationWillingness}
             onChange={handleInputChange}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+            className="w-full px-3 md:px-4 py-2 md:py-3 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] text-sm md:text-base"
           >
             <option value="">Select option</option>
             {relocationOptions.map((option) => (
@@ -942,7 +965,7 @@ const ProfileSetup = () => {
 
       {/* Skills */}
               <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
           Skills
         </label>
         <div className="flex gap-2 mb-2">
@@ -951,22 +974,22 @@ const ProfileSetup = () => {
                     value={currentSkill}
                     onChange={(e) => setCurrentSkill(e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addSkill())}
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            className="flex-1 px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
             placeholder="Add skill"
                   />
                   <button
                     type="button"
             onClick={addSkill}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+            className="px-3 md:px-4 py-2 bg-[#273469] text-white rounded-xl hover:bg-[#1e2749] transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
                   >
-            <Plus className="h-4 w-4" />
+            <Plus className="h-3 w-3 md:h-4 md:w-4" />
                   </button>
                 </div>
         <div className="flex flex-wrap gap-2">
                   {formData.skills.map((skill) => (
                     <span
                       key={skill}
-              className="inline-flex items-center gap-1 bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm"
+              className="inline-flex items-center gap-1 bg-indigo-100 text-indigo-800 px-2 md:px-3 py-1 rounded-full text-xs md:text-sm"
             >
               {skill}
               <button
@@ -974,7 +997,7 @@ const ProfileSetup = () => {
                 onClick={() => removeSkill(skill)}
                 className="hover:text-indigo-600"
               >
-                <X className="h-3 w-3" />
+                <X className="h-2 w-2 md:h-3 md:w-3" />
               </button>
                     </span>
                   ))}
@@ -983,20 +1006,20 @@ const ProfileSetup = () => {
 
       {/* Resume Upload */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
           Resume Upload
         </label>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 md:gap-4">
           {resumeFile ? (
             <div className="flex items-center gap-2">
-              <FileText className="h-5 w-5 text-green-600" />
-              <span className="text-sm text-gray-700">{resumeFile.name}</span>
+              <FileText className="h-4 w-4 md:h-5 md:w-5 text-green-600" />
+              <span className="text-xs md:text-sm text-gray-700">{resumeFile.name}</span>
               <button
                 type="button"
                 onClick={removeResume}
                 className="text-red-600 hover:text-red-800"
               >
-                <X className="h-4 w-4" />
+                <X className="h-3 w-3 md:h-4 md:w-4" />
               </button>
             </div>
           ) : (
@@ -1010,9 +1033,9 @@ const ProfileSetup = () => {
               />
               <label
                 htmlFor="resume-upload"
-                className="cursor-pointer bg-white border border-gray-300 rounded-lg px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                className="cursor-pointer bg-white border-2 border-[#e4d9ff] rounded-xl px-3 md:px-4 py-2 md:py-3 text-xs md:text-sm font-medium text-[#30343f] hover:bg-[#fafaff] transition-all duration-300 flex items-center gap-2"
               >
-                <Upload className="h-4 w-4" />
+                <Upload className="h-3 w-3 md:h-4 md:w-4" />
                 Upload Resume (PDF, DOC, DOCX)
               </label>
               <p className="text-xs text-gray-500 mt-1">Maximum file size: 10MB</p>
@@ -1020,8 +1043,8 @@ const ProfileSetup = () => {
           )}
         </div>
         {errors.resume && (
-          <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
-            <AlertCircle className="h-4 w-4" />
+          <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
+            <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
             {errors.resume}
           </p>
         )}
@@ -1030,41 +1053,53 @@ const ProfileSetup = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+    <div className="min-h-screen bg-[#fafaff] text-[#1e2749] overflow-x-hidden">
       <Header />
       
-      <div className="pt-8 pb-8">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-32 h-32 bg-[#e4d9ff] rounded-full opacity-20 animate-pulse"></div>
+        <div className="absolute top-40 right-20 w-24 h-24 bg-[#30343f] rounded-full opacity-15 animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-20 left-1/4 w-20 h-20 bg-[#e4d9ff] rounded-full opacity-25 animate-pulse" style={{ animationDelay: '2s' }}></div>
+      </div>
+      
+      <div className="relative pt-24 pb-20 lg:pt-32 lg:pb-32">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
-          <div className="text-center mb-6">
-            <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full mb-3">
-              <User className="h-6 w-6 text-white" />
-            </div>
-            <h4 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+          <div className="text-center mb-8 md:mb-12">
+            <div className="inline-flex items-center px-3 py-2 md:px-4 md:py-2 rounded-full bg-[#e4d9ff] text-[#273469] text-xs md:text-sm font-medium mb-4 md:mb-6">
+              <Sparkles className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
               Complete Your Profile
-            </h4>
-            <p className="text-base sm:text-sm text-gray-600">
-              Set up your candidate profile to access exclusive opportunities
+            </div>
+            
+            <div className="flex items-center justify-center gap-2 md:gap-3 mb-3 md:mb-4">
+              <h1 className="text-lg md:text-xl lg:text-2xl font-black text-[#1e2749] px-4">
+                Profile Setup
+              </h1>
+            </div>
+            
+            <p className="text-sm md:text-base lg:text-lg text-[#30343f] max-w-2xl mx-auto leading-relaxed px-4">
+              Set up your candidate profile to access exclusive opportunities with pre-vetted companies
             </p>
           </div>
 
           {/* Progress Bar */}
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-gray-700">Step {currentStep} of 4</span>
-              <span className="text-sm text-gray-500">{Math.round((currentStep / 4) * 100)}% Complete</span>
-              </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="mb-6 md:mb-8">
+            <div className="flex items-center justify-between mb-2 md:mb-3">
+              <span className="text-xs md:text-sm font-semibold text-[#1e2749]">Step {currentStep} of 4</span>
+              <span className="text-xs md:text-sm text-[#30343f]">{Math.round((currentStep / 4) * 100)}% Complete</span>
+            </div>
+            <div className="w-full bg-[#e4d9ff] rounded-full h-2 md:h-3">
               <div 
-                className="bg-gradient-to-r from-indigo-600 to-purple-600 h-2 rounded-full transition-all duration-300"
+                className="bg-gradient-to-r from-[#273469] to-[#1e2749] h-2 md:h-3 rounded-full transition-all duration-300"
                 style={{ width: `${(currentStep / 4) * 100}%` }}
               ></div>
             </div>
           </div>
 
           {/* Form */}
-          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-            <div className="p-4 sm:p-6 lg:p-8">
+          <div className="bg-white rounded-xl md:rounded-2xl shadow-2xl border-2 border-[#e4d9ff] overflow-hidden">
+            <div className="p-3 sm:p-4 md:p-6 lg:p-8">
               <form onSubmit={handleSubmit}>
                 {currentStep === 1 && renderStep1()}
                 {currentStep === 2 && renderStep2()}
@@ -1082,57 +1117,57 @@ const ProfileSetup = () => {
           )}
 
                 {/* Navigation Buttons */}
-                <div className="flex justify-between mt-8">
-            <button
+                <div className="flex justify-between mt-6 md:mt-8">
+                  <button
                     type="button"
                     onClick={handlePrevious}
                     disabled={currentStep === 1}
-                    className="flex items-center gap-2 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 border-2 border-[#e4d9ff] text-[#30343f] rounded-xl hover:bg-[#e4d9ff] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 font-semibold text-sm md:text-base"
                   >
-                    <ArrowLeft className="h-4 w-4" />
+                    <ArrowLeft className="h-3 w-3 md:h-4 md:w-4" />
                     Previous
-            </button>
+                  </button>
 
                   {currentStep < 4 ? (
-              <button
+                    <button
                       type="button"
-                onClick={handleNext}
-                      className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 flex items-center gap-2"
-              >
-                Next
-                      <ArrowLeft className="h-4 w-4 rotate-180" />
-              </button>
-            ) : (
-              <button
+                      onClick={handleNext}
+                      className="bg-[#273469] text-white px-4 md:px-6 py-2 md:py-3 rounded-xl font-semibold hover:bg-[#1e2749] transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 text-sm md:text-base"
+                    >
+                      Next
+                      <ArrowLeft className="h-3 w-3 md:h-4 md:w-4 rotate-180" />
+                    </button>
+                  ) : (
+                    <button
                       type="submit"
                       disabled={isLoading}
-                      className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                      className="bg-[#273469] text-white px-4 md:px-6 py-2 md:py-3 rounded-xl font-semibold hover:bg-[#1e2749] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 disabled:transform-none text-sm md:text-base"
                     >
                       {isLoading ? (
                         <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                          <div className="animate-spin rounded-full h-3 w-3 md:h-4 md:w-4 border-b-2 border-white"></div>
                           Creating Profile...
                         </>
                       ) : (
                         <>
-                          <CheckCircle className="h-4 w-4" />
-                Complete Profile
+                          <CheckCircle className="h-3 w-3 md:h-4 md:w-4" />
+                          Complete Profile
                         </>
                       )}
-              </button>
-            )}
+                    </button>
+                  )}
                 </div>
               </form>
             </div>
           </div>
 
           {/* Back Button */}
-          <div className="mt-6 text-center">
+          <div className="mt-6 md:mt-8 text-center">
             <Link
               to="/candidate/verification"
-              className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 font-medium"
+              className="inline-flex items-center gap-2 text-[#30343f] hover:text-[#1e2749] transition-colors duration-300 font-medium text-sm md:text-base"
             >
-              <ArrowLeft className="h-4 w-4" />
+              <ArrowLeft className="h-3 w-3 md:h-4 md:w-4" />
               Back to Email Verification
             </Link>
           </div>

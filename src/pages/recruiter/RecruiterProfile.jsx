@@ -12,7 +12,8 @@ import {
   AlertCircle,
   ArrowLeft,
   Upload,
-  X
+  X,
+  Sparkles
 } from "lucide-react";
 import Header from "../../Components/Header";
 
@@ -216,36 +217,41 @@ const RecruiterProfile = () => {
   };
 
   const renderStep1 = () => (
-    <div className="space-y-6">
-      <div className="text-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Company Information</h2>
-        <p className="text-gray-600">Tell us about your company</p>
+    <div className="space-y-6 md:space-y-8">
+      <div className="text-center mb-4 md:mb-6">
+        <h2 className="text-lg md:text-2xl font-bold text-[#1e2749] mb-2 flex items-center justify-center gap-2 md:gap-3">
+          <div className="w-8 h-8 md:w-10 md:h-10 bg-[#e4d9ff] rounded-xl flex items-center justify-center">
+            <Building className="h-4 w-4 md:h-5 md:w-5 text-[#273469]" />
+          </div>
+          Company Information
+        </h2>
+        <p className="text-sm md:text-base text-[#30343f]">Tell us about your company</p>
       </div>
 
       {/* Company Logo */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
           Company Logo
         </label>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 md:gap-4">
           {logoPreview ? (
             <div className="relative">
               <img
                 src={logoPreview}
                 alt="Company logo"
-                className="w-20 h-20 object-cover rounded-lg border border-gray-200"
+                className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-lg border border-gray-200"
               />
               <button
                 type="button"
                 onClick={removeLogo}
-                className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600"
+                className="absolute -top-1 -right-1 md:-top-2 md:-right-2 w-5 h-5 md:w-6 md:h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600"
               >
-                <X className="h-3 w-3" />
+                <X className="h-2 w-2 md:h-3 md:w-3" />
               </button>
             </div>
           ) : (
-            <div className="w-20 h-20 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
-              <Upload className="h-6 w-6 text-gray-400" />
+            <div className="w-16 h-16 md:w-20 md:h-20 border-2 border-dashed border-[#e4d9ff] rounded-xl flex items-center justify-center">
+              <Upload className="h-4 w-4 md:h-6 md:w-6 text-[#30343f]" />
             </div>
           )}
           <div>
@@ -258,24 +264,24 @@ const RecruiterProfile = () => {
             />
             <label
               htmlFor="logo-upload"
-              className="cursor-pointer bg-white border border-gray-300 rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              className="cursor-pointer bg-white border-2 border-[#e4d9ff] rounded-xl px-3 md:px-4 py-2 text-xs md:text-sm font-medium text-[#30343f] hover:bg-[#fafaff] transition-all duration-300"
             >
               Upload Logo
             </label>
-            <p className="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB</p>
+            <p className="text-xs text-[#30343f] mt-1">PNG, JPG up to 5MB</p>
           </div>
         </div>
         {errors.logo && (
-          <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
-            <AlertCircle className="h-4 w-4" />
+          <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
+            <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
             {errors.logo}
           </p>
         )}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
         <div className="sm:col-span-2">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
             Company Name *
           </label>
           <input
@@ -283,29 +289,29 @@ const RecruiterProfile = () => {
             name="companyName"
             value={formData.companyName}
             onChange={handleInputChange}
-            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
-              errors.companyName ? 'border-red-300 bg-red-50' : 'border-gray-300'
+            className={`w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] ${
+              errors.companyName ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
             }`}
             placeholder="Enter company name"
           />
           {errors.companyName && (
-            <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
-              <AlertCircle className="h-4 w-4" />
+            <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
+              <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
               {errors.companyName}
             </p>
           )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
             Industry *
           </label>
           <select
             name="industry"
             value={formData.industry}
             onChange={handleInputChange}
-            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
-              errors.industry ? 'border-red-300 bg-red-50' : 'border-gray-300'
+            className={`w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] ${
+              errors.industry ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
             }`}
           >
             <option value="">Select industry</option>
@@ -316,23 +322,23 @@ const RecruiterProfile = () => {
             ))}
           </select>
           {errors.industry && (
-            <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
-              <AlertCircle className="h-4 w-4" />
+            <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
+              <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
               {errors.industry}
             </p>
           )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
             Company Size *
           </label>
           <select
             name="companySize"
             value={formData.companySize}
             onChange={handleInputChange}
-            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
-              errors.companySize ? 'border-red-300 bg-red-50' : 'border-gray-300'
+            className={`w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] ${
+              errors.companySize ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
             }`}
           >
             <option value="">Select company size</option>
@@ -344,32 +350,32 @@ const RecruiterProfile = () => {
             <option value="1000+">1000+ employees</option>
           </select>
           {errors.companySize && (
-            <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
-              <AlertCircle className="h-4 w-4" />
+            <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
+              <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
               {errors.companySize}
             </p>
           )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
             Website
           </label>
           <div className="relative">
-            <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-gray-400" />
             <input
               type="url"
               name="companyWebsite"
               value={formData.companyWebsite}
               onChange={handleInputChange}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+              className="w-full pl-9 md:pl-10 pr-3 md:pr-4 py-2 md:py-3 text-sm md:text-base border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f]"
               placeholder="https://company.com"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
             Founded Year
           </label>
           <input
@@ -379,38 +385,38 @@ const RecruiterProfile = () => {
             onChange={handleInputChange}
             min="1800"
             max={new Date().getFullYear()}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+            className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f]"
             placeholder="2020"
           />
         </div>
 
         <div className="sm:col-span-2">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
             Headquarters *
           </label>
           <div className="relative">
-            <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-gray-400" />
             <input
               type="text"
               name="headquarters"
               value={formData.headquarters}
               onChange={handleInputChange}
-              className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
-                errors.headquarters ? 'border-red-300 bg-red-50' : 'border-gray-300'
+              className={`w-full pl-9 md:pl-10 pr-3 md:pr-4 py-2 md:py-3 text-sm md:text-base border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] ${
+                errors.headquarters ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
               }`}
               placeholder="City, State, Country"
             />
           </div>
           {errors.headquarters && (
-            <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
-              <AlertCircle className="h-4 w-4" />
+            <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
+              <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
               {errors.headquarters}
             </p>
           )}
         </div>
 
         <div className="sm:col-span-2">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
             Company Description *
           </label>
           <textarea
@@ -418,14 +424,14 @@ const RecruiterProfile = () => {
             value={formData.companyDescription}
             onChange={handleInputChange}
             rows={4}
-            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
-              errors.companyDescription ? 'border-red-300 bg-red-50' : 'border-gray-300'
+            className={`w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] ${
+              errors.companyDescription ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
             }`}
             placeholder="Describe your company, mission, and what makes you unique..."
           />
           {errors.companyDescription && (
-            <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
-              <AlertCircle className="h-4 w-4" />
+            <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
+              <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
               {errors.companyDescription}
             </p>
           )}
@@ -435,15 +441,20 @@ const RecruiterProfile = () => {
   );
 
   const renderStep2 = () => (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="text-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Contact Information</h2>
-        <p className="text-gray-600">Your primary contact details</p>
+        <h2 className="text-2xl font-bold text-[#1e2749] mb-2 flex items-center justify-center gap-3">
+          <div className="w-10 h-10 bg-[#e4d9ff] rounded-xl flex items-center justify-center">
+            <Users className="h-5 w-5 text-[#273469]" />
+          </div>
+          Contact Information
+        </h2>
+        <p className="text-base text-[#30343f]">Your primary contact details</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="sm:col-span-2">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-semibold text-[#1e2749] mb-3">
             Primary Contact Name *
           </label>
           <input
@@ -451,8 +462,8 @@ const RecruiterProfile = () => {
             name="primaryContact"
             value={formData.primaryContact}
             onChange={handleInputChange}
-            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
-              errors.primaryContact ? 'border-red-300 bg-red-50' : 'border-gray-300'
+            className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] ${
+              errors.primaryContact ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
             }`}
             placeholder="Your full name"
           />
@@ -465,7 +476,7 @@ const RecruiterProfile = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-semibold text-[#1e2749] mb-3">
             Job Title *
           </label>
           <input
@@ -473,8 +484,8 @@ const RecruiterProfile = () => {
             name="jobTitle"
             value={formData.jobTitle}
             onChange={handleInputChange}
-            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
-              errors.jobTitle ? 'border-red-300 bg-red-50' : 'border-gray-300'
+            className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] ${
+              errors.jobTitle ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
             }`}
             placeholder="e.g., HR Manager, Talent Acquisition"
           />
@@ -487,7 +498,7 @@ const RecruiterProfile = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-semibold text-[#1e2749] mb-3">
             Department
           </label>
           <input
@@ -495,13 +506,13 @@ const RecruiterProfile = () => {
             name="department"
             value={formData.department}
             onChange={handleInputChange}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+            className="w-full px-4 py-3 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f]"
             placeholder="e.g., Human Resources, Engineering"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-semibold text-[#1e2749] mb-3">
             Phone Number *
           </label>
           <div className="relative">
@@ -511,8 +522,8 @@ const RecruiterProfile = () => {
               name="phone"
               value={formData.phone}
               onChange={handleInputChange}
-              className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
-                errors.phone ? 'border-red-300 bg-red-50' : 'border-gray-300'
+              className={`w-full pl-10 pr-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] ${
+                errors.phone ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
               }`}
               placeholder="+1 (555) 123-4567"
             />
@@ -526,7 +537,7 @@ const RecruiterProfile = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-semibold text-[#1e2749] mb-3">
             Email Address *
           </label>
           <div className="relative">
@@ -536,8 +547,8 @@ const RecruiterProfile = () => {
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
-                errors.email ? 'border-red-300 bg-red-50' : 'border-gray-300'
+              className={`w-full pl-10 pr-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] ${
+                errors.email ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
               }`}
               placeholder="your.email@company.com"
             />
@@ -551,7 +562,7 @@ const RecruiterProfile = () => {
         </div>
 
         <div className="sm:col-span-2">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-semibold text-[#1e2749] mb-3">
             LinkedIn Profile
           </label>
           <div className="relative">
@@ -561,7 +572,7 @@ const RecruiterProfile = () => {
               name="linkedinProfile"
               value={formData.linkedinProfile}
               onChange={handleInputChange}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+              className="w-full pl-10 pr-4 py-3 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f]"
               placeholder="https://linkedin.com/in/yourprofile"
             />
           </div>
@@ -571,23 +582,28 @@ const RecruiterProfile = () => {
   );
 
   const renderStep3 = () => (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="text-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Hiring Preferences</h2>
-        <p className="text-gray-600">Help us understand your hiring needs</p>
+        <h2 className="text-2xl font-bold text-[#1e2749] mb-2 flex items-center justify-center gap-3">
+          <div className="w-10 h-10 bg-[#e4d9ff] rounded-xl flex items-center justify-center">
+            <Briefcase className="h-5 w-5 text-[#273469]" />
+          </div>
+          Hiring Preferences
+        </h2>
+        <p className="text-base text-[#30343f]">Help us understand your hiring needs</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-semibold text-[#1e2749] mb-3">
             Typical Hiring Volume *
           </label>
           <select
             name="typicalHiringVolume"
             value={formData.typicalHiringVolume}
             onChange={handleInputChange}
-            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
-              errors.typicalHiringVolume ? 'border-red-300 bg-red-50' : 'border-gray-300'
+            className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] ${
+              errors.typicalHiringVolume ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
             }`}
           >
             <option value="">Select hiring volume</option>
@@ -606,14 +622,14 @@ const RecruiterProfile = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-semibold text-[#1e2749] mb-3">
             Average Time to Hire
           </label>
           <select
             name="averageTimeToHire"
             value={formData.averageTimeToHire}
             onChange={handleInputChange}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+            className="w-full px-4 py-3 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f]"
           >
             <option value="">Select time to hire</option>
             <option value="1-2 weeks">1-2 weeks</option>
@@ -625,15 +641,15 @@ const RecruiterProfile = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-semibold text-[#1e2749] mb-3">
             Budget Range *
           </label>
           <select
             name="budgetRange"
             value={formData.budgetRange}
             onChange={handleInputChange}
-            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
-              errors.budgetRange ? 'border-red-300 bg-red-50' : 'border-gray-300'
+            className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] ${
+              errors.budgetRange ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
             }`}
           >
             <option value="">Select budget range</option>
@@ -652,14 +668,14 @@ const RecruiterProfile = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-semibold text-[#1e2749] mb-3">
             Preferred Communication
           </label>
           <select
             name="preferredCommunication"
             value={formData.preferredCommunication}
             onChange={handleInputChange}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+            className="w-full px-4 py-3 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f]"
           >
             <option value="">Select communication method</option>
             {communicationMethods.map((method) => (
@@ -671,7 +687,7 @@ const RecruiterProfile = () => {
         </div>
 
         <div className="sm:col-span-2">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-semibold text-[#1e2749] mb-3">
             Target Roles (Select all that apply)
           </label>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -687,16 +703,16 @@ const RecruiterProfile = () => {
                   value={role}
                   checked={formData.targetRoles.includes(role)}
                   onChange={handleInputChange}
-                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-[#273469] focus:ring-[#273469] border-[#e4d9ff] rounded"
                 />
-                <span className="text-sm text-gray-700">{role}</span>
+                <span className="text-sm text-[#30343f]">{role}</span>
               </label>
             ))}
           </div>
         </div>
 
         <div className="sm:col-span-2">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-semibold text-[#1e2749] mb-3">
             Additional Notes
           </label>
           <textarea
@@ -704,7 +720,7 @@ const RecruiterProfile = () => {
             value={formData.notes}
             onChange={handleInputChange}
             rows={4}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+            className="w-full px-4 py-3 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f]"
             placeholder="Any additional information about your hiring needs, company culture, or specific requirements..."
           />
         </div>
@@ -713,41 +729,53 @@ const RecruiterProfile = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+    <div className="min-h-screen bg-[#fafaff] text-[#1e2749] overflow-x-hidden">
       <Header />
       
-      <div className="pt-8 pb-12">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-32 h-32 bg-[#e4d9ff] rounded-full opacity-20 animate-pulse"></div>
+        <div className="absolute top-40 right-20 w-24 h-24 bg-[#30343f] rounded-full opacity-15 animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-20 left-1/4 w-20 h-20 bg-[#e4d9ff] rounded-full opacity-25 animate-pulse" style={{ animationDelay: '2s' }}></div>
+      </div>
+      
+      <div className="relative pt-24 pb-20 lg:pt-32 lg:pb-32">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full mb-2">
-              <Building className="h-7 w-7 text-white" />
-            </div>
-            <h4 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
+          <div className="text-center mb-8 md:mb-12">
+            <div className="inline-flex items-center px-3 py-2 md:px-4 md:py-2 rounded-full bg-[#e4d9ff] text-[#273469] text-xs md:text-sm font-medium mb-4 md:mb-6">
+              <Sparkles className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
               Complete Your Profile
-            </h4>
-            <p className="text-sm text-gray-600">
-              Set up your recruiter profile to get started
+            </div>
+            
+            <div className="flex items-center justify-center gap-2 md:gap-3 mb-3 md:mb-4">
+              <h1 className="text-lg md:text-xl lg:text-2xl font-black text-[#1e2749] px-4">
+                Recruiter Profile Setup
+              </h1>
+            </div>
+            
+            <p className="text-sm md:text-base lg:text-lg text-[#30343f] max-w-2xl mx-auto leading-relaxed px-4">
+              Set up your recruiter profile to access pre-vetted candidates and streamline your hiring process
             </p>
           </div>
 
           {/* Progress Bar */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-gray-700">Step {currentStep} of 3</span>
-              <span className="text-sm text-gray-500">{Math.round((currentStep / 3) * 100)}% Complete</span>
+          <div className="mb-6 md:mb-8">
+            <div className="flex items-center justify-between mb-2 md:mb-3">
+              <span className="text-xs md:text-sm font-semibold text-[#1e2749]">Step {currentStep} of 3</span>
+              <span className="text-xs md:text-sm text-[#30343f]">{Math.round((currentStep / 3) * 100)}% Complete</span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
+            <div className="w-full bg-[#e4d9ff] rounded-full h-2 md:h-3">
               <div 
-                className="bg-gradient-to-r from-indigo-600 to-purple-600 h-2 rounded-full transition-all duration-300"
+                className="bg-gradient-to-r from-[#273469] to-[#1e2749] h-2 md:h-3 rounded-full transition-all duration-300"
                 style={{ width: `${(currentStep / 3) * 100}%` }}
               ></div>
             </div>
           </div>
 
           {/* Form */}
-          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-            <div className="p-6 sm:p-8 lg:p-10">
+          <div className="bg-white rounded-xl md:rounded-2xl shadow-2xl border-2 border-[#e4d9ff] overflow-hidden">
+            <div className="p-3 sm:p-6 md:p-8 lg:p-10">
               <form onSubmit={handleSubmit}>
                 {currentStep === 1 && renderStep1()}
                 {currentStep === 2 && renderStep2()}
@@ -764,14 +792,14 @@ const RecruiterProfile = () => {
                 )}
 
                 {/* Navigation Buttons */}
-                <div className="flex justify-between mt-8">
+                <div className="flex justify-between mt-6 md:mt-8">
                   <button
                     type="button"
                     onClick={handlePrevious}
                     disabled={currentStep === 1}
-                    className="flex items-center gap-2 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 border-2 border-[#e4d9ff] text-[#30343f] rounded-xl hover:bg-[#e4d9ff] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 font-semibold text-sm md:text-base"
                   >
-                    <ArrowLeft className="h-4 w-4" />
+                    <ArrowLeft className="h-3 w-3 md:h-4 md:w-4" />
                     Previous
                   </button>
 
@@ -779,25 +807,25 @@ const RecruiterProfile = () => {
                     <button
                       type="button"
                       onClick={handleNext}
-                      className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 flex items-center gap-2"
+                      className="bg-[#273469] text-white px-4 md:px-6 py-2 md:py-3 rounded-xl font-semibold hover:bg-[#1e2749] transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 text-sm md:text-base"
                     >
                       Next
-                      <ArrowLeft className="h-4 w-4 rotate-180" />
+                      <ArrowLeft className="h-3 w-3 md:h-4 md:w-4 rotate-180" />
                     </button>
                   ) : (
                     <button
                       type="submit"
                       disabled={isLoading}
-                      className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                      className="bg-[#273469] text-white px-4 md:px-6 py-2 md:py-3 rounded-xl font-semibold hover:bg-[#1e2749] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 disabled:transform-none text-sm md:text-base"
                     >
                       {isLoading ? (
                         <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                          <div className="animate-spin rounded-full h-3 w-3 md:h-4 md:w-4 border-b-2 border-white"></div>
                           Saving...
                         </>
                       ) : (
                         <>
-                          <CheckCircle className="h-4 w-4" />
+                          <CheckCircle className="h-3 w-3 md:h-4 md:w-4" />
                           Complete Profile
                         </>
                       )}
@@ -809,12 +837,12 @@ const RecruiterProfile = () => {
           </div>
 
           {/* Back Button */}
-          <div className="mt-8 text-center">
+          <div className="mt-6 md:mt-8 text-center">
             <Link
               to="/recruiter/verification"
-              className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 font-medium"
+              className="inline-flex items-center gap-2 text-[#30343f] hover:text-[#1e2749] transition-colors duration-300 font-medium text-sm md:text-base"
             >
-              <ArrowLeft className="h-4 w-4" />
+              <ArrowLeft className="h-3 w-3 md:h-4 md:w-4" />
               Back to Email Verification
             </Link>
           </div>

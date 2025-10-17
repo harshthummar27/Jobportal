@@ -55,52 +55,52 @@ const CandidateInfo = () => {
       <div className="relative pt-24 pb-20 lg:pt-32 lg:pb-32">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center px-4 py-2 rounded-full bg-[#e4d9ff] text-[#273469] text-sm font-medium mb-6">
-              <Sparkles className="h-4 w-4 mr-2" />
+          <div className="text-center mb-8 md:mb-12">
+            <div className="inline-flex items-center px-3 py-2 md:px-4 md:py-2 rounded-full bg-[#e4d9ff] text-[#273469] text-xs md:text-sm font-medium mb-4 md:mb-6">
+              <Sparkles className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
               For Candidates
             </div>
             
-            <div className="flex items-center justify-center gap-3 mb-6">
+            <div className="flex items-center justify-center gap-2 md:gap-3 mb-3 md:mb-4">
               {/* <div className="w-12 h-12 bg-[#273469] rounded-2xl flex items-center justify-center">
                 <Users className="h-6 w-6 text-white" />
               </div> */}
-              <h1 className="text-2xl lg:text-3xl font-black text-[#1e2749]">
+              <h1 className="text-lg md:text-xl lg:text-2xl font-black text-[#1e2749] px-4">
                 Let's Find Better Job Opportunities Together
               </h1>
             </div>
             
-            <p className="text-lg lg:text-xl text-[#30343f] max-w-3xl mx-auto leading-relaxed mb-4">
+            <p className="text-sm md:text-base lg:text-lg text-[#30343f] max-w-3xl mx-auto leading-relaxed mb-2 md:mb-3 px-4">
               If you are looking for a better package and want to change a toxic working environment,
               we could be your secret job search partner.
             </p>
-            <p className="text-base lg:text-lg text-[#30343f] max-w-2xl mx-auto">
+            <p className="text-sm md:text-base lg:text-lg text-[#30343f] max-w-2xl mx-auto px-4">
               VettedPool always seeks top talent — just clear our interviews and new jobs may await
               at your doorstep.
             </p>
           </div>
 
           {/* Back Button */}
-          <div className="mb-8">
+          <div className="mb-6 md:mb-8">
             <Link 
               to="/" 
               className="inline-flex items-center gap-2 text-[#30343f] hover:text-[#1e2749] transition-colors duration-300"
             >
-              <ArrowLeft className="h-5 w-5" />
-              <span className="font-medium">Back to Home</span>
+              <ArrowLeft className="h-4 w-4 md:h-5 md:w-5" />
+              <span className="font-medium text-sm md:text-base">Back to Home</span>
             </Link>
           </div>
 
           {/* Important Info */}
-          <div className="bg-white rounded-2xl shadow-2xl border-2 border-[#e4d9ff] overflow-hidden mb-12">
-            <div className="p-6 sm:p-8 lg:p-10">
-              <h2 className="text-2xl font-bold text-[#1e2749] mb-8 flex items-center gap-3">
-                <div className="w-10 h-10 bg-[#e4d9ff] rounded-xl flex items-center justify-center">
-                  <AlertTriangle className="h-5 w-5 text-[#273469]" />
+          <div className="bg-white rounded-xl md:rounded-2xl shadow-2xl border-2 border-[#e4d9ff] overflow-hidden mb-8 md:mb-12">
+            <div className="p-4 sm:p-6 md:p-8 lg:p-10">
+              <h2 className="text-xl md:text-2xl font-bold text-[#1e2749] mb-6 md:mb-8 flex items-center gap-2 md:gap-3">
+                <div className="w-8 h-8 md:w-10 md:h-10 bg-[#e4d9ff] rounded-xl flex items-center justify-center">
+                  <AlertTriangle className="h-4 w-4 md:h-5 md:w-5 text-[#273469]" />
                 </div>
                 Important Information
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                 {[
                   {
                     icon: <CheckCircle className="h-5 w-5 text-green-600" />,
@@ -148,14 +148,16 @@ const CandidateInfo = () => {
                     text: "Providing false experience details may lead to legal actions.",
                   },
                 ].map((item, idx) => (
-                  <div key={idx} className="bg-[#f2edff] p-4 rounded-xl border-l-4 border-[#e4d9ff]">
-                    <div className="flex items-start gap-3">
+                  <div key={idx} className="bg-[#f2edff] p-3 md:p-4 rounded-xl border-l-4 border-[#e4d9ff]">
+                    <div className="flex items-start gap-2 md:gap-3">
                       <div className="flex-shrink-0 mt-1">
-                        {item.icon}
+                        <div className="w-4 h-4 md:w-5 md:h-5 flex items-center justify-center">
+                          {item.icon}
+                        </div>
                       </div>
                       <div>
-                        <h3 className="font-semibold text-[#1e2749] mb-1">{item.title}</h3>
-                        <p className="text-[#30343f] text-sm leading-relaxed">{item.text}</p>
+                        <h3 className="font-semibold text-[#1e2749] mb-1 text-sm md:text-base">{item.title}</h3>
+                        <p className="text-[#30343f] text-xs md:text-sm leading-relaxed">{item.text}</p>
                       </div>
                     </div>
                   </div>
@@ -165,16 +167,16 @@ const CandidateInfo = () => {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-6 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center">
             <Link to="/candidate/register">
-              <Button size="lg" className="group">
-                <Users className="mr-3 h-5 w-5 group-hover:rotate-12 transition-transform duration-300" />
+              <Button size="md" className="group w-full sm:w-auto">
+                <Users className="mr-2 md:mr-3 h-4 w-4 md:h-5 md:w-5 group-hover:rotate-12 transition-transform duration-300" />
                 Sign Up Now
               </Button>
             </Link>
             <Link to="/candidate/login">
-              <Button size="lg" variant="outline" className="group">
-                <Briefcase className="mr-3 h-5 w-5 group-hover:rotate-12 transition-transform duration-300" />
+              <Button size="md" variant="outline" className="group w-full sm:w-auto">
+                <Briefcase className="mr-2 md:mr-3 h-4 w-4 md:h-5 md:w-5 group-hover:rotate-12 transition-transform duration-300" />
                 Already Registered? Login
               </Button>
             </Link>
