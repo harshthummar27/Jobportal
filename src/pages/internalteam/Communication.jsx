@@ -561,7 +561,7 @@ const Communication = () => {
                       value={newCommunication.candidateEmail}
                       onChange={(e) => setNewCommunication(prev => ({ ...prev, candidateEmail: e.target.value }))}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                      placeholder="candidate@email.com"
+                      placeholder="candidate@example.com"
                     />
                   </div>
                   
@@ -599,7 +599,7 @@ const Communication = () => {
                       value={newCommunication.recruiterContact}
                       onChange={(e) => setNewCommunication(prev => ({ ...prev, recruiterContact: e.target.value }))}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                      placeholder="recruiter@company.com"
+                      placeholder="recruiter@example.com"
                     />
                   </div>
                   

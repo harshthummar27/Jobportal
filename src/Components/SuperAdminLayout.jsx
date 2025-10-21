@@ -172,7 +172,7 @@ const SuperAdminLayout = ({ children }) => {
                 <Menu className="h-4 w-4 sm:h-4 sm:w-4" />
               </button>
               
-              {/* Demo Logo - Always visible */}
+              {/* Logo */}
               <div className="flex items-center gap-1 sm:gap-2">
                 <div className="w-6 h-6 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-lg flex items-center justify-center shadow-sm flex-shrink-0">
                   <span className="text-white font-bold text-xs">VP</span>
@@ -234,7 +234,7 @@ const SuperAdminLayout = ({ children }) => {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="text-xs sm:text-sm font-semibold text-gray-900 truncate">John Admin</div>
-                        <div className="text-[10px] sm:text-xs text-gray-500 truncate">john.admin@vettedpool.com</div>
+                        <div className="text-[10px] sm:text-xs text-gray-500 truncate">admin@vettedpool.com</div>
                         <div className="text-[10px] sm:text-xs text-indigo-600 font-medium">Super Admin</div>
                       </div>
                     </div>

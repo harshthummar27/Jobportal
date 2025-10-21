@@ -302,7 +302,7 @@ const Landing = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#fafaff] text-[#1e2749] overflow-x-hidden">
+    <div className="min-h-screen bg-main text-primary overflow-x-hidden">
       {/* Header */}
       <Header />
       
@@ -310,9 +310,9 @@ const Landing = () => {
       <section className="relative pt-20 pb-16 md:pt-24 md:pb-20 lg:pt-32 lg:pb-32 overflow-hidden">
         {/* Background Elements */}
         <div className="absolute inset-0">
-          <div className="absolute top-10 left-5 md:top-20 md:left-10 w-16 h-16 md:w-32 md:h-32 bg-[#e4d9ff] rounded-full opacity-20 animate-pulse"></div>
-          <div className="absolute top-20 right-10 md:top-40 md:right-20 w-12 h-12 md:w-24 md:h-24 bg-[#30343f] rounded-full opacity-15 animate-pulse" style={{ animationDelay: '1s' }}></div>
-          <div className="absolute bottom-10 left-1/4 md:bottom-20 w-10 h-10 md:w-20 md:h-20 bg-[#e4d9ff] rounded-full opacity-25 animate-pulse" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute top-10 left-5 md:top-20 md:left-10 w-16 h-16 md:w-32 md:h-32 bg-purple-accent rounded-full opacity-20 animate-pulse"></div>
+          <div className="absolute top-20 right-10 md:top-40 md:right-20 w-12 h-12 md:w-24 md:h-24 bg-dark rounded-full opacity-15 animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute bottom-10 left-1/4 md:bottom-20 w-10 h-10 md:w-20 md:h-20 bg-purple-accent rounded-full opacity-25 animate-pulse" style={{ animationDelay: '2s' }}></div>
         </div>
 
         <div className="relative max-w-7xl mx-auto px-4">

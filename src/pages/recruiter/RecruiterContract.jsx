@@ -152,70 +152,70 @@ const RecruiterContract = () => {
   );
 
   return (
-    <div className="min-h-screen bg-[#fafaff] text-[#1e2749] overflow-x-hidden">
+    <div className="min-h-screen bg-main text-primary overflow-x-hidden">
       <Header />
       
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-32 h-32 bg-[#e4d9ff] rounded-full opacity-20 animate-pulse"></div>
-        <div className="absolute top-40 right-20 w-24 h-24 bg-[#30343f] rounded-full opacity-15 animate-pulse" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute bottom-20 left-1/4 w-20 h-20 bg-[#e4d9ff] rounded-full opacity-25 animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-20 left-10 w-32 h-32 bg-purple-accent rounded-full opacity-20 animate-pulse"></div>
+        <div className="absolute top-40 right-20 w-24 h-24 bg-dark rounded-full opacity-15 animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-20 left-1/4 w-20 h-20 bg-purple-accent rounded-full opacity-25 animate-pulse" style={{ animationDelay: '2s' }}></div>
       </div>
       
       <div className="relative pt-20 md:pt-24 pb-16 md:pb-20 lg:pt-32 lg:pb-32">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="text-center mb-8 md:mb-12">
-            <div className="inline-flex items-center px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-[#e4d9ff] text-[#273469] text-xs md:text-sm font-medium mb-4 md:mb-6">
+            <div className="inline-flex items-center px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-purple-accent text-primary-color text-xs md:text-sm font-medium mb-4 md:mb-6">
               <Sparkles className="h-3 w-3 md:h-4 md:w-4 mr-1.5 md:mr-2" />
               Final Step
             </div>
             
             <div className="flex items-center justify-center gap-2 md:gap-3 mb-3 md:mb-4">
-              <h1 className="text-lg md:text-xl lg:text-2xl font-black text-[#1e2749] px-4">
+              <h1 className="text-lg md:text-xl lg:text-2xl font-black text-primary px-4">
                 Recruiter Agreement
               </h1>
             </div>
             
-            <p className="text-sm md:text-base lg:text-lg text-[#30343f] max-w-2xl mx-auto leading-relaxed px-4">
+            <p className="text-sm md:text-base lg:text-lg text-secondary max-w-2xl mx-auto leading-relaxed px-4">
               Review and accept our terms to access the pre-vetted candidate network
             </p>
           </div>
 
           {/* Contract Overview */}
-          <div className="bg-white rounded-xl md:rounded-2xl shadow-2xl border-2 border-[#e4d9ff] overflow-hidden mb-6 md:mb-8">
+          <div className="bg-white rounded-xl md:rounded-2xl shadow-2xl border-2 border-main overflow-hidden mb-6 md:mb-8">
             <div className="p-4 md:p-6 lg:p-8">
               <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-4 md:mb-6">
-                <div className="text-center p-3 md:p-6 bg-[#f2edff] rounded-lg md:rounded-xl border-2 border-[#e4d9ff] hover:shadow-lg transition-all duration-300">
-                  <div className="w-8 h-8 md:w-12 md:h-12 bg-[#e4d9ff] rounded-lg md:rounded-xl flex items-center justify-center mx-auto mb-2 md:mb-3">
-                    <Shield className="h-4 w-4 md:h-6 md:w-6 text-[#273469]" />
+                <div className="text-center p-3 md:p-6 bg-light-purple rounded-lg md:rounded-xl border-2 border-main hover:shadow-lg transition-all duration-300">
+                  <div className="w-8 h-8 md:w-12 md:h-12 bg-purple-accent rounded-lg md:rounded-xl flex items-center justify-center mx-auto mb-2 md:mb-3">
+                    <Shield className="h-4 w-4 md:h-6 md:w-6 text-primary-color" />
                   </div>
-                  <h3 className="font-semibold text-[#1e2749] mb-1 md:mb-2 text-xs md:text-sm">Secure Platform</h3>
-                  <p className="text-xs md:text-sm text-[#30343f]">Enterprise-grade security</p>
+                  <h3 className="font-semibold text-primary mb-1 md:mb-2 text-xs md:text-sm">Secure Platform</h3>
+                  <p className="text-xs md:text-sm text-secondary">Enterprise-grade security</p>
                 </div>
                 
-                <div className="text-center p-3 md:p-6 bg-[#f2edff] rounded-lg md:rounded-xl border-2 border-[#e4d9ff] hover:shadow-lg transition-all duration-300">
-                  <div className="w-8 h-8 md:w-12 md:h-12 bg-[#e4d9ff] rounded-lg md:rounded-xl flex items-center justify-center mx-auto mb-2 md:mb-3">
-                    <Users className="h-4 w-4 md:h-6 md:w-6 text-[#273469]" />
+                <div className="text-center p-3 md:p-6 bg-light-purple rounded-lg md:rounded-xl border-2 border-main hover:shadow-lg transition-all duration-300">
+                  <div className="w-8 h-8 md:w-12 md:h-12 bg-purple-accent rounded-lg md:rounded-xl flex items-center justify-center mx-auto mb-2 md:mb-3">
+                    <Users className="h-4 w-4 md:h-6 md:w-6 text-primary-color" />
                   </div>
-                  <h3 className="font-semibold text-[#1e2749] mb-1 md:mb-2 text-xs md:text-sm">Pre-vetted Candidates</h3>
-                  <p className="text-xs md:text-sm text-[#30343f]">Quality guaranteed</p>
+                  <h3 className="font-semibold text-primary mb-1 md:mb-2 text-xs md:text-sm">Pre-vetted Candidates</h3>
+                  <p className="text-xs md:text-sm text-secondary">Quality guaranteed</p>
                 </div>
                 
-                <div className="text-center p-3 md:p-6 bg-[#f2edff] rounded-lg md:rounded-xl border-2 border-[#e4d9ff] hover:shadow-lg transition-all duration-300">
-                  <div className="w-8 h-8 md:w-12 md:h-12 bg-[#e4d9ff] rounded-lg md:rounded-xl flex items-center justify-center mx-auto mb-2 md:mb-3">
-                    <DollarSign className="h-4 w-4 md:h-6 md:w-6 text-[#273469]" />
+                <div className="text-center p-3 md:p-6 bg-light-purple rounded-lg md:rounded-xl border-2 border-main hover:shadow-lg transition-all duration-300">
+                  <div className="w-8 h-8 md:w-12 md:h-12 bg-purple-accent rounded-lg md:rounded-xl flex items-center justify-center mx-auto mb-2 md:mb-3">
+                    <DollarSign className="h-4 w-4 md:h-6 md:w-6 text-primary-color" />
                   </div>
-                  <h3 className="font-semibold text-[#1e2749] mb-1 md:mb-2 text-xs md:text-sm">Transparent Pricing</h3>
-                  <p className="text-xs md:text-sm text-[#30343f]">No hidden fees</p>
+                  <h3 className="font-semibold text-primary mb-1 md:mb-2 text-xs md:text-sm">Transparent Pricing</h3>
+                  <p className="text-xs md:text-sm text-secondary">No hidden fees</p>
                 </div>
                 
-                <div className="text-center p-3 md:p-6 bg-[#f2edff] rounded-lg md:rounded-xl border-2 border-[#e4d9ff] hover:shadow-lg transition-all duration-300">
-                  <div className="w-8 h-8 md:w-12 md:h-12 bg-[#e4d9ff] rounded-lg md:rounded-xl flex items-center justify-center mx-auto mb-2 md:mb-3">
-                    <Calendar className="h-4 w-4 md:h-6 md:w-6 text-[#273469]" />
+                <div className="text-center p-3 md:p-6 bg-light-purple rounded-lg md:rounded-xl border-2 border-main hover:shadow-lg transition-all duration-300">
+                  <div className="w-8 h-8 md:w-12 md:h-12 bg-purple-accent rounded-lg md:rounded-xl flex items-center justify-center mx-auto mb-2 md:mb-3">
+                    <Calendar className="h-4 w-4 md:h-6 md:w-6 text-primary-color" />
                   </div>
-                  <h3 className="font-semibold text-[#1e2749] mb-1 md:mb-2 text-xs md:text-sm">24/7 Support</h3>
-                  <p className="text-xs md:text-sm text-[#30343f]">Always available</p>
+                  <h3 className="font-semibold text-primary mb-1 md:mb-2 text-xs md:text-sm">24/7 Support</h3>
+                  <p className="text-xs md:text-sm text-secondary">Always available</p>
                 </div>
               </div>
 
@@ -226,12 +226,12 @@ const RecruiterContract = () => {
                   <div className="flex flex-col sm:flex-row gap-2">
                     <button
                       onClick={() => setShowFullContract(!showFullContract)}
-                      className="flex items-center justify-center gap-2 px-3 md:px-4 py-2 text-xs md:text-sm bg-[#273469] text-white rounded-lg md:rounded-xl hover:bg-[#1e2749] transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
+                      className="flex items-center justify-center gap-2 px-3 md:px-4 py-2 text-xs md:text-sm bg-primary text-white rounded-lg md:rounded-xl hover:bg-dark transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
                     >
                       <Eye className="h-3 w-3 md:h-4 md:w-4" />
                       {showFullContract ? "Hide" : "View"} Full Contract
                     </button>
-                    <button className="flex items-center justify-center gap-2 px-3 md:px-4 py-2 text-xs md:text-sm bg-white border-2 border-[#e4d9ff] text-[#30343f] rounded-lg md:rounded-xl hover:bg-[#fafaff] transition-all duration-300">
+                    <button className="flex items-center justify-center gap-2 px-3 md:px-4 py-2 text-xs md:text-sm bg-white border-2 border-main text-secondary rounded-lg md:rounded-xl hover:bg-main transition-all duration-300">
                       <Download className="h-3 w-3 md:h-4 md:w-4" />
                       Download PDF
                     </button>
@@ -368,7 +368,7 @@ const RecruiterContract = () => {
                 <button
                   type="submit"
                   disabled={isLoading || !allRequiredAgreed || !hasReadContract}
-                  className="w-full bg-[#273469] text-white py-3 md:py-4 px-4 md:px-6 rounded-lg md:rounded-xl font-semibold text-sm md:text-lg hover:bg-[#1e2749] focus:ring-4 focus:ring-[#273469] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 disabled:transform-none"
+                  className="w-full bg-primary text-white py-3 md:py-4 px-4 md:px-6 rounded-lg md:rounded-xl font-semibold text-sm md:text-lg hover:bg-dark focus:ring-4 focus:ring-primary transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 disabled:transform-none"
                 >
                   {isLoading ? (
                     <>

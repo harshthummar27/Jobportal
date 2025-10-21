@@ -1,3 +1,7 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -66,7 +70,6 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
-@import "tailwindcss";
 
 /* Professional scroll behavior - prevents flash */
 html {
@@ -461,6 +464,22 @@ body {
 * {
   transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
 }
+
+/* Global Color Classes Only - No Fixed Sizing */
+.bg-main { background-color: #fafaff; }
+.bg-purple-accent { background-color: #e4d9ff; }
+.bg-primary { background-color: #273469; }
+.bg-dark { background-color: #30343f; }
+.bg-light-purple { background-color: #f2edff; }
+.bg-white { background-color: #ffffff; }
+
+.text-primary { color: #1e2749; }
+.text-secondary { color: #30343f; }
+.text-primary-color { color: #273469; }
+.text-white { color: #ffffff; }
+
+.border-main { border-color: #e4d9ff; }
+.border-primary { border-color: #273469; }
 
 /* Focus States */
 button:focus-visible,

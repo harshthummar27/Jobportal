@@ -19,7 +19,7 @@ const Header = () => {
           <div className="flex items-center gap-4">
             <Link
               to="/login"
-              className="px-4 py-2 rounded-md bg-[#273469] text-white font-medium hover:bg-[#1e2749] transition"
+              className="px-4 py-2 rounded-md bg-primary text-white font-medium hover:bg-dark transition"
             >
               Login
             </Link>

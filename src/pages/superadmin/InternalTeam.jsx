@@ -29,7 +29,7 @@ const InternalTeam = () => {
     {
       id: 1,
       name: "John Admin",
-      email: "john.admin@vettedpool.com",
+      email: "admin@vettedpool.com",
       mobile: "+1 234-567-8901",
       role: "Super Admin",
       department: "Administration",

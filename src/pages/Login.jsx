@@ -77,7 +77,7 @@ const Login = () => {
       case "recruiter":
         return "/recruiter/dashboard";
       case "internalteam":
-        return "/superadmin/internal-team";
+        return "/internal-team/dashboard";
       case "superadmin":
         return "/superadmin/dashboard";
       default:
@@ -119,27 +119,27 @@ const Login = () => {
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-[#fafaff] text-[#1e2749] overflow-x-hidden">
+      <div className="min-h-screen bg-main text-primary overflow-x-hidden">
         {/* Background Elements */}
         <div className="absolute inset-0">
-          <div className="absolute top-20 left-10 w-32 h-32 bg-[#e4d9ff] rounded-full opacity-20 animate-pulse"></div>
-          <div className="absolute top-40 right-20 w-24 h-24 bg-[#30343f] rounded-full opacity-15 animate-pulse" style={{ animationDelay: '1s' }}></div>
-          <div className="absolute bottom-20 left-1/4 w-20 h-20 bg-[#e4d9ff] rounded-full opacity-25 animate-pulse" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute top-20 left-10 w-32 h-32 bg-purple-accent rounded-full opacity-20 animate-pulse"></div>
+          <div className="absolute top-40 right-20 w-24 h-24 bg-dark rounded-full opacity-15 animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute bottom-20 left-1/4 w-20 h-20 bg-purple-accent rounded-full opacity-25 animate-pulse" style={{ animationDelay: '2s' }}></div>
         </div>
 
         <div className="relative flex items-center justify-center min-h-screen p-4 pt-24">
           <div className="w-full max-w-6xl">
             {/* Header Section */}
             <div className="text-center mb-8 md:mb-12">
-              <div className="inline-flex items-center px-3 py-2 md:px-4 md:py-4 rounded-full bg-[#e4d9ff] text-[#273469] text-xs md:text-sm font-medium mb-3 md:mb-4">
+              <div className="inline-flex items-center px-3 py-2 md:px-4 md:py-4 rounded-full bg-purple-accent text-primary-color text-xs md:text-sm font-medium mb-3 md:mb-4">
                 <Shield className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
                 Secure Access Portal
               </div>
-              <h1 className="text-xl md:text-2xl lg:text-5xl font-black mb-2 text-[#1e2749] leading-tight">
+              <h1 className="text-xl md:text-2xl lg:text-5xl font-black mb-2 text-primary leading-tight">
                 Welcome to
-                <span className=" text-[#273469]">VettedPool</span>
+                <span className=" text-primary-color">VettedPool</span>
               </h1>
-              <p className="text-sm md:text-base lg:text-lg text-[#30343f] max-w-3xl mx-auto leading-relaxed px-4">
+              <p className="text-sm md:text-base lg:text-lg text-secondary max-w-3xl mx-auto leading-relaxed px-4">
                 Choose your role to access the platform and continue your journey
               </p>
             </div>
@@ -288,77 +288,6 @@ const Login = () => {
             </div>
           )}
 
-          {/* Demo Credentials - Show when role is selected */}
-          {selectedRole && (
-            <div className="max-w-lg mx-auto mt-6 md:mt-8">
-              <div className="bg-[#f2edff] rounded-xl p-4 md:p-6 border-2 border-[#e4d9ff]">
-                <h4 className="text-base md:text-lg font-bold text-[#1e2749] mb-3 md:mb-4 text-center">
-                  Demo Credentials for {userTypes.find(t => t.id === selectedRole)?.title}
-                </h4>
-                <div className="text-center">
-                  <div className="flex items-center justify-center gap-2 md:gap-3 mb-2 md:mb-3">
-                    <div className="w-3 h-3 md:w-4 md:h-4 rounded-full bg-[#273469]"></div>
-                    <span className="text-sm md:text-base text-[#30343f] font-medium">
-                      {selectedRole === 'candidate' ? 'candidate@email.com' :
-                       selectedRole === 'recruiter' ? 'recruiter@company.com' :
-                       selectedRole === 'internalteam' ? 'team@vettedpool.com' : 'admin@vettedpool.com'}
-                    </span>
-                  </div>
-                  <p className="text-xs md:text-sm text-[#30343f]">
-                    Password: Use any password for demo purposes
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Demo Credentials - Show when no role is selected */}
-          {!selectedRole && (
-            <div className="max-w-4xl mx-auto mt-8 md:mt-12">
-              <div className="bg-white rounded-xl md:rounded-2xl p-6 md:p-8 border-2 border-[#e4d9ff] shadow-lg">
-                <h3 className="text-xl md:text-2xl font-bold text-[#1e2749] mb-4 md:mb-6 text-center">
-                  Demo Credentials
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                  <div className="space-y-3 md:space-y-4">
-                    <div className="flex items-center gap-2 md:gap-3 p-2 md:p-3 bg-[#f2edff] rounded-xl">
-                      <div className="w-3 h-3 md:w-4 md:h-4 rounded-full bg-[#273469]"></div>
-                      <div>
-                        <span className="font-bold text-[#1e2749] text-sm md:text-base">Candidate:</span>
-                        <span className="text-[#30343f] ml-1 md:ml-2 text-xs md:text-sm">candidate@email.com</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 md:gap-3 p-2 md:p-3 bg-[#f2edff] rounded-xl">
-                      <div className="w-3 h-3 md:w-4 md:h-4 rounded-full bg-[#273469]"></div>
-                      <div>
-                        <span className="font-bold text-[#1e2749] text-sm md:text-base">Recruiter:</span>
-                        <span className="text-[#30343f] ml-1 md:ml-2 text-xs md:text-sm">recruiter@company.com</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="space-y-3 md:space-y-4">
-                    <div className="flex items-center gap-2 md:gap-3 p-2 md:p-3 bg-[#f2edff] rounded-xl">
-                      <div className="w-3 h-3 md:w-4 md:h-4 rounded-full bg-[#273469]"></div>
-                      <div>
-                        <span className="font-bold text-[#1e2749] text-sm md:text-base">Internal Team:</span>
-                        <span className="text-[#30343f] ml-1 md:ml-2 text-xs md:text-sm">team@vettedpool.com</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 md:gap-3 p-2 md:p-3 bg-[#f2edff] rounded-xl">
-                      <div className="w-3 h-3 md:w-4 md:h-4 rounded-full bg-[#273469]"></div>
-                      <div>
-                        <span className="font-bold text-[#1e2749] text-sm md:text-base">Super Admin:</span>
-                        <span className="text-[#30343f] ml-1 md:ml-2 text-xs md:text-sm">admin@vettedpool.com</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <p className="text-[#30343f] text-center mt-4 md:mt-6 text-xs md:text-sm">
-                  Password: Use any password for demo purposes
-                </p>
-              </div>
-            </div>
-          )}
           </div>
         </div>
       </div>

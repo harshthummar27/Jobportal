@@ -44,7 +44,8 @@ const CandidateVerification = () => {
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       // In real app, verify code with backend
-      if (verificationCode === "123456") { // Demo code
+      // Accept any 6-digit code for testing
+      if (verificationCode.length === 6) {
         setSuccess(true);
         setTimeout(() => {
           navigate("/candidate/profile-setup", { 
@@ -86,14 +87,14 @@ const CandidateVerification = () => {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-[#fafaff] text-[#1e2749] overflow-x-hidden">
+      <div className="min-h-screen bg-main text-primary overflow-x-hidden">
         <Header />
         
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 left-10 w-32 h-32 bg-[#e4d9ff] rounded-full opacity-20 animate-pulse"></div>
-          <div className="absolute top-40 right-20 w-24 h-24 bg-[#30343f] rounded-full opacity-15 animate-pulse" style={{ animationDelay: '1s' }}></div>
-          <div className="absolute bottom-20 left-1/4 w-20 h-20 bg-[#e4d9ff] rounded-full opacity-25 animate-pulse" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute top-20 left-10 w-32 h-32 bg-purple-accent rounded-full opacity-20 animate-pulse"></div>
+          <div className="absolute top-40 right-20 w-24 h-24 bg-dark rounded-full opacity-15 animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute bottom-20 left-1/4 w-20 h-20 bg-purple-accent rounded-full opacity-25 animate-pulse" style={{ animationDelay: '2s' }}></div>
         </div>
         
         <div className="relative pt-24 pb-20 lg:pt-32 lg:pb-32">
@@ -122,14 +123,14 @@ const CandidateVerification = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#fafaff] text-[#1e2749] overflow-x-hidden">
+    <div className="min-h-screen bg-main text-primary overflow-x-hidden">
       <Header />
       
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-32 h-32 bg-[#e4d9ff] rounded-full opacity-20 animate-pulse"></div>
-        <div className="absolute top-40 right-20 w-24 h-24 bg-[#30343f] rounded-full opacity-15 animate-pulse" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute bottom-20 left-1/4 w-20 h-20 bg-[#e4d9ff] rounded-full opacity-25 animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-20 left-10 w-32 h-32 bg-purple-accent rounded-full opacity-20 animate-pulse"></div>
+        <div className="absolute top-40 right-20 w-24 h-24 bg-dark rounded-full opacity-15 animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-20 left-1/4 w-20 h-20 bg-purple-accent rounded-full opacity-25 animate-pulse" style={{ animationDelay: '2s' }}></div>
       </div>
       
       <div className="relative pt-24 pb-20 lg:pt-32 lg:pb-32">
@@ -251,24 +252,6 @@ const CandidateVerification = () => {
                 </button>
               </div>
 
-              {/* Demo Code Notice */}
-              <div className="mt-6 md:mt-8 p-3 md:p-4 bg-[#f2edff] border-2 border-[#e4d9ff] rounded-xl">
-                <div className="flex items-start gap-2 md:gap-3">
-                  <div className="flex-shrink-0">
-                    <div className="w-5 h-5 md:w-6 md:h-6 bg-[#273469] rounded-full flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">!</span>
-                    </div>
-                  </div>
-                  <div>
-                    <h4 className="text-xs md:text-sm font-semibold text-[#1e2749] mb-1">
-                      Demo Mode
-                    </h4>
-                    <p className="text-xs md:text-sm text-[#30343f]">
-                      For testing purposes, use the verification code: <span className="font-mono font-bold text-[#273469]">123456</span>
-                    </p>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
 
