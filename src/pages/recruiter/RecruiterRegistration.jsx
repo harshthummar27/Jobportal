@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock, User, Building, Phone, CheckCircle, AlertCircle, ArrowLeft, Sparkles, Users, Briefcase } from "lucide-react";
+import { toast } from 'react-toastify';
 import Header from "../../Components/Header";
 
 // Mobile Slider Component
@@ -132,20 +133,27 @@ const MobileSlider = ({ children, className = "" }) => {
 const RecruiterRegistration = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    name: "",
     email: "",
-    phone: "",
-    companyName: "",
-    companySize: "",
     password: "",
-    confirmPassword: "",
-    agreeToTerms: false,
-    agreeToPrivacy: false
+    mobile_number: "",
+    company_name: "",
+    company_website: "",
+    company_size: "",
+    industry: "",
+    company_description: "",
+    contact_person_name: "",
+    contact_person_title: "",
+    contact_email: "",
+    contact_phone: "",
+    office_address: "",
+    city: "",
+    state: "",
+    country: "",
+    postal_code: ""
   });
   
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
@@ -169,25 +177,31 @@ const RecruiterRegistration = () => {
     const newErrors = {};
 
     // Required fields
-    if (!formData.firstName.trim()) newErrors.firstName = "First name is required";
-    if (!formData.lastName.trim()) newErrors.lastName = "Last name is required";
+    if (!formData.name.trim()) newErrors.name = "Name is required";
     if (!formData.email.trim()) newErrors.email = "Email is required";
-    if (!formData.phone.trim()) newErrors.phone = "Phone number is required";
-    if (!formData.companyName.trim()) newErrors.companyName = "Company name is required";
-    if (!formData.companySize) newErrors.companySize = "Company size is required";
     if (!formData.password) newErrors.password = "Password is required";
-    if (!formData.confirmPassword) newErrors.confirmPassword = "Please confirm your password";
+    if (!formData.mobile_number.trim()) newErrors.mobile_number = "Mobile number is required";
+    if (!formData.company_name.trim()) newErrors.company_name = "Company name is required";
+    if (!formData.contact_person_name.trim()) newErrors.contact_person_name = "Contact person name is required";
+    if (!formData.contact_email.trim()) newErrors.contact_email = "Contact email is required";
+    if (!formData.contact_phone.trim()) newErrors.contact_phone = "Contact phone is required";
 
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (formData.email && !emailRegex.test(formData.email)) {
       newErrors.email = "Please enter a valid email address";
     }
+    if (formData.contact_email && !emailRegex.test(formData.contact_email)) {
+      newErrors.contact_email = "Please enter a valid contact email address";
+    }
 
-    // Phone validation
+    // Mobile number validation
     const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
-    if (formData.phone && !phoneRegex.test(formData.phone.replace(/[\s\-\(\)]/g, ''))) {
-      newErrors.phone = "Please enter a valid phone number";
+    if (formData.mobile_number && !phoneRegex.test(formData.mobile_number.replace(/[\s\-\(\)]/g, ''))) {
+      newErrors.mobile_number = "Please enter a valid mobile number";
+    }
+    if (formData.contact_phone && !phoneRegex.test(formData.contact_phone.replace(/[\s\-\(\)]/g, ''))) {
+      newErrors.contact_phone = "Please enter a valid contact phone number";
     }
 
     // Password validation
@@ -195,17 +209,12 @@ const RecruiterRegistration = () => {
       newErrors.password = "Password must be at least 8 characters long";
     }
 
-    // Password confirmation
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match";
-    }
-
-    // Terms agreement
-    if (!formData.agreeToTerms) {
-      newErrors.agreeToTerms = "You must agree to the terms and conditions";
-    }
-    if (!formData.agreeToPrivacy) {
-      newErrors.agreeToPrivacy = "You must agree to the privacy policy";
+    // Website URL validation (if provided)
+    if (formData.company_website && formData.company_website.trim()) {
+      const urlRegex = /^https?:\/\/.+/;
+      if (!urlRegex.test(formData.company_website)) {
+        newErrors.company_website = "Please enter a valid website URL (starting with http:// or https://)";
+      }
     }
 
     setErrors(newErrors);
@@ -222,31 +231,94 @@ const RecruiterRegistration = () => {
     setIsLoading(true);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Prepare registration data
+      const registrationData = {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        mobile_number: formData.mobile_number,
+        company_name: formData.company_name,
+        company_website: formData.company_website,
+        company_size: formData.company_size,
+        industry: formData.industry,
+        company_description: formData.company_description,
+        contact_person_name: formData.contact_person_name,
+        contact_person_title: formData.contact_person_title,
+        contact_email: formData.contact_email,
+        contact_phone: formData.contact_phone,
+        office_address: formData.office_address,
+        city: formData.city,
+        state: formData.state,
+        country: formData.country,
+        postal_code: formData.postal_code
+      };
+
+      // Make API call to register recruiter
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/recruiter/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(registrationData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Registration failed');
+      }
+
+      console.log("Registration response:", data);
       
-      // In real app, make API call to register recruiter
-      console.log("Registration data:", formData);
+      // Show success toast
+      toast.success("Registration successful! Please check your email for verification code.");
       
       // Navigate to email verification
       navigate("/recruiter/verification", { 
-        state: { email: formData.email, type: "registration" }
+        state: { 
+          email: formData.email, 
+          type: "registration",
+          userId: data.user?.id || data.id
+        }
       });
     } catch (error) {
       console.error("Registration error:", error);
-      setErrors({ submit: "Registration failed. Please try again." });
+      
+      // Handle specific error messages
+      if (error.message.includes("email")) {
+        setErrors(prev => ({ ...prev, email: "Email already exists. Please use a different email." }));
+      } else if (error.message.includes("mobile")) {
+        setErrors(prev => ({ ...prev, mobile_number: "Mobile number already exists. Please use a different number." }));
+      } else {
+        toast.error(error.message || "Registration failed. Please try again.");
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
   const companySizes = [
-    "1-10 employees",
-    "11-50 employees", 
-    "51-200 employees",
-    "201-500 employees",
-    "501-1000 employees",
-    "1000+ employees"
+    "1-10",
+    "11-50", 
+    "51-100",
+    "101-500",
+    "501-1000",
+    "1000+"
+  ];
+
+  const industries = [
+    "Technology",
+    "Healthcare",
+    "Finance",
+    "Education",
+    "Manufacturing",
+    "Retail",
+    "Consulting",
+    "Real Estate",
+    "Media & Entertainment",
+    "Government",
+    "Non-profit",
+    "Other"
   ];
 
   return (
@@ -311,50 +383,26 @@ const RecruiterRegistration = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
                       <div>
                         <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
-                          First Name *
+                          Full Name *
                         </label>
                         <input
                           type="text"
-                          name="firstName"
-                          value={formData.firstName}
+                          name="name"
+                          value={formData.name}
                           onChange={handleInputChange}
                           className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
-                            errors.firstName ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
+                            errors.name ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
                           }`}
-                          placeholder="Enter your first name"
+                          placeholder="Enter your full name"
                         />
-                        {errors.firstName && (
+                        {errors.name && (
                           <p className="mt-2 text-xs md:text-sm text-red-600 flex items-center gap-2">
                             <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
-                            {errors.firstName}
+                            {errors.name}
                           </p>
                         )}
                       </div>
 
-                      <div>
-                        <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
-                          Last Name *
-                        </label>
-                        <input
-                          type="text"
-                          name="lastName"
-                          value={formData.lastName}
-                          onChange={handleInputChange}
-                          className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
-                            errors.lastName ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
-                          }`}
-                          placeholder="Enter your last name"
-                        />
-                        {errors.lastName && (
-                          <p className="mt-2 text-xs md:text-sm text-red-600 flex items-center gap-2">
-                            <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
-                            {errors.lastName}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 mt-4 md:mt-6">
                       <div>
                         <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
                           Email Address *
@@ -379,105 +427,34 @@ const RecruiterRegistration = () => {
                           </p>
                         )}
                       </div>
+                    </div>
 
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 mt-4 md:mt-6">
                       <div>
                         <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
-                          Phone Number *
+                          Mobile Number *
                         </label>
                         <div className="relative">
                           <Phone className="absolute left-3 md:left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-[#30343f]" />
                           <input
                             type="tel"
-                            name="phone"
-                            value={formData.phone}
+                            name="mobile_number"
+                            value={formData.mobile_number}
                             onChange={handleInputChange}
                             className={`w-full pl-10 md:pl-12 pr-4 md:pr-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
-                              errors.phone ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
+                              errors.mobile_number ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
                             }`}
-                            placeholder="+1 (555) 123-4567"
+                            placeholder="+919876543210"
                           />
                         </div>
-                        {errors.phone && (
+                        {errors.mobile_number && (
                           <p className="mt-2 text-xs md:text-sm text-red-600 flex items-center gap-2">
                             <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
-                            {errors.phone}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Company Information */}
-                  <div className="border-b border-[#e4d9ff] pb-6 md:pb-8">
-                    <h2 className="text-lg md:text-2xl font-bold text-[#1e2749] mb-4 md:mb-6 flex items-center gap-2 md:gap-3">
-                      <div className="w-8 h-8 md:w-10 md:h-10 bg-[#e4d9ff] rounded-xl flex items-center justify-center">
-                        <Building className="h-4 w-4 md:h-5 md:w-5 text-[#273469]" />
-                      </div>
-                      Company Information
-                    </h2>
-                    
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-                      <div className="sm:col-span-2">
-                        <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
-                          Company Name *
-                        </label>
-                        <input
-                          type="text"
-                          name="companyName"
-                          value={formData.companyName}
-                          onChange={handleInputChange}
-                          className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
-                            errors.companyName ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
-                          }`}
-                          placeholder="Enter your company name"
-                        />
-                        {errors.companyName && (
-                          <p className="mt-2 text-xs md:text-sm text-red-600 flex items-center gap-2">
-                            <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
-                            {errors.companyName}
+                            {errors.mobile_number}
                           </p>
                         )}
                       </div>
 
-                      <div className="sm:col-span-2">
-                        <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
-                          Company Size *
-                        </label>
-                        <select
-                          name="companySize"
-                          value={formData.companySize}
-                          onChange={handleInputChange}
-                          className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] text-sm md:text-base ${
-                            errors.companySize ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
-                          }`}
-                        >
-                          <option value="">Select company size</option>
-                          {companySizes.map((size) => (
-                            <option key={size} value={size}>
-                              {size}
-                            </option>
-                          ))}
-                        </select>
-                        {errors.companySize && (
-                          <p className="mt-2 text-xs md:text-sm text-red-600 flex items-center gap-2">
-                            <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
-                            {errors.companySize}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Security */}
-                  <div>
-                    <h2 className="text-lg md:text-2xl font-bold text-[#1e2749] mb-4 md:mb-6 flex items-center gap-2 md:gap-3">
-                      <div className="w-8 h-8 md:w-10 md:h-10 bg-[#e4d9ff] rounded-xl flex items-center justify-center">
-                        <Lock className="h-4 w-4 md:h-5 md:w-5 text-[#273469]" />
-                      </div>
-                      Security
-                    </h2>
-                    
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
                       <div>
                         <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
                           Password *
@@ -509,88 +486,369 @@ const RecruiterRegistration = () => {
                           </p>
                         )}
                       </div>
+                    </div>
+
+                  </div>
+
+                  {/* Company Information */}
+                  <div className="border-b border-[#e4d9ff] pb-6 md:pb-8">
+                    <h2 className="text-lg md:text-2xl font-bold text-[#1e2749] mb-4 md:mb-6 flex items-center gap-2 md:gap-3">
+                      <div className="w-8 h-8 md:w-10 md:h-10 bg-[#e4d9ff] rounded-xl flex items-center justify-center">
+                        <Building className="h-4 w-4 md:h-5 md:w-5 text-[#273469]" />
+                      </div>
+                      Company Information
+                    </h2>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+                      <div className="sm:col-span-2">
+                        <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
+                          Company Name *
+                        </label>
+                        <input
+                          type="text"
+                          name="company_name"
+                          value={formData.company_name}
+                          onChange={handleInputChange}
+                          className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+                            errors.company_name ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
+                          }`}
+                          placeholder="Enter your company name"
+                        />
+                        {errors.company_name && (
+                          <p className="mt-2 text-xs md:text-sm text-red-600 flex items-center gap-2">
+                            <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
+                            {errors.company_name}
+                          </p>
+                        )}
+                      </div>
 
                       <div>
                         <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
-                          Confirm Password *
+                          Company Website
                         </label>
-                        <div className="relative">
-                          <Lock className="absolute left-3 md:left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-[#30343f]" />
-                          <input
-                            type={showConfirmPassword ? "text" : "password"}
-                            name="confirmPassword"
-                            value={formData.confirmPassword}
-                            onChange={handleInputChange}
-                            className={`w-full pl-10 md:pl-12 pr-12 md:pr-14 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
-                              errors.confirmPassword ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
-                            }`}
-                            placeholder="Confirm your password"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                            className="absolute right-3 md:right-4 top-1/2 transform -translate-y-1/2 text-[#30343f] hover:text-[#1e2749] transition-colors duration-300"
-                          >
-                            {showConfirmPassword ? <EyeOff className="h-4 w-4 md:h-5 md:w-5" /> : <Eye className="h-4 w-4 md:h-5 md:w-5" />}
-                          </button>
-                        </div>
-                        {errors.confirmPassword && (
+                        <input
+                          type="url"
+                          name="company_website"
+                          value={formData.company_website}
+                          onChange={handleInputChange}
+                          className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+                            errors.company_website ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
+                          }`}
+                          placeholder="https://yourcompany.com"
+                        />
+                        {errors.company_website && (
                           <p className="mt-2 text-xs md:text-sm text-red-600 flex items-center gap-2">
                             <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
-                            {errors.confirmPassword}
+                            {errors.company_website}
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
+                          Company Size
+                        </label>
+                        <select
+                          name="company_size"
+                          value={formData.company_size}
+                          onChange={handleInputChange}
+                          className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] text-sm md:text-base ${
+                            errors.company_size ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
+                          }`}
+                        >
+                          <option value="">Select company size</option>
+                          {companySizes.map((size) => (
+                            <option key={size} value={size}>
+                              {size} employees
+                            </option>
+                          ))}
+                        </select>
+                        {errors.company_size && (
+                          <p className="mt-2 text-xs md:text-sm text-red-600 flex items-center gap-2">
+                            <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
+                            {errors.company_size}
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
+                          Industry
+                        </label>
+                        <select
+                          name="industry"
+                          value={formData.industry}
+                          onChange={handleInputChange}
+                          className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] text-sm md:text-base ${
+                            errors.industry ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
+                          }`}
+                        >
+                          <option value="">Select industry</option>
+                          {industries.map((industry) => (
+                            <option key={industry} value={industry}>
+                              {industry}
+                            </option>
+                          ))}
+                        </select>
+                        {errors.industry && (
+                          <p className="mt-2 text-xs md:text-sm text-red-600 flex items-center gap-2">
+                            <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
+                            {errors.industry}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="sm:col-span-2">
+                        <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
+                          Company Description
+                        </label>
+                        <textarea
+                          name="company_description"
+                          value={formData.company_description}
+                          onChange={handleInputChange}
+                          rows={3}
+                          className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base resize-none ${
+                            errors.company_description ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
+                          }`}
+                          placeholder="Brief description of your company"
+                        />
+                        {errors.company_description && (
+                          <p className="mt-2 text-xs md:text-sm text-red-600 flex items-center gap-2">
+                            <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
+                            {errors.company_description}
                           </p>
                         )}
                       </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Terms and Conditions */}
-                <div className="space-y-4 md:space-y-6">
-                  <div className="flex items-start gap-3 md:gap-4">
-                    <input
-                      type="checkbox"
-                      name="agreeToTerms"
-                      checked={formData.agreeToTerms}
-                      onChange={handleInputChange}
-                      className="mt-1 h-4 w-4 md:h-5 md:w-5 text-[#273469] focus:ring-[#273469] border-[#e4d9ff] rounded"
-                    />
-                    <label className="text-xs md:text-sm text-[#30343f] leading-relaxed">
-                      I agree to the{" "}
-                      <Link to="/terms" className="text-[#273469] hover:text-[#1e2749] font-semibold transition-colors duration-300">
-                        Terms and Conditions
-                      </Link>{" "}
-                      and{" "}
-                      <Link to="/privacy" className="text-[#273469] hover:text-[#1e2749] font-semibold transition-colors duration-300">
-                        Privacy Policy
-                      </Link>
-                    </label>
-                  </div>
-                  {errors.agreeToTerms && (
-                    <p className="text-xs md:text-sm text-red-600 flex items-center gap-2">
-                      <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
-                      {errors.agreeToTerms}
-                    </p>
-                  )}
+                  {/* Contact Information */}
+                  <div className="border-b border-[#e4d9ff] pb-6 md:pb-8">
+                    <h2 className="text-lg md:text-2xl font-bold text-[#1e2749] mb-4 md:mb-6 flex items-center gap-2 md:gap-3">
+                      <div className="w-8 h-8 md:w-10 md:h-10 bg-[#e4d9ff] rounded-xl flex items-center justify-center">
+                        <Users className="h-4 w-4 md:h-5 md:w-5 text-[#273469]" />
+                      </div>
+                      Contact Information
+                    </h2>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+                      <div>
+                        <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
+                          Contact Person Name *
+                        </label>
+                        <input
+                          type="text"
+                          name="contact_person_name"
+                          value={formData.contact_person_name}
+                          onChange={handleInputChange}
+                          className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+                            errors.contact_person_name ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
+                          }`}
+                          placeholder="Contact person's full name"
+                        />
+                        {errors.contact_person_name && (
+                          <p className="mt-2 text-xs md:text-sm text-red-600 flex items-center gap-2">
+                            <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
+                            {errors.contact_person_name}
+                          </p>
+                        )}
+                      </div>
 
-                  <div className="flex items-start gap-3 md:gap-4">
-                    <input
-                      type="checkbox"
-                      name="agreeToPrivacy"
-                      checked={formData.agreeToPrivacy}
-                      onChange={handleInputChange}
-                      className="mt-1 h-4 w-4 md:h-5 md:w-5 text-[#273469] focus:ring-[#273469] border-[#e4d9ff] rounded"
-                    />
-                    <label className="text-xs md:text-sm text-[#30343f] leading-relaxed">
-                      I consent to receive communications about candidate matches and platform updates
-                    </label>
+                      <div>
+                        <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
+                          Contact Person Title
+                        </label>
+                        <input
+                          type="text"
+                          name="contact_person_title"
+                          value={formData.contact_person_title}
+                          onChange={handleInputChange}
+                          className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+                            errors.contact_person_title ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
+                          }`}
+                          placeholder="e.g., HR Manager, CEO"
+                        />
+                        {errors.contact_person_title && (
+                          <p className="mt-2 text-xs md:text-sm text-red-600 flex items-center gap-2">
+                            <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
+                            {errors.contact_person_title}
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
+                          Contact Email *
+                        </label>
+                        <div className="relative">
+                          <Mail className="absolute left-3 md:left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-[#30343f]" />
+                          <input
+                            type="email"
+                            name="contact_email"
+                            value={formData.contact_email}
+                            onChange={handleInputChange}
+                            className={`w-full pl-10 md:pl-12 pr-4 md:pr-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+                              errors.contact_email ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
+                            }`}
+                            placeholder="contact@company.com"
+                          />
+                        </div>
+                        {errors.contact_email && (
+                          <p className="mt-2 text-xs md:text-sm text-red-600 flex items-center gap-2">
+                            <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
+                            {errors.contact_email}
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
+                          Contact Phone *
+                        </label>
+                        <div className="relative">
+                          <Phone className="absolute left-3 md:left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-[#30343f]" />
+                          <input
+                            type="tel"
+                            name="contact_phone"
+                            value={formData.contact_phone}
+                            onChange={handleInputChange}
+                            className={`w-full pl-10 md:pl-12 pr-4 md:pr-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+                              errors.contact_phone ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
+                            }`}
+                            placeholder="+919876543210"
+                          />
+                        </div>
+                        {errors.contact_phone && (
+                          <p className="mt-2 text-xs md:text-sm text-red-600 flex items-center gap-2">
+                            <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
+                            {errors.contact_phone}
+                          </p>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                  {errors.agreeToPrivacy && (
-                    <p className="text-xs md:text-sm text-red-600 flex items-center gap-2">
-                      <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
-                      {errors.agreeToPrivacy}
-                    </p>
-                  )}
+
+                  {/* Office Address */}
+                  <div>
+                    <h2 className="text-lg md:text-2xl font-bold text-[#1e2749] mb-4 md:mb-6 flex items-center gap-2 md:gap-3">
+                      <div className="w-8 h-8 md:w-10 md:h-10 bg-[#e4d9ff] rounded-xl flex items-center justify-center">
+                        <Briefcase className="h-4 w-4 md:h-5 md:w-5 text-[#273469]" />
+                      </div>
+                      Office Address
+                    </h2>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+                      <div className="sm:col-span-2">
+                        <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
+                          Office Address
+                        </label>
+                        <textarea
+                          name="office_address"
+                          value={formData.office_address}
+                          onChange={handleInputChange}
+                          rows={2}
+                          className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base resize-none ${
+                            errors.office_address ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
+                          }`}
+                          placeholder="Enter office address"
+                        />
+                        {errors.office_address && (
+                          <p className="mt-2 text-xs md:text-sm text-red-600 flex items-center gap-2">
+                            <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
+                            {errors.office_address}
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
+                          City
+                        </label>
+                        <input
+                          type="text"
+                          name="city"
+                          value={formData.city}
+                          onChange={handleInputChange}
+                          className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+                            errors.city ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
+                          }`}
+                          placeholder="Enter city"
+                        />
+                        {errors.city && (
+                          <p className="mt-2 text-xs md:text-sm text-red-600 flex items-center gap-2">
+                            <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
+                            {errors.city}
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
+                          State
+                        </label>
+                        <input
+                          type="text"
+                          name="state"
+                          value={formData.state}
+                          onChange={handleInputChange}
+                          className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+                            errors.state ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
+                          }`}
+                          placeholder="Enter state"
+                        />
+                        {errors.state && (
+                          <p className="mt-2 text-xs md:text-sm text-red-600 flex items-center gap-2">
+                            <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
+                            {errors.state}
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
+                          Country
+                        </label>
+                        <input
+                          type="text"
+                          name="country"
+                          value={formData.country}
+                          onChange={handleInputChange}
+                          className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+                            errors.country ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
+                          }`}
+                          placeholder="Enter country"
+                        />
+                        {errors.country && (
+                          <p className="mt-2 text-xs md:text-sm text-red-600 flex items-center gap-2">
+                            <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
+                            {errors.country}
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
+                          Postal Code
+                        </label>
+                        <input
+                          type="text"
+                          name="postal_code"
+                          value={formData.postal_code}
+                          onChange={handleInputChange}
+                          className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+                            errors.postal_code ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
+                          }`}
+                          placeholder="Enter postal code"
+                        />
+                        {errors.postal_code && (
+                          <p className="mt-2 text-xs md:text-sm text-red-600 flex items-center gap-2">
+                            <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
+                            {errors.postal_code}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Submit Error */}
@@ -612,12 +870,12 @@ const RecruiterRegistration = () => {
                   {isLoading ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 md:h-5 md:w-5 border-b-2 border-white"></div>
-                      Creating Account...
+                      Registering...
                     </>
                   ) : (
                     <>
                       <CheckCircle className="h-4 w-4 md:h-5 md:w-5" />
-                      Create Recruiter Account
+                      Register as Recruiter
                     </>
                   )}
                 </button>

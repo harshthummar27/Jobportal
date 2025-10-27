@@ -1,5 +1,7 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import CandidateInfo from "./pages/CandidateInfo";
@@ -93,6 +95,9 @@ export default function App() {
         <Route path="*" element={<NotFound />} />
         {/* <Route path="*" element={<NotFound />} /> */}
       </Routes>
+      
+      {/* Toast Container */}
+      <ToastContainer />
     </>
   );
 }

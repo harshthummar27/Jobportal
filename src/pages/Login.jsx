@@ -2,6 +2,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { User, Building2, Users, Shield, Eye, EyeOff, ArrowRight } from "lucide-react";
+import { toast } from 'react-toastify';
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
 
@@ -89,28 +90,80 @@ const Login = () => {
     e.preventDefault();
     
     if (!selectedRole || !email || !password) {
-      alert("Please select a user type and fill all fields");
+      toast.warning("Please select a user type and fill all fields");
       return;
     }
 
     setIsLoading(true);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Prepare login data
+      const loginData = {
+        email,
+        password,
+        role: selectedRole
+      };
 
+      // Make API call to login
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(loginData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Login failed');
+      }
+
+      console.log("Login response:", data);
+
+      // Store user data in localStorage
       const userData = {
         email,
         role: selectedRole,
-        loginTime: new Date().toISOString()
+        loginTime: new Date().toISOString(),
+        token: data.token || data.access_token,
+        user: data.user || data
       };
 
       localStorage.setItem("user", JSON.stringify(userData));
-      alert(`Welcome back! You've successfully logged in as ${userTypes.find(t => t.id === selectedRole)?.title}.`);
-
-      navigate(getRedirectPath(selectedRole));
+      
+      // Show success message
+      toast.success(`Welcome back! You've successfully logged in as ${userTypes.find(t => t.id === selectedRole)?.title}.`);
+      
+      // Check if this is a candidate login and if they need to complete profile setup
+      if (selectedRole === "candidate") {
+        // Check if candidate has completed profile setup
+        const hasCompletedProfile = localStorage.getItem("candidateProfileComplete");
+        
+        if (!hasCompletedProfile) {
+          toast.info("Welcome! Please complete your profile setup to continue.");
+          navigate("/candidate/profile-setup");
+        } else {
+          navigate("/candidate/dashboard");
+        }
+      } else {
+        navigate(getRedirectPath(selectedRole));
+      }
     } catch (error) {
-      alert("Login failed. Please try again.");
+      console.error("Login error:", error);
+      
+      // Handle specific error messages
+      if (error.message.includes("email") || error.message.includes("Email")) {
+        toast.error("Invalid email address. Please check and try again.");
+      } else if (error.message.includes("password") || error.message.includes("Password")) {
+        toast.error("Invalid password. Please check and try again.");
+      } else if (error.message.includes("credentials")) {
+        toast.error("Invalid credentials. Please check your email and password.");
+      } else if (error.message.includes("not found") || error.message.includes("doesn't exist")) {
+        toast.error("Account not found. Please check your email or sign up.");
+      } else {
+        toast.error(error.message || "Login failed. Please try again.");
+      }
     } finally {
       setIsLoading(false);
     }

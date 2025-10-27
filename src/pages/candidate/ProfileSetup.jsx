@@ -23,6 +23,7 @@ import {
   Users,
   Sparkles
 } from "lucide-react";
+import { toast } from 'react-toastify';
 import Header from "../../Components/Header";
 
 const ProfileSetup = () => {
@@ -34,21 +35,22 @@ const ProfileSetup = () => {
   const [resumeFile, setResumeFile] = useState(null);
   const [resumePreview, setResumePreview] = useState(null);
 
-  // Scroll to top when component mounts
+  // Scroll to top when component mounts and check authentication
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+    
+    // Check if user is authenticated
+    const token = localStorage.getItem('token');
+    if (!token) {
+      toast.error("Please log in to access this page.");
+      navigate("/candidate/login");
+    }
+  }, [navigate]);
 
   const [formData, setFormData] = useState({
-    // Basic Information (Hidden from recruiters)
-    fullName: "",
-    contactEmail: "",
-    phone: "",
-    
-    // Current Location
+    // Location
     city: "",
     state: "",
-    country: "",
     willingToRelocate: false,
     preferredLocations: [],
     
@@ -59,9 +61,8 @@ const ProfileSetup = () => {
     
     // Work Experience
     totalYearsExperience: "",
-    currentEmployer: "",
-    hideCurrentEmployer: true,
     jobHistory: [],
+    currentEmployer: "",
     
     // Skills
     skills: [],
@@ -73,7 +74,9 @@ const ProfileSetup = () => {
     certifications: [],
     
     // Resume
-    resumeUploaded: false,
+    resumeFilePath: "",
+    resumeFileName: "",
+    resumeMimeType: "",
     
     // Visa Status
     visaStatus: "",
@@ -88,7 +91,7 @@ const ProfileSetup = () => {
     desiredAnnualPackage: "",
     
     // Availability
-    availabilityToJoin: "",
+    availabilityDate: "",
     
     // Languages
     languagesSpoken: [],
@@ -111,18 +114,13 @@ const ProfileSetup = () => {
   const [currentJob, setCurrentJob] = useState({
     company: "",
     position: "",
-    startDate: "",
-    endDate: "",
-    current: false,
-    description: ""
+    duration: ""
   });
 
   const [currentEducation, setCurrentEducation] = useState({
     degree: "",
     institution: "",
-    major: "",
-    graduationYear: "",
-    gpa: ""
+    year: ""
   });
 
   const [currentCertification, setCurrentCertification] = useState({
@@ -135,9 +133,7 @@ const ProfileSetup = () => {
   const [currentReference, setCurrentReference] = useState({
     name: "",
     position: "",
-    company: "",
-    email: "",
-    phone: ""
+    contact: ""
   });
 
   const [currentSkill, setCurrentSkill] = useState("");
@@ -153,31 +149,31 @@ const ProfileSetup = () => {
   ];
 
   const visaStatuses = [
-    "US Citizen",
-    "Permanent Resident",
-    "H1-B",
-    "OPT/CPT",
-    "Other"
+    "us_citizen",
+    "permanent_resident",
+    "h1_b",
+    "opt_cpt",
+    "other"
   ];
 
   const jobSeekingStatuses = [
-    "Actively looking",
-    "Open to better offers",
-    "Not actively looking"
+    "actively_looking",
+    "open_to_better_offers",
+    "not_actively_looking"
   ];
 
   const relocationOptions = [
-    "By self",
+    "Yes",
     "If employer covers relocation costs",
-    "Not willing to relocate"
+    "No"
   ];
 
   const availabilityOptions = [
-    "Immediately",
-    "2 weeks notice",
-    "1 month notice",
-    "2 months notice",
-    "3+ months notice"
+    "2024-01-01",
+    "2024-02-01", 
+    "2024-03-01",
+    "2024-04-01",
+    "2024-05-01"
   ];
 
   const handleInputChange = (e) => {
@@ -228,7 +224,12 @@ const ProfileSetup = () => {
       }
       
       setResumeFile(file);
-      setFormData(prev => ({ ...prev, resumeUploaded: true }));
+      setFormData(prev => ({ 
+        ...prev, 
+        resumeFilePath: `/uploads/${file.name}`,
+        resumeFileName: file.name,
+        resumeMimeType: file.type
+      }));
       setErrors(prev => ({ ...prev, resume: "" }));
     }
   };
@@ -236,11 +237,16 @@ const ProfileSetup = () => {
   const removeResume = () => {
     setResumeFile(null);
     setResumePreview(null);
-    setFormData(prev => ({ ...prev, resumeUploaded: false }));
+    setFormData(prev => ({ 
+      ...prev, 
+      resumeFilePath: "",
+      resumeFileName: "",
+      resumeMimeType: ""
+    }));
   };
 
   const addJobHistory = () => {
-    if (currentJob.company && currentJob.position && currentJob.startDate) {
+    if (currentJob.company && currentJob.position && currentJob.duration) {
       setFormData(prev => ({
         ...prev,
         jobHistory: [...prev.jobHistory, { ...currentJob }]
@@ -248,10 +254,7 @@ const ProfileSetup = () => {
       setCurrentJob({
         company: "",
         position: "",
-        startDate: "",
-        endDate: "",
-        current: false,
-        description: ""
+        duration: ""
       });
     }
   };
@@ -264,7 +267,7 @@ const ProfileSetup = () => {
   };
 
   const addEducation = () => {
-    if (currentEducation.degree && currentEducation.institution && currentEducation.graduationYear) {
+    if (currentEducation.degree && currentEducation.institution && currentEducation.year) {
       setFormData(prev => ({
         ...prev,
         education: [...prev.education, { ...currentEducation }]
@@ -272,9 +275,7 @@ const ProfileSetup = () => {
       setCurrentEducation({
         degree: "",
         institution: "",
-        major: "",
-        graduationYear: "",
-        gpa: ""
+        year: ""
       });
     }
   };
@@ -309,7 +310,7 @@ const ProfileSetup = () => {
   };
 
   const addReference = () => {
-    if (currentReference.name && currentReference.email) {
+    if (currentReference.name && currentReference.contact) {
       setFormData(prev => ({
         ...prev,
         references: [...prev.references, { ...currentReference }]
@@ -317,9 +318,7 @@ const ProfileSetup = () => {
       setCurrentReference({
         name: "",
         position: "",
-        company: "",
-        email: "",
-        phone: ""
+        contact: ""
       });
     }
   };
@@ -366,10 +365,10 @@ const ProfileSetup = () => {
   };
 
   const addPreferredLocation = () => {
-    if (currentPreferredLocation && !formData.preferredLocations.includes(currentPreferredLocation)) {
+    if (currentPreferredLocation && !(formData.preferredLocations || []).includes(currentPreferredLocation)) {
       setFormData(prev => ({
         ...prev,
-        preferredLocations: [...prev.preferredLocations, currentPreferredLocation]
+        preferredLocations: [...(prev.preferredLocations || []), currentPreferredLocation]
       }));
       setCurrentPreferredLocation("");
     }
@@ -378,7 +377,7 @@ const ProfileSetup = () => {
   const removePreferredLocation = (location) => {
     setFormData(prev => ({
       ...prev,
-      preferredLocations: prev.preferredLocations.filter(l => l !== location)
+      preferredLocations: (prev.preferredLocations || []).filter(l => l !== location)
     }));
   };
 
@@ -386,32 +385,24 @@ const ProfileSetup = () => {
     const newErrors = {};
 
     if (step === 1) {
-      if (!formData.fullName.trim()) newErrors.fullName = "Full name is required";
-      if (!formData.contactEmail.trim()) newErrors.contactEmail = "Contact email is required";
-      if (!formData.phone.trim()) newErrors.phone = "Phone number is required";
-      
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (formData.contactEmail && !emailRegex.test(formData.contactEmail)) {
-        newErrors.contactEmail = "Please enter a valid email address";
-      }
+      if (!formData.city.trim()) newErrors.city = "City is required";
+      if (!formData.state.trim()) newErrors.state = "State is required";
     }
 
     if (step === 2) {
-      if (!formData.city.trim()) newErrors.city = "City is required";
-      if (!formData.state.trim()) newErrors.state = "State is required";
-      if (!formData.country.trim()) newErrors.country = "Country is required";
+      if ((formData.desiredJobRoles || []).length === 0) newErrors.desiredJobRoles = "At least one job role is required";
+      if ((formData.preferredIndustries || []).length === 0) newErrors.preferredIndustries = "At least one industry is required";
+      if ((formData.employmentTypes || []).length === 0) newErrors.employmentTypes = "At least one employment type is required";
     }
 
     if (step === 3) {
-      if (formData.desiredJobRoles.length === 0) newErrors.desiredJobRoles = "At least one job role is required";
-      if (formData.preferredIndustries.length === 0) newErrors.preferredIndustries = "At least one industry is required";
-      if (formData.employmentTypes.length === 0) newErrors.employmentTypes = "At least one employment type is required";
-    }
-
-    if (step === 4) {
       if (!formData.totalYearsExperience) newErrors.totalYearsExperience = "Total years of experience is required";
       if (!formData.visaStatus) newErrors.visaStatus = "Visa status is required";
       if (!formData.jobSeekingStatus) newErrors.jobSeekingStatus = "Job seeking status is required";
+    }
+
+    if (step === 4) {
+      // Step 4 is optional details, no required validation
     }
 
     setErrors(newErrors);
@@ -419,7 +410,7 @@ const ProfileSetup = () => {
   };
 
   const handleNext = () => {
-    if (validateStep(currentStep)) {
+    if (validateStep(currentStep) && currentStep < 4) {
       setCurrentStep(currentStep + 1);
       window.scrollTo(0, 0);
     }
@@ -433,34 +424,95 @@ const ProfileSetup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!validateStep(4)) {
+    // Only validate step 3 (the last required step) when submitting
+    if (!validateStep(3)) {
       return;
     }
 
     setIsLoading(true);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Prepare the data in the format expected by the API
+      const profileData = {
+        city: formData.city,
+        state: formData.state,
+        willing_to_relocate: formData.willingToRelocate,
+        preferred_locations: formData.preferredLocations || [],
+        desired_job_roles: formData.desiredJobRoles || [],
+        preferred_industries: formData.preferredIndustries || [],
+        employment_types: formData.employmentTypes || [],
+        total_years_experience: formData.totalYearsExperience,
+        job_history: formData.jobHistory || [],
+        current_employer: formData.currentEmployer,
+        skills: formData.skills || [],
+        education: formData.education || [],
+        certifications: formData.certifications || [],
+        resume_file_path: formData.resumeFilePath,
+        resume_file_name: formData.resumeFileName,
+        resume_mime_type: formData.resumeMimeType,
+        visa_status: formData.visaStatus,
+        relocation_willingness: formData.relocationWillingness,
+        job_seeking_status: formData.jobSeekingStatus,
+        desired_annual_package: formData.desiredAnnualPackage ? parseInt(formData.desiredAnnualPackage) : null,
+        availability_date: formData.availabilityDate,
+        languages_spoken: formData.languagesSpoken || [],
+        ethnicity: formData.ethnicity,
+        veteran_status: formData.veteranStatus,
+        disability_status: formData.disabilityStatus,
+        references: formData.references || [],
+        blocked_companies: formData.blockedCompanies || [],
+        additional_notes: formData.additionalNotes
+      };
+
+      // Make API call to create profile
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/profile/create`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify(profileData)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Profile creation failed');
+      }
+
+      const result = data;
       
-      // Generate unique candidate code
-      const candidateCode = `TSC-${new Date().getFullYear()}-${Math.floor(Math.random() * 9000) + 1000}`;
+      // Generate unique candidate code (if not provided by API)
+      const candidateCode = result.candidateCode || `TSC-${new Date().getFullYear()}-${Math.floor(Math.random() * 9000) + 1000}`;
       
-      // In real app, save profile data
-      console.log("Profile data:", { ...formData, candidateCode });
+      // Mark profile as complete in localStorage
+      localStorage.setItem("candidateProfileComplete", "true");
+      localStorage.setItem("candidateProfileData", JSON.stringify({ ...profileData, candidateCode }));
+      
+      // Show success message
+      toast.success("Profile setup completed successfully! Welcome to VettedPool.");
       
       // Navigate to dashboard
       navigate("/candidate/dashboard", { 
         state: { 
           profileComplete: true,
           candidateCode,
-          profileData: formData,
+          profileData: profileData,
           resumeFile
         }
       });
     } catch (error) {
-      console.error("Profile save error:", error);
-      setErrors({ submit: "Failed to save profile. Please try again." });
+      console.error("Profile creation error:", error);
+      
+      // Handle specific error messages
+      if (error.message.includes("token") || error.message.includes("unauthorized")) {
+        toast.error("Session expired. Please log in again.");
+        navigate("/candidate/login");
+      } else if (error.message.includes("validation") || error.message.includes("required")) {
+        toast.error("Please check your form data and try again.");
+      } else {
+        toast.error(error.message || "Failed to create profile. Please try again.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -471,139 +523,31 @@ const ProfileSetup = () => {
       <div className="text-center mb-4 md:mb-6">
         <h2 className="text-lg md:text-2xl font-bold text-[#1e2749] mb-2 flex items-center justify-center gap-2 md:gap-3">
           <div className="w-8 h-8 md:w-10 md:h-10 bg-[#e4d9ff] rounded-xl flex items-center justify-center">
-            <User className="h-4 w-4 md:h-5 md:w-5 text-[#273469]" />
-          </div>
-          Basic Information
-        </h2>
-        <p className="text-sm md:text-base text-[#30343f]">Your personal details (hidden from recruiters)</p>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-        <div className="sm:col-span-2">
-          <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
-            Full Name *
-          </label>
-          <div className="relative">
-            <User className="absolute left-3 md:left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-[#30343f]" />
-            <input
-              type="text"
-              name="fullName"
-              value={formData.fullName}
-              onChange={handleInputChange}
-              className={`w-full pl-10 md:pl-12 pr-4 md:pr-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
-                errors.fullName ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
-              }`}
-              placeholder="Enter your full name"
-            />
-          </div>
-          {errors.fullName && (
-            <p className="mt-2 text-xs md:text-sm text-red-600 flex items-center gap-2">
-              <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
-              {errors.fullName}
-            </p>
-          )}
-        </div>
-
-        <div>
-          <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
-            Contact Email *
-          </label>
-          <div className="relative">
-            <Mail className="absolute left-3 md:left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-[#30343f]" />
-            <input
-              type="email"
-              name="contactEmail"
-              value={formData.contactEmail}
-              onChange={handleInputChange}
-              className={`w-full pl-10 md:pl-12 pr-4 md:pr-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
-                errors.contactEmail ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
-              }`}
-              placeholder="your.email@example.com"
-            />
-          </div>
-          {errors.contactEmail && (
-            <p className="mt-2 text-xs md:text-sm text-red-600 flex items-center gap-2">
-              <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
-              {errors.contactEmail}
-            </p>
-          )}
-        </div>
-
-        <div>
-          <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
-            Phone Number *
-          </label>
-          <div className="relative">
-            <Phone className="absolute left-3 md:left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-[#30343f]" />
-            <input
-              type="tel"
-              name="phone"
-              value={formData.phone}
-              onChange={handleInputChange}
-              className={`w-full pl-10 md:pl-12 pr-4 md:pr-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
-                errors.phone ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
-              }`}
-              placeholder="+1 (555) 123-4567"
-            />
-          </div>
-          {errors.phone && (
-            <p className="mt-2 text-xs md:text-sm text-red-600 flex items-center gap-2">
-              <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
-              {errors.phone}
-            </p>
-          )}
-        </div>
-      </div>
-
-      <div className="bg-[#f2edff] border-2 border-[#e4d9ff] rounded-xl p-4 md:p-6">
-        <div className="flex items-start gap-3 md:gap-4">
-          <div className="w-8 h-8 md:w-10 md:h-10 bg-[#e4d9ff] rounded-xl flex items-center justify-center flex-shrink-0">
-            <Shield className="h-4 w-4 md:h-5 md:w-5 text-[#273469]" />
-          </div>
-          <div>
-            <h4 className="text-sm md:text-base font-semibold text-[#1e2749] mb-2">
-              Privacy Protected
-            </h4>
-            <p className="text-xs md:text-sm text-[#30343f] leading-relaxed">
-              Your full name, contact email, and phone number will be hidden from recruiters. 
-              Only your candidate code and professional details will be visible.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderStep2 = () => (
-    <div className="space-y-6 md:space-y-8">
-      <div className="text-center mb-4 md:mb-6">
-        <h2 className="text-lg md:text-2xl font-bold text-[#1e2749] mb-2 flex items-center justify-center gap-2 md:gap-3">
-          <div className="w-8 h-8 md:w-10 md:h-10 bg-[#e4d9ff] rounded-xl flex items-center justify-center">
             <MapPin className="h-4 w-4 md:h-5 md:w-5 text-[#273469]" />
           </div>
-          Location & Preferences
+          Location & Basic Info
         </h2>
-        <p className="text-sm md:text-base text-[#30343f]">Where you are and where you'd like to work</p>
+        <p className="text-sm md:text-base text-[#30343f]">Where you are located and basic preferences</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
-                <div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+        <div>
           <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
             City *
           </label>
           <div className="relative">
             <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-gray-400" />
-                  <input
-                    type="text"
+            <input
+              type="text"
               name="city"
               value={formData.city}
               onChange={handleInputChange}
               className={`w-full pl-9 md:pl-10 pr-3 md:pr-4 py-2 md:py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
                 errors.city ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
               }`}
-                    placeholder="New York"
-                  />
-                </div>
+              placeholder="Mumbai"
+            />
+          </div>
           {errors.city && (
             <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
               <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
@@ -612,19 +556,19 @@ const ProfileSetup = () => {
           )}
         </div>
 
-                <div>
+        <div>
           <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
             State *
           </label>
           <input
             type="text"
             name="state"
-                    value={formData.state}
+            value={formData.state}
             onChange={handleInputChange}
             className={`w-full px-3 md:px-4 py-2 md:py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
               errors.state ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
             }`}
-            placeholder="NY"
+            placeholder="Maharashtra"
           />
           {errors.state && (
             <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
@@ -633,35 +577,13 @@ const ProfileSetup = () => {
             </p>
           )}
         </div>
+      </div>
 
-        <div>
-          <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
-            Country *
-          </label>
-          <input
-            type="text"
-            name="country"
-            value={formData.country}
-            onChange={handleInputChange}
-            className={`w-full px-3 md:px-4 py-2 md:py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
-              errors.country ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
-            }`}
-            placeholder="United States"
-          />
-          {errors.country && (
-            <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
-              <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
-              {errors.country}
-            </p>
-          )}
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
+      <div className="flex items-center gap-2">
+        <input
+          type="checkbox"
           name="willingToRelocate"
-                  checked={formData.willingToRelocate}
+          checked={formData.willingToRelocate}
           onChange={handleInputChange}
           className="h-3 w-3 md:h-4 md:w-4 text-[#273469] focus:ring-[#273469] border-[#e4d9ff] rounded"
         />
@@ -690,7 +612,7 @@ const ProfileSetup = () => {
           </button>
         </div>
         <div className="flex flex-wrap gap-2">
-          {formData.preferredLocations.map((location) => (
+          {(formData.preferredLocations || []).map((location) => (
             <span
               key={location}
               className="inline-flex items-center gap-1 bg-indigo-100 text-indigo-800 px-2 md:px-3 py-1 rounded-full text-xs md:text-sm"
@@ -707,10 +629,50 @@ const ProfileSetup = () => {
           ))}
         </div>
       </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+        <div>
+          <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
+            Relocation Willingness
+          </label>
+          <select
+            name="relocationWillingness"
+            value={formData.relocationWillingness}
+            onChange={handleInputChange}
+            className="w-full px-3 md:px-4 py-2 md:py-3 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] text-sm md:text-base"
+          >
+            <option value="">Select option</option>
+            {relocationOptions.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
+            Availability Date
+          </label>
+          <select
+            name="availabilityDate"
+            value={formData.availabilityDate}
+            onChange={handleInputChange}
+            className="w-full px-3 md:px-4 py-2 md:py-3 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] text-sm md:text-base"
+          >
+            <option value="">Select availability</option>
+            {availabilityOptions.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
     </div>
   );
 
-  const renderStep3 = () => (
+  const renderStep2 = () => (
     <div className="space-y-6 md:space-y-8">
       <div className="text-center mb-4 md:mb-6">
         <h2 className="text-lg md:text-2xl font-bold text-[#1e2749] mb-2 flex items-center justify-center gap-2 md:gap-3">
@@ -738,7 +700,7 @@ const ProfileSetup = () => {
                 type="checkbox"
                 name="desiredJobRoles"
                 value={role}
-                checked={formData.desiredJobRoles.includes(role)}
+                checked={(formData.desiredJobRoles || []).includes(role)}
                 onChange={handleInputChange}
                 className="h-3 w-3 md:h-4 md:w-4 text-[#273469] focus:ring-[#273469] border-[#e4d9ff] rounded"
               />
@@ -768,7 +730,7 @@ const ProfileSetup = () => {
                 type="checkbox"
                 name="preferredIndustries"
                 value={industry}
-                checked={formData.preferredIndustries.includes(industry)}
+                checked={(formData.preferredIndustries || []).includes(industry)}
                 onChange={handleInputChange}
                 className="h-3 w-3 md:h-4 md:w-4 text-[#273469] focus:ring-[#273469] border-[#e4d9ff] rounded"
               />
@@ -795,7 +757,7 @@ const ProfileSetup = () => {
                 type="checkbox"
                 name="employmentTypes"
                 value={type}
-                checked={formData.employmentTypes.includes(type)}
+                checked={(formData.employmentTypes || []).includes(type)}
                 onChange={handleInputChange}
                 className="h-3 w-3 md:h-4 md:w-4 text-[#273469] focus:ring-[#273469] border-[#e4d9ff] rounded"
               />
@@ -809,20 +771,21 @@ const ProfileSetup = () => {
             {errors.employmentTypes}
           </p>
         )}
-              </div>
-            </div>
+      </div>
+    </div>
   );
 
-  const renderStep4 = () => (
+
+  const renderStep3 = () => (
     <div className="space-y-6 md:space-y-8">
       <div className="text-center mb-4 md:mb-6">
         <h2 className="text-lg md:text-2xl font-bold text-[#1e2749] mb-2 flex items-center justify-center gap-2 md:gap-3">
           <div className="w-8 h-8 md:w-10 md:h-10 bg-[#e4d9ff] rounded-xl flex items-center justify-center">
             <Award className="h-4 w-4 md:h-5 md:w-5 text-[#273469]" />
           </div>
-          Experience & Details
+          Professional Experience
         </h2>
-        <p className="text-sm md:text-base text-[#30343f]">Your professional background and preferences</p>
+        <p className="text-sm md:text-base text-[#30343f]">Your work experience and professional status</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
@@ -855,6 +818,20 @@ const ProfileSetup = () => {
 
         <div>
           <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
+            Current Employer
+          </label>
+          <input
+            type="text"
+            name="currentEmployer"
+            value={formData.currentEmployer}
+            onChange={handleInputChange}
+            className="w-full px-3 md:px-4 py-2 md:py-3 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+            placeholder="Tech Corp"
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
             Visa Status *
           </label>
           <select
@@ -868,7 +845,7 @@ const ProfileSetup = () => {
             <option value="">Select visa status</option>
             {visaStatuses.map((status) => (
               <option key={status} value={status}>
-                {status}
+                {status.replace('_', ' ').toUpperCase()}
               </option>
             ))}
           </select>
@@ -895,7 +872,7 @@ const ProfileSetup = () => {
             <option value="">Select status</option>
             {jobSeekingStatuses.map((status) => (
               <option key={status} value={status}>
-                {status}
+                {status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
               </option>
             ))}
           </select>
@@ -907,88 +884,120 @@ const ProfileSetup = () => {
           )}
         </div>
 
-              <div>
+        <div>
           <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
             Desired Annual Package (USD)
           </label>
           <div className="relative">
             <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-gray-400" />
-                <input
+            <input
               type="number"
               name="desiredAnnualPackage"
               value={formData.desiredAnnualPackage}
               onChange={handleInputChange}
               className="w-full pl-9 md:pl-10 pr-3 md:pr-4 py-2 md:py-3 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
-              placeholder="80000"
-                />
+              placeholder="800000"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
+            Ethnicity
+          </label>
+          <input
+            type="text"
+            name="ethnicity"
+            value={formData.ethnicity}
+            onChange={handleInputChange}
+            className="w-full px-3 md:px-4 py-2 md:py-3 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+            placeholder="Asian"
+          />
+        </div>
+      </div>
+
+      {/* Job History */}
+      <div>
+        <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
+          Job History
+        </label>
+        <div className="space-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <input
+              type="text"
+              placeholder="Company"
+              value={currentJob.company}
+              onChange={(e) => setCurrentJob(prev => ({ ...prev, company: e.target.value }))}
+              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+            />
+            <input
+              type="text"
+              placeholder="Position"
+              value={currentJob.position}
+              onChange={(e) => setCurrentJob(prev => ({ ...prev, position: e.target.value }))}
+              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+            />
+            <input
+              type="text"
+              placeholder="Duration (e.g., 2 years)"
+              value={currentJob.duration}
+              onChange={(e) => setCurrentJob(prev => ({ ...prev, duration: e.target.value }))}
+              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+            />
+          </div>
+          <button
+            type="button"
+            onClick={addJobHistory}
+            className="px-3 md:px-4 py-2 bg-[#273469] text-white rounded-xl hover:bg-[#1e2749] transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
+          >
+            <Plus className="h-3 w-3 md:h-4 md:w-4 inline mr-1" />
+            Add Job
+          </button>
+        </div>
+        <div className="mt-3 space-y-2">
+          {formData.jobHistory.map((job, index) => (
+            <div key={index} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+              <div>
+                <span className="font-medium">{job.position}</span> at <span className="font-medium">{job.company}</span> - {job.duration}
               </div>
-        </div>
-
-        <div>
-          <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
-            Availability to Join
-          </label>
-          <select
-            name="availabilityToJoin"
-            value={formData.availabilityToJoin}
-            onChange={handleInputChange}
-            className="w-full px-3 md:px-4 py-2 md:py-3 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] text-sm md:text-base"
-          >
-            <option value="">Select availability</option>
-            {availabilityOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
-            Relocation Willingness
-          </label>
-          <select
-            name="relocationWillingness"
-            value={formData.relocationWillingness}
-            onChange={handleInputChange}
-            className="w-full px-3 md:px-4 py-2 md:py-3 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] text-sm md:text-base"
-          >
-            <option value="">Select option</option>
-            {relocationOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
+              <button
+                type="button"
+                onClick={() => removeJobHistory(index)}
+                className="text-red-600 hover:text-red-800"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          ))}
         </div>
       </div>
 
       {/* Skills */}
-              <div>
+      <div>
         <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
           Skills
         </label>
         <div className="flex gap-2 mb-2">
-                  <input
-                    type="text"
-                    value={currentSkill}
-                    onChange={(e) => setCurrentSkill(e.target.value)}
+          <input
+            type="text"
+            value={currentSkill}
+            onChange={(e) => setCurrentSkill(e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addSkill())}
             className="flex-1 px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
             placeholder="Add skill"
-                  />
-                  <button
-                    type="button"
+          />
+          <button
+            type="button"
             onClick={addSkill}
             className="px-3 md:px-4 py-2 bg-[#273469] text-white rounded-xl hover:bg-[#1e2749] transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
-                  >
+          >
             <Plus className="h-3 w-3 md:h-4 md:w-4" />
-                  </button>
-                </div>
+          </button>
+        </div>
         <div className="flex flex-wrap gap-2">
-                  {formData.skills.map((skill) => (
-                    <span
-                      key={skill}
+          {(formData.skills || []).map((skill) => (
+            <span
+              key={skill}
               className="inline-flex items-center gap-1 bg-indigo-100 text-indigo-800 px-2 md:px-3 py-1 rounded-full text-xs md:text-sm"
             >
               {skill}
@@ -999,10 +1008,218 @@ const ProfileSetup = () => {
               >
                 <X className="h-2 w-2 md:h-3 md:w-3" />
               </button>
-                    </span>
-                  ))}
-                </div>
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderStep4 = () => (
+    <div className="space-y-6 md:space-y-8">
+      <div className="text-center mb-4 md:mb-6">
+        <h2 className="text-lg md:text-2xl font-bold text-[#1e2749] mb-2 flex items-center justify-center gap-2 md:gap-3">
+          <div className="w-8 h-8 md:w-10 md:h-10 bg-[#e4d9ff] rounded-xl flex items-center justify-center">
+            <FileText className="h-4 w-4 md:h-5 md:w-5 text-[#273469]" />
+          </div>
+          Additional Details & Documents
+        </h2>
+        <p className="text-sm md:text-base text-[#30343f]">Complete your profile with education, certifications, and documents</p>
+      </div>
+
+      {/* Education */}
+      <div>
+        <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
+          Education
+        </label>
+        <div className="space-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <input
+              type="text"
+              placeholder="Degree"
+              value={currentEducation.degree}
+              onChange={(e) => setCurrentEducation(prev => ({ ...prev, degree: e.target.value }))}
+              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+            />
+            <input
+              type="text"
+              placeholder="Institution"
+              value={currentEducation.institution}
+              onChange={(e) => setCurrentEducation(prev => ({ ...prev, institution: e.target.value }))}
+              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+            />
+            <input
+              type="text"
+              placeholder="Year"
+              value={currentEducation.year}
+              onChange={(e) => setCurrentEducation(prev => ({ ...prev, year: e.target.value }))}
+              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+            />
+          </div>
+          <button
+            type="button"
+            onClick={addEducation}
+            className="px-3 md:px-4 py-2 bg-[#273469] text-white rounded-xl hover:bg-[#1e2749] transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
+          >
+            <Plus className="h-3 w-3 md:h-4 md:w-4 inline mr-1" />
+            Add Education
+          </button>
+        </div>
+        <div className="mt-3 space-y-2">
+          {formData.education.map((edu, index) => (
+            <div key={index} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+              <div>
+                <span className="font-medium">{edu.degree}</span> from <span className="font-medium">{edu.institution}</span> ({edu.year})
               </div>
+              <button
+                type="button"
+                onClick={() => removeEducation(index)}
+                className="text-red-600 hover:text-red-800"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Certifications */}
+      <div>
+        <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
+          Certifications
+        </label>
+        <div className="flex gap-2 mb-2">
+          <input
+            type="text"
+            value={currentCertification.name}
+            onChange={(e) => setCurrentCertification(prev => ({ ...prev, name: e.target.value }))}
+            onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addCertification())}
+            className="flex-1 px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+            placeholder="Add certification"
+          />
+          <button
+            type="button"
+            onClick={addCertification}
+            className="px-3 md:px-4 py-2 bg-[#273469] text-white rounded-xl hover:bg-[#1e2749] transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
+          >
+            <Plus className="h-3 w-3 md:h-4 md:w-4" />
+          </button>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {(formData.certifications || []).map((cert, index) => (
+            <span
+              key={index}
+              className="inline-flex items-center gap-1 bg-green-100 text-green-800 px-2 md:px-3 py-1 rounded-full text-xs md:text-sm"
+            >
+              {cert.name}
+              <button
+                type="button"
+                onClick={() => removeCertification(index)}
+                className="hover:text-green-600"
+              >
+                <X className="h-2 w-2 md:h-3 md:w-3" />
+              </button>
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* Languages */}
+      <div>
+        <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
+          Languages Spoken
+        </label>
+        <div className="flex gap-2 mb-2">
+          <input
+            type="text"
+            value={currentLanguage}
+            onChange={(e) => setCurrentLanguage(e.target.value)}
+            onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addLanguage())}
+            className="flex-1 px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+            placeholder="Add language"
+          />
+          <button
+            type="button"
+            onClick={addLanguage}
+            className="px-3 md:px-4 py-2 bg-[#273469] text-white rounded-xl hover:bg-[#1e2749] transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
+          >
+            <Plus className="h-3 w-3 md:h-4 md:w-4" />
+          </button>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {(formData.languagesSpoken || []).map((language) => (
+            <span
+              key={language}
+              className="inline-flex items-center gap-1 bg-blue-100 text-blue-800 px-2 md:px-3 py-1 rounded-full text-xs md:text-sm"
+            >
+              {language}
+              <button
+                type="button"
+                onClick={() => removeLanguage(language)}
+                className="hover:text-blue-600"
+              >
+                <X className="h-2 w-2 md:h-3 md:w-3" />
+              </button>
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* References */}
+      <div>
+        <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
+          References
+        </label>
+        <div className="space-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <input
+              type="text"
+              placeholder="Name"
+              value={currentReference.name}
+              onChange={(e) => setCurrentReference(prev => ({ ...prev, name: e.target.value }))}
+              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+            />
+            <input
+              type="text"
+              placeholder="Position"
+              value={currentReference.position}
+              onChange={(e) => setCurrentReference(prev => ({ ...prev, position: e.target.value }))}
+              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+            />
+            <input
+              type="text"
+              placeholder="Contact (email/phone)"
+              value={currentReference.contact}
+              onChange={(e) => setCurrentReference(prev => ({ ...prev, contact: e.target.value }))}
+              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+            />
+          </div>
+          <button
+            type="button"
+            onClick={addReference}
+            className="px-3 md:px-4 py-2 bg-[#273469] text-white rounded-xl hover:bg-[#1e2749] transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
+          >
+            <Plus className="h-3 w-3 md:h-4 md:w-4 inline mr-1" />
+            Add Reference
+          </button>
+        </div>
+        <div className="mt-3 space-y-2">
+          {formData.references.map((ref, index) => (
+            <div key={index} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+              <div>
+                <span className="font-medium">{ref.name}</span> - {ref.position} ({ref.contact})
+              </div>
+              <button
+                type="button"
+                onClick={() => removeReference(index)}
+                className="text-red-600 hover:text-red-800"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* Resume Upload */}
       <div>
@@ -1048,6 +1265,46 @@ const ProfileSetup = () => {
             {errors.resume}
           </p>
         )}
+      </div>
+
+      {/* Additional Notes */}
+      <div>
+        <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
+          Additional Notes
+        </label>
+        <textarea
+          name="additionalNotes"
+          value={formData.additionalNotes}
+          onChange={handleInputChange}
+          rows={3}
+          className="w-full px-3 md:px-4 py-2 md:py-3 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+          placeholder="Open to remote work"
+        />
+      </div>
+
+      {/* Optional Information */}
+      <div className="space-y-3">
+        <h4 className="text-sm font-medium text-gray-700">Optional Information</h4>
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            name="veteranStatus"
+            checked={formData.veteranStatus}
+            onChange={handleInputChange}
+            className="h-3 w-3 md:h-4 md:w-4 text-[#273469] focus:ring-[#273469] border-[#e4d9ff] rounded"
+          />
+          <label className="text-xs md:text-sm text-gray-700">I am a veteran</label>
+        </div>
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            name="disabilityStatus"
+            checked={formData.disabilityStatus}
+            onChange={handleInputChange}
+            className="h-3 w-3 md:h-4 md:w-4 text-[#273469] focus:ring-[#273469] border-[#e4d9ff] rounded"
+          />
+          <label className="text-xs md:text-sm text-gray-700">I have a disability</label>
+        </div>
       </div>
     </div>
   );
@@ -1139,7 +1396,8 @@ const ProfileSetup = () => {
                     </button>
                   ) : (
                     <button
-                      type="submit"
+                      type="button"
+                      onClick={handleSubmit}
                       disabled={isLoading}
                       className="bg-[#273469] text-white px-4 md:px-6 py-2 md:py-3 rounded-xl font-semibold hover:bg-[#1e2749] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 disabled:transform-none text-sm md:text-base"
                     >

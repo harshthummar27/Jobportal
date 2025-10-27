@@ -20,6 +20,7 @@ const RecruiterContract = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingTerms, setIsLoadingTerms] = useState(true);
   const [errors, setErrors] = useState({});
   const [agreements, setAgreements] = useState({
     termsAndConditions: false,
@@ -32,9 +33,43 @@ const RecruiterContract = () => {
   });
   const [hasReadContract, setHasReadContract] = useState(false);
   const [showFullContract, setShowFullContract] = useState(false);
+  const [agreementData, setAgreementData] = useState({
+    agreement_terms: "",
+    agreement_version: "",
+    last_updated: ""
+  });
 
   const profileData = location.state?.profileData || {};
   const logoFile = location.state?.logoFile || null;
+
+  // Fetch agreement terms on component mount
+  useEffect(() => {
+    const fetchAgreementTerms = async () => {
+      try {
+        setIsLoadingTerms(true);
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/recruiter/agreement`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch agreement terms');
+        }
+
+        const data = await response.json();
+        setAgreementData(data);
+      } catch (error) {
+        console.error('Error fetching agreement terms:', error);
+        setErrors({ api: 'Failed to load agreement terms. Please refresh the page.' });
+      } finally {
+        setIsLoadingTerms(false);
+      }
+    };
+
+    fetchAgreementTerms();
+  }, []);
 
   const contractTerms = [
     {
@@ -123,25 +158,44 @@ const RecruiterContract = () => {
     setIsLoading(true);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Prepare agreement data
+      const agreementPayload = {
+        agreements: agreements,
+        hasReadContract: hasReadContract,
+        agreementVersion: agreementData.agreement_version,
+        profileData: profileData
+      };
+
+      // Call API to accept agreement
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/recruiter/accept-agreement`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(agreementPayload),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to accept agreement');
+      }
+
+      const result = await response.json();
+      console.log("Agreement accepted successfully:", result);
       
-      // In real app, save contract agreements
-      console.log("Contract agreements:", agreements);
-      console.log("Profile data:", profileData);
-      
-      // Navigate to dashboard
-      navigate("/recruiter/dashboard", { 
+      // Navigate to candidate search
+      navigate("/recruiter/search", { 
         state: { 
           profileComplete: true,
           contractSigned: true,
           profileData,
-          logoFile
+          logoFile,
+          agreementAccepted: true
         }
       });
     } catch (error) {
       console.error("Contract submission error:", error);
-      setErrors({ submit: "Failed to process agreement. Please try again." });
+      setErrors({ submit: error.message || "Failed to process agreement. Please try again." });
     } finally {
       setIsLoading(false);
     }
@@ -222,7 +276,14 @@ const RecruiterContract = () => {
               {/* Contract Preview */}
               <div className="border-2 border-[#e4d9ff] rounded-lg md:rounded-xl p-4 md:p-6 bg-[#fafaff]">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-                  <h3 className="text-base md:text-lg font-semibold text-[#1e2749]">Recruiter Service Agreement</h3>
+                  <div>
+                    <h3 className="text-base md:text-lg font-semibold text-[#1e2749]">Recruiter Service Agreement</h3>
+                    {agreementData.agreement_version && (
+                      <p className="text-xs text-[#30343f] mt-1">
+                        Version {agreementData.agreement_version} • Last updated: {new Date(agreementData.last_updated).toLocaleDateString()}
+                      </p>
+                    )}
+                  </div>
                   <div className="flex flex-col sm:flex-row gap-2">
                     <button
                       onClick={() => setShowFullContract(!showFullContract)}
@@ -238,53 +299,33 @@ const RecruiterContract = () => {
                   </div>
                 </div>
 
-                {showFullContract ? (
+                {isLoadingTerms ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#273469]"></div>
+                    <span className="ml-3 text-sm text-[#30343f]">Loading agreement terms...</span>
+                  </div>
+                ) : errors.api ? (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <p className="text-sm text-red-600 flex items-center gap-2">
+                      <AlertCircle className="h-4 w-4" />
+                      {errors.api}
+                    </p>
+                  </div>
+                ) : showFullContract ? (
                   <div className="space-y-3 md:space-y-4 text-xs md:text-sm text-[#30343f] max-h-80 md:max-h-96 overflow-y-auto">
-                    <div>
-                      <h4 className="font-semibold text-[#1e2749] mb-1 md:mb-2 text-sm md:text-base">1. Service Overview</h4>
-                      <p>VettedPool provides access to pre-screened, qualified candidates through our secure platform. As a recruiter, you agree to use our services in accordance with these terms.</p>
-                    </div>
-                    
-                    <div>
-                      <h4 className="font-semibold text-[#1e2749] mb-1 md:mb-2 text-sm md:text-base">2. Candidate Privacy</h4>
-                      <p>All candidate information is anonymized. You may not attempt to identify candidates through external means or share candidate information with unauthorized parties.</p>
-                    </div>
-                    
-                    <div>
-                      <h4 className="font-semibold text-[#1e2749] mb-1 md:mb-2 text-sm md:text-base">3. Fee Structure</h4>
-                      <p>Fees are based on successful placements. No upfront costs. Payment terms are 30 days net from successful candidate placement.</p>
-                    </div>
-                    
-                    <div>
-                      <h4 className="font-semibold text-[#1e2749] mb-1 md:mb-2 text-sm md:text-base">4. Data Protection</h4>
-                      <p>We comply with GDPR and other data protection regulations. Your data is encrypted and stored securely.</p>
-                    </div>
-                    
-                    <div>
-                      <h4 className="font-semibold text-[#1e2749] mb-1 md:mb-2 text-sm md:text-base">5. Confidentiality</h4>
-                      <p>You agree to maintain confidentiality of all proprietary information and candidate data accessed through our platform.</p>
-                    </div>
-                    
-                    <div>
-                      <h4 className="font-semibold text-[#1e2749] mb-1 md:mb-2 text-sm md:text-base">6. Compliance</h4>
-                      <p>You must comply with all applicable recruitment laws and regulations in your jurisdiction.</p>
-                    </div>
-                    
-                    <div>
-                      <h4 className="font-semibold text-[#1e2749] mb-1 md:mb-2 text-sm md:text-base">7. Termination</h4>
-                      <p>Either party may terminate this agreement with 30 days written notice. Outstanding fees remain due.</p>
+                    <div className="whitespace-pre-line">
+                      {agreementData.agreement_terms || "No agreement terms available."}
                     </div>
                   </div>
                 ) : (
                   <div className="text-xs md:text-sm text-[#30343f]">
                     <p className="mb-2">This agreement covers:</p>
-                    <ul className="list-disc list-inside space-y-1">
-                      <li>Access to pre-vetted candidate profiles</li>
-                      <li>Candidate privacy protection requirements</li>
-                      <li>Fee structure and payment terms</li>
-                      <li>Data protection and confidentiality obligations</li>
-                      <li>Compliance with recruitment regulations</li>
-                    </ul>
+                    <div className="whitespace-pre-line text-xs">
+                      {agreementData.agreement_terms ? 
+                        agreementData.agreement_terms.split('\n').slice(0, 5).join('\n') + '\n\n...' : 
+                        "No agreement terms available."
+                      }
+                    </div>
                   </div>
                 )}
               </div>
@@ -341,7 +382,7 @@ const RecruiterContract = () => {
                     <div className="flex-1">
                       <label htmlFor="contractRead" className="block">
                         <span className="font-semibold text-[#1e2749] text-sm md:text-base">
-                          I have read and understood the complete Recruiter Service Agreement *
+                          I have read and understood the complete Recruiter Service Agreement{agreementData.agreement_version ? ` (Version ${agreementData.agreement_version})` : ''} *
                         </span>
                         {errors.contract && (
                           <p className="mt-1 md:mt-2 text-xs md:text-sm text-red-600 flex items-center gap-1 md:gap-2">
@@ -367,7 +408,7 @@ const RecruiterContract = () => {
                 {/* Submit Button */}
                 <button
                   type="submit"
-                  disabled={isLoading || !allRequiredAgreed || !hasReadContract}
+                  disabled={isLoading || !allRequiredAgreed || !hasReadContract || isLoadingTerms}
                   className="w-full bg-primary text-white py-3 md:py-4 px-4 md:px-6 rounded-lg md:rounded-xl font-semibold text-sm md:text-lg hover:bg-dark focus:ring-4 focus:ring-primary transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 disabled:transform-none"
                 >
                   {isLoading ? (
@@ -375,10 +416,15 @@ const RecruiterContract = () => {
                       <div className="animate-spin rounded-full h-4 w-4 md:h-5 md:w-5 border-b-2 border-white"></div>
                       Processing Agreement...
                     </>
+                  ) : isLoadingTerms ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 md:h-5 md:w-5 border-b-2 border-white"></div>
+                      Loading Agreement Terms...
+                    </>
                   ) : (
                     <>
                       <CheckCircle className="h-4 w-4 md:h-5 md:w-5" />
-                      Accept Agreement & Access Platform
+                      Accept Agreement & Search Candidates
                     </>
                   )}
                 </button>
@@ -411,11 +457,11 @@ const RecruiterContract = () => {
           {/* Back Button */}
           <div className="mt-6 md:mt-8 text-center">
             <Link
-              to="/recruiter/profile-setup"
+              to="/recruiter/verification"
               className="inline-flex items-center gap-2 text-[#30343f] hover:text-[#1e2749] transition-colors duration-300 font-medium text-sm md:text-base"
             >
               <ArrowLeft className="h-3 w-3 md:h-4 md:w-4" />
-              Back to Profile Setup
+              Back to Email Verification
             </Link>
           </div>
         </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock, User, Phone, CheckCircle, AlertCircle, Shield, Users, DollarSign, MapPin, ArrowLeft, Sparkles } from "lucide-react";
+import { toast } from 'react-toastify';
 import Header from "../../Components/Header";
 
 // Mobile Slider Component
@@ -132,27 +133,22 @@ const MobileSlider = ({ children, className = "" }) => {
 const CandidateRegistration = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    name: "",
     email: "",
-    phone: "",
     password: "",
-    confirmPassword: "",
-    agreeToTerms: false,
-    agreeToPrivacy: false,
-    agreeToBackgroundCheck: false
+    role: "candidate",
+    mobile_number: ""
   });
   
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
   const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: value
     }));
     
     // Clear error when user starts typing
@@ -168,12 +164,10 @@ const CandidateRegistration = () => {
     const newErrors = {};
 
     // Required fields
-    if (!formData.firstName.trim()) newErrors.firstName = "First name is required";
-    if (!formData.lastName.trim()) newErrors.lastName = "Last name is required";
+    if (!formData.name.trim()) newErrors.name = "Name is required";
     if (!formData.email.trim()) newErrors.email = "Email is required";
-    if (!formData.phone.trim()) newErrors.phone = "Phone number is required";
     if (!formData.password) newErrors.password = "Password is required";
-    if (!formData.confirmPassword) newErrors.confirmPassword = "Please confirm your password";
+    if (!formData.mobile_number.trim()) newErrors.mobile_number = "Mobile number is required";
 
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -181,31 +175,15 @@ const CandidateRegistration = () => {
       newErrors.email = "Please enter a valid email address";
     }
 
-    // Phone validation
-    const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
-    if (formData.phone && !phoneRegex.test(formData.phone.replace(/[\s\-\(\)]/g, ''))) {
-      newErrors.phone = "Please enter a valid phone number";
+    // Mobile number validation
+    const mobileRegex = /^[\+]?[1-9][\d]{0,15}$/;
+    if (formData.mobile_number && !mobileRegex.test(formData.mobile_number.replace(/[\s\-\(\)]/g, ''))) {
+      newErrors.mobile_number = "Please enter a valid mobile number";
     }
 
     // Password validation
     if (formData.password && formData.password.length < 8) {
       newErrors.password = "Password must be at least 8 characters long";
-    }
-
-    // Password confirmation
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match";
-    }
-
-    // Terms agreement
-    if (!formData.agreeToTerms) {
-      newErrors.agreeToTerms = "You must agree to the terms and conditions";
-    }
-    if (!formData.agreeToPrivacy) {
-      newErrors.agreeToPrivacy = "You must agree to the privacy policy";
-    }
-    if (!formData.agreeToBackgroundCheck) {
-      newErrors.agreeToBackgroundCheck = "You must agree to background verification";
     }
 
     setErrors(newErrors);
@@ -222,19 +200,54 @@ const CandidateRegistration = () => {
     setIsLoading(true);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Prepare registration data
+      const registrationData = {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        role: formData.role,
+        mobile_number: formData.mobile_number
+      };
+
+      // Make API call to register candidate
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(registrationData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Registration failed');
+      }
+
+      console.log("Registration response:", data);
       
-      // In real app, make API call to register candidate
-      console.log("Registration data:", formData);
+      // Show success toast
+      toast.success("Registration successful! Please check your email for verification code.");
       
       // Navigate to email verification
       navigate("/candidate/verification", { 
-        state: { email: formData.email, type: "registration" }
+        state: { 
+          email: formData.email, 
+          type: "registration",
+          userId: data.user?.id || data.id
+        }
       });
     } catch (error) {
       console.error("Registration error:", error);
-      setErrors({ submit: "Registration failed. Please try again." });
+      
+      // Handle specific error messages
+      if (error.message.includes("email")) {
+        setErrors(prev => ({ ...prev, email: "Email already exists. Please use a different email." }));
+      } else if (error.message.includes("mobile")) {
+        setErrors(prev => ({ ...prev, mobile_number: "Mobile number already exists. Please use a different number." }));
+      } else {
+        toast.error(error.message || "Registration failed. Please try again.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -289,63 +302,41 @@ const CandidateRegistration = () => {
           <div className="bg-white rounded-xl md:rounded-2xl shadow-2xl border-2 border-[#e4d9ff] overflow-hidden">
             <div className="p-4 sm:p-6 md:p-8 lg:p-10">
               <form onSubmit={handleSubmit} className="space-y-6 md:space-y-8">
-                {/* Personal Information */}
+                {/* Registration Form */}
                 <div className="space-y-6 md:space-y-8">
-                  <div className="border-b border-[#e4d9ff] pb-6 md:pb-8">
+                  <div>
                     <h2 className="text-xl md:text-2xl font-bold text-[#1e2749] mb-4 md:mb-6 flex items-center gap-2 md:gap-3">
                       <div className="w-8 h-8 md:w-10 md:h-10 bg-[#e4d9ff] rounded-xl flex items-center justify-center">
                         <User className="h-4 w-4 md:h-5 md:w-5 text-[#273469]" />
                       </div>
-                      Personal Information
+                      Registration Details
                     </h2>
                     
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+                    <div className="space-y-4 md:space-y-6">
+                      {/* Name Field */}
                       <div>
                         <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
-                          First Name *
+                          Full Name *
                         </label>
                         <input
                           type="text"
-                          name="firstName"
-                          value={formData.firstName}
+                          name="name"
+                          value={formData.name}
                           onChange={handleInputChange}
                           className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
-                            errors.firstName ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
+                            errors.name ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
                           }`}
-                          placeholder="Enter your first name"
+                          placeholder="Enter your full name"
                         />
-                        {errors.firstName && (
+                        {errors.name && (
                           <p className="mt-2 text-xs md:text-sm text-red-600 flex items-center gap-2">
                             <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
-                            {errors.firstName}
+                            {errors.name}
                           </p>
                         )}
                       </div>
 
-                      <div>
-                        <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
-                          Last Name *
-                        </label>
-                        <input
-                          type="text"
-                          name="lastName"
-                          value={formData.lastName}
-                          onChange={handleInputChange}
-                          className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
-                            errors.lastName ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
-                          }`}
-                          placeholder="Enter your last name"
-                        />
-                        {errors.lastName && (
-                          <p className="mt-2 text-xs md:text-sm text-red-600 flex items-center gap-2">
-                            <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
-                            {errors.lastName}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 mt-4 md:mt-6">
+                      {/* Email Field */}
                       <div>
                         <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
                           Email Address *
@@ -371,43 +362,33 @@ const CandidateRegistration = () => {
                         )}
                       </div>
 
+                      {/* Mobile Number Field */}
                       <div>
                         <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
-                          Phone Number *
+                          Mobile Number *
                         </label>
                         <div className="relative">
                           <Phone className="absolute left-3 md:left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-[#30343f]" />
                           <input
                             type="tel"
-                            name="phone"
-                            value={formData.phone}
+                            name="mobile_number"
+                            value={formData.mobile_number}
                             onChange={handleInputChange}
                             className={`w-full pl-10 md:pl-12 pr-4 md:pr-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
-                              errors.phone ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
+                              errors.mobile_number ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
                             }`}
-                            placeholder="+1 (555) 123-4567"
+                            placeholder="+919999999999"
                           />
                         </div>
-                        {errors.phone && (
+                        {errors.mobile_number && (
                           <p className="mt-2 text-xs md:text-sm text-red-600 flex items-center gap-2">
                             <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
-                            {errors.phone}
+                            {errors.mobile_number}
                           </p>
                         )}
                       </div>
-                    </div>
-                  </div>
 
-                  {/* Security */}
-                  <div>
-                    <h2 className="text-xl md:text-2xl font-bold text-[#1e2749] mb-4 md:mb-6 flex items-center gap-2 md:gap-3">
-                      <div className="w-8 h-8 md:w-10 md:h-10 bg-[#e4d9ff] rounded-xl flex items-center justify-center">
-                        <Lock className="h-4 w-4 md:h-5 md:w-5 text-[#273469]" />
-                      </div>
-                      Security
-                    </h2>
-                    
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+                      {/* Password Field */}
                       <div>
                         <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
                           Password *
@@ -439,107 +420,8 @@ const CandidateRegistration = () => {
                           </p>
                         )}
                       </div>
-
-                      <div>
-                        <label className="block text-xs md:text-sm font-semibold text-[#1e2749] mb-2 md:mb-3">
-                          Confirm Password *
-                        </label>
-                        <div className="relative">
-                          <Lock className="absolute left-3 md:left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-[#30343f]" />
-                          <input
-                            type={showConfirmPassword ? "text" : "password"}
-                            name="confirmPassword"
-                            value={formData.confirmPassword}
-                            onChange={handleInputChange}
-                            className={`w-full pl-10 md:pl-12 pr-12 md:pr-14 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
-                              errors.confirmPassword ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
-                            }`}
-                            placeholder="Confirm your password"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                            className="absolute right-3 md:right-4 top-1/2 transform -translate-y-1/2 text-[#30343f] hover:text-[#1e2749] transition-colors duration-300"
-                          >
-                            {showConfirmPassword ? <EyeOff className="h-4 w-4 md:h-5 md:w-5" /> : <Eye className="h-4 w-4 md:h-5 md:w-5" />}
-                          </button>
-                        </div>
-                        {errors.confirmPassword && (
-                          <p className="mt-2 text-xs md:text-sm text-red-600 flex items-center gap-2">
-                            <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
-                            {errors.confirmPassword}
-                          </p>
-                        )}
-                      </div>
                     </div>
                   </div>
-                </div>
-
-                {/* Terms and Conditions */}
-                <div className="space-y-4 md:space-y-6">
-                  <div className="flex items-start gap-3 md:gap-4">
-                    <input
-                      type="checkbox"
-                      name="agreeToTerms"
-                      checked={formData.agreeToTerms}
-                      onChange={handleInputChange}
-                      className="mt-1 h-4 w-4 md:h-5 md:w-5 text-[#273469] focus:ring-[#273469] border-[#e4d9ff] rounded"
-                    />
-                    <label className="text-xs md:text-sm text-[#30343f] leading-relaxed">
-                      I agree to the{" "}
-                      <Link to="/terms" className="text-[#273469] hover:text-[#1e2749] font-semibold transition-colors duration-300">
-                        Terms and Conditions
-                      </Link>{" "}
-                      and{" "}
-                      <Link to="/privacy" className="text-[#273469] hover:text-[#1e2749] font-semibold transition-colors duration-300">
-                        Privacy Policy
-                      </Link>
-                    </label>
-                  </div>
-                  {errors.agreeToTerms && (
-                    <p className="text-xs md:text-sm text-red-600 flex items-center gap-2">
-                      <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
-                      {errors.agreeToTerms}
-                    </p>
-                  )}
-
-                  <div className="flex items-start gap-3 md:gap-4">
-                    <input
-                      type="checkbox"
-                      name="agreeToPrivacy"
-                      checked={formData.agreeToPrivacy}
-                      onChange={handleInputChange}
-                      className="mt-1 h-4 w-4 md:h-5 md:w-5 text-[#273469] focus:ring-[#273469] border-[#e4d9ff] rounded"
-                    />
-                    <label className="text-xs md:text-sm text-[#30343f] leading-relaxed">
-                      I consent to receive job opportunities and platform updates via email
-                    </label>
-                  </div>
-                  {errors.agreeToPrivacy && (
-                    <p className="text-xs md:text-sm text-red-600 flex items-center gap-2">
-                      <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
-                      {errors.agreeToPrivacy}
-                    </p>
-                  )}
-
-                  <div className="flex items-start gap-3 md:gap-4">
-                    <input
-                      type="checkbox"
-                      name="agreeToBackgroundCheck"
-                      checked={formData.agreeToBackgroundCheck}
-                      onChange={handleInputChange}
-                      className="mt-1 h-4 w-4 md:h-5 md:w-5 text-[#273469] focus:ring-[#273469] border-[#e4d9ff] rounded"
-                    />
-                    <label className="text-xs md:text-sm text-[#30343f] leading-relaxed">
-                      I consent to background verification and third-party checks as part of the vetting process
-                    </label>
-                  </div>
-                  {errors.agreeToBackgroundCheck && (
-                    <p className="text-xs md:text-sm text-red-600 flex items-center gap-2">
-                      <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
-                      {errors.agreeToBackgroundCheck}
-                    </p>
-                  )}
                 </div>
 
                 {/* Submit Error */}
@@ -561,12 +443,12 @@ const CandidateRegistration = () => {
                   {isLoading ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 md:h-5 md:w-5 border-b-2 border-white"></div>
-                      Creating Account...
+                      Registering...
                     </>
                   ) : (
                     <>
                       <CheckCircle className="h-4 w-4 md:h-5 md:w-5" />
-                      Create Candidate Account
+                      Register as Candidate
                     </>
                   )}
                 </button>

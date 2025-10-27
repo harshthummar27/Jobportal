@@ -48,7 +48,7 @@ const EmailVerification = () => {
       if (verificationCode.length === 6) {
         setSuccess(true);
         setTimeout(() => {
-          navigate("/recruiter/profile-setup", { 
+          navigate("/recruiter/contract", { 
             state: { email, verified: true }
           });
         }, 2000);
@@ -109,7 +109,7 @@ const EmailVerification = () => {
               </h1>
               
               <p className="text-lg text-[#30343f] mb-8">
-                Your email has been successfully verified. Redirecting to profile setup...
+                Your email has been successfully verified. Redirecting to contract agreement...
               </p>
               
               <div className="flex justify-center">

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Mail, CheckCircle, AlertCircle, ArrowLeft, RefreshCw, Clock, Sparkles } from "lucide-react";
+import { toast } from 'react-toastify';
 import Header from "../../Components/Header";
 
 const CandidateVerification = () => {
@@ -48,8 +49,9 @@ const CandidateVerification = () => {
       if (verificationCode.length === 6) {
         setSuccess(true);
         setTimeout(() => {
-          navigate("/candidate/profile-setup", { 
-            state: { email, verified: true }
+          toast.success("Email verified successfully! Please login to continue.");
+          navigate("/candidate/login", { 
+            state: { email, verified: true, message: "Email verified successfully! Please login to continue." }
           });
         }, 2000);
       } else {
@@ -109,7 +111,7 @@ const CandidateVerification = () => {
               </h1>
               
               <p className="text-sm md:text-base lg:text-lg text-[#30343f] mb-6 md:mb-8 px-4">
-                Your email has been successfully verified. Redirecting to profile setup...
+                Your email has been successfully verified. Redirecting to login page...
               </p>
               
               <div className="flex justify-center">
