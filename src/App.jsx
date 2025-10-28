@@ -8,19 +8,20 @@ import CandidateInfo from "./pages/CandidateInfo";
 import RecruiterInfo from "./pages/RecruiterInfo";
 import ProfileSetup from "./pages/candidate/ProfileSetup";
 import CandidateRegistration from "./pages/candidate/CandidateRegistration";
-import CandidateVerification from "./pages/candidate/CandidateVerification";
+// COMMENTED OUT: Email verification component - not used for now
+// import CandidateVerification from "./pages/candidate/CandidateVerification";
 import CandidatePreferences from "./pages/candidate/CandidatePreferences";
 import CandidateDashboard from "./pages/candidate/CandidateDashboard";
 import CandidateProfile from "./pages/recruiter/CandidateProfile";
 import RecruiterDashboard from "./pages/recruiter/RecruiterDashboard";
-import CandidateSearch from "./pages/recruiter/CandidateSearch";
 import RecruiterRegistration from "./pages/recruiter/RecruiterRegistration";
-import EmailVerification from "./pages/recruiter/EmailVerification";
+// COMMENTED OUT: Email verification component - not used for now
+// import EmailVerification from "./pages/recruiter/EmailVerification";
 import RecruiterProfile from "./pages/recruiter/RecruiterProfile";
-import RecruiterContract from "./pages/recruiter/RecruiterContract";
+// COMMENTED OUT: Agreement contract component - not used for now
+// import RecruiterContract from "./pages/recruiter/RecruiterContract";
 import ShortlistedCandidates from "./pages/recruiter/ShortlistedCandidates";
 import InterviewTracking from "./pages/recruiter/InterviewTracking";
-import SelectionDashboard from "./pages/recruiter/SelectionDashboard";
 import SuperAdminDashboard from "./pages/superadmin/SuperAdminDashboard";
 import PendingCandidates from "./pages/superadmin/PendingCandidates";
 import ApprovedCandidates from "./pages/superadmin/ApprovedCandidates";
@@ -56,24 +57,25 @@ export default function App() {
         
         {/* Candidate Registration Flow */}
         <Route path="/candidate/register" element={<CandidateRegistration />} />
-        <Route path="/candidate/verification" element={<CandidateVerification />} />
+        {/* COMMENTED OUT: Email verification route - not used for now */}
+        {/* <Route path="/candidate/verification" element={<CandidateVerification />} /> */}
         <Route path="/candidate/login" element={<Login />} />
         <Route path="/candidate/preferences" element={<CandidatePreferences />} />
         <Route path="/recruiter/dashboard" element={<RecruiterDashboard />} />
-        <Route path="/recruiter/search" element={<CandidateSearch />} />
         <Route path="/recruiter/candidate/:code" element={<CandidateProfile />} />
         
           {/* Recruiter Registration Flow */}
           <Route path="/recruiter/register" element={<RecruiterRegistration />} />
-          <Route path="/recruiter/verification" element={<EmailVerification />} />
+          {/* COMMENTED OUT: Email verification route - not used for now */}
+          {/* <Route path="/recruiter/verification" element={<EmailVerification />} /> */}
           <Route path="/recruiter/login" element={<Login />} />
           <Route path="/recruiter/profile-setup" element={<RecruiterProfile />} />
-          <Route path="/recruiter/contract" element={<RecruiterContract />} />
+          {/* COMMENTED OUT: Agreement contract route - not used for now */}
+          {/* <Route path="/recruiter/contract" element={<RecruiterContract />} /> */}
           
           {/* Recruiter Selection & Management */}
           <Route path="/recruiter/shortlisted" element={<ShortlistedCandidates />} />
           <Route path="/recruiter/interview-tracking" element={<InterviewTracking />} />
-          <Route path="/recruiter/selection-dashboard" element={<SelectionDashboard />} />
         
         {/* Super Admin Routes */}
         <Route path="/superadmin/dashboard" element={<SuperAdminLayout><SuperAdminDashboard /></SuperAdminLayout>} />

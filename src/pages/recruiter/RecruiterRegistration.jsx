@@ -271,14 +271,14 @@ const RecruiterRegistration = () => {
       console.log("Registration response:", data);
       
       // Show success toast
-      toast.success("Registration successful! Please check your email for verification code.");
+      toast.success("Registration successful! Please login to continue.");
       
-      // Navigate to email verification
-      navigate("/recruiter/verification", { 
+      // Navigate to login page after successful registration
+      navigate("/login", { 
         state: { 
           email: formData.email, 
-          type: "registration",
-          userId: data.user?.id || data.id
+          message: "Registration successful! Please login to continue.",
+          role: "recruiter"
         }
       });
     } catch (error) {

@@ -211,12 +211,13 @@ const InternalTeam = () => {
   const [newMember, setNewMember] = useState({
     name: "",
     email: "",
-    mobile: "",
-    role: "",
-    department: "",
-    status: "active",
-    permissions: []
+    password: "",
+    role: "staff",
+    mobile_number: ""
   });
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   // Prevent background scrolling when modal is open
   useEffect(() => {
@@ -232,32 +233,6 @@ const InternalTeam = () => {
     };
   }, [showAddModal]);
 
-  const roles = [
-    "Super Admin",
-    "HR Manager", 
-    "Technical Lead",
-    "Support Specialist",
-    "Interviewer",
-    "Data Analyst"
-  ];
-
-  const departments = [
-    "Administration",
-    "Human Resources",
-    "Technology",
-    "Customer Support",
-    "Marketing",
-    "Finance"
-  ];
-
-  const permissionOptions = [
-    { key: "candidates", label: "Manage Candidates" },
-    { key: "recruiters", label: "Manage Recruiters" },
-    { key: "interviews", label: "Conduct Interviews" },
-    { key: "support", label: "Customer Support" },
-    { key: "analytics", label: "View Analytics" },
-    { key: "all", label: "All Permissions" }
-  ];
 
   const filteredMembers = teamMembers.filter(member =>
     member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -289,12 +264,11 @@ const InternalTeam = () => {
     setNewMember({
       name: member.name,
       email: member.email,
-      mobile: member.mobile,
-      role: member.role,
-      department: member.department,
-      status: member.status,
-      permissions: member.permissions
+      password: "",
+      role: "staff",
+      mobile_number: member.mobile
     });
+    setError("");
     setShowAddModal(true);
   };
 
@@ -323,60 +297,89 @@ const InternalTeam = () => {
     setNewMember({
       name: "",
       email: "",
-      mobile: "",
-      role: "",
-      department: "",
-      status: "active",
-      permissions: []
+      password: "",
+      role: "staff",
+      mobile_number: ""
     });
     setEditingMember(null);
+    setError("");
     setShowAddModal(true);
   };
 
-  const handleSaveMember = () => {
-    if (!newMember.name || !newMember.email || !newMember.role || !newMember.department) {
-      alert("Please fill in all required fields");
+  const handleSaveMember = async () => {
+    // Validate required fields
+    if (!newMember.name || !newMember.email || !newMember.password || !newMember.mobile_number) {
+      setError("Please fill in all required fields");
       return;
     }
 
-    if (editingMember) {
-      // Update existing member
-      setTeamMembers(prev => prev.map(member => 
-        member.id === editingMember.id 
-          ? { ...newMember, id: editingMember.id, joinDate: editingMember.joinDate }
-          : member
-      ));
-      alert("Team member has been updated!");
-    } else {
-      // Add new member
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(newMember.email)) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
+    // Basic mobile number validation
+    if (newMember.mobile_number.length < 10) {
+      setError("Please enter a valid mobile number");
+      return;
+    }
+
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: newMember.name,
+          email: newMember.email,
+          password: newMember.password,
+          role: newMember.role,
+          mobile_number: newMember.mobile_number
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to register team member');
+      }
+
+      const result = await response.json();
+      
+      // Add the new member to the local state
       const newId = Math.max(...teamMembers.map(m => m.id)) + 1;
       setTeamMembers(prev => [...prev, {
-        ...newMember,
         id: newId,
-        joinDate: new Date().toISOString().split('T')[0]
+        name: newMember.name,
+        email: newMember.email,
+        mobile: newMember.mobile_number,
+        role: "Internal Team",
+        department: "Internal",
+        joinDate: new Date().toISOString().split('T')[0],
+        status: "active",
+        permissions: ["candidates"],
+        lastLogin: "Never",
+        totalActions: 0,
+        location: "N/A",
+        employeeId: `EMP${String(newId).padStart(3, '0')}`
       }]);
-      alert("New team member has been added!");
-    }
 
-    setShowAddModal(false);
-    setEditingMember(null);
-  };
-
-  const handlePermissionChange = (permission) => {
-    if (permission === "all") {
-      setNewMember(prev => ({
-        ...prev,
-        permissions: prev.permissions.includes("all") ? [] : ["all"]
-      }));
-    } else {
-      setNewMember(prev => ({
-        ...prev,
-        permissions: prev.permissions.includes(permission)
-          ? prev.permissions.filter(p => p !== permission)
-          : [...prev.permissions, permission]
-      }));
+      alert("Team member has been successfully registered!");
+      setShowAddModal(false);
+      setEditingMember(null);
+    } catch (error) {
+      console.error('Registration error:', error);
+      setError(error.message || 'Failed to register team member. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
+
 
   const getStatusBadge = (status) => {
     const statusConfig = {
@@ -643,6 +646,12 @@ const InternalTeam = () => {
             </div>
             
             <div className="p-6 space-y-4">
+              {error && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                  <p className="text-red-800 text-sm">{error}</p>
+                </div>
+              )}
+              
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
@@ -652,6 +661,7 @@ const InternalTeam = () => {
                     onChange={(e) => setNewMember(prev => ({ ...prev, name: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     placeholder="Enter full name"
+                    disabled={isLoading}
                   />
                 </div>
                 
@@ -663,76 +673,39 @@ const InternalTeam = () => {
                     onChange={(e) => setNewMember(prev => ({ ...prev, email: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     placeholder="Enter email address"
+                    disabled={isLoading}
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Mobile *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Password *</label>
+                  <input
+                    type="password"
+                    value={newMember.password}
+                    onChange={(e) => setNewMember(prev => ({ ...prev, password: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    placeholder="Enter password"
+                    disabled={isLoading}
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Mobile Number *</label>
                   <input
                     type="tel"
-                    value={newMember.mobile}
-                    onChange={(e) => setNewMember(prev => ({ ...prev, mobile: e.target.value }))}
+                    value={newMember.mobile_number}
+                    onChange={(e) => setNewMember(prev => ({ ...prev, mobile_number: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     placeholder="Enter mobile number"
+                    disabled={isLoading}
                   />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Role *</label>
-                  <select
-                    value={newMember.role}
-                    onChange={(e) => setNewMember(prev => ({ ...prev, role: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  >
-                    <option value="">Select a role</option>
-                    {roles.map(role => (
-                      <option key={role} value={role}>{role}</option>
-                    ))}
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Department *</label>
-                  <select
-                    value={newMember.department}
-                    onChange={(e) => setNewMember(prev => ({ ...prev, department: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  >
-                    <option value="">Select a department</option>
-                    {departments.map(dept => (
-                      <option key={dept} value={dept}>{dept}</option>
-                    ))}
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                  <select
-                    value={newMember.status}
-                    onChange={(e) => setNewMember(prev => ({ ...prev, status: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  >
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                  </select>
                 </div>
               </div>
               
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Permissions</label>
-                <div className="grid grid-cols-2 gap-2">
-                  {permissionOptions.map(permission => (
-                    <label key={permission.key} className="flex items-center">
-                      <input
-                        type="checkbox"
-                        checked={newMember.permissions.includes(permission.key)}
-                        onChange={() => handlePermissionChange(permission.key)}
-                        className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                      />
-                      <span className="ml-2 text-sm text-gray-700">{permission.label}</span>
-                    </label>
-                  ))}
-                </div>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                <p className="text-blue-800 text-sm">
+                  <strong>Note:</strong> The role is automatically set to "staff" for all new team members.
+                </p>
               </div>
             </div>
             
@@ -740,15 +713,26 @@ const InternalTeam = () => {
               <button
                 onClick={() => setShowAddModal(false)}
                 className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md border border-gray-300 hover:bg-gray-200 transition-all duration-200 shadow-sm"
+                disabled={isLoading}
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveMember}
-                className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-md border border-green-600 hover:bg-green-600 transition-all duration-200 shadow-sm"
+                className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-md border border-green-600 hover:bg-green-600 transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isLoading}
               >
-                <Save className="h-4 w-4" />
-                {editingMember ? "Update Member" : "Add Member"}
+                {isLoading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    Registering...
+                  </>
+                ) : (
+                  <>
+                    <Save className="h-4 w-4" />
+                    Register Team Member
+                  </>
+                )}
               </button>
             </div>
           </div>

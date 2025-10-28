@@ -836,8 +836,8 @@ const RecruiterProfile = () => {
             </div>
           </div>
 
-          {/* Back Button */}
-          <div className="mt-6 md:mt-8 text-center">
+          {/* Back Button - COMMENTED OUT: Email verification not used for now */}
+          {/* <div className="mt-6 md:mt-8 text-center">
             <Link
               to="/recruiter/verification"
               className="inline-flex items-center gap-2 text-[#30343f] hover:text-[#1e2749] transition-colors duration-300 font-medium text-sm md:text-base"
@@ -845,7 +845,7 @@ const RecruiterProfile = () => {
               <ArrowLeft className="h-3 w-3 md:h-4 md:w-4" />
               Back to Email Verification
             </Link>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

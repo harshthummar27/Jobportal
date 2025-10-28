@@ -227,14 +227,22 @@ const CandidateRegistration = () => {
       console.log("Registration response:", data);
       
       // Show success toast
-      toast.success("Registration successful! Please check your email for verification code.");
+      toast.success("Registration successful! Please login to continue");
       
-      // Navigate to email verification
-      navigate("/candidate/verification", { 
+      // COMMENTED OUT: Navigate to email verification
+      // navigate("/candidate/verification", { 
+      //   state: { 
+      //     email: formData.email, 
+      //     type: "registration",
+      //     userId: data.user?.id || data.id
+      //   }
+      // });
+      
+      // TEMPORARY: Navigate directly to login after registration
+      navigate("/candidate/login", { 
         state: { 
           email: formData.email, 
-          type: "registration",
-          userId: data.user?.id || data.id
+          message: "Registration successful! Please login to continue."
         }
       });
     } catch (error) {

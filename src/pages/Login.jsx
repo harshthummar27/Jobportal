@@ -24,6 +24,20 @@ const Login = () => {
     }
   }, [location.pathname]);
 
+  // Pre-fill email and role from registration if available
+  useEffect(() => {
+    const locationState = location.state;
+    if (locationState?.email) {
+      setEmail(locationState.email);
+    }
+    if (locationState?.role) {
+      setSelectedRole(locationState.role);
+    }
+    if (locationState?.message) {
+
+    }
+  }, [location.state]);
+
   const userTypes = [
     {
       id: "candidate",
@@ -48,8 +62,8 @@ const Login = () => {
       textColor: "text-purple-700"
     },
     {
-      id: "internalteam",
-      title: "Internal Team",
+      id: "staff",
+      title: "Staff",
       description: "Manage operations",
       icon: Users,
       color: "from-green-500 to-green-600",
@@ -77,7 +91,7 @@ const Login = () => {
         return "/candidate/dashboard";
       case "recruiter":
         return "/recruiter/dashboard";
-      case "internalteam":
+      case "staff":
         return "/internal-team/dashboard";
       case "superadmin":
         return "/superadmin/dashboard";
@@ -119,33 +133,49 @@ const Login = () => {
         throw new Error(data.message || 'Login failed');
       }
 
-      console.log("Login response:", data);
+      // Get the actual user role from the API response
+      const actualUserRole = data.user?.role || data.role;
+      
+      // Check if the selected role matches the actual user role
+      if (selectedRole !== actualUserRole) {
+        toast.error("Role mismatch. Please select the correct role and try again.");
+        setIsLoading(false);
+        return;
+      }
 
-      // Store user data in localStorage
+      // Store user data in localStorage only if roles match
       const userData = {
         email,
         role: selectedRole,
         loginTime: new Date().toISOString(),
         token: data.token || data.access_token,
-        user: data.user || data
+        user: data.user || data,
+        has_profile: data.has_profile || false
       };
 
       localStorage.setItem("user", JSON.stringify(userData));
+      localStorage.setItem("token", data.access_token);
+      localStorage.setItem("has_profile", data.has_profile || false);
       
       // Show success message
       toast.success(`Welcome back! You've successfully logged in as ${userTypes.find(t => t.id === selectedRole)?.title}.`);
       
-      // Check if this is a candidate login and if they need to complete profile setup
+      // Navigate to dashboard based on role
       if (selectedRole === "candidate") {
-        // Check if candidate has completed profile setup
-        const hasCompletedProfile = localStorage.getItem("candidateProfileComplete");
+        navigate("/candidate/dashboard");
+      } else if (selectedRole === "recruiter") {
+        // COMMENTED OUT: Agreement check logic - recruiters now go directly to dashboard
+        // const hasAcceptedAgreement = localStorage.getItem("recruiterAgreementAccepted");
         
-        if (!hasCompletedProfile) {
-          toast.info("Welcome! Please complete your profile setup to continue.");
-          navigate("/candidate/profile-setup");
-        } else {
-          navigate("/candidate/dashboard");
-        }
+        // if (!hasAcceptedAgreement) {
+        //   toast.info("Welcome! Please review and accept our recruiter agreement to continue.");
+        //   navigate("/recruiter/contract");
+        // } else {
+        //   navigate("/recruiter/dashboard");
+        // }
+        
+        // Direct navigation to dashboard (agreement page bypassed for now)
+        navigate("/recruiter/dashboard");
       } else {
         navigate(getRedirectPath(selectedRole));
       }

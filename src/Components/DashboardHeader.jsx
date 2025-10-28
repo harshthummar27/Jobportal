@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { User, Edit, LogOut, Settings } from "lucide-react";
+import { User, Edit, LogOut, AlertTriangle } from "lucide-react";
+import { toast } from 'react-toastify';
 
-const DashboardHeader = () => {
+const DashboardHeader = ({ onEditProfile, userData }) => {
   const location = useLocation();
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   // Get page name based on current route
   const getPageName = () => {
@@ -32,24 +35,75 @@ const DashboardHeader = () => {
 
   const handleEditProfile = () => {
     setUserDropdownOpen(false);
-    // In real app, navigate to edit profile page or open modal
-    alert("Edit Profile - This would open profile editing functionality");
+    if (onEditProfile) {
+      onEditProfile();
+    }
   };
 
   const handleLogout = () => {
     setUserDropdownOpen(false);
-    // In real app, implement logout logic
-    if (window.confirm("Are you sure you want to logout?")) {
-      alert("Logging out...");
-      // Redirect to login page or clear session
+    setShowLogoutModal(true);
+  };
+
+  const confirmLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      const token = localStorage.getItem('token');
+      const baseURL = import.meta.env.VITE_API_BASE_URL;
+      
+      const response = await fetch(`${baseURL}/api/logout`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        // credentials: 'include', // Include cookies for session management
+      });
+
+      if (response.ok) {
+        // Clear any local storage or session data
+        localStorage.clear();
+        
+        // Show success toast
+        toast.success("Logged out successfully!");
+        setShowLogoutModal(false);
+        
+        // Redirect to login page after a short delay
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 1500);
+      } else {
+        console.error('Logout failed:', response.statusText);
+        toast.error('Logout failed. Please try again.');
+        setShowLogoutModal(false);
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+      toast.error('An error occurred during logout. Please try again.');
+      setShowLogoutModal(false);
+    } finally {
+      setIsLoggingOut(false);
     }
   };
 
-  const handleSettings = () => {
-    setUserDropdownOpen(false);
-    // In real app, navigate to settings page
-    alert("Settings - This would open settings page");
+  const cancelLogout = () => {
+    setShowLogoutModal(false);
   };
+
+  // Prevent background scrolling when modal is open
+  useEffect(() => {
+    if (showLogoutModal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    // Cleanup function to restore scrolling when component unmounts
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [showLogoutModal]);
+
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -66,7 +120,63 @@ const DashboardHeader = () => {
   }, [userDropdownOpen]);
 
   return (
-    <div className="fixed top-0 left-0 right-0 h-12 bg-white/95 backdrop-blur-sm border-b border-gray-200/50 shadow-sm px-2 sm:px-3 md:px-4 lg:px-6 py-1.5 z-50 flex items-center">
+    <>
+      {/* Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 animate-in zoom-in-95 duration-200">
+            <div className="p-6">
+              {/* Modal Header */}
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <AlertTriangle className="h-5 w-5 text-red-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Confirm Logout</h3>
+                  <p className="text-sm text-gray-500">Are you sure you want to logout?</p>
+                </div>
+              </div>
+
+              {/* Modal Content */}
+              <div className="mb-6">
+                <p className="text-sm text-gray-600">
+                  You will be redirected to the login page and will need to sign in again to access your account.
+                </p>
+              </div>
+
+              {/* Modal Actions */}
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={cancelLogout}
+                  disabled={isLoggingOut}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmLogout}
+                  disabled={isLoggingOut}
+                  className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                  {isLoggingOut ? (
+                    <>
+                      <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Logging out...
+                    </>
+                  ) : (
+                    'Logout'
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="fixed top-0 left-0 right-0 h-12 bg-white/95 backdrop-blur-sm border-b border-gray-200/50 shadow-sm px-2 sm:px-3 md:px-4 lg:px-6 py-1.5 z-50 flex items-center">
       <div className="flex items-center justify-between gap-1 sm:gap-2 md:gap-4 w-full">
         {/* Left Section - Logo */}
         <div className="flex items-center gap-1 sm:gap-2 md:gap-4 flex-shrink-0">
@@ -87,7 +197,9 @@ const DashboardHeader = () => {
           <div className="flex items-center gap-1 sm:gap-2">
             {/* User Info - Hidden on small screens, visible on sm+ */}
             <div className="hidden sm:block text-right">
-              <div className="text-[10px] sm:text-xs font-medium text-gray-800 truncate max-w-[80px] lg:max-w-none">John User</div>
+              <div className="text-[10px] sm:text-xs font-medium text-gray-800 truncate max-w-[80px] lg:max-w-none">
+                {userData?.full_name || userData?.contact_email || "User"}
+              </div>
               <div className="text-[9px] sm:text-xs text-gray-500 truncate max-w-[80px] lg:max-w-none">Candidate</div>
             </div>
             {/* User Avatar - Always visible */}
@@ -109,8 +221,12 @@ const DashboardHeader = () => {
                     <User className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-xs sm:text-sm font-semibold text-gray-900 truncate">John User</div>
-                    <div className="text-[10px] sm:text-xs text-gray-500 truncate">john.user@vettedpool.com</div>
+                    <div className="text-xs sm:text-sm font-semibold text-gray-900 truncate">
+                      {userData?.full_name || "User"}
+                    </div>
+                    <div className="text-[10px] sm:text-xs text-gray-500 truncate">
+                      {userData?.contact_email || "user@example.com"}
+                    </div>
                     <div className="text-[10px] sm:text-xs text-indigo-600 font-medium">Candidate</div>
                   </div>
                 </div>
@@ -124,14 +240,6 @@ const DashboardHeader = () => {
                 >
                   <Edit className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400 flex-shrink-0" />
                   <span className="truncate">Edit Profile</span>
-                </button>
-                
-                <button
-                  onClick={handleSettings}
-                  className="w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                >
-                  <Settings className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400 flex-shrink-0" />
-                  <span className="truncate">Settings</span>
                 </button>
                 
                 <div className="border-t border-gray-100 my-1"></div>
@@ -149,6 +257,7 @@ const DashboardHeader = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

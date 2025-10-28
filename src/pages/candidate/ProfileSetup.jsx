@@ -51,18 +51,18 @@ const ProfileSetup = () => {
     // Location
     city: "",
     state: "",
-    willingToRelocate: false,
-    preferredLocations: [],
+    willing_to_relocate: false,
+    preferred_locations: [],
     
     // Job Preferences
-    desiredJobRoles: [],
-    preferredIndustries: [],
-    employmentTypes: [],
+    desired_job_roles: [],
+    preferred_industries: [],
+    employment_types: [],
     
     // Work Experience
-    totalYearsExperience: "",
-    jobHistory: [],
-    currentEmployer: "",
+    total_years_experience: "",
+    job_history: [],
+    current_employer: "",
     
     // Skills
     skills: [],
@@ -74,41 +74,41 @@ const ProfileSetup = () => {
     certifications: [],
     
     // Resume
-    resumeFilePath: "",
-    resumeFileName: "",
-    resumeMimeType: "",
+    resume_file_path: "",
+    resume_file_name: "",
+    resume_mime_type: "",
     
     // Visa Status
-    visaStatus: "",
+    visa_status: "",
     
     // Relocation
-    relocationWillingness: "",
+    relocation_willingness: "",
     
     // Job Seeking Status
-    jobSeekingStatus: "",
+    job_seeking_status: "",
     
     // Salary
-    desiredAnnualPackage: "",
+    desired_annual_package: "",
     
     // Availability
-    availabilityDate: "",
+    availability_date: "",
     
     // Languages
-    languagesSpoken: [],
+    languages_spoken: [],
     
     // Optional Information
     ethnicity: "",
-    veteranStatus: false,
-    disabilityStatus: false,
+    veteran_status: false,
+    disability_status: false,
     
     // References
     references: [],
     
     // Company Blacklist
-    blockedCompanies: [],
+    blocked_companies: [],
     
     // Additional Notes
-    additionalNotes: ""
+    additional_notes: ""
   });
 
   const [currentJob, setCurrentJob] = useState({
@@ -157,30 +157,18 @@ const ProfileSetup = () => {
   ];
 
   const jobSeekingStatuses = [
-    "actively_looking",
-    "open_to_better_offers",
-    "not_actively_looking"
+    "actively_looking"
   ];
 
   const relocationOptions = [
-    "Yes",
-    "If employer covers relocation costs",
-    "No"
-  ];
-
-  const availabilityOptions = [
-    "2024-01-01",
-    "2024-02-01", 
-    "2024-03-01",
-    "2024-04-01",
-    "2024-05-01"
+    "by_self"
   ];
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     
     if (type === 'checkbox') {
-      if (name === 'employmentTypes' || name === 'preferredIndustries' || name === 'desiredJobRoles') {
+      if (name === 'employment_types' || name === 'preferred_industries' || name === 'desired_job_roles') {
         setFormData(prev => ({
           ...prev,
           [name]: checked 
@@ -226,9 +214,9 @@ const ProfileSetup = () => {
       setResumeFile(file);
       setFormData(prev => ({ 
         ...prev, 
-        resumeFilePath: `/uploads/${file.name}`,
-        resumeFileName: file.name,
-        resumeMimeType: file.type
+        resume_file_path: `/uploads/${file.name}`,
+        resume_file_name: file.name,
+        resume_mime_type: file.type
       }));
       setErrors(prev => ({ ...prev, resume: "" }));
     }
@@ -239,9 +227,9 @@ const ProfileSetup = () => {
     setResumePreview(null);
     setFormData(prev => ({ 
       ...prev, 
-      resumeFilePath: "",
-      resumeFileName: "",
-      resumeMimeType: ""
+      resume_file_path: "",
+      resume_file_name: "",
+      resume_mime_type: ""
     }));
   };
 
@@ -249,7 +237,7 @@ const ProfileSetup = () => {
     if (currentJob.company && currentJob.position && currentJob.duration) {
       setFormData(prev => ({
         ...prev,
-        jobHistory: [...prev.jobHistory, { ...currentJob }]
+        job_history: [...prev.job_history, { ...currentJob }]
       }));
       setCurrentJob({
         company: "",
@@ -262,7 +250,7 @@ const ProfileSetup = () => {
   const removeJobHistory = (index) => {
     setFormData(prev => ({
       ...prev,
-      jobHistory: prev.jobHistory.filter((_, i) => i !== index)
+      job_history: prev.job_history.filter((_, i) => i !== index)
     }));
   };
 
@@ -348,10 +336,10 @@ const ProfileSetup = () => {
   };
 
   const addLanguage = () => {
-    if (currentLanguage && !formData.languagesSpoken.includes(currentLanguage)) {
+    if (currentLanguage && !formData.languages_spoken.includes(currentLanguage)) {
       setFormData(prev => ({
         ...prev,
-        languagesSpoken: [...prev.languagesSpoken, currentLanguage]
+        languages_spoken: [...prev.languages_spoken, currentLanguage]
       }));
       setCurrentLanguage("");
     }
@@ -360,15 +348,15 @@ const ProfileSetup = () => {
   const removeLanguage = (language) => {
     setFormData(prev => ({
       ...prev,
-      languagesSpoken: prev.languagesSpoken.filter(l => l !== language)
+      languages_spoken: prev.languages_spoken.filter(l => l !== language)
     }));
   };
 
   const addPreferredLocation = () => {
-    if (currentPreferredLocation && !(formData.preferredLocations || []).includes(currentPreferredLocation)) {
+    if (currentPreferredLocation && !(formData.preferred_locations || []).includes(currentPreferredLocation)) {
       setFormData(prev => ({
         ...prev,
-        preferredLocations: [...(prev.preferredLocations || []), currentPreferredLocation]
+        preferred_locations: [...(prev.preferred_locations || []), currentPreferredLocation]
       }));
       setCurrentPreferredLocation("");
     }
@@ -377,7 +365,7 @@ const ProfileSetup = () => {
   const removePreferredLocation = (location) => {
     setFormData(prev => ({
       ...prev,
-      preferredLocations: (prev.preferredLocations || []).filter(l => l !== location)
+      preferred_locations: (prev.preferred_locations || []).filter(l => l !== location)
     }));
   };
 
@@ -387,22 +375,27 @@ const ProfileSetup = () => {
     if (step === 1) {
       if (!formData.city.trim()) newErrors.city = "City is required";
       if (!formData.state.trim()) newErrors.state = "State is required";
+      if ((formData.preferred_locations || []).length === 0) newErrors.preferred_locations = "At least one preferred location is required";
     }
 
     if (step === 2) {
-      if ((formData.desiredJobRoles || []).length === 0) newErrors.desiredJobRoles = "At least one job role is required";
-      if ((formData.preferredIndustries || []).length === 0) newErrors.preferredIndustries = "At least one industry is required";
-      if ((formData.employmentTypes || []).length === 0) newErrors.employmentTypes = "At least one employment type is required";
+      if ((formData.desired_job_roles || []).length === 0) newErrors.desired_job_roles = "At least one job role is required";
+      if ((formData.preferred_industries || []).length === 0) newErrors.preferred_industries = "At least one industry is required";
+      if ((formData.employment_types || []).length === 0) newErrors.employment_types = "At least one employment type is required";
     }
 
     if (step === 3) {
-      if (!formData.totalYearsExperience) newErrors.totalYearsExperience = "Total years of experience is required";
-      if (!formData.visaStatus) newErrors.visaStatus = "Visa status is required";
-      if (!formData.jobSeekingStatus) newErrors.jobSeekingStatus = "Job seeking status is required";
+      if (!formData.total_years_experience) newErrors.total_years_experience = "Total years of experience is required";
+      if (!formData.visa_status) newErrors.visa_status = "Visa status is required";
+      if (!formData.job_seeking_status) newErrors.job_seeking_status = "Job seeking status is required";
+      if (!formData.relocation_willingness) newErrors.relocation_willingness = "Relocation willingness is required";
+      if (!formData.desired_annual_package) newErrors.desired_annual_package = "Desired annual package is required";
+      if ((formData.job_history || []).length === 0) newErrors.job_history = "At least one job history entry is required";
+      if ((formData.skills || []).length === 0) newErrors.skills = "At least one skill is required";
     }
 
     if (step === 4) {
-      // Step 4 is optional details, no required validation
+      if ((formData.education || []).length === 0) newErrors.education = "At least one education entry is required";
     }
 
     setErrors(newErrors);
@@ -410,9 +403,23 @@ const ProfileSetup = () => {
   };
 
   const handleNext = () => {
-    if (validateStep(currentStep) && currentStep < 4) {
-      setCurrentStep(currentStep + 1);
-      window.scrollTo(0, 0);
+    if (validateStep(currentStep)) {
+      if (currentStep < 4) {
+        setCurrentStep(currentStep + 1);
+        window.scrollTo(0, 0);
+      }
+    } else {
+      // Scroll to first error field
+      const firstErrorField = Object.keys(errors)[0];
+      if (firstErrorField) {
+        setTimeout(() => {
+          const errorElement = document.querySelector(`[name="${firstErrorField}"]`);
+          if (errorElement) {
+            errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            errorElement.focus();
+          }
+        }, 100);
+      }
     }
   };
   
@@ -424,8 +431,19 @@ const ProfileSetup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Only validate step 3 (the last required step) when submitting
-    if (!validateStep(3)) {
+    // Validate all steps including step 4 when submitting
+    if (!validateStep(1) || !validateStep(2) || !validateStep(3) || !validateStep(4)) {
+      // Scroll to first error field
+      const firstErrorField = Object.keys(errors)[0];
+      if (firstErrorField) {
+        setTimeout(() => {
+          const errorElement = document.querySelector(`[name="${firstErrorField}"]`);
+          if (errorElement) {
+            errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            errorElement.focus();
+          }
+        }, 100);
+      }
       return;
     }
 
@@ -436,32 +454,32 @@ const ProfileSetup = () => {
       const profileData = {
         city: formData.city,
         state: formData.state,
-        willing_to_relocate: formData.willingToRelocate,
-        preferred_locations: formData.preferredLocations || [],
-        desired_job_roles: formData.desiredJobRoles || [],
-        preferred_industries: formData.preferredIndustries || [],
-        employment_types: formData.employmentTypes || [],
-        total_years_experience: formData.totalYearsExperience,
-        job_history: formData.jobHistory || [],
-        current_employer: formData.currentEmployer,
+        willing_to_relocate: formData.willing_to_relocate,
+        preferred_locations: formData.preferred_locations || [],
+        desired_job_roles: formData.desired_job_roles || [],
+        preferred_industries: formData.preferred_industries || [],
+        employment_types: formData.employment_types || [],
+        total_years_experience: parseInt(formData.total_years_experience),
+        job_history: formData.job_history || [],
+        current_employer: formData.current_employer,
         skills: formData.skills || [],
         education: formData.education || [],
         certifications: formData.certifications || [],
-        resume_file_path: formData.resumeFilePath,
-        resume_file_name: formData.resumeFileName,
-        resume_mime_type: formData.resumeMimeType,
-        visa_status: formData.visaStatus,
-        relocation_willingness: formData.relocationWillingness,
-        job_seeking_status: formData.jobSeekingStatus,
-        desired_annual_package: formData.desiredAnnualPackage ? parseInt(formData.desiredAnnualPackage) : null,
-        availability_date: formData.availabilityDate,
-        languages_spoken: formData.languagesSpoken || [],
+        resume_file_path: formData.resume_file_path,
+        resume_file_name: formData.resume_file_name,
+        resume_mime_type: formData.resume_mime_type,
+        visa_status: formData.visa_status,
+        relocation_willingness: formData.relocation_willingness,
+        job_seeking_status: formData.job_seeking_status,
+        desired_annual_package: formData.desired_annual_package ? parseFloat(formData.desired_annual_package) : null,
+        availability_date: formData.availability_date,
+        languages_spoken: formData.languages_spoken || [],
         ethnicity: formData.ethnicity,
-        veteran_status: formData.veteranStatus,
-        disability_status: formData.disabilityStatus,
+        veteran_status: formData.veteran_status,
+        disability_status: formData.disability_status,
         references: formData.references || [],
-        blocked_companies: formData.blockedCompanies || [],
-        additional_notes: formData.additionalNotes
+        blocked_companies: formData.blocked_companies || [],
+        additional_notes: formData.additional_notes
       };
 
       // Make API call to create profile
@@ -487,6 +505,7 @@ const ProfileSetup = () => {
       
       // Mark profile as complete in localStorage
       localStorage.setItem("candidateProfileComplete", "true");
+      localStorage.setItem("has_profile", "true");
       localStorage.setItem("candidateProfileData", JSON.stringify({ ...profileData, candidateCode }));
       
       // Show success message
@@ -498,7 +517,8 @@ const ProfileSetup = () => {
           profileComplete: true,
           candidateCode,
           profileData: profileData,
-          resumeFile
+          resumeFile,
+          fromProfileSetup: true
         }
       });
     } catch (error) {
@@ -533,7 +553,7 @@ const ProfileSetup = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
         <div>
           <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
-            City *
+            City <span className="text-red-500">*</span>
           </label>
           <div className="relative">
             <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-gray-400" />
@@ -551,14 +571,14 @@ const ProfileSetup = () => {
           {errors.city && (
             <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
               <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
-              {errors.city}
+              Please enter your city
             </p>
           )}
         </div>
 
         <div>
           <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
-            State *
+            State <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
@@ -573,7 +593,7 @@ const ProfileSetup = () => {
           {errors.state && (
             <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
               <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
-              {errors.state}
+              Please enter your state
             </p>
           )}
         </div>
@@ -582,8 +602,8 @@ const ProfileSetup = () => {
       <div className="flex items-center gap-2">
         <input
           type="checkbox"
-          name="willingToRelocate"
-          checked={formData.willingToRelocate}
+          name="willing_to_relocate"
+          checked={formData.willing_to_relocate}
           onChange={handleInputChange}
           className="h-3 w-3 md:h-4 md:w-4 text-[#273469] focus:ring-[#273469] border-[#e4d9ff] rounded"
         />
@@ -592,7 +612,7 @@ const ProfileSetup = () => {
 
       <div>
         <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
-          Preferred Locations
+          Preferred Locations <span className="text-red-500">*</span>
         </label>
         <div className="flex gap-2 mb-2">
           <input
@@ -612,7 +632,7 @@ const ProfileSetup = () => {
           </button>
         </div>
         <div className="flex flex-wrap gap-2">
-          {(formData.preferredLocations || []).map((location) => (
+          {(formData.preferred_locations || []).map((location) => (
             <span
               key={location}
               className="inline-flex items-center gap-1 bg-indigo-100 text-indigo-800 px-2 md:px-3 py-1 rounded-full text-xs md:text-sm"
@@ -628,45 +648,60 @@ const ProfileSetup = () => {
             </span>
           ))}
         </div>
+        {errors.preferred_locations && (
+          <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
+            <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
+            Please add at least one preferred location
+          </p>
+        )}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
         <div>
           <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
-            Relocation Willingness
+            Relocation Willingness <span className="text-red-500">*</span>
           </label>
           <select
-            name="relocationWillingness"
-            value={formData.relocationWillingness}
+            name="relocation_willingness"
+            value={formData.relocation_willingness}
             onChange={handleInputChange}
-            className="w-full px-3 md:px-4 py-2 md:py-3 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] text-sm md:text-base"
+            className={`w-full px-3 md:px-4 py-2 md:py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] text-sm md:text-base ${
+              errors.relocation_willingness ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
+            }`}
           >
-            <option value="">Select option</option>
-            {relocationOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
+            <option value="">Select your relocation preference</option>
+            <option value="by_self">Yes, I can relocate by myself</option>
           </select>
+          {errors.relocation_willingness && (
+            <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
+              <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
+              Please select your relocation preference
+            </p>
+          )}
         </div>
 
         <div>
           <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
             Availability Date
           </label>
-          <select
-            name="availabilityDate"
-            value={formData.availabilityDate}
-            onChange={handleInputChange}
-            className="w-full px-3 md:px-4 py-2 md:py-3 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] text-sm md:text-base"
-          >
-            <option value="">Select availability</option>
-            {availabilityOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
+          <div className="relative">
+            <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-gray-400" />
+            <input
+              type="date"
+              name="availability_date"
+              value={formData.availability_date}
+              onChange={handleInputChange}
+              min={new Date().toISOString().split('T')[0]}
+              className="w-full pl-9 md:pl-10 pr-3 md:pr-4 py-2 md:py-3 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] text-sm md:text-base"
+              style={{
+                colorScheme: 'light'
+              }}
+            />
+          </div>
+          <p className="mt-1 text-xs text-gray-500 flex items-center gap-1">
+            <AlertCircle className="h-3 w-3" />
+            Only future dates are selectable
+          </p>
         </div>
       </div>
     </div>
@@ -686,7 +721,7 @@ const ProfileSetup = () => {
 
       <div>
         <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
-          Desired Job Roles *
+          Desired Job Roles <span className="text-red-500">*</span>
         </label>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {[
@@ -698,9 +733,9 @@ const ProfileSetup = () => {
             <label key={role} className="flex items-center gap-2 p-2 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
               <input
                 type="checkbox"
-                name="desiredJobRoles"
+                name="desired_job_roles"
                 value={role}
-                checked={(formData.desiredJobRoles || []).includes(role)}
+                checked={(formData.desired_job_roles || []).includes(role)}
                 onChange={handleInputChange}
                 className="h-3 w-3 md:h-4 md:w-4 text-[#273469] focus:ring-[#273469] border-[#e4d9ff] rounded"
               />
@@ -708,17 +743,17 @@ const ProfileSetup = () => {
             </label>
           ))}
         </div>
-        {errors.desiredJobRoles && (
+        {errors.desired_job_roles && (
           <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
             <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
-            {errors.desiredJobRoles}
+            Please select at least one job role
           </p>
         )}
       </div>
 
       <div>
         <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
-          Preferred Industries *
+          Preferred Industries <span className="text-red-500">*</span>
         </label>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {[
@@ -728,9 +763,9 @@ const ProfileSetup = () => {
             <label key={industry} className="flex items-center gap-2 p-2 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
               <input
                 type="checkbox"
-                name="preferredIndustries"
+                name="preferred_industries"
                 value={industry}
-                checked={(formData.preferredIndustries || []).includes(industry)}
+                checked={(formData.preferred_industries || []).includes(industry)}
                 onChange={handleInputChange}
                 className="h-3 w-3 md:h-4 md:w-4 text-[#273469] focus:ring-[#273469] border-[#e4d9ff] rounded"
               />
@@ -738,26 +773,26 @@ const ProfileSetup = () => {
             </label>
           ))}
         </div>
-        {errors.preferredIndustries && (
+        {errors.preferred_industries && (
           <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
             <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
-            {errors.preferredIndustries}
+            Please select at least one industry
           </p>
         )}
       </div>
 
       <div>
         <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
-          Employment Types *
+          Employment Types <span className="text-red-500">*</span>
         </label>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {employmentTypes.map((type) => (
             <label key={type} className="flex items-center gap-2 p-2 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
               <input
                 type="checkbox"
-                name="employmentTypes"
+                name="employment_types"
                 value={type}
-                checked={(formData.employmentTypes || []).includes(type)}
+                checked={(formData.employment_types || []).includes(type)}
                 onChange={handleInputChange}
                 className="h-3 w-3 md:h-4 md:w-4 text-[#273469] focus:ring-[#273469] border-[#e4d9ff] rounded"
               />
@@ -765,10 +800,10 @@ const ProfileSetup = () => {
             </label>
           ))}
         </div>
-        {errors.employmentTypes && (
+        {errors.employment_types && (
           <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
             <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
-            {errors.employmentTypes}
+            Please select at least one employment type
           </p>
         )}
       </div>
@@ -791,27 +826,37 @@ const ProfileSetup = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
         <div>
           <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
-            Total Years of Experience *
+            Total Years of Experience <span className="text-red-500">*</span>
           </label>
           <select
-            name="totalYearsExperience"
-            value={formData.totalYearsExperience}
+            name="total_years_experience"
+            value={formData.total_years_experience}
             onChange={handleInputChange}
             className={`w-full px-3 md:px-4 py-2 md:py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] text-sm md:text-base ${
-              errors.totalYearsExperience ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
+              errors.total_years_experience ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
             }`}
           >
             <option value="">Select experience</option>
-            <option value="0-1">0-1 years</option>
-            <option value="1-3">1-3 years</option>
-            <option value="3-5">3-5 years</option>
-            <option value="5-10">5-10 years</option>
-            <option value="10+">10+ years</option>
+            <option value="0">0 years</option>
+            <option value="1">1 year</option>
+            <option value="2">2 years</option>
+            <option value="3">3 years</option>
+            <option value="4">4 years</option>
+            <option value="5">5 years</option>
+            <option value="6">6 years</option>
+            <option value="7">7 years</option>
+            <option value="8">8 years</option>
+            <option value="9">9 years</option>
+            <option value="10">10 years</option>
+            <option value="15">15 years</option>
+            <option value="20">20 years</option>
+            <option value="25">25 years</option>
+            <option value="30">30 years</option>
           </select>
-          {errors.totalYearsExperience && (
+          {errors.total_years_experience && (
             <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
               <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
-              {errors.totalYearsExperience}
+              Please select your years of experience
             </p>
           )}
         </div>
@@ -822,8 +867,8 @@ const ProfileSetup = () => {
           </label>
           <input
             type="text"
-            name="currentEmployer"
-            value={formData.currentEmployer}
+            name="current_employer"
+            value={formData.current_employer}
             onChange={handleInputChange}
             className="w-full px-3 md:px-4 py-2 md:py-3 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
             placeholder="Tech Corp"
@@ -832,14 +877,14 @@ const ProfileSetup = () => {
 
         <div>
           <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
-            Visa Status *
+            Visa Status <span className="text-red-500">*</span>
           </label>
           <select
-            name="visaStatus"
-            value={formData.visaStatus}
+            name="visa_status"
+            value={formData.visa_status}
             onChange={handleInputChange}
             className={`w-full px-3 md:px-4 py-2 md:py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] text-sm md:text-base ${
-              errors.visaStatus ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
+              errors.visa_status ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
             }`}
           >
             <option value="">Select visa status</option>
@@ -849,24 +894,24 @@ const ProfileSetup = () => {
               </option>
             ))}
           </select>
-          {errors.visaStatus && (
+          {errors.visa_status && (
             <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
               <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
-              {errors.visaStatus}
+              Please select your visa status
             </p>
           )}
         </div>
 
         <div>
           <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
-            Job Seeking Status *
+            Job Seeking Status <span className="text-red-500">*</span>
           </label>
           <select
-            name="jobSeekingStatus"
-            value={formData.jobSeekingStatus}
+            name="job_seeking_status"
+            value={formData.job_seeking_status}
             onChange={handleInputChange}
             className={`w-full px-3 md:px-4 py-2 md:py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] text-sm md:text-base ${
-              errors.jobSeekingStatus ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
+              errors.job_seeking_status ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
             }`}
           >
             <option value="">Select status</option>
@@ -876,29 +921,37 @@ const ProfileSetup = () => {
               </option>
             ))}
           </select>
-          {errors.jobSeekingStatus && (
+          {errors.job_seeking_status && (
             <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
               <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
-              {errors.jobSeekingStatus}
+              Please select your job seeking status
             </p>
           )}
         </div>
 
         <div>
           <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
-            Desired Annual Package (USD)
+            Desired Annual Package (USD) <span className="text-red-500">*</span>
           </label>
           <div className="relative">
             <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-gray-400" />
             <input
               type="number"
-              name="desiredAnnualPackage"
-              value={formData.desiredAnnualPackage}
+              name="desired_annual_package"
+              value={formData.desired_annual_package}
               onChange={handleInputChange}
-              className="w-full pl-9 md:pl-10 pr-3 md:pr-4 py-2 md:py-3 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+              className={`w-full pl-9 md:pl-10 pr-3 md:pr-4 py-2 md:py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+                errors.desired_annual_package ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
+              }`}
               placeholder="800000"
             />
           </div>
+          {errors.desired_annual_package && (
+            <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
+              <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
+              Please enter your desired annual package
+            </p>
+          )}
         </div>
 
         <div>
@@ -919,7 +972,7 @@ const ProfileSetup = () => {
       {/* Job History */}
       <div>
         <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
-          Job History
+          Job History <span className="text-red-500">*</span>
         </label>
         <div className="space-y-3">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -955,7 +1008,7 @@ const ProfileSetup = () => {
           </button>
         </div>
         <div className="mt-3 space-y-2">
-          {formData.jobHistory.map((job, index) => (
+          {formData.job_history.map((job, index) => (
             <div key={index} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
               <div>
                 <span className="font-medium">{job.position}</span> at <span className="font-medium">{job.company}</span> - {job.duration}
@@ -970,12 +1023,18 @@ const ProfileSetup = () => {
             </div>
           ))}
         </div>
+        {errors.job_history && (
+          <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
+            <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
+            Please add at least one job history entry
+          </p>
+        )}
       </div>
 
       {/* Skills */}
       <div>
         <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
-          Skills
+          Skills <span className="text-red-500">*</span>
         </label>
         <div className="flex gap-2 mb-2">
           <input
@@ -1011,6 +1070,12 @@ const ProfileSetup = () => {
             </span>
           ))}
         </div>
+        {errors.skills && (
+          <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
+            <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
+            Please add at least one skill
+          </p>
+        )}
       </div>
     </div>
   );
@@ -1030,7 +1095,7 @@ const ProfileSetup = () => {
       {/* Education */}
       <div>
         <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
-          Education
+          Education <span className="text-red-500">*</span>
         </label>
         <div className="space-y-3">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -1081,6 +1146,12 @@ const ProfileSetup = () => {
             </div>
           ))}
         </div>
+        {errors.education && (
+          <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
+            <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
+            Please add at least one education entry
+          </p>
+        )}
       </div>
 
       {/* Certifications */}
@@ -1147,7 +1218,7 @@ const ProfileSetup = () => {
           </button>
         </div>
         <div className="flex flex-wrap gap-2">
-          {(formData.languagesSpoken || []).map((language) => (
+          {(formData.languages_spoken || []).map((language) => (
             <span
               key={language}
               className="inline-flex items-center gap-1 bg-blue-100 text-blue-800 px-2 md:px-3 py-1 rounded-full text-xs md:text-sm"
@@ -1273,8 +1344,8 @@ const ProfileSetup = () => {
           Additional Notes
         </label>
         <textarea
-          name="additionalNotes"
-          value={formData.additionalNotes}
+          name="additional_notes"
+          value={formData.additional_notes}
           onChange={handleInputChange}
           rows={3}
           className="w-full px-3 md:px-4 py-2 md:py-3 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
@@ -1288,8 +1359,8 @@ const ProfileSetup = () => {
         <div className="flex items-center gap-2">
           <input
             type="checkbox"
-            name="veteranStatus"
-            checked={formData.veteranStatus}
+            name="veteran_status"
+            checked={formData.veteran_status}
             onChange={handleInputChange}
             className="h-3 w-3 md:h-4 md:w-4 text-[#273469] focus:ring-[#273469] border-[#e4d9ff] rounded"
           />
@@ -1298,8 +1369,8 @@ const ProfileSetup = () => {
         <div className="flex items-center gap-2">
           <input
             type="checkbox"
-            name="disabilityStatus"
-            checked={formData.disabilityStatus}
+            name="disability_status"
+            checked={formData.disability_status}
             onChange={handleInputChange}
             className="h-3 w-3 md:h-4 md:w-4 text-[#273469] focus:ring-[#273469] border-[#e4d9ff] rounded"
           />
@@ -1419,8 +1490,8 @@ const ProfileSetup = () => {
             </div>
           </div>
 
-          {/* Back Button */}
-          <div className="mt-6 md:mt-8 text-center">
+          {/* Back Button - COMMENTED OUT: Email verification not used for now */}
+          {/* <div className="mt-6 md:mt-8 text-center">
             <Link
               to="/candidate/verification"
               className="inline-flex items-center gap-2 text-[#30343f] hover:text-[#1e2749] transition-colors duration-300 font-medium text-sm md:text-base"
@@ -1428,7 +1499,7 @@ const ProfileSetup = () => {
               <ArrowLeft className="h-3 w-3 md:h-4 md:w-4" />
               Back to Email Verification
             </Link>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
