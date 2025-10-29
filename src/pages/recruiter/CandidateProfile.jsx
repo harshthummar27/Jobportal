@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Star, MapPin, Briefcase, DollarSign, Clock, Shield, UserCheck, AlertCircle, Loader2, Calendar, Mail, Phone } from "lucide-react";
-import RecruiterDashboardHeader from "../../Components/RecruiterDashboardHeader";
+import Header from "../../Components/Header";
 
 const CandidateProfile = () => {
   const { code } = useParams();
@@ -110,7 +110,7 @@ const CandidateProfile = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <RecruiterDashboardHeader />
+        <Header />
         <div className="pt-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="flex items-center justify-center h-64">
@@ -128,7 +128,7 @@ const CandidateProfile = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <RecruiterDashboardHeader />
+        <Header />
         <div className="pt-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="flex items-center justify-center h-64">
@@ -152,7 +152,7 @@ const CandidateProfile = () => {
   if (!candidate) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <RecruiterDashboardHeader />
+        <Header />
         <div className="pt-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="flex items-center justify-center h-64">

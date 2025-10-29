@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Calendar, Clock, Users, MapPin, Video, Phone, MessageSquare, CheckCircle, XCircle, AlertCircle, Star, Filter, Search, Plus } from "lucide-react";
-import DashboardHeader from "../../Components/DashboardHeader";
+import Header from "../../Components/Header";
 
 const mockInterviews = [
   {
@@ -161,7 +161,7 @@ const InterviewTracking = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <DashboardHeader />
+      <Header />
       
       <div className="pt-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

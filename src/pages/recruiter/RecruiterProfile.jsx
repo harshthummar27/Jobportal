@@ -204,8 +204,8 @@ const RecruiterProfile = () => {
       // In real app, save profile data
       console.log("Profile data:", formData);
       
-      // Navigate to contract page
-      navigate("/recruiter/contract", { 
+      // Navigate to dashboard
+      navigate("/recruiter/dashboard", { 
         state: { profileData: formData, logoFile }
       });
     } catch (error) {

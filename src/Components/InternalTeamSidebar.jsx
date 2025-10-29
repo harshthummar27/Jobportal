@@ -2,7 +2,7 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { 
   LayoutDashboard, 
-  Users, 
+  Bell, 
   Calendar, 
   FileText, 
   Shield, 
@@ -25,9 +25,9 @@ const InternalTeamSidebar = ({ isCollapsed, setIsCollapsed, onMobileClose, isMob
       bgColor: "bg-emerald-100"
     },
     {
-      name: "Candidate Selections",
-      path: "/internal-team/candidate-selections",
-      icon: Users,
+      name: "Notifications",
+      path: "/internal-team/notifications",
+      icon: Bell,
       color: "text-blue-600",
       bgColor: "bg-blue-100"
     },

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Users, Star, UserCheck, AlertCircle, Loader2, Search, Filter, MapPin, Briefcase, DollarSign, CheckCircle, X } from "lucide-react";
-import RecruiterDashboardHeader from "../../Components/RecruiterDashboardHeader";
+import { Users, UserCheck, AlertCircle, Loader2, Search, Filter, MapPin, Briefcase, DollarSign, CheckCircle, X } from "lucide-react";
+import { toast } from 'react-toastify';
+import Header from "../../Components/Header";
 
 
 const RecruiterDashboard = () => {
@@ -38,11 +39,12 @@ const RecruiterDashboard = () => {
   const [selectFormData, setSelectFormData] = useState({
     job_title: '',
     job_description: '',
-    salary_offered: '',
+    offered_salary_min: '',
+    offered_salary_max: '',
     location: '',
-    employment_type: 'full-time',
-    start_date: '',
-    notes: ''
+    notes: '',
+    selection_status: 'shortlisted',
+    is_priority: false
   });
   const [isSelecting, setIsSelecting] = useState(false);
 
@@ -69,7 +71,11 @@ const RecruiterDashboard = () => {
       // Add search filters if they have values
       if (searchParams.job_role) params.append('job_role', searchParams.job_role);
       if (searchParams.location) params.append('location', searchParams.location);
-      if (searchParams.skills) params.append('skills', searchParams.skills);
+      if (searchParams.skills) {
+        // Handle skills as array - split by comma and add each skill
+        const skillsArray = searchParams.skills.split(',').map(skill => skill.trim()).filter(skill => skill);
+        skillsArray.forEach(skill => params.append('skills[]', skill));
+      }
       if (searchParams.years_experience_min) params.append('years_experience_min', searchParams.years_experience_min);
       if (searchParams.years_experience_max) params.append('years_experience_max', searchParams.years_experience_max);
       if (searchParams.salary_min) params.append('salary_min', searchParams.salary_min);
@@ -88,10 +94,19 @@ const RecruiterDashboard = () => {
       }
 
       const data = await response.json();
+      console.log('Search API Response:', data); // Debug log
       
-      if (data.success) {
-        setCandidates(data.data);
-        setPagination(data.meta);
+      // Handle the API response structure: { candidates: { data: [...], ... }, filters_applied: {...} }
+      if (data.candidates) {
+        setCandidates(data.candidates.data || []);
+        setPagination({
+          current_page: data.candidates.current_page || 1,
+          per_page: data.candidates.per_page || 25,
+          total: data.candidates.total || 0,
+          last_page: data.candidates.last_page || 1,
+          from: data.candidates.from,
+          to: data.candidates.to
+        });
       } else {
         throw new Error(data.message || 'Failed to search candidates');
       }
@@ -188,49 +203,87 @@ const RecruiterDashboard = () => {
         throw new Error('No authentication token found');
       }
 
+      // Parse salary values, ensuring they're valid numbers
+      const salaryMin = selectFormData.offered_salary_min ? parseInt(selectFormData.offered_salary_min, 10) : null;
+      const salaryMax = selectFormData.offered_salary_max ? parseInt(selectFormData.offered_salary_max, 10) : null;
+
+      // Validate required fields
+      if (!selectFormData.job_title?.trim() || 
+          !selectFormData.job_description?.trim() || 
+          salaryMin === null || 
+          salaryMax === null || 
+          isNaN(salaryMin) || 
+          isNaN(salaryMax) ||
+          !selectFormData.location?.trim()) {
+        throw new Error('Please fill all required fields with valid values');
+      }
+
+      // Validate salary range
+      if (salaryMin > salaryMax) {
+        throw new Error('Minimum salary cannot be greater than maximum salary');
+      }
+
+      // Build payload matching Postman format exactly
+      const payload = {
+        candidate_code: selectedCandidate?.candidate_profile?.candidate_code || `CAND${selectedCandidate?.id}`,
+        selection_status: selectFormData.selection_status || 'shortlisted',
+        notes: selectFormData.notes || '',
+        job_title: selectFormData.job_title.trim(),
+        job_description: selectFormData.job_description.trim(),
+        offered_salary_min: salaryMin,
+        offered_salary_max: salaryMax,
+        location: selectFormData.location.trim(),
+        is_priority: Boolean(selectFormData.is_priority)
+      };
+
+
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/candidates/select`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          candidate_code: selectedCandidate?.candidate_profile?.candidate_code || `CAND${selectedCandidate?.id}`,
-          job_title: selectFormData.job_title,
-          job_description: selectFormData.job_description,
-          salary_offered: parseInt(selectFormData.salary_offered),
-          location: selectFormData.location,
-          employment_type: selectFormData.employment_type,
-          start_date: selectFormData.start_date,
-          notes: selectFormData.notes
-        }),
+        body: JSON.stringify(payload),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        // Log the full error response for debugging
+        console.error('API Error Response:', data);
+        
+        // Handle Laravel validation errors (422)
+        if (response.status === 422 && data.errors) {
+          const errorMessages = Object.values(data.errors).flat().join(', ');
+          throw new Error(errorMessages || data.message || 'Validation error');
+        }
+        
+        throw new Error(data.message || data.error || `HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
-      
-      if (data.success) {
-        alert('Candidate selected successfully!');
+      // Handle successful response (API returns message and selection object)
+      if (data.selection || data.message) {
+        toast.success(data.message || 'Candidate selected successfully!');
         setShowSelectModal(false);
         setSelectedCandidate(null);
         setSelectFormData({
           job_title: '',
           job_description: '',
-          salary_offered: '',
+          offered_salary_min: '',
+          offered_salary_max: '',
           location: '',
-          employment_type: 'full-time',
-          start_date: '',
-          notes: ''
+          notes: '',
+          selection_status: 'shortlisted',
+          is_priority: false
         });
+        // Refresh candidates list
+        fetchCandidates();
       } else {
         throw new Error(data.message || 'Failed to select candidate');
       }
     } catch (error) {
       console.error('Error selecting candidate:', error);
-      alert(`Error: ${error.message}`);
+      toast.error(`Error: ${error.message}`);
     } finally {
       setIsSelecting(false);
     }
@@ -243,7 +296,8 @@ const RecruiterDashboard = () => {
       ...prev,
       job_title: candidate.candidate_profile?.desired_job_roles?.[0] || '',
       location: `${candidate.candidate_profile?.city || ''}, ${candidate.candidate_profile?.state || ''}`.replace(', ,', '').replace(/^,\s*/, '').replace(/,\s*$/, ''),
-      salary_offered: candidate.candidate_profile?.desired_annual_package || ''
+      offered_salary_min: candidate.candidate_profile?.desired_annual_package || '',
+      offered_salary_max: candidate.candidate_profile?.desired_annual_package || ''
     }));
     setShowSelectModal(true);
   };
@@ -283,7 +337,7 @@ const RecruiterDashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <RecruiterDashboardHeader />
+      <Header />
       
       <div className="pt-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -295,6 +349,10 @@ const RecruiterDashboard = () => {
                 <p className="text-gray-600 mt-1">Manage your candidate selections and track your hiring progress</p>
               </div>
               <div className="flex flex-col sm:flex-row gap-3">
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <Users className="h-4 w-4" />
+                  <span>{pagination.total} Total Candidates</span>
+                </div>
                 <Link
                   to="/recruiter/shortlisted"
                   className="inline-flex items-center gap-2 bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-all duration-200 shadow-lg"
@@ -469,52 +527,6 @@ const RecruiterDashboard = () => {
             </div>
           </div>
 
-          {/* Stats Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Total Candidates</p>
-                  <p className="text-3xl font-bold text-indigo-600 mt-1">{pagination.total}</p>
-                  <p className="text-xs text-gray-500 mt-1">Approved candidates</p>
-                </div>
-                <div className="h-12 w-12 bg-indigo-100 rounded-lg flex items-center justify-center">
-                  <Users className="h-6 w-6 text-indigo-600" />
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Current Page</p>
-                  <p className="text-3xl font-bold text-purple-600 mt-1">{candidates.length}</p>
-                  <p className="text-xs text-gray-500 mt-1">Showing now</p>
-                </div>
-                <div className="h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                  <Users className="h-6 w-6 text-purple-600" />
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Average Score</p>
-                  <p className="text-3xl font-bold text-green-600 mt-1">
-                    {candidates.length > 0 
-                      ? Math.round(candidates.reduce((sum, c) => sum + (c.candidate_profile?.candidate_score || 85), 0) / candidates.length)
-                      : 0
-                    }
-                  </p>
-                  <p className="text-xs text-gray-500 mt-1">Current candidates</p>
-                </div>
-                <div className="h-12 w-12 bg-green-100 rounded-lg flex items-center justify-center">
-                  <Star className="h-6 w-6 text-green-600" />
-                </div>
-              </div>
-            </div>
-          </div>
 
           {/* Approved Candidates Table */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -568,7 +580,6 @@ const RecruiterDashboard = () => {
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Candidate</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role & Experience</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Salary</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
@@ -594,12 +605,6 @@ const RecruiterDashboard = () => {
                                 {formattedCandidate.skills.slice(0, 3).join(', ')}
                                 {formattedCandidate.skills.length > 3 && '...'}
                               </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center gap-1">
-                              <Star className="h-4 w-4 text-yellow-500" />
-                              <span className="text-sm font-semibold text-gray-900">{formattedCandidate.score}</span>
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
@@ -710,15 +715,28 @@ const RecruiterDashboard = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Salary Offered ($) *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Min Salary ($) *</label>
                   <input
                     type="number"
-                    value={selectFormData.salary_offered}
-                    onChange={(e) => setSelectFormData(prev => ({ ...prev, salary_offered: e.target.value }))}
+                    value={selectFormData.offered_salary_min}
+                    onChange={(e) => setSelectFormData(prev => ({ ...prev, offered_salary_min: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                     required
                   />
                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Max Salary ($) *</label>
+                  <input
+                    type="number"
+                    value={selectFormData.offered_salary_max}
+                    onChange={(e) => setSelectFormData(prev => ({ ...prev, offered_salary_max: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Location *</label>
                   <input
@@ -729,31 +747,33 @@ const RecruiterDashboard = () => {
                     required
                   />
                 </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Employment Type *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Selection Status *</label>
                   <select
-                    value={selectFormData.employment_type}
-                    onChange={(e) => setSelectFormData(prev => ({ ...prev, employment_type: e.target.value }))}
+                    value={selectFormData.selection_status}
+                    onChange={(e) => setSelectFormData(prev => ({ ...prev, selection_status: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                   >
-                    <option value="full-time">Full-time</option>
-                    <option value="part-time">Part-time</option>
-                    <option value="contract">Contract</option>
-                    <option value="freelance">Freelance</option>
+                    <option value="shortlisted">Shortlisted</option>
+                    <option value="selected">Selected</option>
+                    <option value="rejected">Rejected</option>
+                    <option value="on_hold">On Hold</option>
                   </select>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Start Date *</label>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <div className="flex items-center">
                   <input
-                    type="date"
-                    value={selectFormData.start_date}
-                    onChange={(e) => setSelectFormData(prev => ({ ...prev, start_date: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                    required
+                    type="checkbox"
+                    id="is_priority"
+                    checked={selectFormData.is_priority}
+                    onChange={(e) => setSelectFormData(prev => ({ ...prev, is_priority: e.target.checked }))}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                   />
+                  <label htmlFor="is_priority" className="ml-2 text-sm font-medium text-gray-700">
+                    Priority Selection
+                  </label>
                 </div>
               </div>
 
@@ -779,7 +799,7 @@ const RecruiterDashboard = () => {
             </button>
             <button
               onClick={selectCandidate}
-              disabled={isSelecting || !selectFormData.job_title || !selectFormData.job_description || !selectFormData.salary_offered || !selectFormData.location || !selectFormData.start_date}
+              disabled={isSelecting || !selectFormData.job_title || !selectFormData.job_description || !selectFormData.offered_salary_min || !selectFormData.offered_salary_max || !selectFormData.location}
               className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSelecting ? (

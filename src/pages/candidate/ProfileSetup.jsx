@@ -161,7 +161,9 @@ const ProfileSetup = () => {
   ];
 
   const relocationOptions = [
-    "by_self"
+    "by_self",
+    "if_employer_covers",
+    "not_willing"
   ];
 
   const handleInputChange = (e) => {
@@ -670,7 +672,13 @@ const ProfileSetup = () => {
             }`}
           >
             <option value="">Select your relocation preference</option>
-            <option value="by_self">Yes, I can relocate by myself</option>
+            {relocationOptions.map((option) => (
+              <option key={option} value={option}>
+                {option === "by_self" ? "Yes, I can relocate by myself" :
+                 option === "if_employer_covers" ? "Yes, if employer covers relocation costs" :
+                 "Not willing to relocate"}
+              </option>
+            ))}
           </select>
           {errors.relocation_willingness && (
             <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
@@ -1159,38 +1167,72 @@ const ProfileSetup = () => {
         <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
           Certifications
         </label>
-        <div className="flex gap-2 mb-2">
-          <input
-            type="text"
-            value={currentCertification.name}
-            onChange={(e) => setCurrentCertification(prev => ({ ...prev, name: e.target.value }))}
-            onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addCertification())}
-            className="flex-1 px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
-            placeholder="Add certification"
-          />
+        <div className="space-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <input
+              type="text"
+              placeholder="Certification Name"
+              value={currentCertification.name}
+              onChange={(e) => setCurrentCertification(prev => ({ ...prev, name: e.target.value }))}
+              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+            />
+            <input
+              type="text"
+              placeholder="Issuer"
+              value={currentCertification.issuer}
+              onChange={(e) => setCurrentCertification(prev => ({ ...prev, issuer: e.target.value }))}
+              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+            />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <input
+              type="date"
+              placeholder="Date Received"
+              value={currentCertification.date}
+              onChange={(e) => setCurrentCertification(prev => ({ ...prev, date: e.target.value }))}
+              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+              style={{ colorScheme: 'light' }}
+            />
+            <input
+              type="date"
+              placeholder="Expiry Date (Optional)"
+              value={currentCertification.expiryDate}
+              onChange={(e) => setCurrentCertification(prev => ({ ...prev, expiryDate: e.target.value }))}
+              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+              style={{ colorScheme: 'light' }}
+            />
+          </div>
           <button
             type="button"
             onClick={addCertification}
             className="px-3 md:px-4 py-2 bg-[#273469] text-white rounded-xl hover:bg-[#1e2749] transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
           >
-            <Plus className="h-3 w-3 md:h-4 md:w-4" />
+            <Plus className="h-3 w-3 md:h-4 md:w-4 inline mr-1" />
+            Add Certification
           </button>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="mt-3 space-y-2">
           {(formData.certifications || []).map((cert, index) => (
-            <span
-              key={index}
-              className="inline-flex items-center gap-1 bg-green-100 text-green-800 px-2 md:px-3 py-1 rounded-full text-xs md:text-sm"
-            >
-              {cert.name}
+            <div key={index} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+              <div className="text-sm">
+                <span className="font-medium">{cert.name}</span>
+                {cert.issuer && <span> by {cert.issuer}</span>}
+                {(cert.date || cert.expiryDate) && (
+                  <span className="text-gray-600">
+                    {cert.date && ` (Received: ${new Date(cert.date).toLocaleDateString()}`}
+                    {cert.expiryDate && (cert.date ? `, Expires: ${new Date(cert.expiryDate).toLocaleDateString()}` : ` (Expires: ${new Date(cert.expiryDate).toLocaleDateString()}`)}
+                    {(cert.date || cert.expiryDate) && ')'}
+                  </span>
+                )}
+              </div>
               <button
                 type="button"
                 onClick={() => removeCertification(index)}
-                className="hover:text-green-600"
+                className="text-red-600 hover:text-red-800"
               >
-                <X className="h-2 w-2 md:h-3 md:w-3" />
+                <X className="h-4 w-4" />
               </button>
-            </span>
+            </div>
           ))}
         </div>
       </div>

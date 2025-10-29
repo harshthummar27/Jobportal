@@ -161,24 +161,7 @@ const Login = () => {
       toast.success(`Welcome back! You've successfully logged in as ${userTypes.find(t => t.id === selectedRole)?.title}.`);
       
       // Navigate to dashboard based on role
-      if (selectedRole === "candidate") {
-        navigate("/candidate/dashboard");
-      } else if (selectedRole === "recruiter") {
-        // COMMENTED OUT: Agreement check logic - recruiters now go directly to dashboard
-        // const hasAcceptedAgreement = localStorage.getItem("recruiterAgreementAccepted");
-        
-        // if (!hasAcceptedAgreement) {
-        //   toast.info("Welcome! Please review and accept our recruiter agreement to continue.");
-        //   navigate("/recruiter/contract");
-        // } else {
-        //   navigate("/recruiter/dashboard");
-        // }
-        
-        // Direct navigation to dashboard (agreement page bypassed for now)
-        navigate("/recruiter/dashboard");
-      } else {
-        navigate(getRedirectPath(selectedRole));
-      }
+      navigate(getRedirectPath(selectedRole));
     } catch (error) {
       console.error("Login error:", error);
       

@@ -12,7 +12,8 @@ import {
   TrendingUp,
   Clock,
   AlertCircle,
-  CheckCircle
+  CheckCircle,
+  Bell
 } from "lucide-react";
 
 const InternalTeamDashboard = () => {
@@ -205,13 +206,13 @@ const InternalTeamDashboard = () => {
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <Link
-            to="/internal-team/candidate-selections"
+            to="/internal-team/notifications"
             className="flex items-center p-3 border rounded-lg hover:bg-gray-50 transition-colors"
           >
-            <Users className="h-6 w-6 text-blue-600 mr-3 flex-shrink-0" />
+            <Bell className="h-6 w-6 text-blue-600 mr-3 flex-shrink-0" />
             <div className="min-w-0">
-              <p className="font-medium text-gray-900 truncate">Candidate Selections</p>
-              <p className="text-sm text-gray-500 truncate">{stats.pendingSelections} pending contact</p>
+              <p className="font-medium text-gray-900 truncate">Notifications</p>
+              <p className="text-sm text-gray-500 truncate">View all notifications</p>
             </div>
           </Link>
           

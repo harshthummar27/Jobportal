@@ -19,7 +19,7 @@ import {
   FileText,
   Globe
 } from "lucide-react";
-import DashboardHeader from "../../Components/DashboardHeader";
+import Header from "../../Components/Header";
 
 const CandidatePreferences = () => {
   const navigate = useNavigate();
@@ -242,7 +242,7 @@ const CandidatePreferences = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <DashboardHeader />
+      <Header />
       
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}

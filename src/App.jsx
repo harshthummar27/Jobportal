@@ -18,8 +18,6 @@ import RecruiterRegistration from "./pages/recruiter/RecruiterRegistration";
 // COMMENTED OUT: Email verification component - not used for now
 // import EmailVerification from "./pages/recruiter/EmailVerification";
 import RecruiterProfile from "./pages/recruiter/RecruiterProfile";
-// COMMENTED OUT: Agreement contract component - not used for now
-// import RecruiterContract from "./pages/recruiter/RecruiterContract";
 import ShortlistedCandidates from "./pages/recruiter/ShortlistedCandidates";
 import InterviewTracking from "./pages/recruiter/InterviewTracking";
 import SuperAdminDashboard from "./pages/superadmin/SuperAdminDashboard";
@@ -31,10 +29,12 @@ import NotFound from "./pages/NotFound";
 import SuperAdminLayout from "./Components/SuperAdminLayout";
 import InternalTeamLayout from "./Components/InternalTeamLayout";
 import ScrollToTop from "./Components/ScrollToTop";
+import PublicRoute from "./Components/Auth/PublicRoute";
+import PrivateRoute from "./Components/Auth/PrivateRoute";
 
 // Internal Team Pages
 import InternalTeamDashboard from "./pages/internalteam/InternalTeamDashboard";
-import CandidateSelections from "./pages/internalteam/CandidateSelections";
+import Notifications from "./pages/internalteam/Notifications";
 import InterviewScheduling from "./pages/internalteam/InterviewScheduling";
 import OfferManagement from "./pages/internalteam/OfferManagement";
 import ScreeningBlocking from "./pages/internalteam/ScreeningBlocking";
@@ -48,54 +48,257 @@ export default function App() {
     <>
       <ScrollToTop />
       <Routes>
+        {/* Public routes - accessible to everyone */}
         <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
         <Route path="/candidate-info" element={<CandidateInfo />} />
         <Route path="/recruiter-info" element={<RecruiterInfo />} />
-        <Route path="/candidate/profile-setup" element={<ProfileSetup />} />
-        <Route path="/candidate/dashboard" element={<CandidateDashboard />} />
         
-        {/* Candidate Registration Flow */}
-        <Route path="/candidate/register" element={<CandidateRegistration />} />
-        {/* COMMENTED OUT: Email verification route - not used for now */}
-        {/* <Route path="/candidate/verification" element={<CandidateVerification />} /> */}
-        <Route path="/candidate/login" element={<Login />} />
-        <Route path="/candidate/preferences" element={<CandidatePreferences />} />
-        <Route path="/recruiter/dashboard" element={<RecruiterDashboard />} />
-        <Route path="/recruiter/candidate/:code" element={<CandidateProfile />} />
+        {/* Public routes with auth guard - redirects logged-in users to dashboard */}
+        <Route 
+          path="/login" 
+          element={
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
+          } 
+        />
+        <Route 
+          path="/candidate/login" 
+          element={
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
+          } 
+        />
+        <Route 
+          path="/recruiter/login" 
+          element={
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
+          } 
+        />
+        <Route 
+          path="/candidate/register" 
+          element={
+            <PublicRoute>
+              <CandidateRegistration />
+            </PublicRoute>
+          } 
+        />
+        <Route 
+          path="/recruiter/register" 
+          element={
+            <PublicRoute>
+              <RecruiterRegistration />
+            </PublicRoute>
+          } 
+        />
         
-          {/* Recruiter Registration Flow */}
-          <Route path="/recruiter/register" element={<RecruiterRegistration />} />
-          {/* COMMENTED OUT: Email verification route - not used for now */}
-          {/* <Route path="/recruiter/verification" element={<EmailVerification />} /> */}
-          <Route path="/recruiter/login" element={<Login />} />
-          <Route path="/recruiter/profile-setup" element={<RecruiterProfile />} />
-          {/* COMMENTED OUT: Agreement contract route - not used for now */}
-          {/* <Route path="/recruiter/contract" element={<RecruiterContract />} /> */}
-          
-          {/* Recruiter Selection & Management */}
-          <Route path="/recruiter/shortlisted" element={<ShortlistedCandidates />} />
-          <Route path="/recruiter/interview-tracking" element={<InterviewTracking />} />
+        {/* Protected routes - require authentication */}
+        <Route 
+          path="/candidate/profile-setup" 
+          element={
+            <PrivateRoute>
+              <ProfileSetup />
+            </PrivateRoute>
+          } 
+        />
+        <Route 
+          path="/candidate/dashboard" 
+          element={
+            <PrivateRoute>
+              <CandidateDashboard />
+            </PrivateRoute>
+          } 
+        />
+        <Route 
+          path="/candidate/preferences" 
+          element={
+            <PrivateRoute>
+              <CandidatePreferences />
+            </PrivateRoute>
+          } 
+        />
         
-        {/* Super Admin Routes */}
-        <Route path="/superadmin/dashboard" element={<SuperAdminLayout><SuperAdminDashboard /></SuperAdminLayout>} />
-        <Route path="/superadmin/pending-candidates" element={<SuperAdminLayout><PendingCandidates /></SuperAdminLayout>} />
-        <Route path="/superadmin/approved-candidates" element={<SuperAdminLayout><ApprovedCandidates /></SuperAdminLayout>} />
-        <Route path="/superadmin/recruiters" element={<SuperAdminLayout><Recruiters /></SuperAdminLayout>} />
-        <Route path="/superadmin/internal-team" element={<SuperAdminLayout><InternalTeam /></SuperAdminLayout>} />
+        {/* Recruiter Protected Routes */}
+        <Route 
+          path="/recruiter/dashboard" 
+          element={
+            <PrivateRoute>
+              <RecruiterDashboard />
+            </PrivateRoute>
+          } 
+        />
+        <Route 
+          path="/recruiter/candidate/:code" 
+          element={
+            <PrivateRoute>
+              <CandidateProfile />
+            </PrivateRoute>
+          } 
+        />
+        <Route 
+          path="/recruiter/profile-setup" 
+          element={
+            <PrivateRoute>
+              <RecruiterProfile />
+            </PrivateRoute>
+          } 
+        />
+        <Route 
+          path="/recruiter/shortlisted" 
+          element={
+            <PrivateRoute>
+              <ShortlistedCandidates />
+            </PrivateRoute>
+          } 
+        />
+        <Route 
+          path="/recruiter/interview-tracking" 
+          element={
+            <PrivateRoute>
+              <InterviewTracking />
+            </PrivateRoute>
+          } 
+        />
         
-        {/* Internal Team Routes */}
-        <Route path="/internal-team/dashboard" element={<InternalTeamLayout><InternalTeamDashboard /></InternalTeamLayout>} />
-        <Route path="/internal-team/candidate-selections" element={<InternalTeamLayout><CandidateSelections /></InternalTeamLayout>} />
-        <Route path="/internal-team/interview-scheduling" element={<InternalTeamLayout><InterviewScheduling /></InternalTeamLayout>} />
-        <Route path="/internal-team/offer-management" element={<InternalTeamLayout><OfferManagement /></InternalTeamLayout>} />
-        <Route path="/internal-team/screening-blocking" element={<InternalTeamLayout><ScreeningBlocking /></InternalTeamLayout>} />
-        <Route path="/internal-team/blocked-candidates" element={<InternalTeamLayout><BlockedCandidates /></InternalTeamLayout>} />
-        <Route path="/internal-team/communication" element={<InternalTeamLayout><Communication /></InternalTeamLayout>} />
-        <Route path="/internal-team/activity-log" element={<InternalTeamLayout><ActivityLog /></InternalTeamLayout>} />
+        {/* Super Admin Protected Routes */}
+        <Route 
+          path="/superadmin/dashboard" 
+          element={
+            <PrivateRoute>
+              <SuperAdminLayout>
+                <SuperAdminDashboard />
+              </SuperAdminLayout>
+            </PrivateRoute>
+          } 
+        />
+        <Route 
+          path="/superadmin/pending-candidates" 
+          element={
+            <PrivateRoute>
+              <SuperAdminLayout>
+                <PendingCandidates />
+              </SuperAdminLayout>
+            </PrivateRoute>
+          } 
+        />
+        <Route 
+          path="/superadmin/approved-candidates" 
+          element={
+            <PrivateRoute>
+              <SuperAdminLayout>
+                <ApprovedCandidates />
+              </SuperAdminLayout>
+            </PrivateRoute>
+          } 
+        />
+        <Route 
+          path="/superadmin/recruiters" 
+          element={
+            <PrivateRoute>
+              <SuperAdminLayout>
+                <Recruiters />
+              </SuperAdminLayout>
+            </PrivateRoute>
+          } 
+        />
+        <Route 
+          path="/superadmin/internal-team" 
+          element={
+            <PrivateRoute>
+              <SuperAdminLayout>
+                <InternalTeam />
+              </SuperAdminLayout>
+            </PrivateRoute>
+          } 
+        />
         
+        {/* Internal Team Protected Routes */}
+        <Route 
+          path="/internal-team/dashboard" 
+          element={
+            <PrivateRoute>
+              <InternalTeamLayout>
+                <InternalTeamDashboard />
+              </InternalTeamLayout>
+            </PrivateRoute>
+          } 
+        />
+        <Route 
+          path="/internal-team/notifications" 
+          element={
+            <PrivateRoute>
+              <InternalTeamLayout>
+                <Notifications />
+              </InternalTeamLayout>
+            </PrivateRoute>
+          } 
+        />
+        <Route 
+          path="/internal-team/interview-scheduling" 
+          element={
+            <PrivateRoute>
+              <InternalTeamLayout>
+                <InterviewScheduling />
+              </InternalTeamLayout>
+            </PrivateRoute>
+          } 
+        />
+        <Route 
+          path="/internal-team/offer-management" 
+          element={
+            <PrivateRoute>
+              <InternalTeamLayout>
+                <OfferManagement />
+              </InternalTeamLayout>
+            </PrivateRoute>
+          } 
+        />
+        <Route 
+          path="/internal-team/screening-blocking" 
+          element={
+            <PrivateRoute>
+              <InternalTeamLayout>
+                <ScreeningBlocking />
+              </InternalTeamLayout>
+            </PrivateRoute>
+          } 
+        />
+        <Route 
+          path="/internal-team/blocked-candidates" 
+          element={
+            <PrivateRoute>
+              <InternalTeamLayout>
+                <BlockedCandidates />
+              </InternalTeamLayout>
+            </PrivateRoute>
+          } 
+        />
+        <Route 
+          path="/internal-team/communication" 
+          element={
+            <PrivateRoute>
+              <InternalTeamLayout>
+                <Communication />
+              </InternalTeamLayout>
+            </PrivateRoute>
+          } 
+        />
+        <Route 
+          path="/internal-team/activity-log" 
+          element={
+            <PrivateRoute>
+              <InternalTeamLayout>
+                <ActivityLog />
+              </InternalTeamLayout>
+            </PrivateRoute>
+          } 
+        />
+        
+        {/* 404 Route */}
         <Route path="*" element={<NotFound />} />
-        {/* <Route path="*" element={<NotFound />} /> */}
       </Routes>
       
       {/* Toast Container */}

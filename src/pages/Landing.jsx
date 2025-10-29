@@ -279,6 +279,33 @@ const MobileSlider = ({ children, className = "" }) => {
 
 const Landing = () => {
   const [isVisible, setIsVisible] = useState({});
+  
+  // Initialize auth state synchronously from localStorage to prevent flash
+  const checkAuthSync = () => {
+    try {
+      const token = localStorage.getItem('token');
+      return !!token;
+    } catch (error) {
+      return false;
+    }
+  };
+  
+  const [isLoggedIn, setIsLoggedIn] = useState(checkAuthSync());
+
+  // Update auth status when storage changes (for logout from other tabs)
+  useEffect(() => {
+    const checkAuth = () => {
+      const token = localStorage.getItem('token');
+      setIsLoggedIn(!!token);
+    };
+    
+    // Listen for storage changes (for logout from other tabs)
+    window.addEventListener('storage', checkAuth);
+    
+    return () => {
+      window.removeEventListener('storage', checkAuth);
+    };
+  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -345,21 +372,23 @@ const Landing = () => {
                 Save time and ensure quality with our comprehensive screening process.
               </p>
               
-              <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
-                <Link to="/candidate-info" className="w-full sm:w-auto">
-                  <Button size="lg" variant="primary" className="group w-full sm:w-auto">
-                    <Users className="mr-2 md:mr-3 h-4 w-4 md:h-5 md:w-5 group-hover:rotate-12 transition-transform duration-300" />
-                    For Candidates
-                    <ArrowRight className="ml-2 md:ml-3 h-4 w-4 md:h-5 md:w-5 group-hover:translate-x-1 transition-transform duration-300" />
-                  </Button>
-                </Link>
-                <Link to="/recruiter-info" className="w-full sm:w-auto">
-                  <Button size="lg" variant="outline" className="group w-full sm:w-auto">
-                    <Briefcase className="mr-2 md:mr-3 h-4 w-4 md:h-5 md:w-5 group-hover:rotate-12 transition-transform duration-300" />
-                    For Recruiters
-                  </Button>
-                </Link>
-              </div>
+              {!isLoggedIn && (
+                <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
+                  <Link to="/candidate-info" className="w-full sm:w-auto">
+                    <Button size="lg" variant="primary" className="group w-full sm:w-auto">
+                      <Users className="mr-2 md:mr-3 h-4 w-4 md:h-5 md:w-5 group-hover:rotate-12 transition-transform duration-300" />
+                      For Candidates
+                      <ArrowRight className="ml-2 md:ml-3 h-4 w-4 md:h-5 md:w-5 group-hover:translate-x-1 transition-transform duration-300" />
+                    </Button>
+                  </Link>
+                  <Link to="/recruiter-info" className="w-full sm:w-auto">
+                    <Button size="lg" variant="outline" className="group w-full sm:w-auto">
+                      <Briefcase className="mr-2 md:mr-3 h-4 w-4 md:h-5 md:w-5 group-hover:rotate-12 transition-transform duration-300" />
+                      For Recruiters
+                    </Button>
+                  </Link>
+                </div>
+              )}
             </div>
 
             {/* Right Side - Visual Elements */}
@@ -752,21 +781,23 @@ const Landing = () => {
                 Join thousands of professionals and companies who trust VettedPool
                 for their recruitment needs.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center">
-                <Link to="/login" className="w-full sm:w-auto">
-                  <Button size="lg" variant="primary" className="group w-full sm:w-auto">
-                    <Rocket className="mr-2 md:mr-3 h-5 w-5 md:h-6 md:w-6 group-hover:rotate-12 transition-transform duration-300" />
-                    Get Started Now
-                    <ArrowRight className="ml-2 md:ml-3 h-4 w-4 md:h-5 md:w-5 group-hover:translate-x-1 transition-transform duration-300" />
-                  </Button>
-                </Link>
-                <Link to="/candidate-info" className="w-full sm:w-auto">
-                  <Button size="lg" variant="outline" className="group w-full sm:w-auto">
-                    <Users className="mr-2 md:mr-3 h-5 w-5 md:h-6 md:w-6 group-hover:rotate-12 transition-transform duration-300" />
-                    Learn More
-                  </Button>
-                </Link>
-              </div>
+              {!isLoggedIn && (
+                <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center">
+                  <Link to="/login" className="w-full sm:w-auto">
+                    <Button size="lg" variant="primary" className="group w-full sm:w-auto">
+                      <Rocket className="mr-2 md:mr-3 h-5 w-5 md:h-6 md:w-6 group-hover:rotate-12 transition-transform duration-300" />
+                      Get Started Now
+                      <ArrowRight className="ml-2 md:ml-3 h-4 w-4 md:h-5 md:w-5 group-hover:translate-x-1 transition-transform duration-300" />
+                    </Button>
+                  </Link>
+                  <Link to="/candidate-info" className="w-full sm:w-auto">
+                    <Button size="lg" variant="outline" className="group w-full sm:w-auto">
+                      <Users className="mr-2 md:mr-3 h-5 w-5 md:h-6 md:w-6 group-hover:rotate-12 transition-transform duration-300" />
+                      Learn More
+                    </Button>
+                  </Link>
+                </div>
+              )}
             </div>
           </FloatingCard>
         </div>

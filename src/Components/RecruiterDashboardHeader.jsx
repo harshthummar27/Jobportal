@@ -346,13 +346,6 @@ const RecruiterDashboardHeader = ({ onEditProfile, userData }) => {
                         Email {profileData.verification_status?.email_verified ? 'Verified' : 'Not Verified'}
                       </span>
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        profileData.verification_status?.agreement_accepted 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-red-100 text-red-800'
-                      }`}>
-                        Agreement {profileData.verification_status?.agreement_accepted ? 'Accepted' : 'Not Accepted'}
-                      </span>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                         profileData.verification_status?.fully_verified 
                           ? 'bg-green-100 text-green-800' 
                           : 'bg-yellow-100 text-yellow-800'

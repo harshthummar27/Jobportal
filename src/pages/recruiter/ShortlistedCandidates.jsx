@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Users, Star, Calendar, MapPin, Briefcase, DollarSign, Eye, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
-import RecruiterDashboardHeader from "../../Components/RecruiterDashboardHeader";
+import { Users, Star, MapPin, Briefcase, Eye, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
+import Header from "../../Components/Header";
 
 const ShortlistedCandidates = () => {
   const [selectedCandidates, setSelectedCandidates] = useState([]);
@@ -110,7 +110,7 @@ const ShortlistedCandidates = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <RecruiterDashboardHeader />
+      <Header />
       
       <div className="pt-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -122,6 +122,10 @@ const ShortlistedCandidates = () => {
                 <p className="text-gray-600 mt-1">View and manage your selected candidates</p>
               </div>
               <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <CheckCircle className="h-4 w-4" />
+                  <span>{pagination.total} Total Selected</span>
+                </div>
                 <Link
                   to="/recruiter/dashboard"
                   className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-all duration-200 shadow-lg"
@@ -133,71 +137,6 @@ const ShortlistedCandidates = () => {
             </div>
           </div>
 
-          {/* Stats Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Total Selected</p>
-                  <p className="text-3xl font-bold text-green-600 mt-1">{pagination.total}</p>
-                  <p className="text-xs text-gray-500 mt-1">Candidates</p>
-                </div>
-                <div className="h-12 w-12 bg-green-100 rounded-lg flex items-center justify-center">
-                  <CheckCircle className="h-6 w-6 text-green-600" />
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Current Page</p>
-                  <p className="text-3xl font-bold text-blue-600 mt-1">{selectedCandidates.length}</p>
-                  <p className="text-xs text-gray-500 mt-1">Showing now</p>
-                </div>
-                <div className="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <Users className="h-6 w-6 text-blue-600" />
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">This Month</p>
-                  <p className="text-3xl font-bold text-purple-600 mt-1">
-                    {selectedCandidates.filter(c => {
-                      const createdDate = new Date(c.created_at);
-                      const now = new Date();
-                      return createdDate.getMonth() === now.getMonth() && createdDate.getFullYear() === now.getFullYear();
-                    }).length}
-                  </p>
-                  <p className="text-xs text-gray-500 mt-1">New selections</p>
-                </div>
-                <div className="h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                  <Calendar className="h-6 w-6 text-purple-600" />
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Avg. Salary</p>
-                  <p className="text-3xl font-bold text-emerald-600 mt-1">
-                    {selectedCandidates.length > 0 
-                      ? `$${Math.round(selectedCandidates.reduce((sum, c) => sum + (parseInt(c.salary_offered) || 0), 0) / selectedCandidates.length / 1000)}k`
-                      : '$0k'
-                    }
-                  </p>
-                  <p className="text-xs text-gray-500 mt-1">Offered</p>
-                </div>
-                <div className="h-12 w-12 bg-emerald-100 rounded-lg flex items-center justify-center">
-                  <DollarSign className="h-6 w-6 text-emerald-600" />
-                </div>
-              </div>
-            </div>
-          </div>
 
           {/* Selected Candidates Table */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">

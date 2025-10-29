@@ -4,7 +4,7 @@ import { Shield } from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer className="border-t border-gray-300 bg-white py-6">
+    <footer className="border-t border-gray-100 bg-white py-6">
       <div className="max-w-7xl mx-auto px-4">
         {/* Brand Section */}
         <div className="text-center">
