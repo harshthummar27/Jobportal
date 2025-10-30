@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Search, RefreshCw, ChevronLeft, ChevronRight, AlertCircle, Users, ChevronUp, ChevronDown } from "lucide-react";
+import { toast } from 'react-toastify';
 
-const AllCandidates = () => {
+const PendingCandidatesIT = () => {
   const [candidates, setCandidates] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -14,6 +15,10 @@ const AllCandidates = () => {
 
   const [meta, setMeta] = useState({ current_page: 1, per_page: 25, total: 0, last_page: 1, from: null, to: null });
   const [links, setLinks] = useState({ first: null, last: null, prev: null, next: null });
+  const [actionLoadingKey, setActionLoadingKey] = useState(null);
+  const [actionError, setActionError] = useState(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmRow, setConfirmRow] = useState(null);
 
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
 
@@ -25,6 +30,7 @@ const AllCandidates = () => {
       const params = new URLSearchParams();
       params.set('page', String(page));
       params.set('per_page', String(perPage));
+      params.set('status', 'pending'); // always filter pending
       if (search) params.set('search', search);
       if (sortBy) params.set('sort_by', sortBy);
       if (sortDirection) params.set('sort_direction', sortDirection);
@@ -33,30 +39,102 @@ const AllCandidates = () => {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
       });
 
+      let json;
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        // Try to parse backend error message
+        try {
+          json = await response.json();
+          const apiMsg = json?.message || json?.error || `HTTP error! status: ${response.status}`;
+          throw new Error(apiMsg);
+        } catch (e) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
       }
 
-      const json = await response.json();
-      // Expected shape:
-      // { success: true, data: [], meta: {...}, links: {...} }
+      json = await response.json();
       setCandidates(Array.isArray(json.data) ? json.data : []);
       if (json.meta) setMeta(json.meta);
       if (json.links) setLinks(json.links);
     } catch (err) {
-      console.error('Error fetching candidates:', err);
-      setError('Failed to fetch candidates. Please try again.');
+      console.error('Error fetching pending candidates:', err);
+      const message = err?.message || 'Failed to fetch pending candidates. Please try again.';
+      setError(message);
+      toast.error(message);
       setCandidates([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // Debounced search
+  const updateCandidateStatus = async (id, status) => {
+    try {
+      setActionError(null);
+      const loadingKey = `${id}:${status}`;
+      setActionLoadingKey(loadingKey);
+
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/internal/status/candidate`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id, status }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data.message || data.error || `Failed to update status (${response.status})`);
+      }
+
+      toast.success(`Candidate status updated to ${status}.`);
+      await fetchCandidates();
+    } catch (err) {
+      console.error('Error updating candidate status:', err);
+      const message = err?.message || 'Failed to update status.';
+      setActionError(message);
+      toast.error(message);
+    } finally {
+      setActionLoadingKey(null);
+    }
+  };
+
+  const handleStatusChange = async (row, nextStatus) => {
+    const id = row.id ?? row.ID ?? row.candidate_id;
+    if (!id) return;
+
+    const currentStatus = row.status ?? row.current_status ?? '';
+    if (String(nextStatus).toLowerCase() === String(currentStatus).toLowerCase()) return;
+
+    if (nextStatus === 'decline') {
+      setConfirmRow(row);
+      setConfirmOpen(true);
+      return;
+    }
+
+    await updateCandidateStatus(id, nextStatus);
+    if (actionError) {
+      fetchCandidates();
+    }
+  };
+
+  const closeConfirm = () => {
+    setConfirmOpen(false);
+    setConfirmRow(null);
+  };
+
+  const confirmDecline = async () => {
+    if (!confirmRow) return;
+    const id = confirmRow.id ?? confirmRow.ID ?? confirmRow.candidate_id;
+    await updateCandidateStatus(id, 'decline');
+    closeConfirm();
+  };
+
   const searchDebounceRef = useRef(null);
 
   useEffect(() => {
@@ -92,6 +170,19 @@ const AllCandidates = () => {
     setPage(1);
   };
 
+  const formatCellValue = (value) => {
+    if (value === null || value === undefined) return '';
+    if (typeof value === 'object') return JSON.stringify(value);
+    
+    const str = String(value);
+    // Check if it looks like an ISO datetime string (e.g., "2025-10-29T06:17:34.000000Z")
+    if (str.includes('T') && /^\d{4}-\d{2}-\d{2}T/.test(str)) {
+      // Extract just the date part (YYYY-MM-DD)
+      return str.split('T')[0];
+    }
+    return str;
+  };
+
   const columns = useMemo(() => {
     if (!candidates || candidates.length === 0) return [];
     const first = candidates[0];
@@ -100,17 +191,15 @@ const AllCandidates = () => {
 
   return (
     <div className="w-full max-w-none">
-      {/* Header */}
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="p-2 rounded-md bg-gray-100 text-gray-700">
             <Users className="h-5 w-5" />
           </div>
-          <h1 className="text-xl font-semibold text-gray-800">All Candidates</h1>
+          <h1 className="text-xl font-semibold text-gray-800">Pending Candidates</h1>
         </div>
       </div>
 
-      {/* Controls */}
       <div className="bg-white border border-gray-200 rounded-lg p-4 mb-4">
         <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
           <div className="relative flex-1">
@@ -140,7 +229,6 @@ const AllCandidates = () => {
         </form>
       </div>
 
-      {/* State: Loading */}
       {loading && (
         <div className="flex items-center justify-center h-48">
           <div className="flex items-center gap-2 text-gray-600">
@@ -150,7 +238,6 @@ const AllCandidates = () => {
         </div>
       )}
 
-      {/* State: Error */}
       {!loading && error && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
           <div className="flex items-center gap-2 text-red-700">
@@ -160,7 +247,6 @@ const AllCandidates = () => {
         </div>
       )}
 
-      {/* Results */}
       {!loading && !error && (
         <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
@@ -185,6 +271,12 @@ const AllCandidates = () => {
                         </div>
                       </th>
                     ))}
+                    <th
+                      scope="col"
+                      className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Status
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -192,9 +284,37 @@ const AllCandidates = () => {
                     <tr key={idx} className="hover:bg-gray-50">
                       {columns.map((col) => (
                         <td key={col} className="px-4 py-2 text-sm text-gray-700 max-w-[28rem] break-words">
-                          {typeof row[col] === 'object' && row[col] !== null ? JSON.stringify(row[col]) : String(row[col] ?? '')}
+                          {formatCellValue(row[col])}
                         </td>
                       ))}
+                      <td className="px-4 py-2 text-sm text-gray-700 whitespace-nowrap">
+                        {(() => {
+                          const id = row.id ?? row.ID ?? row.candidate_id;
+                          const isLoadingThisRow = actionLoadingKey && actionLoadingKey.startsWith(`${id}:`);
+                          const current = (row.status ?? row.current_status ?? '').toString().toLowerCase();
+                          return (
+                            <div className="relative inline-flex items-center">
+                              <select
+                                className={`appearance-none pr-8 pl-3 py-1.5 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 ${isLoadingThisRow ? 'opacity-70 cursor-not-allowed' : ''}`}
+                                value={current || ''}
+                                onChange={(e) => handleStatusChange(row, e.target.value)}
+                                disabled={!!isLoadingThisRow}
+                              >
+                                <option value="pending">Pending</option>
+                                <option value="approve">Approve</option>
+                                <option value="decline">Decline</option>
+                              </select>
+                              <div className="pointer-events-none absolute right-2">
+                                {isLoadingThisRow ? (
+                                  <RefreshCw className="h-4 w-4 animate-spin text-gray-500" />
+                                ) : (
+                                  <ChevronDown className="h-4 w-4 text-gray-500" />
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })()}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -202,7 +322,54 @@ const AllCandidates = () => {
             )}
           </div>
 
-          {/* Footer: meta + pagination */}
+          {actionError && (
+            <div className="px-4 pb-3 text-sm text-red-700">{actionError}</div>
+          )}
+
+          {confirmOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center">
+              <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"></div>
+              <div className="relative bg-white rounded-lg shadow-xl w-full max-w-sm mx-4">
+                <div className="p-5 border-b border-gray-200">
+                  <h3 className="text-base font-semibold text-gray-800">Confirm Decline</h3>
+                </div>
+                <div className="p-5 text-sm text-gray-700 space-y-2">
+                  <p>Are you sure you want to decline this candidate?</p>
+                  {confirmRow && (
+                    <div className="text-xs text-gray-500">
+                      ID: {String(confirmRow.id ?? confirmRow.ID ?? confirmRow.candidate_id)}
+                    </div>
+                  )}
+                </div>
+                <div className="p-4 border-t border-gray-200 flex items-center justify-end gap-2">
+                  <button
+                    type="button"
+                    className="px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100"
+                    onClick={closeConfirm}
+                    disabled={!!actionLoadingKey}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 flex items-center gap-2"
+                    onClick={confirmDecline}
+                    disabled={!!actionLoadingKey}
+                  >
+                    {actionLoadingKey && confirmRow && actionLoadingKey === `${(confirmRow.id ?? confirmRow.ID ?? confirmRow.candidate_id)}:decline` ? (
+                      <>
+                        <RefreshCw className="h-4 w-4 animate-spin" />
+                        Declining...
+                      </>
+                    ) : (
+                      'Confirm Decline'
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="p-3 border-t border-gray-200 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
             <div className="text-sm text-gray-600">
               Page {meta.current_page} of {meta.last_page} · Total {meta.total}
@@ -233,6 +400,6 @@ const AllCandidates = () => {
   );
 };
 
-export default AllCandidates;
+export default PendingCandidatesIT;
 
 

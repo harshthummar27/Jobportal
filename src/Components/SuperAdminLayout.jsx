@@ -147,7 +147,7 @@ const SuperAdminLayout = ({ children }) => {
 
   return (
     <SearchContext.Provider value={{ searchTerm: globalSearchTerm, onSearch: setGlobalSearchTerm }}>
-      <div className="min-h-screen bg-gray-50">
+      <div className="bg-gray-50">
         {/* Mobile Overlay - Professional transparent with blur (only behind sidebar) */}
         {mobileSidebarOpen && isMobile && (
           <div 

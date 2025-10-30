@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Search, RefreshCw, ChevronLeft, ChevronRight, AlertCircle, Users, ChevronUp, ChevronDown } from "lucide-react";
 
-const AllCandidates = () => {
+const ApprovedCandidatesIT = () => {
   const [candidates, setCandidates] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const [page, setPage] = useState(1);
-  const perPage = 25; // fixed per-page as requested
+  const perPage = 25;
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [sortDirection, setSortDirection] = useState("asc");
@@ -25,6 +25,7 @@ const AllCandidates = () => {
       const params = new URLSearchParams();
       params.set('page', String(page));
       params.set('per_page', String(perPage));
+      params.set('status', 'approved');
       if (search) params.set('search', search);
       if (sortBy) params.set('sort_by', sortBy);
       if (sortDirection) params.set('sort_direction', sortDirection);
@@ -33,6 +34,7 @@ const AllCandidates = () => {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
       });
@@ -42,21 +44,18 @@ const AllCandidates = () => {
       }
 
       const json = await response.json();
-      // Expected shape:
-      // { success: true, data: [], meta: {...}, links: {...} }
       setCandidates(Array.isArray(json.data) ? json.data : []);
       if (json.meta) setMeta(json.meta);
       if (json.links) setLinks(json.links);
     } catch (err) {
-      console.error('Error fetching candidates:', err);
-      setError('Failed to fetch candidates. Please try again.');
+      console.error('Error fetching approved candidates:', err);
+      setError('Failed to fetch approved candidates. Please try again.');
       setCandidates([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // Debounced search
   const searchDebounceRef = useRef(null);
 
   useEffect(() => {
@@ -100,17 +99,15 @@ const AllCandidates = () => {
 
   return (
     <div className="w-full max-w-none">
-      {/* Header */}
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="p-2 rounded-md bg-gray-100 text-gray-700">
             <Users className="h-5 w-5" />
           </div>
-          <h1 className="text-xl font-semibold text-gray-800">All Candidates</h1>
+          <h1 className="text-xl font-semibold text-gray-800">Approved Candidates</h1>
         </div>
       </div>
 
-      {/* Controls */}
       <div className="bg-white border border-gray-200 rounded-lg p-4 mb-4">
         <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
           <div className="relative flex-1">
@@ -140,7 +137,6 @@ const AllCandidates = () => {
         </form>
       </div>
 
-      {/* State: Loading */}
       {loading && (
         <div className="flex items-center justify-center h-48">
           <div className="flex items-center gap-2 text-gray-600">
@@ -150,7 +146,6 @@ const AllCandidates = () => {
         </div>
       )}
 
-      {/* State: Error */}
       {!loading && error && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
           <div className="flex items-center gap-2 text-red-700">
@@ -160,7 +155,6 @@ const AllCandidates = () => {
         </div>
       )}
 
-      {/* Results */}
       {!loading && !error && (
         <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
@@ -202,7 +196,6 @@ const AllCandidates = () => {
             )}
           </div>
 
-          {/* Footer: meta + pagination */}
           <div className="p-3 border-t border-gray-200 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
             <div className="text-sm text-gray-600">
               Page {meta.current_page} of {meta.last_page} · Total {meta.total}
@@ -233,6 +226,6 @@ const AllCandidates = () => {
   );
 };
 
-export default AllCandidates;
+export default ApprovedCandidatesIT;
 
 

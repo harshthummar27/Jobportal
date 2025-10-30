@@ -110,7 +110,7 @@ const RecruiterLayout = ({ children }) => {
 
   return (
     <SearchContext.Provider value={{ searchTerm: "", onSearch: () => {} }}>
-      <div className="min-h-screen bg-gray-50">
+      <div className="bg-gray-50">
         {mobileSidebarOpen && isMobile && (
           <div 
             className="fixed top-12 left-0 right-0 bottom-0 bg-white/20 backdrop-blur-sm z-40 transition-opacity duration-300"

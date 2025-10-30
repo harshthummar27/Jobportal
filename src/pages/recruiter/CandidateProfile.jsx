@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Star, MapPin, Briefcase, DollarSign, Clock, Shield, UserCheck, AlertCircle, Loader2, Calendar, Mail, Phone } from "lucide-react";
-import Header from "../../Components/Header";
+import { ArrowLeft, Star, MapPin, Briefcase, DollarSign, Clock, Shield, UserCheck, AlertCircle, Loader2, Calendar } from "lucide-react";
+import RecruiterDashboardHeader from "../../Components/RecruiterDashboardHeader";
 
 const CandidateProfile = () => {
   const { code } = useParams();
@@ -35,7 +35,9 @@ const CandidateProfile = () => {
 
       const data = await response.json();
       
-      if (data.success) {
+      if (data && data.candidate) {
+        setCandidate(data.candidate);
+      } else if (data && data.success && data.data) {
         setCandidate(data.data);
       } else {
         throw new Error(data.message || 'Failed to fetch candidate details');
@@ -58,24 +60,43 @@ const CandidateProfile = () => {
   // Format candidate data for display
   const formatCandidateData = (candidate) => {
     if (!candidate) return null;
-    
     return {
       id: candidate.id,
+      user_id: candidate.user_id,
       candidate_code: candidate.candidate_code || code,
-      full_name: candidate.candidate_profile?.full_name || candidate.name || 'N/A',
-      email: candidate.email || 'N/A',
-      phone: candidate.candidate_profile?.contact_phone || candidate.mobile_number || 'N/A',
-      desired_job_roles: candidate.candidate_profile?.desired_job_roles || ['N/A'],
-      total_years_experience: candidate.candidate_profile?.total_years_experience || 0,
-      city: candidate.candidate_profile?.city || 'N/A',
-      state: candidate.candidate_profile?.state || 'N/A',
-      country: candidate.candidate_profile?.country || 'N/A',
-      desired_annual_package: candidate.candidate_profile?.desired_annual_package || 'N/A',
-      visa_status: candidate.candidate_profile?.visa_status || 'N/A',
-      candidate_score: candidate.candidate_profile?.candidate_score || 0,
-      skills: candidate.candidate_profile?.skills || [],
-      availability: candidate.candidate_profile?.availability || 'N/A',
-      created_at: candidate.created_at ? new Date(candidate.created_at).toLocaleDateString() : 'N/A'
+      city: candidate.city,
+      state: candidate.state,
+      willing_to_relocate: candidate.willing_to_relocate,
+      preferred_locations: candidate.preferred_locations || [],
+      desired_job_roles: candidate.desired_job_roles || [],
+      preferred_industries: candidate.preferred_industries || [],
+      employment_types: candidate.employment_types || [],
+      total_years_experience: candidate.total_years_experience,
+      job_history: candidate.job_history || [],
+      skills: candidate.skills || [],
+      education: candidate.education || [],
+      certifications: candidate.certifications || [],
+      resume_file_path: candidate.resume_file_path,
+      resume_file_name: candidate.resume_file_name,
+      resume_mime_type: candidate.resume_mime_type,
+      visa_status: candidate.visa_status,
+      relocation_willingness: candidate.relocation_willingness,
+      job_seeking_status: candidate.job_seeking_status,
+      desired_annual_package: candidate.desired_annual_package,
+      availability_date: candidate.availability_date,
+      languages_spoken: candidate.languages_spoken || [],
+      ethnicity: candidate.ethnicity,
+      veteran_status: candidate.veteran_status,
+      disability_status: candidate.disability_status,
+      references: candidate.references || [],
+      blocked_companies: candidate.blocked_companies || [],
+      additional_notes: candidate.additional_notes,
+      candidate_score: candidate.candidate_score,
+      score_notes: candidate.score_notes,
+      score_updated_at: candidate.score_updated_at,
+      created_at: candidate.created_at ? new Date(candidate.created_at).toLocaleDateString() : null,
+      updated_at: candidate.updated_at,
+      scored_by: candidate.scored_by
     };
   };
 
@@ -110,7 +131,7 @@ const CandidateProfile = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Header />
+        <RecruiterDashboardHeader />
         <div className="pt-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="flex items-center justify-center h-64">
@@ -128,7 +149,7 @@ const CandidateProfile = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Header />
+        <RecruiterDashboardHeader />
         <div className="pt-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="flex items-center justify-center h-64">
@@ -152,7 +173,7 @@ const CandidateProfile = () => {
   if (!candidate) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Header />
+        <RecruiterDashboardHeader />
         <div className="pt-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="flex items-center justify-center h-64">
@@ -216,8 +237,7 @@ const CandidateProfile = () => {
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                {getStatusBadge(candidate.status)}
-                {getVisaStatusBadge(formattedCandidate.visa_status)}
+                {formattedCandidate.visa_status && getVisaStatusBadge(formattedCandidate.visa_status)}
               </div>
             </div>
           </div>
@@ -226,31 +246,36 @@ const CandidateProfile = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left Column - Basic Info */}
             <div className="lg:col-span-2 space-y-6">
-              {/* Contact Information */}
+              {/* Basic Information */}
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <Mail className="h-5 w-5 text-blue-600" />
-                  Contact Information
-                </h2>
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Basic Information</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-1">Email</label>
-                    <p className="text-sm text-gray-900">{formattedCandidate.email}</p>
-                  </div>
-                      <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-1">Phone</label>
-                    <p className="text-sm text-gray-900">{formattedCandidate.phone}</p>
+                  {formattedCandidate.city && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 mb-1">City</label>
+                      <p className="text-sm text-gray-900">{formattedCandidate.city}</p>
                     </div>
-                      <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-1">Location</label>
-                    <p className="text-sm text-gray-900">{formattedCandidate.city}, {formattedCandidate.state}, {formattedCandidate.country}</p>
+                  )}
+                  {formattedCandidate.state && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 mb-1">State</label>
+                      <p className="text-sm text-gray-900">{formattedCandidate.state}</p>
                     </div>
-                      <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-1">Availability</label>
-                    <p className="text-sm text-gray-900">{formattedCandidate.availability}</p>
-                      </div>
+                  )}
+                  {formattedCandidate.availability_date && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 mb-1">Availability Date</label>
+                      <p className="text-sm text-gray-900">{new Date(formattedCandidate.availability_date).toLocaleDateString()}</p>
                     </div>
-                  </div>
+                  )}
+                  {formattedCandidate.job_seeking_status && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 mb-1">Job Seeking Status</label>
+                      <p className="text-sm text-gray-900">{formattedCandidate.job_seeking_status.replaceAll('_', ' ')}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
                   
               {/* Professional Information */}
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
@@ -273,18 +298,56 @@ const CandidateProfile = () => {
                     <label className="block text-sm font-medium text-gray-600 mb-1">Experience</label>
                     <p className="text-sm text-gray-900">{formattedCandidate.total_years_experience} years</p>
                       </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-1">Desired Salary</label>
-                    <p className="text-sm text-gray-900">
-                      {formattedCandidate.desired_annual_package !== 'N/A' 
-                        ? `$${parseInt(formattedCandidate.desired_annual_package).toLocaleString()}`
-                        : 'Not specified'
-                      }
-                    </p>
+                  {formattedCandidate.desired_annual_package && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 mb-1">Desired Salary</label>
+                      <p className="text-sm text-gray-900">${parseInt(formattedCandidate.desired_annual_package).toLocaleString()}</p>
                     </div>
-                      <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-1">Visa Status</label>
-                    <p className="text-sm text-gray-900">{formattedCandidate.visa_status.replace('_', ' ')}</p>
+                  )}
+                  {formattedCandidate.visa_status && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 mb-1">Visa Status</label>
+                      <p className="text-sm text-gray-900">{formattedCandidate.visa_status.replace('_', ' ')}</p>
+                    </div>
+                  )}
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-600 mb-1">Preferred Industries</label>
+                    <div className="flex flex-wrap gap-1">
+                      {formattedCandidate.preferred_industries.map((ind, index) => (
+                        <span key={index} className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs font-medium">{ind}</span>
+                      ))}
+                      {formattedCandidate.preferred_industries.length === 0 && null}
+                    </div>
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-600 mb-1">Employment Types</label>
+                    <div className="flex flex-wrap gap-1">
+                      {formattedCandidate.employment_types.map((type, index) => (
+                        <span key={index} className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs font-medium">{type}</span>
+                      ))}
+                      {formattedCandidate.employment_types.length === 0 && null}
+                    </div>
+                  </div>
+                  {formattedCandidate.willing_to_relocate !== null && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 mb-1">Willing To Relocate</label>
+                      <p className="text-sm text-gray-900">{formattedCandidate.willing_to_relocate ? 'Yes' : 'No'}</p>
+                    </div>
+                  )}
+                  {formattedCandidate.relocation_willingness && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 mb-1">Relocation Willingness</label>
+                      <p className="text-sm text-gray-900">{formattedCandidate.relocation_willingness.replaceAll('_', ' ')}</p>
+                    </div>
+                  )}
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-600 mb-1">Preferred Locations</label>
+                    <div className="flex flex-wrap gap-1">
+                      {formattedCandidate.preferred_locations.map((loc, index) => (
+                        <span key={index} className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs font-medium">{loc}</span>
+                      ))}
+                      {formattedCandidate.preferred_locations.length === 0 && null}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -301,8 +364,76 @@ const CandidateProfile = () => {
                       {skill}
                     </span>
                   ))}
+                  {formattedCandidate.skills.length === 0 && null}
                 </div>
                 </div>
+
+              {/* Job History */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Job History</h2>
+                {formattedCandidate.job_history.length > 0 && (
+                  <div className="space-y-4">
+                    {formattedCandidate.job_history.map((job, idx) => (
+                      <div key={idx} className="border border-gray-100 rounded-lg p-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                          <div className="font-medium text-gray-900">{job.position} @ {job.company}</div>
+                          <div className="text-sm text-gray-500">
+                            {job.start_date ? new Date(job.start_date).toLocaleDateString() : '—'} - {job.end_date ? new Date(job.end_date).toLocaleDateString() : 'Present'}
+                          </div>
+                        </div>
+                        {job.description && (
+                          <p className="text-sm text-gray-700 mt-2">{job.description}</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Education */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Education</h2>
+                {formattedCandidate.education.length > 0 && (
+                  <div className="space-y-4">
+                    {formattedCandidate.education.map((edu, idx) => (
+                      <div key={idx} className="border border-gray-100 rounded-lg p-4">
+                        <div className="font-medium text-gray-900">{edu.degree} - {edu.major}</div>
+                        <div className="text-sm text-gray-500">{edu.institution}{edu.graduation_year ? `, ${edu.graduation_year}` : ''}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Certifications */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Certifications</h2>
+                {formattedCandidate.certifications.length > 0 && (
+                  <div className="space-y-2">
+                    {formattedCandidate.certifications.map((cert, idx) => {
+                      const isObject = cert && typeof cert === 'object' && !Array.isArray(cert);
+                      const name = isObject ? (cert.name || cert.title || 'Certification') : cert;
+                      const issuer = isObject ? cert.issuer : null;
+                      const date = isObject ? (cert.date || cert.issued || cert.issueDate) : null;
+                      const expiry = isObject ? (cert.expiryDate || cert.expires || cert.expirationDate) : null;
+                      return (
+                        <div key={idx} className="flex items-center justify-between border border-gray-100 rounded-md px-3 py-2">
+                          <div>
+                            <div className="text-sm font-medium text-gray-900">{name}</div>
+                            <div className="text-xs text-gray-500">
+                              {issuer ? `Issuer: ${issuer}` : null}
+                              {(issuer && (date || expiry)) ? ' · ' : null}
+                              {date ? `Date: ${new Date(date).toLocaleDateString()}` : null}
+                              {(date && expiry) ? ' · ' : null}
+                              {expiry ? `Expiry: ${new Date(expiry).toLocaleDateString()}` : null}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
               </div>
 
             {/* Right Column - Summary */}
@@ -311,39 +442,105 @@ const CandidateProfile = () => {
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">Candidate Summary</h2>
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Score</span>
-                    <span className="text-sm font-semibold text-gray-900">{formattedCandidate.candidate_score}</span>
+                  {formattedCandidate.candidate_score !== null && formattedCandidate.candidate_score !== undefined && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">Score</span>
+                      <span className="text-sm font-semibold text-gray-900">{formattedCandidate.candidate_score}</span>
+                    </div>
+                  )}
+                  {formattedCandidate.total_years_experience !== undefined && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">Experience</span>
+                      <span className="text-sm font-semibold text-gray-900">{formattedCandidate.total_years_experience} years</span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Experience</span>
-                    <span className="text-sm font-semibold text-gray-900">{formattedCandidate.total_years_experience} years</span>
-                </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Location</span>
-                    <span className="text-sm font-semibold text-gray-900">{formattedCandidate.city}</span>
+                  )}
+                  {formattedCandidate.city && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">City</span>
+                      <span className="text-sm font-semibold text-gray-900">{formattedCandidate.city}</span>
+                    </div>
+                  )}
+                  {formattedCandidate.skills && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">Skills Count</span>
+                      <span className="text-sm font-semibold text-gray-900">{formattedCandidate.skills.length}</span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Skills Count</span>
-                    <span className="text-sm font-semibold text-gray-900">{formattedCandidate.skills.length}</span>
-                </div>
+                  )}
+                  {formattedCandidate.availability_date && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">Availability</span>
+                      <span className="text-sm font-semibold text-gray-900">{new Date(formattedCandidate.availability_date).toLocaleDateString()}</span>
+                    </div>
+                  )}
               </div>
           </div>
 
-              {/* Actions */}
+              {/* Languages */}
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">Actions</h2>
-                <div className="space-y-3">
-                  <button className="w-full bg-green-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-700 transition-colors">
-                    Select Candidate
-                  </button>
-                  <button className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
-                    Schedule Interview
-                  </button>
-                  <button className="w-full border border-gray-300 text-gray-700 px-4 py-2 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
-                    Download Resume
-                  </button>
-                </div>
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Languages</h2>
+                {formattedCandidate.languages_spoken.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {formattedCandidate.languages_spoken.map((lang, idx) => (
+                      <span key={idx} className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium">{lang}</span>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* References */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">References</h2>
+                {formattedCandidate.references.length > 0 && (
+                  <div className="space-y-3">
+                    {formattedCandidate.references.map((ref, idx) => (
+                      <div key={idx} className="border border-gray-100 rounded-lg p-3">
+                        <div className="font-medium text-gray-900">{ref.name} - {ref.position}</div>
+                        <div className="text-sm text-gray-600">{ref.company}</div>
+                        {ref.contact && (
+                          <div className="text-sm text-gray-600">{ref.contact}</div>
+                        )}
+                        {ref.relationship && (
+                          <div className="text-xs text-gray-500">{ref.relationship}</div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Blocked Companies */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Blocked Companies</h2>
+                {formattedCandidate.blocked_companies.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {formattedCandidate.blocked_companies.map((comp, idx) => (
+                      <span key={idx} className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium">{comp}</span>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Additional Notes */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Additional Notes</h2>
+                {formattedCandidate.additional_notes && (
+                  <p className="text-sm text-gray-700">{formattedCandidate.additional_notes}</p>
+                )}
+              </div>
+
+              {/* Resume */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Resume</h2>
+                {formattedCandidate.resume_file_path ? (
+                  <a
+                    href={formattedCandidate.resume_file_path}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                  >
+                    Download {formattedCandidate.resume_file_name || 'Resume'}
+                  </a>
+                ) : null}
               </div>
             </div>
           </div>

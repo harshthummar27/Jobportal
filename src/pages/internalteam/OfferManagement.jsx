@@ -19,6 +19,7 @@ import {
   TrendingUp,
   TrendingDown
 } from "lucide-react";
+import { toast } from 'react-toastify';
 import { useSearch } from "../../Components/InternalTeamLayout";
 
 const OfferManagement = () => {
@@ -26,145 +27,37 @@ const OfferManagement = () => {
   const [showOfferModal, setShowOfferModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedOffer, setSelectedOffer] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState({});
   const { searchTerm } = useSearch();
 
-  // Mock data - in real app, replace with API call
-  const [offers, setOffers] = useState([
-    {
-      id: 1,
-      candidateId: "TSC-2024-2847",
-      candidateName: "Grace Chen",
-      candidateEmail: "grace.chen@email.com",
-      candidatePhone: "+1 234-567-8901",
-      recruiter: "CloudFirst Technologies",
-      recruiterContact: "john.recruiter@cloudfirst.com",
-      position: "Senior React Developer",
-      offeredSalary: "$125,000",
-      candidateExpectedSalary: "$120,000",
-      location: "Remote",
-      candidatePreferredLocation: "Remote",
-      offerDate: "2024-01-20",
-      responseDeadline: "2024-01-27",
-      status: "pending",
-      responseDate: null,
-      declineCount: 0,
-      notes: "Strong technical skills, good cultural fit",
-      benefits: ["Health Insurance", "401k", "Flexible Hours", "Remote Work"],
-      startDate: "2024-02-15"
-    },
-    {
-      id: 2,
-      candidateId: "TSC-2024-2848",
-      candidateName: "Michael Johnson",
-      candidateEmail: "michael.j@email.com",
-      candidatePhone: "+1 234-567-8902",
-      recruiter: "TechCorp Inc.",
-      recruiterContact: "sarah.tech@techcorp.com",
-      position: "Backend Developer",
-      offeredSalary: "$130,000",
-      candidateExpectedSalary: "$130,000",
-      location: "Austin, TX",
-      candidatePreferredLocation: "Austin, TX",
-      offerDate: "2024-01-19",
-      responseDeadline: "2024-01-26",
-      status: "accepted",
-      responseDate: "2024-01-22",
-      declineCount: 0,
-      notes: "Perfect match for requirements",
-      benefits: ["Health Insurance", "401k", "Stock Options", "Gym Membership"],
-      startDate: "2024-02-01"
-    },
-    {
-      id: 3,
-      candidateId: "TSC-2024-2849",
-      candidateName: "Sarah Williams",
-      candidateEmail: "sarah.w@email.com",
-      candidatePhone: "+1 234-567-8903",
-      recruiter: "DataFlow Solutions",
-      recruiterContact: "mike.data@dataflow.com",
-      position: "Data Scientist",
-      offeredSalary: "$115,000",
-      candidateExpectedSalary: "$110,000",
-      location: "Seattle, WA",
-      candidatePreferredLocation: "Seattle, WA",
-      offerDate: "2024-01-18",
-      responseDeadline: "2024-01-25",
-      status: "declined",
-      responseDate: "2024-01-23",
-      declineCount: 1,
-      notes: "Salary below expectations",
-      benefits: ["Health Insurance", "401k", "Learning Budget"],
-      startDate: "2024-02-10"
-    },
-    {
-      id: 4,
-      candidateId: "TSC-2024-2850",
-      candidateName: "David Brown",
-      candidateEmail: "david.brown@email.com",
-      candidatePhone: "+1 234-567-8904",
-      recruiter: "InnovateTech",
-      recruiterContact: "lisa.innovate@innovatetech.com",
-      position: "Java Developer",
-      offeredSalary: "$120,000",
-      candidateExpectedSalary: "$125,000",
-      location: "New York, NY",
-      candidatePreferredLocation: "New York, NY",
-      offerDate: "2024-01-17",
-      responseDeadline: "2024-01-24",
-      status: "declined",
-      responseDate: "2024-01-21",
-      declineCount: 2,
-      notes: "Second decline - candidate may be removed",
-      benefits: ["Health Insurance", "401k", "Commuter Benefits"],
-      startDate: "2024-02-05"
-    },
-    {
-      id: 5,
-      candidateId: "TSC-2024-2851",
-      candidateName: "Emma Davis",
-      candidateEmail: "emma.davis@email.com",
-      candidatePhone: "+1 234-567-8905",
-      recruiter: "StartupXYZ",
-      recruiterContact: "tom.startup@startupxyz.com",
-      position: "Full Stack Developer",
-      offeredSalary: "$100,000",
-      candidateExpectedSalary: "$95,000",
-      location: "Los Angeles, CA",
-      candidatePreferredLocation: "Los Angeles, CA",
-      offerDate: "2024-01-16",
-      responseDeadline: "2024-01-23",
-      status: "expired",
-      responseDate: null,
-      declineCount: 0,
-      notes: "No response within deadline",
-      benefits: ["Health Insurance", "401k", "Equity"],
-      startDate: "2024-02-01"
-    }
-  ]);
+  // Initialize with empty array - data will be fetched from API
+  const [offers, setOffers] = useState([]);
 
   const [newOffer, setNewOffer] = useState({
-    candidateId: "",
-    candidateName: "",
-    candidateEmail: "",
-    candidatePhone: "",
-    recruiter: "",
-    recruiterContact: "",
-    position: "",
-    offeredSalary: "",
-    candidateExpectedSalary: "",
+    candidate_code: "",
+    candidate_selection_id: "",
+    job_title: "",
+    job_description: "",
+    offered_salary: "",
     location: "",
-    candidatePreferredLocation: "",
-    responseDeadline: "",
-    notes: "",
     benefits: [],
-    startDate: ""
+    start_date: "",
+    offer_deadline: "",
+    offer_notes: ""
   });
 
+  // Get today's date in YYYY-MM-DD format for min date
+  const getTodayDate = () => {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  };
+
   const filteredOffers = offers.filter(offer =>
-    offer.candidateName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    offer.candidateId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    offer.recruiter.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    offer.position.toLowerCase().includes(searchTerm.toLowerCase())
+    (offer.candidateName?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+    (offer.candidateId?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+    (offer.recruiter?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+    (offer.position?.toLowerCase() || '').includes(searchTerm.toLowerCase())
   );
 
   const handleSelectOffer = (offerId) => {
@@ -185,22 +78,18 @@ const OfferManagement = () => {
 
   const handleCreateOffer = () => {
     setNewOffer({
-      candidateId: "",
-      candidateName: "",
-      candidateEmail: "",
-      candidatePhone: "",
-      recruiter: "",
-      recruiterContact: "",
-      position: "",
-      offeredSalary: "",
-      candidateExpectedSalary: "",
+      candidate_code: "",
+      candidate_selection_id: "",
+      job_title: "",
+      job_description: "",
+      offered_salary: "",
       location: "",
-      candidatePreferredLocation: "",
-      responseDeadline: "",
-      notes: "",
       benefits: [],
-      startDate: ""
+      start_date: "",
+      offer_deadline: "",
+      offer_notes: ""
     });
+    setErrors({});
     setShowOfferModal(true);
   };
 
@@ -210,29 +99,172 @@ const OfferManagement = () => {
     setShowEditModal(true);
   };
 
-  const handleSaveOffer = () => {
-    if (selectedOffer) {
-      // Update existing offer
-      setOffers(prev => prev.map(offer => 
-        offer.id === selectedOffer.id 
-          ? { ...newOffer, id: selectedOffer.id, offerDate: selectedOffer.offerDate }
-          : offer
-      ));
-      setShowEditModal(false);
-    } else {
-      // Add new offer
-      const newId = Math.max(...offers.map(o => o.id)) + 1;
-      setOffers(prev => [...prev, {
-        ...newOffer,
-        id: newId,
-        status: "pending",
-        offerDate: new Date().toISOString().split('T')[0],
-        responseDate: null,
-        declineCount: 0
-      }]);
-      setShowOfferModal(false);
+  const validateOffer = () => {
+    const newErrors = {};
+
+    if (!newOffer.candidate_code?.trim()) {
+      newErrors.candidate_code = "Candidate code is required";
     }
-    setSelectedOffer(null);
+
+    if (!newOffer.candidate_selection_id?.toString().trim()) {
+      newErrors.candidate_selection_id = "Candidate selection ID is required";
+    } else if (isNaN(Number(newOffer.candidate_selection_id))) {
+      newErrors.candidate_selection_id = "Candidate selection ID must be a valid number";
+    }
+
+    if (!newOffer.job_title?.trim()) {
+      newErrors.job_title = "Job title is required";
+    }
+
+    if (!newOffer.job_description?.trim()) {
+      newErrors.job_description = "Job description is required";
+    }
+
+    if (!newOffer.offered_salary?.toString().trim()) {
+      newErrors.offered_salary = "Offered salary is required";
+    } else if (isNaN(Number(newOffer.offered_salary)) || Number(newOffer.offered_salary) <= 0) {
+      newErrors.offered_salary = "Offered salary must be a valid positive number";
+    }
+
+    if (!newOffer.location?.trim()) {
+      newErrors.location = "Location is required";
+    }
+
+    if (!newOffer.benefits || newOffer.benefits.length === 0) {
+      newErrors.benefits = "At least one benefit is required";
+    }
+
+    if (!newOffer.start_date) {
+      newErrors.start_date = "Start date is required";
+    } else {
+      const startDate = new Date(newOffer.start_date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (startDate < today) {
+        newErrors.start_date = "Start date cannot be in the past";
+      }
+    }
+
+    if (!newOffer.offer_deadline) {
+      newErrors.offer_deadline = "Offer deadline is required";
+    } else {
+      const deadline = new Date(newOffer.offer_deadline);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (deadline < today) {
+        newErrors.offer_deadline = "Offer deadline cannot be in the past";
+      }
+    }
+
+    if (!newOffer.offer_notes?.trim()) {
+      newErrors.offer_notes = "Offer notes is required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSaveOffer = async () => {
+    if (!validateOffer()) {
+      toast.error("Please fill in all required fields correctly");
+      return;
+    }
+
+    setIsLoading(true);
+    setErrors({});
+
+    try {
+      // Get authentication token
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      
+      if (!token) {
+        toast.error("Authentication token not found. Please login again.");
+        setIsLoading(false);
+        return;
+      }
+
+      // Prepare API data
+      const offerData = {
+        candidate_code: newOffer.candidate_code.trim(),
+        candidate_selection_id: Number(newOffer.candidate_selection_id),
+        job_title: newOffer.job_title.trim(),
+        job_description: newOffer.job_description.trim(),
+        offered_salary: Number(newOffer.offered_salary),
+        location: newOffer.location.trim(),
+        benefits: newOffer.benefits,
+        start_date: newOffer.start_date,
+        offer_deadline: newOffer.offer_deadline,
+        offer_notes: newOffer.offer_notes.trim()
+      };
+
+      // Make API call
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/internal/offers`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify(offerData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error("API Error Response:", data);
+        console.error("Response Status:", response.status);
+        
+        // Handle specific error messages from API
+        let errorMessage = data.message || data.error || 'Failed to create offer';
+        
+        // If API returns field-specific errors
+        if (data.errors) {
+          const fieldErrors = {};
+          Object.keys(data.errors).forEach(key => {
+            fieldErrors[key] = Array.isArray(data.errors[key]) 
+              ? data.errors[key][0] 
+              : data.errors[key];
+          });
+          setErrors(fieldErrors);
+          toast.error("Please correct the errors in the form");
+        } else {
+          toast.error(errorMessage);
+        }
+        
+        setIsLoading(false);
+        return;
+      }
+
+      console.log("Offer created successfully:", data);
+      
+      // Show success toast
+      toast.success("Offer created successfully!");
+      
+      // Close modal and reset form
+      setShowOfferModal(false);
+      setNewOffer({
+        candidate_code: "",
+        candidate_selection_id: "",
+        job_title: "",
+        job_description: "",
+        offered_salary: "",
+        location: "",
+        benefits: [],
+        start_date: "",
+        offer_deadline: "",
+        offer_notes: ""
+      });
+      setErrors({});
+      
+      // TODO: Refresh offers list from API
+      // You may want to fetch the updated list of offers here
+      
+    } catch (error) {
+      console.error("Error creating offer:", error);
+      toast.error(error.message || "Failed to create offer. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleUpdateStatus = (offerId, newStatus) => {
@@ -286,8 +318,8 @@ const OfferManagement = () => {
   const statusCounts = getStatusCounts();
 
   const getSalaryComparison = (offered, expected) => {
-    const offeredNum = parseInt(offered.replace(/[$,]/g, ''));
-    const expectedNum = parseInt(expected.replace(/[$,]/g, ''));
+    const offeredNum = offered ? parseInt(offered.replace(/[$,]/g, '')) : 0;
+    const expectedNum = expected ? parseInt(expected.replace(/[$,]/g, '')) : 0;
     
     if (offeredNum >= expectedNum) {
       return { icon: TrendingUp, color: "text-green-600", text: "Meets/Exceeds" };
@@ -297,6 +329,9 @@ const OfferManagement = () => {
   };
 
   const getLocationMatch = (offered, preferred) => {
+    if (!offered || !preferred) {
+      return { match: false, color: "text-yellow-600" };
+    }
     return offered.toLowerCase() === preferred.toLowerCase() ? 
       { match: true, color: "text-green-600" } : 
       { match: false, color: "text-yellow-600" };
@@ -580,47 +615,56 @@ const OfferManagement = () => {
                   <h4 className="text-md font-medium text-gray-900">Candidate Information</h4>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Candidate ID</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Candidate Code <span className="text-red-500">*</span>
+                    </label>
                     <input
                       type="text"
-                      value={newOffer.candidateId}
-                      onChange={(e) => setNewOffer(prev => ({ ...prev, candidateId: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                      placeholder="TSC-2024-XXXX"
+                      value={newOffer.candidate_code}
+                      onChange={(e) => {
+                        setNewOffer(prev => ({ ...prev, candidate_code: e.target.value }));
+                        if (errors.candidate_code) {
+                          setErrors(prev => ({ ...prev, candidate_code: "" }));
+                        }
+                      }}
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent ${
+                        errors.candidate_code ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                      }`}
+                      placeholder="CAND138087"
                     />
+                    {errors.candidate_code && (
+                      <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                        <AlertCircle className="h-3 w-3" />
+                        {errors.candidate_code}
+                      </p>
+                    )}
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Candidate Name</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Candidate Selection ID <span className="text-red-500">*</span>
+                    </label>
                     <input
-                      type="text"
-                      value={newOffer.candidateName}
-                      onChange={(e) => setNewOffer(prev => ({ ...prev, candidateName: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                      placeholder="Enter candidate name"
+                      type="number"
+                      value={newOffer.candidate_selection_id}
+                      onChange={(e) => {
+                        setNewOffer(prev => ({ ...prev, candidate_selection_id: e.target.value }));
+                        if (errors.candidate_selection_id) {
+                          setErrors(prev => ({ ...prev, candidate_selection_id: "" }));
+                        }
+                      }}
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent ${
+                        errors.candidate_selection_id ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                      }`}
+                      placeholder="1"
+                      min="1"
                     />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                    <input
-                      type="email"
-                      value={newOffer.candidateEmail}
-                      onChange={(e) => setNewOffer(prev => ({ ...prev, candidateEmail: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                      placeholder="candidate@example.com"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                    <input
-                      type="tel"
-                      value={newOffer.candidatePhone}
-                      onChange={(e) => setNewOffer(prev => ({ ...prev, candidatePhone: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                      placeholder="+1 234-567-8900"
-                    />
+                    {errors.candidate_selection_id && (
+                      <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                        <AlertCircle className="h-3 w-3" />
+                        {errors.candidate_selection_id}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -629,110 +673,170 @@ const OfferManagement = () => {
                   <h4 className="text-md font-medium text-gray-900">Offer Details</h4>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Position</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Job Title <span className="text-red-500">*</span>
+                    </label>
                     <input
                       type="text"
-                      value={newOffer.position}
-                      onChange={(e) => setNewOffer(prev => ({ ...prev, position: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                      placeholder="Job position"
+                      value={newOffer.job_title}
+                      onChange={(e) => {
+                        setNewOffer(prev => ({ ...prev, job_title: e.target.value }));
+                        if (errors.job_title) {
+                          setErrors(prev => ({ ...prev, job_title: "" }));
+                        }
+                      }}
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent ${
+                        errors.job_title ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                      }`}
+                      placeholder="Senior Software Engineer"
                     />
+                    {errors.job_title && (
+                      <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                        <AlertCircle className="h-3 w-3" />
+                        {errors.job_title}
+                      </p>
+                    )}
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Recruiter</label>
-                    <input
-                      type="text"
-                      value={newOffer.recruiter}
-                      onChange={(e) => setNewOffer(prev => ({ ...prev, recruiter: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                      placeholder="Company name"
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Job Description <span className="text-red-500">*</span>
+                    </label>
+                    <textarea
+                      rows={4}
+                      value={newOffer.job_description}
+                      onChange={(e) => {
+                        setNewOffer(prev => ({ ...prev, job_description: e.target.value }));
+                        if (errors.job_description) {
+                          setErrors(prev => ({ ...prev, job_description: "" }));
+                        }
+                      }}
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none ${
+                        errors.job_description ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                      }`}
+                      placeholder="Lead development team and work on high-impact projects..."
                     />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Recruiter Contact</label>
-                    <input
-                      type="email"
-                      value={newOffer.recruiterContact}
-                      onChange={(e) => setNewOffer(prev => ({ ...prev, recruiterContact: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                      placeholder="recruiter@example.com"
-                    />
+                    {errors.job_description && (
+                      <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                        <AlertCircle className="h-3 w-3" />
+                        {errors.job_description}
+                      </p>
+                    )}
                   </div>
                   
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Offered Salary</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Offered Salary <span className="text-red-500">*</span>
+                      </label>
                       <input
-                        type="text"
-                        value={newOffer.offeredSalary}
-                        onChange={(e) => setNewOffer(prev => ({ ...prev, offeredSalary: e.target.value }))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                        placeholder="$120,000"
+                        type="number"
+                        value={newOffer.offered_salary}
+                        onChange={(e) => {
+                          setNewOffer(prev => ({ ...prev, offered_salary: e.target.value }));
+                          if (errors.offered_salary) {
+                            setErrors(prev => ({ ...prev, offered_salary: "" }));
+                          }
+                        }}
+                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent ${
+                          errors.offered_salary ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                        }`}
+                        placeholder="1200000"
+                        min="0"
                       />
+                      {errors.offered_salary && (
+                        <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                          <AlertCircle className="h-3 w-3" />
+                          {errors.offered_salary}
+                        </p>
+                      )}
                     </div>
                     
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Expected Salary</label>
-                      <input
-                        type="text"
-                        value={newOffer.candidateExpectedSalary}
-                        onChange={(e) => setNewOffer(prev => ({ ...prev, candidateExpectedSalary: e.target.value }))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                        placeholder="$120,000"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Location <span className="text-red-500">*</span>
+                      </label>
                       <input
                         type="text"
                         value={newOffer.location}
-                        onChange={(e) => setNewOffer(prev => ({ ...prev, location: e.target.value }))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                        placeholder="Remote, City, State"
+                        onChange={(e) => {
+                          setNewOffer(prev => ({ ...prev, location: e.target.value }));
+                          if (errors.location) {
+                            setErrors(prev => ({ ...prev, location: "" }));
+                          }
+                        }}
+                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent ${
+                          errors.location ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                        }`}
+                        placeholder="Mumbai, India"
                       />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Preferred Location</label>
-                      <input
-                        type="text"
-                        value={newOffer.candidatePreferredLocation}
-                        onChange={(e) => setNewOffer(prev => ({ ...prev, candidatePreferredLocation: e.target.value }))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                        placeholder="Remote, City, State"
-                      />
+                      {errors.location && (
+                        <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                          <AlertCircle className="h-3 w-3" />
+                          {errors.location}
+                        </p>
+                      )}
                     </div>
                   </div>
                   
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Response Deadline</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Start Date <span className="text-red-500">*</span>
+                      </label>
                       <input
                         type="date"
-                        value={newOffer.responseDeadline}
-                        onChange={(e) => setNewOffer(prev => ({ ...prev, responseDeadline: e.target.value }))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                        value={newOffer.start_date}
+                        onChange={(e) => {
+                          setNewOffer(prev => ({ ...prev, start_date: e.target.value }));
+                          if (errors.start_date) {
+                            setErrors(prev => ({ ...prev, start_date: "" }));
+                          }
+                        }}
+                        min={getTodayDate()}
+                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent ${
+                          errors.start_date ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                        }`}
                       />
+                      {errors.start_date && (
+                        <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                          <AlertCircle className="h-3 w-3" />
+                          {errors.start_date}
+                        </p>
+                      )}
                     </div>
                     
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Offer Deadline <span className="text-red-500">*</span>
+                      </label>
                       <input
                         type="date"
-                        value={newOffer.startDate}
-                        onChange={(e) => setNewOffer(prev => ({ ...prev, startDate: e.target.value }))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                        value={newOffer.offer_deadline}
+                        onChange={(e) => {
+                          setNewOffer(prev => ({ ...prev, offer_deadline: e.target.value }));
+                          if (errors.offer_deadline) {
+                            setErrors(prev => ({ ...prev, offer_deadline: "" }));
+                          }
+                        }}
+                        min={getTodayDate()}
+                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent ${
+                          errors.offer_deadline ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                        }`}
                       />
+                      {errors.offer_deadline && (
+                        <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                          <AlertCircle className="h-3 w-3" />
+                          {errors.offer_deadline}
+                        </p>
+                      )}
                     </div>
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Benefits</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Benefits <span className="text-red-500">*</span>
+                    </label>
                     <div className="grid grid-cols-2 gap-2">
                       {benefitOptions.map(benefit => (
                         <label key={benefit} className="flex items-center">
@@ -745,6 +849,9 @@ const OfferManagement = () => {
                               } else {
                                 setNewOffer(prev => ({ ...prev, benefits: prev.benefits.filter(b => b !== benefit) }));
                               }
+                              if (errors.benefits) {
+                                setErrors(prev => ({ ...prev, benefits: "" }));
+                              }
                             }}
                             className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
                           />
@@ -752,17 +859,38 @@ const OfferManagement = () => {
                         </label>
                       ))}
                     </div>
+                    {errors.benefits && (
+                      <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                        <AlertCircle className="h-3 w-3" />
+                        {errors.benefits}
+                      </p>
+                    )}
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Offer Notes <span className="text-red-500">*</span>
+                    </label>
                     <textarea
                       rows={3}
-                      value={newOffer.notes}
-                      onChange={(e) => setNewOffer(prev => ({ ...prev, notes: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                      placeholder="Additional notes about the offer..."
+                      value={newOffer.offer_notes}
+                      onChange={(e) => {
+                        setNewOffer(prev => ({ ...prev, offer_notes: e.target.value }));
+                        if (errors.offer_notes) {
+                          setErrors(prev => ({ ...prev, offer_notes: "" }));
+                        }
+                      }}
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none ${
+                        errors.offer_notes ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                      }`}
+                      placeholder="Great opportunity to grow with a leading tech company"
                     />
+                    {errors.offer_notes && (
+                      <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                        <AlertCircle className="h-3 w-3" />
+                        {errors.offer_notes}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -770,20 +898,32 @@ const OfferManagement = () => {
             
             <div className="flex items-center justify-end gap-3 p-6 border-t">
               <button
+                type="button"
                 onClick={() => {
                   setShowOfferModal(false);
                   setShowEditModal(false);
                   setSelectedOffer(null);
+                  setErrors({});
                 }}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md border border-gray-300 hover:bg-gray-200 transition-all duration-200"
+                disabled={isLoading}
+                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md border border-gray-300 hover:bg-gray-200 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Cancel
               </button>
               <button
+                type="button"
                 onClick={handleSaveOffer}
-                className="px-4 py-2 bg-emerald-500 text-white rounded-md border border-emerald-600 hover:bg-emerald-600 transition-all duration-200"
+                disabled={isLoading}
+                className="px-4 py-2 bg-emerald-500 text-white rounded-md border border-emerald-600 hover:bg-emerald-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
-                {showEditModal ? "Update Offer" : "Create Offer"}
+                {isLoading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    Creating...
+                  </>
+                ) : (
+                  showEditModal ? "Update Offer" : "Create Offer"
+                )}
               </button>
             </div>
           </div>

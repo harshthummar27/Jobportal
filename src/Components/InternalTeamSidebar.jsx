@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { 
   LayoutDashboard, 
@@ -9,7 +9,6 @@ import {
   FileText, 
   Shield, 
   UserX, 
-  MessageSquare, 
   Activity,
   ChevronRight,
   X
@@ -17,6 +16,7 @@ import {
 
 const InternalTeamSidebar = ({ isCollapsed, setIsCollapsed, onMobileClose, isMobile, mobileSidebarOpen }) => {
   const location = useLocation();
+  const [expandedGroups, setExpandedGroups] = useState({});
 
   const menuItems = [
     {
@@ -27,18 +27,28 @@ const InternalTeamSidebar = ({ isCollapsed, setIsCollapsed, onMobileClose, isMob
       bgColor: "bg-emerald-100"
     },
     {
-      name: "All Candidates",
-      path: "/internal-team/all-candidates",
+      name: "View Candidate",
       icon: Users,
       color: "text-teal-600",
-      bgColor: "bg-teal-100"
+      bgColor: "bg-teal-100",
+      children: [
+        { name: "All Candidates", path: "/internal-team/all-candidates" },
+        { name: "Pending Candidates", path: "/internal-team/pending-candidates" },
+        { name: "Approved Candidates", path: "/internal-team/approved-candidates" },
+        { name: "Declined Candidates", path: "/internal-team/declined-candidates" }
+      ]
     },
     {
-      name: "All Recruiters",
-      path: "/internal-team/all-recruiters",
+      name: "View Recruiter",
       icon: UserCheck,
       color: "text-amber-600",
-      bgColor: "bg-amber-100"
+      bgColor: "bg-amber-100",
+      children: [
+        { name: "All Recruiters", path: "/internal-team/all-recruiters" },
+        { name: "Pending Recruiters", path: "/internal-team/pending-recruiters" },
+        { name: "Approved Recruiters", path: "/internal-team/approved-recruiters" },
+        { name: "Declined Recruiters", path: "/internal-team/declined-recruiters" }
+      ]
     },
     {
       name: "Notifications",
@@ -74,24 +84,26 @@ const InternalTeamSidebar = ({ isCollapsed, setIsCollapsed, onMobileClose, isMob
       icon: UserX,
       color: "text-gray-600",
       bgColor: "bg-gray-100"
-    },
-    {
-      name: "Communication",
-      path: "/internal-team/communication",
-      icon: MessageSquare,
-      color: "text-indigo-600",
-      bgColor: "bg-indigo-100"
-    },
-    {
-      name: "Activity Log",
-      path: "/internal-team/activity-log",
-      icon: Activity,
-      color: "text-cyan-600",
-      bgColor: "bg-cyan-100"
     }
   ];
 
   const isActive = (path) => location.pathname === path;
+
+  const isGroupActive = (children = []) => children.some((c) => isActive(c.path));
+
+  const computedExpanded = useMemo(() => {
+    const next = { ...expandedGroups };
+    menuItems.forEach((item) => {
+      if (item.children && isGroupActive(item.children)) {
+        next[item.name] = true;
+      }
+    });
+    return next;
+  }, [expandedGroups, location.pathname]);
+
+  const toggleGroup = (name) => {
+    setExpandedGroups((prev) => ({ ...prev, [name]: !prev[name] }));
+  };
 
   const sidebarClasses = `
     ${isMobile 
@@ -108,10 +120,7 @@ const InternalTeamSidebar = ({ isCollapsed, setIsCollapsed, onMobileClose, isMob
       {/* Mobile Close Button */}
       {isMobile && (
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">IT</span>
-            </div>
+          <div className="flex items-center">
             <span className="text-lg font-semibold text-gray-800">Internal Team</span>
           </div>
           <button
@@ -123,29 +132,89 @@ const InternalTeamSidebar = ({ isCollapsed, setIsCollapsed, onMobileClose, isMob
         </div>
       )}
 
-      {/* Desktop Header */}
-      {!isMobile && (
-        <div className={`border-b border-gray-200 transition-all duration-300 ${isCollapsed ? 'p-2' : 'p-4'}`}>
-          <div className={`flex items-center transition-all duration-300 ${isCollapsed ? 'justify-center' : 'gap-3'}`}>
-            <div className={`bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-300 ${isCollapsed ? 'w-8 h-8' : 'w-10 h-10'}`}>
-              <span className={`text-white font-bold transition-all duration-300 ${isCollapsed ? 'text-sm' : 'text-lg'}`}>IT</span>
-            </div>
-            {!isCollapsed && (
-              <div className="min-w-0">
-                {/* <h2 className="text-lg font-semibold text-gray-800 truncate">Internal Team</h2> */}
-                <p className="text-xs text-gray-500 truncate">Candidate Management</p>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+      {/* Desktop header removed */}
 
       {/* Navigation Menu */}
       <nav className={`space-y-2 transition-all duration-300 ${isCollapsed && !isMobile ? 'p-2' : 'p-4'}`}>
         {menuItems.map((item) => {
           const IconComponent = item.icon;
-          const active = isActive(item.path);
-          
+          const hasChildren = !!item.children;
+          const active = hasChildren ? isGroupActive(item.children) : isActive(item.path);
+          const expanded = hasChildren ? !!computedExpanded[item.name] : false;
+
+          if (hasChildren) {
+            return (
+              <div key={item.name}>
+                <button
+                  type="button"
+                  onClick={() => toggleGroup(item.name)}
+                  className={`
+                    w-full flex items-center rounded-lg transition-all duration-200 group relative
+                    ${active 
+                      ? `${item.bgColor} ${item.color} shadow-sm` 
+                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}
+                    ${isCollapsed && !isMobile ? 'justify-center px-2 py-2.5' : 'gap-3 px-3 py-2.5'}
+                  `}
+                  title={isCollapsed && !isMobile ? item.name : ''}
+                >
+                  <div className={`
+                    flex-shrink-0 rounded-md transition-colors
+                    ${active ? item.bgColor : 'group-hover:bg-gray-200'}
+                    ${isCollapsed && !isMobile ? 'p-1.5' : 'p-1.5'}
+                  `}>
+                    {IconComponent && (
+                      <IconComponent className={`h-4 w-4 ${active ? item.color : 'text-gray-500 group-hover:text-gray-700'}`} />
+                    )}
+                  </div>
+
+                  {(!isCollapsed || isMobile) && (
+                    <>
+                      <span className={`
+                        font-medium text-sm truncate transition-colors
+                        ${active ? 'text-gray-900' : 'text-gray-700 group-hover:text-gray-900'}
+                      `}>
+                        {item.name}
+                      </span>
+                      <ChevronRight className={`h-4 w-4 ml-auto text-gray-400 transition-transform ${expanded ? 'rotate-90' : ''}`} />
+                    </>
+                  )}
+
+                  {isCollapsed && !isMobile && (
+                    <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                      {item.name}
+                    </div>
+                  )}
+                </button>
+
+                {expanded && (!isCollapsed || isMobile) && (
+                  <div className="mt-1 ml-8 space-y-1">
+                    {item.children.map((child) => {
+                      const childActive = isActive(child.path);
+                      return (
+                        <Link
+                          key={child.path}
+                          to={child.path}
+                          onClick={isMobile ? onMobileClose : undefined}
+                          className={`
+                            flex items-center rounded-lg transition-all duration-200 group relative
+                            ${childActive 
+                              ? 'bg-gray-100 text-gray-900 shadow-sm' 
+                              : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}
+                            gap-3 px-3 py-2
+                          `}
+                          title={child.name}
+                        >
+                          <div className={`flex-shrink-0 rounded-full ${childActive ? 'bg-gray-300' : 'bg-gray-200'} h-1.5 w-1.5`} />
+                          <span className={`text-sm ${childActive ? 'text-gray-900 font-medium' : 'text-gray-700'}`}>{child.name}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          }
+
           return (
             <Link
               key={item.path}
@@ -155,8 +224,7 @@ const InternalTeamSidebar = ({ isCollapsed, setIsCollapsed, onMobileClose, isMob
                 flex items-center rounded-lg transition-all duration-200 group relative
                 ${active 
                   ? `${item.bgColor} ${item.color} shadow-sm` 
-                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                }
+                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}
                 ${isCollapsed && !isMobile ? 'justify-center px-2 py-2.5' : 'gap-3 px-3 py-2.5'}
               `}
               title={isCollapsed && !isMobile ? item.name : ''}
@@ -166,25 +234,20 @@ const InternalTeamSidebar = ({ isCollapsed, setIsCollapsed, onMobileClose, isMob
                 ${active ? item.bgColor : 'group-hover:bg-gray-200'}
                 ${isCollapsed && !isMobile ? 'p-1.5' : 'p-1.5'}
               `}>
-                <IconComponent className={`h-4 w-4 ${active ? item.color : 'text-gray-500 group-hover:text-gray-700'}`} />
+                {IconComponent && (
+                  <IconComponent className={`h-4 w-4 ${active ? item.color : 'text-gray-500 group-hover:text-gray-700'}`} />
+                )}
               </div>
               
               {(!isCollapsed || isMobile) && (
-                <>
-                  <span className={`
-                    font-medium text-sm truncate transition-colors
-                    ${active ? 'text-gray-900' : 'text-gray-700 group-hover:text-gray-900'}
-                  `}>
-                    {item.name}
-                  </span>
-                  
-                  {active && (
-                    <ChevronRight className="h-4 w-4 ml-auto text-gray-400" />
-                  )}
-                </>
+                <span className={`
+                  font-medium text-sm truncate transition-colors
+                  ${active ? 'text-gray-900' : 'text-gray-700 group-hover:text-gray-900'}
+                `}>
+                  {item.name}
+                </span>
               )}
 
-              {/* Tooltip for collapsed state */}
               {isCollapsed && !isMobile && (
                 <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
                   {item.name}

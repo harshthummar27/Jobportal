@@ -50,13 +50,7 @@ const RecruiterSidebar = ({ isCollapsed, setIsCollapsed, onMobileClose, isMobile
   return (
     <div className={sidebarClasses}>
       {isMobile && (
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">RC</span>
-            </div>
-            <span className="text-lg font-semibold text-gray-800">Recruiter</span>
-          </div>
+        <div className="flex items-center justify-end p-4 border-b border-gray-200">
           <button
             onClick={onMobileClose}
             className="p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
@@ -66,20 +60,7 @@ const RecruiterSidebar = ({ isCollapsed, setIsCollapsed, onMobileClose, isMobile
         </div>
       )}
 
-      {!isMobile && (
-        <div className={`border-b border-gray-200 transition-all duration-300 ${isCollapsed ? 'p-2' : 'p-4'}`}>
-          <div className={`flex items-center transition-all duration-300 ${isCollapsed ? 'justify-center' : 'gap-3'}`}>
-            <div className={`bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-300 ${isCollapsed ? 'w-8 h-8' : 'w-10 h-10'}`}>
-              <span className={`text-white font-bold transition-all duration-300 ${isCollapsed ? 'text-sm' : 'text-lg'}`}>RC</span>
-            </div>
-            {!isCollapsed && (
-              <div className="min-w-0">
-                <p className="text-xs text-gray-500 truncate">Recruiter Console</p>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+      {!isMobile && null}
 
       <nav className={`space-y-2 transition-all duration-300 ${isCollapsed && !isMobile ? 'p-2' : 'p-4'}`}>
         {menuItems.map((item) => {

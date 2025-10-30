@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Users, Star, MapPin, Briefcase, Eye, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
+import { Users, Eye, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 import RecruiterLayout from "../../Components/RecruiterLayout";
 
 const ShortlistedCandidates = () => {
@@ -11,7 +11,9 @@ const ShortlistedCandidates = () => {
     current_page: 1,
     per_page: 25,
     total: 0,
-    last_page: 1
+    last_page: 1,
+    from: 0,
+    to: 0,
   });
 
   // Fetch selected candidates from API
@@ -30,7 +32,7 @@ const ShortlistedCandidates = () => {
         per_page: pagination.per_page.toString()
       });
 
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/candidates/selections?${params}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/recruiter/selections?${params}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -43,13 +45,21 @@ const ShortlistedCandidates = () => {
       }
 
       const data = await response.json();
-      
-      if (data.success) {
-        setSelectedCandidates(data.data);
-        setPagination(data.meta);
-      } else {
-        throw new Error(data.message || 'Failed to fetch selected candidates');
+
+      if (!data || !data.selections) {
+        throw new Error('Invalid API response');
       }
+
+      const selections = data.selections;
+      setSelectedCandidates(Array.isArray(selections.data) ? selections.data : []);
+      setPagination({
+        current_page: selections.current_page ?? 1,
+        per_page: Number(selections.per_page) || pagination.per_page,
+        total: selections.total ?? 0,
+        last_page: selections.last_page ?? 1,
+        from: selections.from ?? 0,
+        to: selections.to ?? 0,
+      });
     } catch (error) {
       console.error('Error fetching selected candidates:', error);
       setError(error.message);
@@ -68,42 +78,23 @@ const ShortlistedCandidates = () => {
     return {
       id: candidate.id,
       candidate_code: candidate.candidate_code,
-      candidate_name: candidate.candidate_name || 'N/A',
       job_title: candidate.job_title || 'N/A',
-      salary_offered: candidate.salary_offered ? `$${parseInt(candidate.salary_offered).toLocaleString()}` : 'N/A',
       location: candidate.location || 'N/A',
-      employment_type: candidate.employment_type || 'N/A',
-      start_date: candidate.start_date ? new Date(candidate.start_date).toLocaleDateString() : 'N/A',
-      created_at: candidate.created_at ? new Date(candidate.created_at).toLocaleDateString() : 'N/A',
-      status: candidate.status || 'selected'
+      selected_at: candidate.selected_at ? new Date(candidate.selected_at).toLocaleDateString() : 'N/A',
+      selection_status: candidate.selection_status || 'shortlisted',
     };
   };
 
   const getStatusBadge = (status) => {
     switch (status) {
-      case 'selected':
-        return <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-medium">Selected</span>;
-      case 'pending':
-        return <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs font-medium">Pending</span>;
+      case 'shortlisted':
+        return <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-medium">Shortlisted</span>;
       case 'approved':
         return <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-medium">Approved</span>;
+      case 'pending':
+        return <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs font-medium">Pending</span>;
       default:
-        return <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs font-medium">Unknown</span>;
-    }
-  };
-
-  const getEmploymentTypeBadge = (type) => {
-    switch (type) {
-      case 'full-time':
-        return <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-medium">Full-time</span>;
-      case 'part-time':
-        return <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs font-medium">Part-time</span>;
-      case 'contract':
-        return <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded text-xs font-medium">Contract</span>;
-      case 'freelance':
-        return <span className="bg-pink-100 text-pink-800 px-2 py-1 rounded text-xs font-medium">Freelance</span>;
-      default:
-        return <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs font-medium">{type}</span>;
+        return <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs font-medium">{status}</span>;
     }
   };
 
@@ -123,13 +114,6 @@ const ShortlistedCandidates = () => {
                   <CheckCircle className="h-4 w-4" />
                   <span>{pagination.total} Total Selected</span>
                 </div>
-                <Link
-                  to="/recruiter/dashboard"
-                  className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-all duration-200 shadow-lg"
-                >
-                  <Users className="h-4 w-4" />
-                  Back to Dashboard
-                </Link>
               </div>
             </div>
           </div>
@@ -187,11 +171,9 @@ const ShortlistedCandidates = () => {
                   <thead className="bg-gray-50 border-b border-gray-100">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Candidate</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Job Details</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Salary & Location</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employment</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Job Title</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                   <tbody className="bg-white divide-y divide-gray-100">
@@ -202,38 +184,23 @@ const ShortlistedCandidates = () => {
                           <td className="px-6 py-4 whitespace-nowrap">
                         <div>
                               <div className="text-sm font-semibold text-green-600">{formattedCandidate.candidate_code}</div>
-                              <div className="text-sm text-gray-900">{formattedCandidate.candidate_name}</div>
-                              <div className="text-xs text-gray-500">Selected: {formattedCandidate.created_at}</div>
+                              <div className="text-xs text-gray-500">Selected: {formattedCandidate.selected_at}</div>
                         </div>
                       </td>
                           <td className="px-6 py-4">
                         <div>
                               <div className="text-sm font-medium text-gray-900">{formattedCandidate.job_title}</div>
-                              <div className="text-xs text-gray-500 mt-1">Position</div>
                         </div>
                       </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div>
-                              <div className="text-sm text-gray-900">{formattedCandidate.salary_offered}</div>
-                              <div className="text-xs text-gray-500">{formattedCandidate.location}</div>
-                        </div>
-                      </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="space-y-1">
-                              {getEmploymentTypeBadge(formattedCandidate.employment_type)}
-                              <div className="text-xs text-gray-500">Start: {formattedCandidate.start_date}</div>
+                              <div className="text-sm text-gray-900">{formattedCandidate.location}</div>
                             </div>
-                      </td>
+                          </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            {getStatusBadge(formattedCandidate.status)}
+                            {getStatusBadge(formattedCandidate.selection_status)}
                       </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <div className="flex items-center gap-2">
-                              <button className="text-blue-600 hover:text-blue-900 px-3 py-1 border border-blue-200 rounded-md hover:bg-blue-50 transition-colors">
-                                <Eye className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </td>
+                          
                     </tr>
                       );
                     })}

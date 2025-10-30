@@ -1,5 +1,5 @@
 import React, { useState, useEffect, createContext, useContext } from "react";
-import { Menu, Search, X, User, Edit, LogOut, Settings } from "lucide-react";
+import { Menu, User, Edit, LogOut, Settings } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import InternalTeamSidebar from "./InternalTeamSidebar";
 
@@ -99,15 +99,7 @@ const InternalTeamLayout = ({ children }) => {
     }
   };
 
-  // Global search handlers
-  const handleGlobalSearch = (e) => {
-    const newValue = e.target.value;
-    setGlobalSearchTerm(newValue);
-  };
-
-  const clearGlobalSearch = () => {
-    setGlobalSearchTerm("");
-  };
+  // Global search UI removed; context is still provided for consumers
 
   // User dropdown handlers
   const handleUserDropdownToggle = () => {
@@ -172,7 +164,7 @@ const InternalTeamLayout = ({ children }) => {
 
   return (
     <SearchContext.Provider value={{ searchTerm: globalSearchTerm, onSearch: setGlobalSearchTerm }}>
-      <div className="min-h-screen bg-gray-50">
+      <div className="bg-gray-50">
         {/* Mobile Overlay - Professional transparent with blur (only behind sidebar) */}
         {mobileSidebarOpen && isMobile && (
           <div 
@@ -209,27 +201,7 @@ const InternalTeamLayout = ({ children }) => {
               </div>
             </div>
             
-            {/* Center Section - Global Search Bar */}
-            <div className="flex-1 flex justify-center px-2 sm:px-4 md:px-6 lg:px-8">
-              <div className="relative w-full max-w-[200px] sm:max-w-[300px] md:max-w-[400px] lg:max-w-[500px] xl:max-w-[600px]">
-                <Search className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  value={globalSearchTerm}
-                  onChange={handleGlobalSearch}
-                  className="w-full pl-6 sm:pl-8 pr-6 sm:pr-8 py-1 sm:py-1.5 text-[10px] sm:text-xs bg-gray-50/80 border border-gray-200/60 rounded-md focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-300 focus:bg-white transition-all duration-200 placeholder-gray-400"
-                />
-                {globalSearchTerm && (
-                  <button
-                    onClick={clearGlobalSearch}
-                    className="absolute right-1.5 sm:right-2.5 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                  >
-                    <X className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                  </button>
-                )}
-              </div>
-            </div>
+            {/* Center Section removed */}
 
             {/* Right Section - User Section */}
             <div className="relative user-dropdown flex-shrink-0">

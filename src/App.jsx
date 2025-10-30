@@ -38,10 +38,14 @@ import InterviewScheduling from "./pages/internalteam/InterviewScheduling";
 import OfferManagement from "./pages/internalteam/OfferManagement";
 import ScreeningBlocking from "./pages/internalteam/ScreeningBlocking";
 import BlockedCandidates from "./pages/internalteam/BlockedCandidates";
-import Communication from "./pages/internalteam/Communication";
-import ActivityLog from "./pages/internalteam/ActivityLog";
 import AllCandidates from "./pages/internalteam/AllCandidates";
 import AllRecruiters from "./pages/internalteam/AllRecruiters";
+import InternalPendingCandidate from "./pages/internalteam/InternalPendingCandidate";
+import InternalApprovedCandidate from "./pages/internalteam/InternalApprovedCandidate";
+import InternalDeclinedCandidate from "./pages/internalteam/InternalDeclinedCandidate";
+import InternalPendingRecruiter from "./pages/internalteam/InternalPendingRecruiter";
+import InternalApprovedRecruiter from "./pages/internalteam/InternalApprovedRecruiter";
+import InternalDeclinedRecruiter from "./pages/internalteam/InternalDeclinedRecruiter";
 // import NotFound from "./pages/NotFound";
 
 export default function App() {
@@ -271,26 +275,7 @@ export default function App() {
             </PrivateRoute>
           } 
         />
-        <Route 
-          path="/internal-team/communication" 
-          element={
-            <PrivateRoute>
-              <InternalTeamLayout>
-                <Communication />
-              </InternalTeamLayout>
-            </PrivateRoute>
-          } 
-        />
-        <Route 
-          path="/internal-team/activity-log" 
-          element={
-            <PrivateRoute>
-              <InternalTeamLayout>
-                <ActivityLog />
-              </InternalTeamLayout>
-            </PrivateRoute>
-          } 
-        />
+        
         <Route 
           path="/internal-team/all-candidates" 
           element={
@@ -302,11 +287,71 @@ export default function App() {
           } 
         />
         <Route 
+          path="/internal-team/approved-candidates" 
+          element={
+            <PrivateRoute>
+              <InternalTeamLayout>
+                <InternalApprovedCandidate />
+              </InternalTeamLayout>
+            </PrivateRoute>
+          } 
+        />
+        <Route 
+          path="/internal-team/declined-candidates" 
+          element={
+            <PrivateRoute>
+              <InternalTeamLayout>
+                <InternalDeclinedCandidate />
+              </InternalTeamLayout>
+            </PrivateRoute>
+          } 
+        />
+        <Route 
+          path="/internal-team/pending-candidates" 
+          element={
+            <PrivateRoute>
+              <InternalTeamLayout>
+                <InternalPendingCandidate />
+              </InternalTeamLayout>
+            </PrivateRoute>
+          } 
+        />
+        <Route 
           path="/internal-team/all-recruiters" 
           element={
             <PrivateRoute>
               <InternalTeamLayout>
                 <AllRecruiters />
+              </InternalTeamLayout>
+            </PrivateRoute>
+          } 
+        />
+        <Route 
+          path="/internal-team/pending-recruiters" 
+          element={
+            <PrivateRoute>
+              <InternalTeamLayout>
+                <InternalPendingRecruiter />
+              </InternalTeamLayout>
+            </PrivateRoute>
+          } 
+        />
+        <Route 
+          path="/internal-team/approved-recruiters" 
+          element={
+            <PrivateRoute>
+              <InternalTeamLayout>
+                <InternalApprovedRecruiter />
+              </InternalTeamLayout>
+            </PrivateRoute>
+          } 
+        />
+        <Route 
+          path="/internal-team/declined-recruiters" 
+          element={
+            <PrivateRoute>
+              <InternalTeamLayout>
+                <InternalDeclinedRecruiter />
               </InternalTeamLayout>
             </PrivateRoute>
           } 

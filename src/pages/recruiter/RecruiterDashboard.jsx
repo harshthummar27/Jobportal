@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Users, UserCheck, AlertCircle, Loader2, Search, Filter, MapPin, Briefcase, DollarSign, CheckCircle, X } from "lucide-react";
+import { Users, UserCheck, AlertCircle, Loader2, Search, CheckCircle, X } from "lucide-react";
 import { toast } from 'react-toastify';
 import RecruiterLayout from "../../Components/RecruiterLayout";
 
@@ -17,21 +17,19 @@ const RecruiterDashboard = () => {
     last_page: 1
   });
   
-  // Search state
+  // Search state (for api/candidates/search)
   const [searchParams, setSearchParams] = useState({
     job_role: '',
-    location: '',
-    skills: '',
+    preferred_locations: '', // comma separated
+    skills: '', // comma separated
     years_experience_min: '',
     years_experience_max: '',
     salary_min: '',
     salary_max: '',
-    sort_by: 'candidate_score',
-    sort_direction: 'desc'
+    visa_status: '',
+    candidate_score_min: ''
   });
-  const [showFilters, setShowFilters] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
-  const [mainSearchTerm, setMainSearchTerm] = useState('');
   
   // Select candidate state
   const [showSelectModal, setShowSelectModal] = useState(false);
@@ -49,8 +47,11 @@ const RecruiterDashboard = () => {
   const [isSelecting, setIsSelecting] = useState(false);
 
 
-  // Search candidates using the search API
-  const searchCandidates = async () => {
+  const normalizeText = (value) => value?.toString().trim().replace(/\s+/g, ' ') || '';
+  const titleCase = (value) => normalizeText(value).toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+
+  // Search candidates using the new search API
+  const searchCandidates = async (filters) => {
     try {
       setIsSearching(true);
       setError(null);
@@ -62,24 +63,34 @@ const RecruiterDashboard = () => {
 
       // Build search parameters
       const params = new URLSearchParams({
-        page: pagination.current_page.toString(),
-        per_page: pagination.per_page.toString(),
-        sort_by: searchParams.sort_by,
-        sort_direction: searchParams.sort_direction
+        page: '1', // static as requested
+        per_page: '25' // static as requested
       });
 
       // Add search filters if they have values
-      if (searchParams.job_role) params.append('job_role', searchParams.job_role);
-      if (searchParams.location) params.append('location', searchParams.location);
-      if (searchParams.skills) {
-        // Handle skills as array - split by comma and add each skill
-        const skillsArray = searchParams.skills.split(',').map(skill => skill.trim()).filter(skill => skill);
+      const f = filters || searchParams;
+      const jobRole = titleCase(f.job_role);
+      if (jobRole) params.append('job_role', jobRole);
+      if (f.preferred_locations) {
+        const locationsArray = f.preferred_locations
+          .split(',')
+          .map(loc => loc.trim())
+          .filter(Boolean);
+        locationsArray.forEach(loc => params.append('preferred_locations[]', loc));
+      }
+      if (f.skills) {
+        const skillsArray = f.skills
+          .split(',')
+          .map(skill => skill.trim())
+          .filter(Boolean);
         skillsArray.forEach(skill => params.append('skills[]', skill));
       }
-      if (searchParams.years_experience_min) params.append('years_experience_min', searchParams.years_experience_min);
-      if (searchParams.years_experience_max) params.append('years_experience_max', searchParams.years_experience_max);
-      if (searchParams.salary_min) params.append('salary_min', searchParams.salary_min);
-      if (searchParams.salary_max) params.append('salary_max', searchParams.salary_max);
+      if (f.years_experience_min) params.append('years_experience_min', normalizeText(f.years_experience_min));
+      if (f.years_experience_max) params.append('years_experience_max', normalizeText(f.years_experience_max));
+      if (f.salary_min) params.append('salary_min', normalizeText(f.salary_min));
+      if (f.salary_max) params.append('salary_max', normalizeText(f.salary_max));
+      if (f.visa_status) params.append('visa_status', normalizeText(f.visa_status));
+      if (f.candidate_score_min) params.append('candidate_score_min', normalizeText(f.candidate_score_min));
 
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/candidates/search?${params}`, {
         method: 'GET',
@@ -118,45 +129,11 @@ const RecruiterDashboard = () => {
     }
   };
 
-  // Fetch candidates from API (original approved candidates)
+  // Initial/refresh fetch now uses search endpoint as well
   const fetchCandidates = async () => {
     try {
       setLoading(true);
-      setError(null);
-      
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
-
-      const params = new URLSearchParams({
-        page: pagination.current_page.toString(),
-        per_page: pagination.per_page.toString()
-      });
-
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/recruiter/candidates?${params}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      
-      if (data.success) {
-        setCandidates(data.data);
-        setPagination(data.meta);
-      } else {
-        throw new Error(data.message || 'Failed to fetch candidates');
-      }
-    } catch (error) {
-      console.error('Error fetching candidates:', error);
-      setError(error.message);
+      await searchCandidates({});
     } finally {
       setLoading(false);
     }
@@ -164,29 +141,24 @@ const RecruiterDashboard = () => {
 
   // Helper functions
   const handleSearch = () => {
-    // If main search term is provided, use it for job_role search
-    if (mainSearchTerm.trim()) {
-      setSearchParams(prev => ({ ...prev, job_role: mainSearchTerm.trim() }));
-    }
-    setPagination(prev => ({ ...prev, current_page: 1 }));
-    searchCandidates();
+    const current = { ...searchParams };
+    searchCandidates(current);
   };
 
   const handleClearSearch = () => {
-    setSearchParams({
+    const cleared = {
       job_role: '',
-      location: '',
+      preferred_locations: '',
       skills: '',
       years_experience_min: '',
       years_experience_max: '',
       salary_min: '',
       salary_max: '',
-      sort_by: 'candidate_score',
-      sort_direction: 'desc'
-    });
-    setMainSearchTerm('');
-    setPagination(prev => ({ ...prev, current_page: 1 }));
-    fetchCandidates();
+      visa_status: '',
+      candidate_score_min: ''
+    };
+    setSearchParams(cleared);
+    searchCandidates(cleared);
   };
 
   const handleSearchParamChange = (key, value) => {
@@ -225,7 +197,7 @@ const RecruiterDashboard = () => {
 
       // Build payload matching Postman format exactly
       const payload = {
-        candidate_code: selectedCandidate?.candidate_profile?.candidate_code || `CAND${selectedCandidate?.id}`,
+        candidate_code: selectedCandidate?.candidate_profile?.candidate_code || selectedCandidate?.candidate_code || `CAND${selectedCandidate?.id}`,
         selection_status: selectFormData.selection_status || 'shortlisted',
         notes: selectFormData.notes || '',
         job_title: selectFormData.job_title.trim(),
@@ -294,40 +266,53 @@ const RecruiterDashboard = () => {
     setSelectedCandidate(candidate);
     setSelectFormData(prev => ({
       ...prev,
-      job_title: candidate.candidate_profile?.desired_job_roles?.[0] || '',
-      location: `${candidate.candidate_profile?.city || ''}, ${candidate.candidate_profile?.state || ''}`.replace(', ,', '').replace(/^,\s*/, '').replace(/,\s*$/, ''),
-      offered_salary_min: candidate.candidate_profile?.desired_annual_package || '',
-      offered_salary_max: candidate.candidate_profile?.desired_annual_package || ''
+      job_title: (candidate.candidate_profile?.desired_job_roles?.[0]) || (candidate.desired_job_roles?.[0]) || '',
+      location: `${candidate.candidate_profile?.city || candidate.city || ''}, ${candidate.candidate_profile?.state || candidate.state || ''}`
+        .replace(', ,', '')
+        .replace(/^,\s*/, '')
+        .replace(/,\s*$/, ''),
+      offered_salary_min: candidate.candidate_profile?.desired_annual_package || candidate.desired_annual_package || '',
+      offered_salary_max: candidate.candidate_profile?.desired_annual_package || candidate.desired_annual_package || ''
     }));
     setShowSelectModal(true);
   };
 
-  // Fetch candidates on component mount and when dependencies change
+  // Fetch candidates on component mount
   useEffect(() => {
     fetchCandidates();
-  }, [pagination.current_page]);
+  }, []);
 
   const getStatusClasses = (status) =>
     status === "interview-scheduled"
       ? "bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs"
       : "bg-gray-200 text-gray-800 px-2 py-1 rounded text-xs";
 
-  // Format candidate data for display
+  // Format candidate data for display (supports both old and new shapes)
   const formatCandidateData = (candidate) => {
     const profile = candidate.candidate_profile;
+    const code = profile?.candidate_code || candidate.candidate_code || `CAND${candidate.id}`;
+    const desiredRoles = profile?.desired_job_roles || candidate.desired_job_roles || [];
+    const skills = profile?.skills || candidate.skills || [];
+    const yearsExp = profile?.total_years_experience ?? candidate.total_years_experience ?? 0;
+    const city = profile?.city || candidate.city || 'N/A';
+    const state = profile?.state || candidate.state || 'N/A';
+    const salaryRaw = profile?.desired_annual_package ?? candidate.desired_annual_package;
+    const visa = (profile?.visa_status || candidate.visa_status || '')
+      ?.toString()
+      .replace('_', ' ');
     return {
       id: candidate.id,
-      code: profile?.candidate_code || `CAND${candidate.id}`,
-      name: profile?.full_name || candidate.name,
-      role: profile?.desired_job_roles?.[0] || "Software Engineer",
-      score: profile?.candidate_score || 85,
+      code,
+      name: profile?.full_name || candidate.name || code,
+      role: desiredRoles?.[0] || "Software Engineer",
+      score: profile?.candidate_score ?? candidate.candidate_score ?? 0,
       shortlistedDate: new Date(candidate.created_at).toLocaleDateString(),
       status: "pending",
-      experience: `${profile?.total_years_experience || 0} years`,
-      location: `${profile?.city || 'N/A'}, ${profile?.state || 'N/A'}`,
-      skills: profile?.skills || [],
-      salary: profile?.desired_annual_package ? `$${parseInt(profile.desired_annual_package).toLocaleString()}` : "Not specified",
-      visaStatus: profile?.visa_status?.replace('_', ' ') || "Not specified",
+      experience: `${yearsExp} years`,
+      location: `${city}, ${state}`,
+      skills,
+      salary: salaryRaw ? `$${parseInt(salaryRaw).toLocaleString()}` : "Not specified",
+      visaStatus: visa || "Not specified",
       interviewStatus: "pre-interviewed",
       email: candidate.email,
       phone: profile?.contact_phone || candidate.mobile_number
@@ -339,7 +324,7 @@ const RecruiterDashboard = () => {
       <div className="w-full max-w-none">
         <div className="mx-auto px-4 sm:px-6 lg:px-8 py-2 lg:py-4">
           {/* Welcome Section */}
-          <div className="mb-8">
+          <div className="mb-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
                 <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Welcome back!</h1>
@@ -352,168 +337,142 @@ const RecruiterDashboard = () => {
                 </div>
               </div>
             </div>
-           {/* Compact Search Section */}
-          <div className="mb-6">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-              {/* Search Header */}
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <Search className="h-4 w-4 text-gray-600" />
-                  <h3 className="text-sm font-medium text-gray-900">Search Candidates</h3>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setShowFilters(!showFilters)}
-                    className="text-xs text-gray-600 hover:text-gray-900 px-2 py-1 rounded hover:bg-gray-100 transition-colors"
-                  >
-                    <Filter className="h-3 w-3 inline mr-1" />
-                    {showFilters ? 'Hide' : 'Filters'}
-                  </button>
-                  <button
-                    onClick={handleClearSearch}
-                    className="text-xs text-gray-500 hover:text-gray-700 px-2 py-1 rounded hover:bg-gray-100 transition-colors"
-                  >
-                    Clear
-                  </button>
+          {/* Search & Filters */}
+          <div className="mb-5">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-5 mt-[1vh]">
+              <div className="mb-3 md:mb-4">
+                <div className="flex items-start md:items-center justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <Search className="h-4 w-4 text-gray-600" />
+                    <div>
+                      <h3 className="text-sm font-semibold text-gray-900">Find Candidates</h3>
+                      <p className="hidden md:block text-xs text-gray-500">Use filters to narrow down results. Leave blank to view all.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={handleClearSearch}
+                      className="px-3 py-1.5 text-xs border border-gray-200 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
+                      aria-label="Clear filters"
+                    >
+                      Clear
+                    </button>
+                    <button
+                      onClick={handleSearch}
+                      disabled={isSearching}
+                      className="px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                      aria-label="Search candidates"
+                    >
+                      {isSearching ? (
+                        <>
+                          <Loader2 className="h-3 w-3 animate-spin inline mr-1" />
+                          Searching...
+                        </>
+                      ) : (
+                        <>
+                          <Search className="h-3 w-3 inline mr-1" />
+                          Search
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              {/* Main Search Row */}
-              <div className="flex flex-col sm:flex-row gap-2 mb-3">
-                <div className="flex-1">
-                  <input
-                    type="text"
-                    placeholder="Job role, skills, location..."
-                    value={mainSearchTerm}
-                    onChange={(e) => setMainSearchTerm(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  />
+              <div className="border-t border-gray-100 pt-3">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Job Role</label>
+                    <input
+                      type="text"
+                      placeholder="e.g., Data Scientist"
+                      value={searchParams.job_role}
+                      onChange={(e) => handleSearchParamChange('job_role', e.target.value)}
+                      className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Preferred Locations</label>
+                    <input
+                      type="text"
+                      placeholder="e.g., New York, Austin"
+                      value={searchParams.preferred_locations}
+                      onChange={(e) => handleSearchParamChange('preferred_locations', e.target.value)}
+                      className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Skills</label>
+                    <input
+                      type="text"
+                      placeholder="e.g., Python, ML"
+                      value={searchParams.skills}
+                      onChange={(e) => handleSearchParamChange('skills', e.target.value)}
+                      className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Min Exp</label>
+                    <input
+                      type="number"
+                      placeholder="0"
+                      value={searchParams.years_experience_min}
+                      onChange={(e) => handleSearchParamChange('years_experience_min', e.target.value)}
+                      className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Max Exp</label>
+                    <input
+                      type="number"
+                      placeholder="10"
+                      value={searchParams.years_experience_max}
+                      onChange={(e) => handleSearchParamChange('years_experience_max', e.target.value)}
+                      className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Salary Range</label>
+                    <div className="flex gap-1.5">
+                      <input
+                        type="number"
+                        placeholder="Min"
+                        value={searchParams.salary_min}
+                        onChange={(e) => handleSearchParamChange('salary_min', e.target.value)}
+                        className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
+                      />
+                      <span className="text-xs text-gray-400 self-center px-1">-</span>
+                      <input
+                        type="number"
+                        placeholder="Max"
+                        value={searchParams.salary_max}
+                        onChange={(e) => handleSearchParamChange('salary_max', e.target.value)}
+                        className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Visa Status</label>
+                    <input
+                      type="text"
+                      placeholder="e.g., opt_cpt, h1b, citizen"
+                      value={searchParams.visa_status}
+                      onChange={(e) => handleSearchParamChange('visa_status', e.target.value)}
+                      className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Min Score</label>
+                    <input
+                      type="number"
+                      placeholder="0"
+                      value={searchParams.candidate_score_min}
+                      onChange={(e) => handleSearchParamChange('candidate_score_min', e.target.value)}
+                      className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
+                    />
+                  </div>
                 </div>
-                <button
-                  onClick={handleSearch}
-                  disabled={isSearching}
-                  className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
-                >
-                  {isSearching ? (
-                    <>
-                      <Loader2 className="h-3 w-3 animate-spin inline mr-1" />
-                      Searching...
-                    </>
-                  ) : (
-                    <>
-                      <Search className="h-3 w-3 inline mr-1" />
-                      Search
-                    </>
-                  )}
-                </button>
               </div>
-
-              {/* Compact Advanced Filters */}
-              {showFilters && (
-                <div className="border-t border-gray-100 pt-3">
-                  <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2 mb-3">
-                    <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Job Role</label>
-                      <input
-                        type="text"
-                        placeholder="Developer"
-                        value={searchParams.job_role}
-                        onChange={(e) => handleSearchParamChange('job_role', e.target.value)}
-                        className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Location</label>
-                      <input
-                        type="text"
-                        placeholder="New York"
-                        value={searchParams.location}
-                        onChange={(e) => handleSearchParamChange('location', e.target.value)}
-                        className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Skills</label>
-                      <input
-                        type="text"
-                        placeholder="PHP, Laravel"
-                        value={searchParams.skills}
-                        onChange={(e) => handleSearchParamChange('skills', e.target.value)}
-                        className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Min Exp</label>
-                      <input
-                        type="number"
-                        placeholder="0"
-                        value={searchParams.years_experience_min}
-                        onChange={(e) => handleSearchParamChange('years_experience_min', e.target.value)}
-                        className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Max Exp</label>
-                      <input
-                        type="number"
-                        placeholder="10"
-                        value={searchParams.years_experience_max}
-                        onChange={(e) => handleSearchParamChange('years_experience_max', e.target.value)}
-                        className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Salary Range</label>
-                      <div className="flex gap-1">
-                        <input
-                          type="number"
-                          placeholder="60k"
-                          value={searchParams.salary_min}
-                          onChange={(e) => handleSearchParamChange('salary_min', e.target.value)}
-                          className="w-full px-1 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        />
-                        <span className="text-xs text-gray-400 self-center">-</span>
-                        <input
-                          type="number"
-                          placeholder="120k"
-                          value={searchParams.salary_max}
-                          onChange={(e) => handleSearchParamChange('salary_max', e.target.value)}
-                          className="w-full px-1 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Sort Options */}
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <div className="flex-1">
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Sort By</label>
-                      <select
-                        value={searchParams.sort_by}
-                        onChange={(e) => handleSearchParamChange('sort_by', e.target.value)}
-                        className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      >
-                        <option value="candidate_score">Score</option>
-                        <option value="created_at">Date</option>
-                        <option value="total_years_experience">Experience</option>
-                        <option value="desired_annual_package">Salary</option>
-                      </select>
-                    </div>
-                    <div className="sm:w-24">
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Order</label>
-                      <select
-                        value={searchParams.sort_direction}
-                        onChange={(e) => handleSearchParamChange('sort_direction', e.target.value)}
-                        className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      >
-                        <option value="desc">Desc</option>
-                        <option value="asc">Asc</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
 
@@ -607,7 +566,7 @@ const RecruiterDashboard = () => {
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <div className="flex items-center gap-2">
                               <Link
-                                to={`/recruiter/candidate/${candidate.id}`}
+                                to={`/recruiter/candidate/${formattedCandidate.code}`}
                                 className="text-indigo-600 hover:text-indigo-900 px-3 py-1 border border-indigo-200 rounded-md hover:bg-indigo-50 transition-colors"
                               >
                                 View
