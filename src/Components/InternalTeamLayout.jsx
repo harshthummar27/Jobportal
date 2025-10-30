@@ -120,12 +120,33 @@ const InternalTeamLayout = ({ children }) => {
     alert("Edit Profile - This would open profile editing functionality");
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setUserDropdownOpen(false);
-    // In real app, implement logout logic
-    if (window.confirm("Are you sure you want to logout?")) {
-      alert("Logging out...");
-      // Redirect to login page or clear session
+    const confirmLogout = window.confirm("Are you sure you want to logout?");
+    if (!confirmLogout) return;
+
+    try {
+      const token = localStorage.getItem('token');
+      const baseURL = import.meta.env.VITE_API_BASE_URL;
+
+      const response = await fetch(`${baseURL}/api/logout`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        localStorage.clear();
+        window.location.href = '/login';
+      } else {
+        console.error('Logout failed:', response.statusText);
+        alert('Logout failed. Please try again.');
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+      alert('An error occurred during logout. Please try again.');
     }
   };
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Users, Star, MapPin, Briefcase, Eye, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
-import Header from "../../Components/Header";
+import RecruiterLayout from "../../Components/RecruiterLayout";
 
 const ShortlistedCandidates = () => {
   const [selectedCandidates, setSelectedCandidates] = useState([]);
@@ -108,12 +108,9 @@ const ShortlistedCandidates = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <Header />
-      
-      <div className="pt-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <RecruiterLayout>
+      <div className="w-full max-w-none">
+        <div className=" mx-auto px-4 sm:px-6 lg:px-8 py-2 lg:py-4">
           {/* Page Header */}
           <div className="mb-8">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -277,7 +274,7 @@ const ShortlistedCandidates = () => {
           </div>
         </div>
       </div>
-    </div>
+    </RecruiterLayout>
   );
 };
 

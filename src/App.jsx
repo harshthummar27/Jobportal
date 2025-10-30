@@ -17,9 +17,8 @@ import RecruiterDashboard from "./pages/recruiter/RecruiterDashboard";
 import RecruiterRegistration from "./pages/recruiter/RecruiterRegistration";
 // COMMENTED OUT: Email verification component - not used for now
 // import EmailVerification from "./pages/recruiter/EmailVerification";
-import RecruiterProfile from "./pages/recruiter/RecruiterProfile";
 import ShortlistedCandidates from "./pages/recruiter/ShortlistedCandidates";
-import InterviewTracking from "./pages/recruiter/InterviewTracking";
+import RecruiterProfile from "./pages/recruiter/RecruiterProfile";
 import SuperAdminDashboard from "./pages/superadmin/SuperAdminDashboard";
 import PendingCandidates from "./pages/superadmin/PendingCandidates";
 import ApprovedCandidates from "./pages/superadmin/ApprovedCandidates";
@@ -41,6 +40,8 @@ import ScreeningBlocking from "./pages/internalteam/ScreeningBlocking";
 import BlockedCandidates from "./pages/internalteam/BlockedCandidates";
 import Communication from "./pages/internalteam/Communication";
 import ActivityLog from "./pages/internalteam/ActivityLog";
+import AllCandidates from "./pages/internalteam/AllCandidates";
+import AllRecruiters from "./pages/internalteam/AllRecruiters";
 // import NotFound from "./pages/NotFound";
 
 export default function App() {
@@ -138,14 +139,7 @@ export default function App() {
             </PrivateRoute>
           } 
         />
-        <Route 
-          path="/recruiter/profile-setup" 
-          element={
-            <PrivateRoute>
-              <RecruiterProfile />
-            </PrivateRoute>
-          } 
-        />
+        
         <Route 
           path="/recruiter/shortlisted" 
           element={
@@ -154,11 +148,12 @@ export default function App() {
             </PrivateRoute>
           } 
         />
+        
         <Route 
-          path="/recruiter/interview-tracking" 
+          path="/recruiter/profile" 
           element={
             <PrivateRoute>
-              <InterviewTracking />
+              <RecruiterProfile />
             </PrivateRoute>
           } 
         />
@@ -292,6 +287,26 @@ export default function App() {
             <PrivateRoute>
               <InternalTeamLayout>
                 <ActivityLog />
+              </InternalTeamLayout>
+            </PrivateRoute>
+          } 
+        />
+        <Route 
+          path="/internal-team/all-candidates" 
+          element={
+            <PrivateRoute>
+              <InternalTeamLayout>
+                <AllCandidates />
+              </InternalTeamLayout>
+            </PrivateRoute>
+          } 
+        />
+        <Route 
+          path="/internal-team/all-recruiters" 
+          element={
+            <PrivateRoute>
+              <InternalTeamLayout>
+                <AllRecruiters />
               </InternalTeamLayout>
             </PrivateRoute>
           } 

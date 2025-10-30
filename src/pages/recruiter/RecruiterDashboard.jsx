@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Users, UserCheck, AlertCircle, Loader2, Search, Filter, MapPin, Briefcase, DollarSign, CheckCircle, X } from "lucide-react";
 import { toast } from 'react-toastify';
-import Header from "../../Components/Header";
+import RecruiterLayout from "../../Components/RecruiterLayout";
 
 
 const RecruiterDashboard = () => {
@@ -335,12 +335,9 @@ const RecruiterDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <Header />
-      
-      <div className="pt-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <RecruiterLayout>
+      <div className="w-full max-w-none">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8 py-2 lg:py-4">
           {/* Welcome Section */}
           <div className="mb-8">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -353,13 +350,6 @@ const RecruiterDashboard = () => {
                   <Users className="h-4 w-4" />
                   <span>{pagination.total} Total Candidates</span>
                 </div>
-                <Link
-                  to="/recruiter/shortlisted"
-                  className="inline-flex items-center gap-2 bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-all duration-200 shadow-lg"
-                >
-                  <Users className="h-5 w-5" />
-                  Shortlisted
-                </Link>
               </div>
             </div>
            {/* Compact Search Section */}
@@ -670,10 +660,8 @@ const RecruiterDashboard = () => {
           </div>
 
           </div>
-
         </div>
       </div>
-
       {/* Select Candidate Modal */}
     {showSelectModal && (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -818,7 +806,7 @@ const RecruiterDashboard = () => {
         </div>
       </div>
     )}
-    </div>
+    </RecruiterLayout>
   );
 };
 

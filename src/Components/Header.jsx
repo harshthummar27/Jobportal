@@ -713,19 +713,7 @@ const Header = ({ onEditProfile, userData }) => {
                         </>
                       )}
                       
-                      {/* My Profile - Only show for recruiters */}
-                      {userRole === 'recruiter' && (
-                        <>
-                          <button
-                            onClick={handleMyProfile}
-                            className="w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                          >
-                            <UserCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400 flex-shrink-0" />
-                            <span className="truncate">My Profile</span>
-                          </button>
-                          <div className="border-t border-gray-100 my-1"></div>
-                        </>
-                      )}
+            
                       
                       {/* Edit Profile - Only show if onEditProfile callback is provided */}
                       {onEditProfile && (

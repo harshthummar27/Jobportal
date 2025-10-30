@@ -85,6 +85,24 @@ const Login = () => {
     }
   ];
 
+  // Normalize roles from various API shapes/values to app-consistent ids
+  const normalizeRole = (role) => {
+    if (!role || typeof role !== "string") return "";
+    const r = role.toLowerCase().replace(/\s+/g, "_").replace(/-/g, "_");
+    switch (r) {
+      case "super_admin":
+        return "superadmin";
+      case "candidate":
+        return "candidate";
+      case "recruiter":
+        return "recruiter";
+      case "staff":
+        return "staff";
+      default:
+        return r;
+    }
+  };
+
   const getRedirectPath = (role) => {
     switch (role) {
       case "candidate":
@@ -133,11 +151,12 @@ const Login = () => {
         throw new Error(data.message || 'Login failed');
       }
 
-      // Get the actual user role from the API response
-      const actualUserRole = data.user?.role || data.role;
-      
-      // Check if the selected role matches the actual user role
-      if (selectedRole !== actualUserRole) {
+      // Get and normalize the actual user role from the API response
+      const actualUserRole = normalizeRole(data?.user?.role || data?.role);
+      const chosenRole = normalizeRole(selectedRole);
+
+      // Check if the chosen role matches the actual user role
+      if (chosenRole !== actualUserRole) {
         toast.error("Role mismatch. Please select the correct role and try again.");
         setIsLoading(false);
         return;
@@ -146,7 +165,7 @@ const Login = () => {
       // Store user data in localStorage only if roles match
       const userData = {
         email,
-        role: selectedRole,
+        role: actualUserRole,
         loginTime: new Date().toISOString(),
         token: data.token || data.access_token,
         user: data.user || data,
@@ -158,10 +177,10 @@ const Login = () => {
       localStorage.setItem("has_profile", data.has_profile || false);
       
       // Show success message
-      toast.success(`Welcome back! You've successfully logged in as ${userTypes.find(t => t.id === selectedRole)?.title}.`);
+      toast.success(`Welcome back! You've successfully logged in as ${userTypes.find(t => t.id === actualUserRole)?.title || actualUserRole}.`);
       
       // Navigate to dashboard based on role
-      navigate(getRedirectPath(selectedRole));
+      navigate(getRedirectPath(actualUserRole));
     } catch (error) {
       console.error("Login error:", error);
       

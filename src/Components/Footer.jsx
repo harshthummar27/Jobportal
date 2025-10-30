@@ -4,13 +4,13 @@ import { Shield } from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer className="border-t border-gray-100 bg-white py-6">
+    <footer className="border-t border-gray-100 bg-white py-4">
       <div className="max-w-7xl mx-auto px-4">
         {/* Brand Section */}
         <div className="text-center">
-          <div className="flex items-center justify-center gap-2 mb-2">
+          <div className="flex items-center justify-center gap-2 mb-1">
             <Shield className="h-5 w-5 text-indigo-600" />
-            <span className="text-base font-bold text-gray-800">
+            <span className="text-xl font-bold text-gray-800">
               VettedPool
             </span>
           </div>
