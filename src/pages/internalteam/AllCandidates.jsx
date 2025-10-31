@@ -118,7 +118,7 @@ const AllCandidates = () => {
             <input
               type="text"
               placeholder="Search by name, email, code, etc."
-              className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-emerald-500"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />

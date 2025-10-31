@@ -564,7 +564,7 @@ const ProfileSetup = () => {
               name="city"
               value={formData.city}
               onChange={handleInputChange}
-              className={`w-full pl-9 md:pl-10 pr-3 md:pr-4 py-2 md:py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+              className={`w-full pl-9 md:pl-10 pr-3 md:pr-4 py-2 md:py-3 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
                 errors.city ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
               }`}
               placeholder="Mumbai"
@@ -587,7 +587,7 @@ const ProfileSetup = () => {
             name="state"
             value={formData.state}
             onChange={handleInputChange}
-            className={`w-full px-3 md:px-4 py-2 md:py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+            className={`w-full px-3 md:px-4 py-2 md:py-3 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
               errors.state ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
             }`}
             placeholder="Maharashtra"
@@ -622,7 +622,7 @@ const ProfileSetup = () => {
             value={currentPreferredLocation}
             onChange={(e) => setCurrentPreferredLocation(e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addPreferredLocation())}
-            className="flex-1 px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+            className="flex-1 px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
             placeholder="Add preferred location"
           />
           <button
@@ -667,7 +667,7 @@ const ProfileSetup = () => {
             name="relocation_willingness"
             value={formData.relocation_willingness}
             onChange={handleInputChange}
-            className={`w-full px-3 md:px-4 py-2 md:py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] text-sm md:text-base ${
+            className={`w-full px-3 md:px-4 py-2 md:py-3 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] text-sm md:text-base ${
               errors.relocation_willingness ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
             }`}
           >
@@ -700,7 +700,7 @@ const ProfileSetup = () => {
               value={formData.availability_date}
               onChange={handleInputChange}
               min={new Date().toISOString().split('T')[0]}
-              className="w-full pl-9 md:pl-10 pr-3 md:pr-4 py-2 md:py-3 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] text-sm md:text-base"
+              className="w-full pl-9 md:pl-10 pr-3 md:pr-4 py-2 md:py-3 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] text-sm md:text-base"
               style={{
                 colorScheme: 'light'
               }}
@@ -840,7 +840,7 @@ const ProfileSetup = () => {
             name="total_years_experience"
             value={formData.total_years_experience}
             onChange={handleInputChange}
-            className={`w-full px-3 md:px-4 py-2 md:py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] text-sm md:text-base ${
+            className={`w-full px-3 md:px-4 py-2 md:py-3 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] text-sm md:text-base ${
               errors.total_years_experience ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
             }`}
           >
@@ -878,7 +878,7 @@ const ProfileSetup = () => {
             name="current_employer"
             value={formData.current_employer}
             onChange={handleInputChange}
-            className="w-full px-3 md:px-4 py-2 md:py-3 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+            className="w-full px-3 md:px-4 py-2 md:py-3 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
             placeholder="Tech Corp"
           />
         </div>
@@ -891,7 +891,7 @@ const ProfileSetup = () => {
             name="visa_status"
             value={formData.visa_status}
             onChange={handleInputChange}
-            className={`w-full px-3 md:px-4 py-2 md:py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] text-sm md:text-base ${
+            className={`w-full px-3 md:px-4 py-2 md:py-3 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] text-sm md:text-base ${
               errors.visa_status ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
             }`}
           >
@@ -918,7 +918,7 @@ const ProfileSetup = () => {
             name="job_seeking_status"
             value={formData.job_seeking_status}
             onChange={handleInputChange}
-            className={`w-full px-3 md:px-4 py-2 md:py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] text-sm md:text-base ${
+            className={`w-full px-3 md:px-4 py-2 md:py-3 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] text-sm md:text-base ${
               errors.job_seeking_status ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
             }`}
           >
@@ -948,7 +948,7 @@ const ProfileSetup = () => {
               name="desired_annual_package"
               value={formData.desired_annual_package}
               onChange={handleInputChange}
-              className={`w-full pl-9 md:pl-10 pr-3 md:pr-4 py-2 md:py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+              className={`w-full pl-9 md:pl-10 pr-3 md:pr-4 py-2 md:py-3 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
                 errors.desired_annual_package ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
               }`}
               placeholder="800000"
@@ -971,7 +971,7 @@ const ProfileSetup = () => {
             name="ethnicity"
             value={formData.ethnicity}
             onChange={handleInputChange}
-            className="w-full px-3 md:px-4 py-2 md:py-3 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+            className="w-full px-3 md:px-4 py-2 md:py-3 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
             placeholder="Asian"
           />
         </div>
@@ -989,21 +989,21 @@ const ProfileSetup = () => {
               placeholder="Company"
               value={currentJob.company}
               onChange={(e) => setCurrentJob(prev => ({ ...prev, company: e.target.value }))}
-              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
             />
             <input
               type="text"
               placeholder="Position"
               value={currentJob.position}
               onChange={(e) => setCurrentJob(prev => ({ ...prev, position: e.target.value }))}
-              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
             />
             <input
               type="text"
               placeholder="Duration (e.g., 2 years)"
               value={currentJob.duration}
               onChange={(e) => setCurrentJob(prev => ({ ...prev, duration: e.target.value }))}
-              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
             />
           </div>
           <button
@@ -1050,7 +1050,7 @@ const ProfileSetup = () => {
             value={currentSkill}
             onChange={(e) => setCurrentSkill(e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addSkill())}
-            className="flex-1 px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+            className="flex-1 px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
             placeholder="Add skill"
           />
           <button
@@ -1112,21 +1112,21 @@ const ProfileSetup = () => {
               placeholder="Degree"
               value={currentEducation.degree}
               onChange={(e) => setCurrentEducation(prev => ({ ...prev, degree: e.target.value }))}
-              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
             />
             <input
               type="text"
               placeholder="Institution"
               value={currentEducation.institution}
               onChange={(e) => setCurrentEducation(prev => ({ ...prev, institution: e.target.value }))}
-              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
             />
             <input
               type="text"
               placeholder="Year"
               value={currentEducation.year}
               onChange={(e) => setCurrentEducation(prev => ({ ...prev, year: e.target.value }))}
-              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
             />
           </div>
           <button
@@ -1174,14 +1174,14 @@ const ProfileSetup = () => {
               placeholder="Certification Name"
               value={currentCertification.name}
               onChange={(e) => setCurrentCertification(prev => ({ ...prev, name: e.target.value }))}
-              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
             />
             <input
               type="text"
               placeholder="Issuer"
               value={currentCertification.issuer}
               onChange={(e) => setCurrentCertification(prev => ({ ...prev, issuer: e.target.value }))}
-              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
             />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -1190,7 +1190,7 @@ const ProfileSetup = () => {
               placeholder="Date Received"
               value={currentCertification.date}
               onChange={(e) => setCurrentCertification(prev => ({ ...prev, date: e.target.value }))}
-              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
               style={{ colorScheme: 'light' }}
             />
             <input
@@ -1198,7 +1198,7 @@ const ProfileSetup = () => {
               placeholder="Expiry Date (Optional)"
               value={currentCertification.expiryDate}
               onChange={(e) => setCurrentCertification(prev => ({ ...prev, expiryDate: e.target.value }))}
-              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
               style={{ colorScheme: 'light' }}
             />
           </div>
@@ -1248,7 +1248,7 @@ const ProfileSetup = () => {
             value={currentLanguage}
             onChange={(e) => setCurrentLanguage(e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addLanguage())}
-            className="flex-1 px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+            className="flex-1 px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
             placeholder="Add language"
           />
           <button
@@ -1290,21 +1290,21 @@ const ProfileSetup = () => {
               placeholder="Name"
               value={currentReference.name}
               onChange={(e) => setCurrentReference(prev => ({ ...prev, name: e.target.value }))}
-              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
             />
             <input
               type="text"
               placeholder="Position"
               value={currentReference.position}
               onChange={(e) => setCurrentReference(prev => ({ ...prev, position: e.target.value }))}
-              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
             />
             <input
               type="text"
               placeholder="Contact (email/phone)"
               value={currentReference.contact}
               onChange={(e) => setCurrentReference(prev => ({ ...prev, contact: e.target.value }))}
-              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
             />
           </div>
           <button
@@ -1390,7 +1390,7 @@ const ProfileSetup = () => {
           value={formData.additional_notes}
           onChange={handleInputChange}
           rows={3}
-          className="w-full px-3 md:px-4 py-2 md:py-3 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+          className="w-full px-3 md:px-4 py-2 md:py-3 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
           placeholder="Open to remote work"
         />
       </div>

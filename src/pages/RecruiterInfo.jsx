@@ -6,7 +6,7 @@ import Footer from "../Components/Footer";
 
 // Modern Button Component
 const Button = ({ children, variant = "primary", size = "md", className = "", ...props }) => {
-  const base = "inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 cursor-pointer transform hover:scale-105 active:scale-95";
+  const base = "inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-300 focus:outline-none focus:ring-1 focus:ring-offset-2 cursor-pointer transform hover:scale-105 active:scale-95";
   const variants = {
     primary: "bg-[#273469] text-white hover:bg-[#1e2749] focus:ring-[#273469] shadow-lg hover:shadow-xl",
     secondary: "bg-[#e4d9ff] text-[#273469] hover:bg-[#fafaff] focus:ring-[#e4d9ff] border-2 border-[#273469]",

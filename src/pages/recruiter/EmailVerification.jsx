@@ -188,7 +188,7 @@ const EmailVerification = () => {
                     type="text"
                     value={verificationCode}
                     onChange={handleCodeChange}
-                    className={`w-full px-6 py-4 text-center text-2xl font-mono border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] ${
+                    className={`w-full px-6 py-4 text-center text-2xl font-mono border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] ${
                       error ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
                     }`}
                     placeholder="000000"

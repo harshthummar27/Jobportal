@@ -193,7 +193,7 @@ const SuperAdminLayout = ({ children }) => {
                   placeholder="Search..."
                   value={globalSearchTerm}
                   onChange={handleGlobalSearch}
-                  className="w-full pl-6 sm:pl-8 pr-6 sm:pr-8 py-1 sm:py-1.5 text-[10px] sm:text-xs bg-gray-50/80 border border-gray-200/60 rounded-md focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300 focus:bg-white transition-all duration-200 placeholder-gray-400"
+                  className="w-full pl-6 sm:pl-8 pr-6 sm:pr-8 py-1 sm:py-1.5 text-[10px] sm:text-xs bg-gray-50/80 border border-gray-200/60 rounded-md focus:ring-1 focus:ring-indigo-500/20 focus:border-indigo-300 focus:bg-white transition-all duration-200 placeholder-gray-400"
                 />
                 {globalSearchTerm && (
                   <button

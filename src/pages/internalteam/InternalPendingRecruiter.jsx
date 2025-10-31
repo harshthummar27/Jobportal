@@ -207,7 +207,7 @@ const PendingRecruitersIT = () => {
             <input
               type="text"
               placeholder="Search by name, email, code, etc."
-              className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-emerald-500"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -295,7 +295,7 @@ const PendingRecruitersIT = () => {
                           return (
                             <div className="relative inline-flex items-center">
                               <select
-                                className={`appearance-none pr-8 pl-3 py-1.5 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 ${isLoadingThisRow ? 'opacity-70 cursor-not-allowed' : ''}`}
+                                className={`appearance-none pr-8 pl-3 py-1.5 border rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500 ${isLoadingThisRow ? 'opacity-70 cursor-not-allowed' : ''}`}
                                 value={current || ''}
                                 onChange={(e) => handleStatusChange(row, e.target.value)}
                                 disabled={!!isLoadingThisRow}

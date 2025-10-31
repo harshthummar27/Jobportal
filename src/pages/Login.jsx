@@ -299,7 +299,7 @@ const Login = () => {
                       id="email"
                       type="email"
                       placeholder="Enter your email"
-                      className="w-full px-4 md:px-6 py-3 md:py-4 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+                      className="w-full px-4 md:px-6 py-3 md:py-4 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
@@ -316,7 +316,7 @@ const Login = () => {
                         id="password"
                         type={showPassword ? "text" : "password"}
                         placeholder="Enter your password"
-                        className="w-full px-4 md:px-6 py-3 md:py-4 pr-12 md:pr-14 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+                        className="w-full px-4 md:px-6 py-3 md:py-4 pr-12 md:pr-14 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required

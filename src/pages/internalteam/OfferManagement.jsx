@@ -627,7 +627,7 @@ const OfferManagement = () => {
                           setErrors(prev => ({ ...prev, candidate_code: "" }));
                         }
                       }}
-                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent ${
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-transparent ${
                         errors.candidate_code ? 'border-red-300 bg-red-50' : 'border-gray-300'
                       }`}
                       placeholder="CAND138087"
@@ -653,7 +653,7 @@ const OfferManagement = () => {
                           setErrors(prev => ({ ...prev, candidate_selection_id: "" }));
                         }
                       }}
-                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent ${
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-transparent ${
                         errors.candidate_selection_id ? 'border-red-300 bg-red-50' : 'border-gray-300'
                       }`}
                       placeholder="1"
@@ -685,7 +685,7 @@ const OfferManagement = () => {
                           setErrors(prev => ({ ...prev, job_title: "" }));
                         }
                       }}
-                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent ${
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-transparent ${
                         errors.job_title ? 'border-red-300 bg-red-50' : 'border-gray-300'
                       }`}
                       placeholder="Senior Software Engineer"
@@ -711,7 +711,7 @@ const OfferManagement = () => {
                           setErrors(prev => ({ ...prev, job_description: "" }));
                         }
                       }}
-                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none ${
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-transparent resize-none ${
                         errors.job_description ? 'border-red-300 bg-red-50' : 'border-gray-300'
                       }`}
                       placeholder="Lead development team and work on high-impact projects..."
@@ -738,7 +738,7 @@ const OfferManagement = () => {
                             setErrors(prev => ({ ...prev, offered_salary: "" }));
                           }
                         }}
-                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent ${
+                        className={`w-full px-3 py-2 border rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-transparent ${
                           errors.offered_salary ? 'border-red-300 bg-red-50' : 'border-gray-300'
                         }`}
                         placeholder="1200000"
@@ -765,7 +765,7 @@ const OfferManagement = () => {
                             setErrors(prev => ({ ...prev, location: "" }));
                           }
                         }}
-                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent ${
+                        className={`w-full px-3 py-2 border rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-transparent ${
                           errors.location ? 'border-red-300 bg-red-50' : 'border-gray-300'
                         }`}
                         placeholder="Mumbai, India"
@@ -794,7 +794,7 @@ const OfferManagement = () => {
                           }
                         }}
                         min={getTodayDate()}
-                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent ${
+                        className={`w-full px-3 py-2 border rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-transparent ${
                           errors.start_date ? 'border-red-300 bg-red-50' : 'border-gray-300'
                         }`}
                       />
@@ -820,7 +820,7 @@ const OfferManagement = () => {
                           }
                         }}
                         min={getTodayDate()}
-                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent ${
+                        className={`w-full px-3 py-2 border rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-transparent ${
                           errors.offer_deadline ? 'border-red-300 bg-red-50' : 'border-gray-300'
                         }`}
                       />
@@ -880,7 +880,7 @@ const OfferManagement = () => {
                           setErrors(prev => ({ ...prev, offer_notes: "" }));
                         }
                       }}
-                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none ${
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-transparent resize-none ${
                         errors.offer_notes ? 'border-red-300 bg-red-50' : 'border-gray-300'
                       }`}
                       placeholder="Great opportunity to grow with a leading tech company"

@@ -122,7 +122,7 @@ const AllRecruiters = () => {
               <input
                 type="text"
                 placeholder="Search by name, email, company, etc."
-                className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-emerald-500"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -133,7 +133,7 @@ const AllRecruiters = () => {
             <div className="relative flex-1">
               <Filter className="h-4 w-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <select
-                className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
+                className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-white"
                 value={status}
                 onChange={(e) => { setStatus(e.target.value); setPage(1); }}
               >

@@ -108,6 +108,16 @@ const RecruiterLayout = ({ children }) => {
     }
   }, []);
 
+  // Get user initial (first letter of name)
+  const getUserInitial = () => {
+    if (displayName && displayName !== "Recruiter") {
+      // Get first letter and make it uppercase
+      return displayName.charAt(0).toUpperCase();
+    }
+    // Fallback to "R" if no valid name found
+    return "R";
+  };
+
   return (
     <SearchContext.Provider value={{ searchTerm: "", onSearch: () => {} }}>
       <div className="bg-gray-50">
@@ -150,9 +160,11 @@ const RecruiterLayout = ({ children }) => {
                 </div>
                 <button
                   onClick={handleUserDropdownToggle}
-                  className="w-6 h-6 sm:w-7 sm:h-7 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full flex items-center justify-center cursor-pointer hover:from-indigo-200 hover:to-purple-200 transition-all duration-200 border border-indigo-200/50 shadow-sm flex-shrink-0"
+                  className="w-6 h-6 sm:w-7 sm:h-7 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center cursor-pointer hover:from-indigo-600 hover:to-purple-700 transition-all duration-200 border border-indigo-200/50 shadow-sm flex-shrink-0"
                 >
-                  <User className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-indigo-600" />
+                  <span className="text-white font-bold text-[10px] sm:text-xs">
+                    {getUserInitial()}
+                  </span>
                 </button>
               </div>
 
@@ -161,7 +173,9 @@ const RecruiterLayout = ({ children }) => {
                   <div className="px-3 sm:px-4 py-3 border-b border-gray-100">
                     <div className="flex items-center gap-2 sm:gap-3">
                       <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
-                        <User className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                        <span className="text-white font-bold text-xs sm:text-sm">
+                          {getUserInitial()}
+                        </span>
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="text-xs sm:text-sm font-semibold text-gray-900 truncate">{displayName}</div>

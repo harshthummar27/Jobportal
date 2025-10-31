@@ -44,7 +44,7 @@ const Button = ({
   ...props
 }) => {
   const base =
-    "inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 cursor-pointer transform hover:scale-105 active:scale-95";
+    "inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-300 focus:outline-none focus:ring-1 focus:ring-offset-2 cursor-pointer transform hover:scale-105 active:scale-95";
   const variants = {
     primary:
       "bg-[#273469] text-white hover:bg-[#1e2749] focus:ring-[#273469] shadow-lg hover:shadow-xl",

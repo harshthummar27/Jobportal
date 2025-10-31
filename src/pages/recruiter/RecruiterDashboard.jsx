@@ -388,7 +388,7 @@ const RecruiterDashboard = () => {
                       placeholder="e.g., Data Scientist"
                       value={searchParams.job_role}
                       onChange={(e) => handleSearchParamChange('job_role', e.target.value)}
-                      className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
+                      className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500/30 focus:border-blue-500"
                     />
                   </div>
                   <div>
@@ -398,7 +398,7 @@ const RecruiterDashboard = () => {
                       placeholder="e.g., New York, Austin"
                       value={searchParams.preferred_locations}
                       onChange={(e) => handleSearchParamChange('preferred_locations', e.target.value)}
-                      className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
+                      className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500/30 focus:border-blue-500"
                     />
                   </div>
                   <div>
@@ -408,7 +408,7 @@ const RecruiterDashboard = () => {
                       placeholder="e.g., Python, ML"
                       value={searchParams.skills}
                       onChange={(e) => handleSearchParamChange('skills', e.target.value)}
-                      className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
+                      className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500/30 focus:border-blue-500"
                     />
                   </div>
                   <div>
@@ -418,7 +418,7 @@ const RecruiterDashboard = () => {
                       placeholder="0"
                       value={searchParams.years_experience_min}
                       onChange={(e) => handleSearchParamChange('years_experience_min', e.target.value)}
-                      className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
+                      className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500/30 focus:border-blue-500"
                     />
                   </div>
                   <div>
@@ -428,7 +428,7 @@ const RecruiterDashboard = () => {
                       placeholder="10"
                       value={searchParams.years_experience_max}
                       onChange={(e) => handleSearchParamChange('years_experience_max', e.target.value)}
-                      className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
+                      className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500/30 focus:border-blue-500"
                     />
                   </div>
                   <div>
@@ -439,7 +439,7 @@ const RecruiterDashboard = () => {
                         placeholder="Min"
                         value={searchParams.salary_min}
                         onChange={(e) => handleSearchParamChange('salary_min', e.target.value)}
-                        className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
+                        className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500/30 focus:border-blue-500"
                       />
                       <span className="text-xs text-gray-400 self-center px-1">-</span>
                       <input
@@ -447,7 +447,7 @@ const RecruiterDashboard = () => {
                         placeholder="Max"
                         value={searchParams.salary_max}
                         onChange={(e) => handleSearchParamChange('salary_max', e.target.value)}
-                        className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
+                        className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500/30 focus:border-blue-500"
                       />
                     </div>
                   </div>
@@ -458,7 +458,7 @@ const RecruiterDashboard = () => {
                       placeholder="e.g., opt_cpt, h1b, citizen"
                       value={searchParams.visa_status}
                       onChange={(e) => handleSearchParamChange('visa_status', e.target.value)}
-                      className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
+                      className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500/30 focus:border-blue-500"
                     />
                   </div>
                   <div>
@@ -468,7 +468,7 @@ const RecruiterDashboard = () => {
                       placeholder="0"
                       value={searchParams.candidate_score_min}
                       onChange={(e) => handleSearchParamChange('candidate_score_min', e.target.value)}
-                      className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
+                      className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500/30 focus:border-blue-500"
                     />
                   </div>
                 </div>
@@ -479,18 +479,18 @@ const RecruiterDashboard = () => {
 
           {/* Approved Candidates Table */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-100 bg-gray-50">
+            <div className="px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 border-b border-gray-100 bg-gray-50">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                    <Users className="h-5 w-5 text-purple-600" />
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="h-8 w-8 sm:h-10 sm:w-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <Users className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-semibold text-gray-900">Approved Candidates</h2>
-                    <p className="text-sm text-gray-600">Candidates available for selection</p>
+                    <h2 className="text-base sm:text-lg font-semibold text-gray-900">Approved Candidates</h2>
+                    <p className="text-xs sm:text-sm text-gray-600 hidden sm:block">Candidates available for selection</p>
                   </div>
                 </div>
-                <div className="text-sm text-gray-500">
+                <div className="text-xs sm:text-sm text-gray-500">
                   {loading ? (
                     <div className="flex items-center gap-2">
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -504,34 +504,34 @@ const RecruiterDashboard = () => {
             </div>
             
             {error && (
-              <div className="px-6 py-4 bg-red-50 border-b border-red-100">
+              <div className="px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 bg-red-50 border-b border-red-100">
                 <div className="flex items-center gap-2 text-red-600">
-                  <AlertCircle className="h-5 w-5" />
-                  <span className="text-sm font-medium">Error: {error}</span>
+                  <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className="text-xs sm:text-sm font-medium">Error: {error}</span>
                 </div>
               </div>
             )}
             
             {loading ? (
-              <div className="p-8 text-center">
-                <Loader2 className="h-8 w-8 animate-spin mx-auto text-gray-400" />
-                <p className="text-gray-500 mt-2">Loading candidates...</p>
+              <div className="p-4 sm:p-6 md:p-8 text-center">
+                <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin mx-auto text-gray-400" />
+                <p className="text-xs sm:text-sm text-gray-500 mt-2">Loading candidates...</p>
               </div>
             ) : candidates.length === 0 ? (
-              <div className="p-8 text-center">
-                <Users className="h-12 w-12 mx-auto text-gray-300" />
-                <p className="text-gray-500 mt-2">No candidates found</p>
+              <div className="p-4 sm:p-6 md:p-8 text-center">
+                <Users className="h-8 w-8 sm:h-12 sm:w-12 mx-auto text-gray-300" />
+                <p className="text-xs sm:text-sm text-gray-500 mt-2">No candidates found</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead className="bg-gray-50 border-b border-gray-100">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Candidate</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role & Experience</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Salary</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                      <th className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-[10px] sm:text-xs font-medium text-gray-500 uppercase tracking-wider">Candidate</th>
+                      <th className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-[10px] sm:text-xs font-medium text-gray-500 uppercase tracking-wider">Role & Experience</th>
+                      <th className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-[10px] sm:text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                      <th className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-[10px] sm:text-xs font-medium text-gray-500 uppercase tracking-wider">Salary</th>
+                      <th className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-[10px] sm:text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-100">
@@ -539,41 +539,41 @@ const RecruiterDashboard = () => {
                       const formattedCandidate = formatCandidateData(candidate);
                       return (
                         <tr key={candidate.id} className="hover:bg-gray-50 transition-colors">
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 whitespace-nowrap">
                             <div>
-                              <div className="text-sm font-semibold text-indigo-600">{formattedCandidate.code}</div>
-                              <div className="text-sm text-gray-900">{formattedCandidate.name}</div>
-                              <div className="text-xs text-gray-500">{formattedCandidate.shortlistedDate}</div>
+                              <div className="text-[11px] sm:text-xs md:text-sm font-semibold text-indigo-600">{formattedCandidate.code}</div>
+                              <div className="text-[11px] sm:text-xs md:text-sm text-gray-900">{formattedCandidate.name}</div>
+                              <div className="text-[10px] sm:text-xs text-gray-500">{formattedCandidate.shortlistedDate}</div>
                             </div>
                           </td>
-                          <td className="px-6 py-4">
+                          <td className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4">
                             <div>
-                              <div className="text-sm font-medium text-gray-900">{formattedCandidate.role}</div>
-                              <div className="text-xs text-gray-500">{formattedCandidate.experience}</div>
-                              <div className="text-xs text-gray-400 mt-1">
+                              <div className="text-[11px] sm:text-xs md:text-sm font-medium text-gray-900">{formattedCandidate.role}</div>
+                              <div className="text-[10px] sm:text-xs text-gray-500">{formattedCandidate.experience}</div>
+                              <div className="text-[10px] sm:text-xs text-gray-400 sm:mt-1">
                                 {formattedCandidate.skills.slice(0, 3).join(', ')}
                                 {formattedCandidate.skills.length > 3 && '...'}
                               </div>
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900">{formattedCandidate.location}</div>
-                            <div className="text-xs text-gray-500">{formattedCandidate.visaStatus}</div>
+                          <td className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 whitespace-nowrap">
+                            <div className="text-[11px] sm:text-xs md:text-sm text-gray-900">{formattedCandidate.location}</div>
+                            <div className="text-[10px] sm:text-xs text-gray-500">{formattedCandidate.visaStatus}</div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900">{formattedCandidate.salary}</div>
+                          <td className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 whitespace-nowrap">
+                            <div className="text-[11px] sm:text-xs md:text-sm text-gray-900">{formattedCandidate.salary}</div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <div className="flex items-center gap-2">
+                          <td className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 whitespace-nowrap text-[11px] sm:text-xs md:text-sm font-medium">
+                            <div className="flex items-center gap-1 sm:gap-2">
                               <Link
                                 to={`/recruiter/candidate/${formattedCandidate.code}`}
-                                className="text-indigo-600 hover:text-indigo-900 px-3 py-1 border border-indigo-200 rounded-md hover:bg-indigo-50 transition-colors"
+                                className="text-indigo-600 hover:text-indigo-900 px-1.5 sm:px-2 md:px-3 py-0.5 sm:py-1 border border-indigo-200 rounded-md hover:bg-indigo-50 transition-colors text-[10px] sm:text-xs"
                               >
                                 View
                               </Link>
                               <button 
                                 onClick={() => handleSelectCandidate(candidate)}
-                                className="text-green-600 hover:text-green-900 px-3 py-1 border border-green-200 rounded-md hover:bg-green-50 transition-colors"
+                                className="text-green-600 hover:text-green-900 px-1.5 sm:px-2 md:px-3 py-0.5 sm:py-1 border border-green-200 rounded-md hover:bg-green-50 transition-colors text-[10px] sm:text-xs"
                               >
                                 Select
                               </button>
@@ -589,26 +589,26 @@ const RecruiterDashboard = () => {
             
             {/* Pagination */}
             {!loading && candidates.length > 0 && pagination.last_page > 1 && (
-              <div className="px-6 py-4 border-t border-gray-100 bg-gray-50">
-                <div className="flex items-center justify-between">
-                  <div className="text-sm text-gray-500">
+              <div className="px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 border-t border-gray-100 bg-gray-50">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-0">
+                  <div className="text-xs sm:text-sm text-gray-500">
                     Showing {pagination.from} to {pagination.to} of {pagination.total} results
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1 sm:gap-2">
                     <button
                       onClick={() => setPagination(prev => ({ ...prev, current_page: prev.current_page - 1 }))}
                       disabled={pagination.current_page === 1}
-                      className="px-3 py-1 text-sm border border-gray-200 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-2 sm:px-3 py-1 text-xs sm:text-sm border border-gray-200 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Previous
                     </button>
-                    <span className="px-3 py-1 text-sm text-gray-700">
+                    <span className="px-2 sm:px-3 py-1 text-xs sm:text-sm text-gray-700">
                       Page {pagination.current_page} of {pagination.last_page}
                     </span>
                     <button
                       onClick={() => setPagination(prev => ({ ...prev, current_page: prev.current_page + 1 }))}
                       disabled={pagination.current_page === pagination.last_page}
-                      className="px-3 py-1 text-sm border border-gray-200 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-2 sm:px-3 py-1 text-xs sm:text-sm border border-gray-200 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Next
                     </button>

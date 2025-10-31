@@ -511,7 +511,7 @@ const ScreeningBlocking = () => {
                   <select
                     value={newBlock.blockingReason}
                     onChange={(e) => setNewBlock(prev => ({ ...prev, blockingReason: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-transparent"
                   >
                     <option value="">Select a reason</option>
                     {blockingReasons.map(reason => (
@@ -525,7 +525,7 @@ const ScreeningBlocking = () => {
                   <select
                     value={newBlock.blockDuration}
                     onChange={(e) => setNewBlock(prev => ({ ...prev, blockDuration: parseInt(e.target.value) }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-transparent"
                   >
                     <option value={3}>3 months</option>
                     <option value={6}>6 months</option>
@@ -539,7 +539,7 @@ const ScreeningBlocking = () => {
                     rows={4}
                     value={newBlock.notes}
                     onChange={(e) => setNewBlock(prev => ({ ...prev, notes: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-transparent"
                     placeholder="Provide additional details about the blocking reason..."
                   />
                 </div>

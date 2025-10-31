@@ -659,7 +659,7 @@ const InternalTeam = () => {
                     type="text"
                     value={newMember.name}
                     onChange={(e) => setNewMember(prev => ({ ...prev, name: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-indigo-500 focus:border-transparent"
                     placeholder="Enter full name"
                     disabled={isLoading}
                   />
@@ -671,7 +671,7 @@ const InternalTeam = () => {
                     type="email"
                     value={newMember.email}
                     onChange={(e) => setNewMember(prev => ({ ...prev, email: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-indigo-500 focus:border-transparent"
                     placeholder="Enter email address"
                     disabled={isLoading}
                   />
@@ -683,7 +683,7 @@ const InternalTeam = () => {
                     type="password"
                     value={newMember.password}
                     onChange={(e) => setNewMember(prev => ({ ...prev, password: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-indigo-500 focus:border-transparent"
                     placeholder="Enter password"
                     disabled={isLoading}
                   />
@@ -695,7 +695,7 @@ const InternalTeam = () => {
                     type="tel"
                     value={newMember.mobile_number}
                     onChange={(e) => setNewMember(prev => ({ ...prev, mobile_number: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-indigo-500 focus:border-transparent"
                     placeholder="Enter mobile number"
                     disabled={isLoading}
                   />

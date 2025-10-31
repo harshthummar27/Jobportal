@@ -454,7 +454,7 @@ const RecruiterRegistration = () => {
             name="name"
             value={formData.name}
             onChange={handleInputChange}
-            className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+            className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
               errors.name ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
             }`}
             placeholder="Enter your full name"
@@ -478,7 +478,7 @@ const RecruiterRegistration = () => {
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              className={`w-full pl-10 md:pl-12 pr-4 md:pr-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+              className={`w-full pl-10 md:pl-12 pr-4 md:pr-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
                 errors.email ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
               }`}
               placeholder="your.email@company.com"
@@ -503,7 +503,7 @@ const RecruiterRegistration = () => {
               name="mobile_number"
               value={formData.mobile_number}
               onChange={handleInputChange}
-              className={`w-full pl-10 md:pl-12 pr-4 md:pr-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+              className={`w-full pl-10 md:pl-12 pr-4 md:pr-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
                 errors.mobile_number ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
               }`}
               placeholder="+919876543210"
@@ -528,7 +528,7 @@ const RecruiterRegistration = () => {
               name="password"
               value={formData.password}
               onChange={handleInputChange}
-              className={`w-full pl-10 md:pl-12 pr-12 md:pr-14 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+              className={`w-full pl-10 md:pl-12 pr-12 md:pr-14 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
                 errors.password ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
               }`}
               placeholder="Create a strong password"
@@ -574,7 +574,7 @@ const RecruiterRegistration = () => {
             name="company_name"
             value={formData.company_name}
             onChange={handleInputChange}
-            className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+            className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
               errors.company_name ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
             }`}
             placeholder="Enter your company name"
@@ -596,7 +596,7 @@ const RecruiterRegistration = () => {
             name="company_website"
             value={formData.company_website}
             onChange={handleInputChange}
-            className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+            className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
               errors.company_website ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
             }`}
             placeholder="https://yourcompany.com"
@@ -618,7 +618,7 @@ const RecruiterRegistration = () => {
               name="company_size"
               value={formData.company_size}
               onChange={handleInputChange}
-              className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] text-sm md:text-base ${
+              className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] text-sm md:text-base ${
                 errors.company_size ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
               }`}
             >
@@ -639,7 +639,7 @@ const RecruiterRegistration = () => {
               name="industry"
               value={formData.industry}
               onChange={handleInputChange}
-              className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] text-sm md:text-base ${
+              className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] text-sm md:text-base ${
                 errors.industry ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
               }`}
             >
@@ -662,7 +662,7 @@ const RecruiterRegistration = () => {
             value={formData.company_description}
             onChange={handleInputChange}
             rows={3}
-            className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base resize-none ${
+            className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base resize-none ${
               errors.company_description ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
             }`}
             placeholder="Brief description of your company"
@@ -695,7 +695,7 @@ const RecruiterRegistration = () => {
               name="contact_person_name"
               value={formData.contact_person_name}
               onChange={handleInputChange}
-              className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+              className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
                 errors.contact_person_name ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
               }`}
               placeholder="Contact person's full name"
@@ -717,7 +717,7 @@ const RecruiterRegistration = () => {
               name="contact_person_title"
               value={formData.contact_person_title}
               onChange={handleInputChange}
-              className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+              className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
                 errors.contact_person_title ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
               }`}
               placeholder="e.g., HR Manager, CEO"
@@ -737,7 +737,7 @@ const RecruiterRegistration = () => {
                 name="contact_email"
                 value={formData.contact_email}
                 onChange={handleInputChange}
-                className={`w-full pl-10 md:pl-12 pr-4 md:pr-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+                className={`w-full pl-10 md:pl-12 pr-4 md:pr-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
                   errors.contact_email ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
                 }`}
                 placeholder="contact@company.com"
@@ -762,7 +762,7 @@ const RecruiterRegistration = () => {
                 name="contact_phone"
                 value={formData.contact_phone}
                 onChange={handleInputChange}
-                className={`w-full pl-10 md:pl-12 pr-4 md:pr-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+                className={`w-full pl-10 md:pl-12 pr-4 md:pr-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
                   errors.contact_phone ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
                 }`}
                 placeholder="+919876543210"
@@ -802,7 +802,7 @@ const RecruiterRegistration = () => {
             value={formData.office_address}
             onChange={handleInputChange}
             rows={2}
-            className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base resize-none ${
+            className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base resize-none ${
               errors.office_address ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
             }`}
             placeholder="Enter office address"
@@ -819,7 +819,7 @@ const RecruiterRegistration = () => {
               name="city"
               value={formData.city}
               onChange={handleInputChange}
-              className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+              className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
                 errors.city ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
               }`}
               placeholder="Enter city"
@@ -835,7 +835,7 @@ const RecruiterRegistration = () => {
               name="state"
               value={formData.state}
               onChange={handleInputChange}
-              className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+              className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
                 errors.state ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
               }`}
               placeholder="Enter state"
@@ -853,7 +853,7 @@ const RecruiterRegistration = () => {
               name="country"
               value={formData.country}
               onChange={handleInputChange}
-              className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+              className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
                 errors.country ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
               }`}
               placeholder="Enter country"
@@ -869,7 +869,7 @@ const RecruiterRegistration = () => {
               name="postal_code"
               value={formData.postal_code}
               onChange={handleInputChange}
-              className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+              className={`w-full px-4 md:px-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
                 errors.postal_code ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
               }`}
               placeholder="Enter postal code"
@@ -916,7 +916,7 @@ const RecruiterRegistration = () => {
               name="agreement_accepted"
               checked={formData.agreement_accepted}
               onChange={handleInputChange}
-              className="mt-1 w-4 h-4 text-[#273469] border-2 border-[#e4d9ff] rounded focus:ring-[#273469] focus:ring-2"
+              className="mt-1 w-4 h-4 text-[#273469] border-2 border-[#e4d9ff] rounded focus:ring-[#273469] focus:ring-1"
             />
             <label className="text-sm text-[#30343f] leading-relaxed">
               I have read and agree to the <span className="text-[#273469] font-semibold">Terms and Conditions</span> and <span className="text-[#273469] font-semibold">Privacy Policy</span>

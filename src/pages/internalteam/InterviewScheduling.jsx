@@ -545,7 +545,7 @@ const InterviewScheduling = () => {
                       type="text"
                       value={newInterview.candidateId}
                       onChange={(e) => setNewInterview(prev => ({ ...prev, candidateId: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-transparent"
                       placeholder="TSC-2024-XXXX"
                     />
                   </div>
@@ -556,7 +556,7 @@ const InterviewScheduling = () => {
                       type="text"
                       value={newInterview.candidateName}
                       onChange={(e) => setNewInterview(prev => ({ ...prev, candidateName: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-transparent"
                       placeholder="Enter candidate name"
                     />
                   </div>
@@ -567,7 +567,7 @@ const InterviewScheduling = () => {
                       type="email"
                       value={newInterview.candidateEmail}
                       onChange={(e) => setNewInterview(prev => ({ ...prev, candidateEmail: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-transparent"
                       placeholder="candidate@example.com"
                     />
                   </div>
@@ -578,7 +578,7 @@ const InterviewScheduling = () => {
                       type="tel"
                       value={newInterview.candidatePhone}
                       onChange={(e) => setNewInterview(prev => ({ ...prev, candidatePhone: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-transparent"
                       placeholder="+1 234-567-8900"
                     />
                   </div>
@@ -594,7 +594,7 @@ const InterviewScheduling = () => {
                       type="text"
                       value={newInterview.position}
                       onChange={(e) => setNewInterview(prev => ({ ...prev, position: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-transparent"
                       placeholder="Job position"
                     />
                   </div>
@@ -604,7 +604,7 @@ const InterviewScheduling = () => {
                     <select
                       value={newInterview.interviewType}
                       onChange={(e) => setNewInterview(prev => ({ ...prev, interviewType: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-transparent"
                     >
                       {interviewTypes.map(type => (
                         <option key={type} value={type}>{type}</option>
@@ -619,7 +619,7 @@ const InterviewScheduling = () => {
                         type="date"
                         value={newInterview.scheduledDate}
                         onChange={(e) => setNewInterview(prev => ({ ...prev, scheduledDate: e.target.value }))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-transparent"
                       />
                     </div>
                     
@@ -629,7 +629,7 @@ const InterviewScheduling = () => {
                         type="time"
                         value={newInterview.scheduledTime}
                         onChange={(e) => setNewInterview(prev => ({ ...prev, scheduledTime: e.target.value }))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-transparent"
                       />
                     </div>
                   </div>
@@ -640,7 +640,7 @@ const InterviewScheduling = () => {
                       type="number"
                       value={newInterview.duration}
                       onChange={(e) => setNewInterview(prev => ({ ...prev, duration: parseInt(e.target.value) }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-transparent"
                       min="15"
                       max="180"
                     />
@@ -651,7 +651,7 @@ const InterviewScheduling = () => {
                     <select
                       value={newInterview.location}
                       onChange={(e) => setNewInterview(prev => ({ ...prev, location: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-transparent"
                     >
                       {locations.map(location => (
                         <option key={location} value={location}>{location}</option>
@@ -664,7 +664,7 @@ const InterviewScheduling = () => {
                     <select
                       value={newInterview.interviewer}
                       onChange={(e) => setNewInterview(prev => ({ ...prev, interviewer: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-transparent"
                     >
                       <option value="">Select interviewer</option>
                       {interviewers.map(interviewer => (
@@ -679,7 +679,7 @@ const InterviewScheduling = () => {
                       rows={3}
                       value={newInterview.notes}
                       onChange={(e) => setNewInterview(prev => ({ ...prev, notes: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-transparent"
                       placeholder="Interview notes, focus areas, etc."
                     />
                   </div>

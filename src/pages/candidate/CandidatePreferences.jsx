@@ -268,7 +268,7 @@ const CandidatePreferences = () => {
                   name="jobSeekingStatus"
                   value={preferences.jobSeekingStatus}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
                 >
                   {jobSeekingStatuses.map((status) => (
                     <option key={status} value={status}>
@@ -289,7 +289,7 @@ const CandidatePreferences = () => {
                     name="desiredSalary"
                     value={preferences.desiredSalary}
                     onChange={handleInputChange}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
                     placeholder="80000"
                   />
                 </div>
@@ -324,7 +324,7 @@ const CandidatePreferences = () => {
                   name="remoteWorkPreference"
                   value={preferences.remoteWorkPreference}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
                 >
                   {remoteWorkOptions.map((option) => (
                     <option key={option} value={option}>
@@ -366,7 +366,7 @@ const CandidatePreferences = () => {
                   name="currentLocation"
                   value={preferences.currentLocation}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
                   placeholder="City, State"
                 />
               </div>
@@ -381,7 +381,7 @@ const CandidatePreferences = () => {
                     value={currentPreferredLocation}
                     onChange={(e) => setCurrentPreferredLocation(e.target.value)}
                     onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addPreferredLocation())}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
                     placeholder="Add preferred location"
                   />
                   <button
@@ -522,7 +522,7 @@ const CandidatePreferences = () => {
                   name="profileVisibility"
                   value={preferences.profileVisibility}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
                 >
                   <option value="Visible to recruiters">Visible to recruiters</option>
                   <option value="Hidden from recruiters">Hidden from recruiters</option>
@@ -596,7 +596,7 @@ const CandidatePreferences = () => {
                   value={currentBlockedCompany}
                   onChange={(e) => setCurrentBlockedCompany(e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addBlockedCompany())}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
                   placeholder="Company name"
                 />
                 <button
@@ -643,7 +643,7 @@ const CandidatePreferences = () => {
                   name="availabilityStatus"
                   value={preferences.availabilityStatus}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
                 >
                   {availabilityStatuses.map((status) => (
                     <option key={status} value={status}>
@@ -661,7 +661,7 @@ const CandidatePreferences = () => {
                   name="noticePeriod"
                   value={preferences.noticePeriod}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
                 >
                   {noticePeriods.map((period) => (
                     <option key={period} value={period}>
@@ -754,7 +754,7 @@ const CandidatePreferences = () => {
                 value={preferences.additionalNotes}
                 onChange={handleInputChange}
                 rows={4}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
                 placeholder="Any additional preferences or requirements..."
               />
             </div>

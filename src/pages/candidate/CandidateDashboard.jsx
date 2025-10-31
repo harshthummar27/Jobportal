@@ -313,7 +313,7 @@ const CandidateDashboard = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
         {/* Modern Header */}
         <div className="mb-4">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mt-[6vh]">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mt-[8vh]">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <div className="w-9 h-9 bg-indigo-600 rounded-lg flex items-center justify-center">
