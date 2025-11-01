@@ -1,4 +1,5 @@
 import React, { useState, useEffect, createContext, useContext } from "react";
+import { Link } from "react-router-dom";
 import { Menu, User, LogOut, AlertTriangle, Lock, Eye, EyeOff, Loader2, X } from "lucide-react";
 import { toast } from 'react-toastify';
 import InternalTeamSidebar from "./InternalTeamSidebar";
@@ -658,15 +659,17 @@ const InternalTeamLayout = ({ children }) => {
               </button>
               
               {/* Logo */}
-              <div className="flex items-center gap-1 sm:gap-2">
-                <div className="w-6 h-6 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 rounded-lg flex items-center justify-center shadow-sm flex-shrink-0">
-                  <span className="text-white font-bold text-xs">IT</span>
+              <Link to="/" className="flex items-center gap-1 sm:gap-2 cursor-pointer hover:opacity-90 transition-opacity">
+                <img 
+                  src="/vettedpool-fav.png" 
+                  alt="VettedPool Logo" 
+                  className="w-6 h-6 object-contain flex-shrink-0"
+                />
+                {/* Page Name - Always visible with responsive sizing */}
+                <div className="min-w-0">
+                  <h4 className="text-xs sm:text-sm lg:text-base font-semibold text-gray-800 truncate">{getPageName()}</h4>
                 </div>
-                {/* Page Name - Hidden on small screens, visible on md+ */}
-                <div className="min-w-0 hidden md:block">
-                  <h4 className="text-sm lg:text-base font-semibold text-gray-800 truncate">{getPageName()}</h4>
-                </div>
-              </div>
+              </Link>
             </div>
             
             {/* Center Section removed */}
@@ -682,7 +685,7 @@ const InternalTeamLayout = ({ children }) => {
                 {/* User Avatar - Always visible */}
                 <button
                   onClick={handleUserDropdownToggle}
-                  className="w-6 h-6 sm:w-7 sm:h-7 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center cursor-pointer hover:from-emerald-600 hover:to-teal-700 transition-all duration-200 border border-emerald-200/50 shadow-sm flex-shrink-0"
+                  className="w-6 h-6 sm:w-7 sm:h-7 bg-[#273469] rounded-full flex items-center justify-center cursor-pointer hover:bg-[#1e2749] transition-all duration-200 border border-[#273469]/20 shadow-sm flex-shrink-0"
                 >
                   <span className="text-white font-bold text-[10px] sm:text-xs">
                     {getUserInitial()}
@@ -696,7 +699,7 @@ const InternalTeamLayout = ({ children }) => {
                   {/* User Info Header */}
                   <div className="px-3 sm:px-4 py-3 border-b border-gray-300">
                     <div className="flex items-center gap-2 sm:gap-3">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center flex-shrink-0">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#273469] rounded-full flex items-center justify-center flex-shrink-0">
                         <span className="text-white font-bold text-xs sm:text-sm">
                           {getUserInitial()}
                         </span>
@@ -704,7 +707,7 @@ const InternalTeamLayout = ({ children }) => {
                       <div className="flex-1 min-w-0">
                         <div className="text-xs sm:text-sm font-semibold text-gray-900 truncate">{displayName}</div>
                         <div className="text-[10px] sm:text-xs text-gray-500 truncate">{displayEmail}</div>
-                        <div className="text-[10px] sm:text-xs text-emerald-600 font-medium">Internal Team</div>
+                        <div className="text-[10px] sm:text-xs text-[#273469] font-medium">Internal Team</div>
                       </div>
                     </div>
                   </div>

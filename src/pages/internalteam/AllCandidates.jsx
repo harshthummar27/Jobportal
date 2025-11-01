@@ -96,7 +96,16 @@ const AllCandidates = () => {
   const columns = useMemo(() => {
     if (!candidates || candidates.length === 0) return [];
     const first = candidates[0];
-    return Object.keys(first);
+    const allColumns = Object.keys(first);
+    // Remove unwanted fields (handling various naming conventions)
+    const normalizeFieldName = (name) => name.toLowerCase().replace(/[-_\s]/g, '');
+    const excludedFields = [
+      'candidatestatus',
+      'isblocked', 'isbloked',
+      'blockinfo',
+      'latestoffer', 'letestoffer'
+    ];
+    return allColumns.filter(col => !excludedFields.includes(normalizeFieldName(col)));
   }, [candidates]);
 
   const formatValue = (value, col) => {

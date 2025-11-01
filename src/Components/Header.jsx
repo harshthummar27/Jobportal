@@ -1017,13 +1017,15 @@ const Header = ({ onEditProfile, userData }) => {
 
       {/* Header - Same style for both logged in and logged out */}
     <header className="border-b border-gray-100 bg-white fixed top-0 left-0 right-0 z-50 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 py-4">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2 sm:py-3">
         <div className="flex justify-between items-center">
-            {/* Logo - Always show Shield logo and VettedPool */}
-          <Link to="/">
-          <div className="flex items-center gap-2">
-           <img className="h-10 w-[100%] text-indigo-600" src={logo} alt="" />
-          </div>
+            {/* Logo - Always show VettedPool logo */}
+          <Link to="/" className="flex items-center hover:opacity-90 transition-opacity">
+            <img 
+              className="h-8 w-auto sm:h-10 md:h-12 max-w-[180px] sm:max-w-[220px] md:max-w-none object-contain" 
+              src={logo} 
+              alt="VettedPool Logo" 
+            />
           </Link>
 
             {/* Right Section - Login Button or User Dropdown */}

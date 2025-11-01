@@ -93,7 +93,13 @@ const AllRecruiters = () => {
   const columns = useMemo(() => {
     if (!recruiters || recruiters.length === 0) return [];
     const first = recruiters[0];
-    return Object.keys(first);
+    const allColumns = Object.keys(first);
+    // Remove unwanted fields (handling various naming conventions)
+    const normalizeFieldName = (name) => name.toLowerCase().replace(/[-_\s]/g, '');
+    const excludedFields = [
+      'emailvarifiedat', 'emailverifiedat'
+    ];
+    return allColumns.filter(col => !excludedFields.includes(normalizeFieldName(col)));
   }, [recruiters]);
 
   const formatValue = (value) => {

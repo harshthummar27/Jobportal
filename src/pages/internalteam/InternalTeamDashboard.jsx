@@ -90,401 +90,401 @@ const InternalTeamDashboard = () => {
 
   return (
     <div className="w-full max-w-none">
-      <div className="mx-auto px-4 sm:px-6 lg:px-8 py-2 lg:py-4">
+      <div className="mx-auto">
           {/* Page Header */}
-          <div className="mb-6">
-            <div className="flex items-center justify-between gap-4">
+          <div className="mb-3">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4">
               <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Dashboard</h1>
-                <p className="text-gray-600 mt-1">Internal team overview and statistics</p>
+                <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">Dashboard</h1>
+                <p className="text-xs sm:text-sm text-gray-600 mt-0.5 hidden sm:block">Internal team overview and statistics</p>
               </div>
               <button 
                 onClick={handleRefresh}
                 disabled={isLoading}
-                className="p-2 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 disabled:opacity-50"
+                className="p-1.5 sm:p-2 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 disabled:opacity-50 flex-shrink-0"
                 title="Refresh Dashboard"
               >
-                <RefreshCw className={`h-4 w-4 text-gray-600 ${isLoading ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-600 ${isLoading ? 'animate-spin' : ''}`} />
               </button>
             </div>
           </div>
 
           {/* Error Message */}
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3 sm:p-4 mb-3 sm:mb-4">
               <div className="flex items-center gap-2 text-red-600">
-                <AlertCircle className="h-5 w-5" />
-                <span className="text-sm font-medium">Error: {error}</span>
+                <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5" />
+                <span className="text-xs sm:text-sm font-medium">Error: {error}</span>
               </div>
             </div>
           )}
 
           {/* Loading State */}
           {isLoading ? (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-              <Loader2 className="h-8 w-8 animate-spin mx-auto text-indigo-600 mb-3" />
-              <p className="text-gray-500 text-sm font-medium">Loading dashboard statistics...</p>
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 sm:p-12 text-center">
+              <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin mx-auto text-indigo-600 mb-2 sm:mb-3" />
+              <p className="text-xs sm:text-sm text-gray-500 font-medium">Loading dashboard statistics...</p>
             </div>
           ) : dashboardStats ? (
             <>
               {/* Notifications Statistics */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-                    <Bell className="h-5 w-5 text-indigo-600" />
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6 mb-3 sm:mb-4">
+                <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-indigo-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Bell className="h-4 w-4 sm:h-5 sm:w-5 text-indigo-600" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-semibold text-gray-900">Notifications</h2>
-                    <p className="text-sm text-gray-600">Notification statistics</p>
+                    <h2 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900">Notifications</h2>
+                    <p className="text-xs text-gray-600 hidden sm:block">Notification statistics</p>
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <FileCheck className="h-4 w-4 text-gray-600" />
-                      <span className="text-xs font-medium text-gray-600">Total</span>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
+                  <div className="bg-gray-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-gray-200">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                      <FileCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-600 flex-shrink-0" />
+                      <span className="text-[10px] sm:text-xs font-medium text-gray-600 truncate">Total</span>
                     </div>
-                    <p className="text-2xl font-bold text-gray-900">{dashboardStats.notifications?.total || 0}</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">{dashboardStats.notifications?.total || 0}</p>
                   </div>
                   
-                  <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Mail className="h-4 w-4 text-blue-600" />
-                      <span className="text-xs font-medium text-blue-700">Unread</span>
+                  <div className="bg-blue-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-blue-200">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                      <Mail className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-blue-600 flex-shrink-0" />
+                      <span className="text-[10px] sm:text-xs font-medium text-blue-700 truncate">Unread</span>
                     </div>
-                    <p className="text-2xl font-bold text-blue-900">{dashboardStats.notifications?.unread || 0}</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-900">{dashboardStats.notifications?.unread || 0}</p>
                   </div>
                   
-                  <div className="bg-green-50 rounded-lg p-4 border border-green-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <CheckCircle2 className="h-4 w-4 text-green-600" />
-                      <span className="text-xs font-medium text-green-700">Read</span>
+                  <div className="bg-green-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-green-200">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                      <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-600 flex-shrink-0" />
+                      <span className="text-[10px] sm:text-xs font-medium text-green-700 truncate">Read</span>
                     </div>
-                    <p className="text-2xl font-bold text-green-900">{dashboardStats.notifications?.read || 0}</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-green-900">{dashboardStats.notifications?.read || 0}</p>
                   </div>
                   
-                  <div className="bg-red-50 rounded-lg p-4 border border-red-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <AlertCircle className="h-4 w-4 text-red-600" />
-                      <span className="text-xs font-medium text-red-700">Urgent</span>
+                  <div className="bg-red-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-red-200">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                      <AlertCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-red-600 flex-shrink-0" />
+                      <span className="text-[10px] sm:text-xs font-medium text-red-700 truncate">Urgent</span>
                     </div>
-                    <p className="text-2xl font-bold text-red-900">{dashboardStats.notifications?.urgent || 0}</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-red-900">{dashboardStats.notifications?.urgent || 0}</p>
                   </div>
                   
-                  <div className="bg-orange-50 rounded-lg p-4 border border-orange-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <TrendingUp className="h-4 w-4 text-orange-600" />
-                      <span className="text-xs font-medium text-orange-700">High Priority</span>
-        </div>
-                    <p className="text-2xl font-bold text-orange-900">{dashboardStats.notifications?.high_priority || 0}</p>
-        </div>
-      </div>
-    </div>
+                  <div className="bg-orange-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-orange-200">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                      <TrendingUp className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-orange-600 flex-shrink-0" />
+                      <span className="text-[10px] sm:text-xs font-medium text-orange-700 truncate">High Priority</span>
+                    </div>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-orange-900">{dashboardStats.notifications?.high_priority || 0}</p>
+                  </div>
+                </div>
+              </div>
 
               {/* Recruiters Statistics */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <Users className="h-5 w-5 text-blue-600" />
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6 mb-3 sm:mb-4">
+                <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Users className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-semibold text-gray-900">Recruiters</h2>
-                    <p className="text-sm text-gray-600">Recruiter statistics</p>
+                    <h2 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900">Recruiters</h2>
+                    <p className="text-xs text-gray-600 hidden sm:block">Recruiter statistics</p>
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <FileCheck className="h-4 w-4 text-gray-600" />
-                      <span className="text-xs font-medium text-gray-600">Total</span>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+                  <div className="bg-gray-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-gray-200">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                      <FileCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-600 flex-shrink-0" />
+                      <span className="text-[10px] sm:text-xs font-medium text-gray-600 truncate">Total</span>
                     </div>
-                    <p className="text-2xl font-bold text-gray-900">{dashboardStats.recruiters?.total || 0}</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">{dashboardStats.recruiters?.total || 0}</p>
                   </div>
                   
-                  <div className="bg-green-50 rounded-lg p-4 border border-green-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <CheckCircle2 className="h-4 w-4 text-green-600" />
-                      <span className="text-xs font-medium text-green-700">Approved</span>
+                  <div className="bg-green-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-green-200">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                      <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-600 flex-shrink-0" />
+                      <span className="text-[10px] sm:text-xs font-medium text-green-700 truncate">Approved</span>
                     </div>
-                    <p className="text-2xl font-bold text-green-900">{dashboardStats.recruiters?.approved || 0}</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-green-900">{dashboardStats.recruiters?.approved || 0}</p>
                   </div>
                   
-                  <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Clock className="h-4 w-4 text-yellow-600" />
-                      <span className="text-xs font-medium text-yellow-700">Pending</span>
+                  <div className="bg-yellow-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-yellow-200">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                      <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-yellow-600 flex-shrink-0" />
+                      <span className="text-[10px] sm:text-xs font-medium text-yellow-700 truncate">Pending</span>
                     </div>
-                    <p className="text-2xl font-bold text-yellow-900">{dashboardStats.recruiters?.pending || 0}</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-yellow-900">{dashboardStats.recruiters?.pending || 0}</p>
                   </div>
                   
-                  <div className="bg-red-50 rounded-lg p-4 border border-red-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <XCircle className="h-4 w-4 text-red-600" />
-                      <span className="text-xs font-medium text-red-700">Declined</span>
+                  <div className="bg-red-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-red-200">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                      <XCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-red-600 flex-shrink-0" />
+                      <span className="text-[10px] sm:text-xs font-medium text-red-700 truncate">Declined</span>
                     </div>
-                    <p className="text-2xl font-bold text-red-900">{dashboardStats.recruiters?.declined || 0}</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-red-900">{dashboardStats.recruiters?.declined || 0}</p>
                   </div>
                 </div>
-      </div>
+              </div>
 
               {/* Candidates Statistics */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                    <UserCheck className="h-5 w-5 text-purple-600" />
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6 mb-3 sm:mb-4">
+                <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <UserCheck className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-semibold text-gray-900">Candidates</h2>
-                    <p className="text-sm text-gray-600">Candidate statistics</p>
+                    <h2 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900">Candidates</h2>
+                    <p className="text-xs text-gray-600 hidden sm:block">Candidate statistics</p>
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-4">
-                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <FileCheck className="h-4 w-4 text-gray-600" />
-                      <span className="text-xs font-medium text-gray-600">Total</span>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-2 sm:gap-3">
+                  <div className="bg-gray-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-gray-200">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                      <FileCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-600 flex-shrink-0" />
+                      <span className="text-[10px] sm:text-xs font-medium text-gray-600 truncate">Total</span>
                     </div>
-                    <p className="text-2xl font-bold text-gray-900">{dashboardStats.candidates?.total || 0}</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">{dashboardStats.candidates?.total || 0}</p>
                   </div>
                   
-                  <div className="bg-green-50 rounded-lg p-4 border border-green-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <CheckCircle2 className="h-4 w-4 text-green-600" />
-                      <span className="text-xs font-medium text-green-700">Approved</span>
+                  <div className="bg-green-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-green-200">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                      <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-600 flex-shrink-0" />
+                      <span className="text-[10px] sm:text-xs font-medium text-green-700 truncate">Approved</span>
                     </div>
-                    <p className="text-2xl font-bold text-green-900">{dashboardStats.candidates?.approved || 0}</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-green-900">{dashboardStats.candidates?.approved || 0}</p>
                   </div>
                   
-                  <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Clock className="h-4 w-4 text-yellow-600" />
-                      <span className="text-xs font-medium text-yellow-700">Pending</span>
+                  <div className="bg-yellow-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-yellow-200">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                      <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-yellow-600 flex-shrink-0" />
+                      <span className="text-[10px] sm:text-xs font-medium text-yellow-700 truncate">Pending</span>
                     </div>
-                    <p className="text-2xl font-bold text-yellow-900">{dashboardStats.candidates?.pending || 0}</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-yellow-900">{dashboardStats.candidates?.pending || 0}</p>
                   </div>
                   
-                  <div className="bg-red-50 rounded-lg p-4 border border-red-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <XCircle className="h-4 w-4 text-red-600" />
-                      <span className="text-xs font-medium text-red-700">Declined</span>
+                  <div className="bg-red-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-red-200">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                      <XCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-red-600 flex-shrink-0" />
+                      <span className="text-[10px] sm:text-xs font-medium text-red-700 truncate">Declined</span>
                     </div>
-                    <p className="text-2xl font-bold text-red-900">{dashboardStats.candidates?.declined || 0}</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-red-900">{dashboardStats.candidates?.declined || 0}</p>
                   </div>
                   
-                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Ban className="h-4 w-4 text-gray-600" />
-                      <span className="text-xs font-medium text-gray-600">Blocked</span>
+                  <div className="bg-gray-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-gray-200">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                      <Ban className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-600 flex-shrink-0" />
+                      <span className="text-[10px] sm:text-xs font-medium text-gray-600 truncate">Blocked</span>
                     </div>
-                    <p className="text-2xl font-bold text-gray-900">{dashboardStats.candidates?.blocked || 0}</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">{dashboardStats.candidates?.blocked || 0}</p>
                   </div>
                   
-                  <div className="bg-orange-50 rounded-lg p-4 border border-orange-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Clock className="h-4 w-4 text-orange-600" />
-                      <span className="text-xs font-medium text-orange-700">Pending Offers</span>
+                  <div className="bg-orange-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-orange-200">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                      <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-orange-600 flex-shrink-0" />
+                      <span className="text-[10px] sm:text-xs font-medium text-orange-700 truncate">Pending Offers</span>
                     </div>
-                    <p className="text-2xl font-bold text-orange-900">{dashboardStats.candidates?.with_pending_offers || 0}</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-orange-900">{dashboardStats.candidates?.with_pending_offers || 0}</p>
                   </div>
                   
-                  <div className="bg-indigo-50 rounded-lg p-4 border border-indigo-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <CheckCircle2 className="h-4 w-4 text-indigo-600" />
-                      <span className="text-xs font-medium text-indigo-700">Accepted Offers</span>
+                  <div className="bg-indigo-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-indigo-200">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                      <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-indigo-600 flex-shrink-0" />
+                      <span className="text-[10px] sm:text-xs font-medium text-indigo-700 truncate">Accepted Offers</span>
                     </div>
-                    <p className="text-2xl font-bold text-indigo-900">{dashboardStats.candidates?.with_accepted_offers || 0}</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-indigo-900">{dashboardStats.candidates?.with_accepted_offers || 0}</p>
                   </div>
                 </div>
-      </div>
+              </div>
 
               {/* Offers Statistics */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center">
-                    <Briefcase className="h-5 w-5 text-teal-600" />
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6 mb-3 sm:mb-4">
+                <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-teal-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Briefcase className="h-4 w-4 sm:h-5 sm:w-5 text-teal-600" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-semibold text-gray-900">Offers</h2>
-                    <p className="text-sm text-gray-600">Job offer statistics</p>
+                    <h2 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900">Offers</h2>
+                    <p className="text-xs text-gray-600 hidden sm:block">Job offer statistics</p>
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <FileCheck className="h-4 w-4 text-gray-600" />
-                      <span className="text-xs font-medium text-gray-600">Total</span>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
+                  <div className="bg-gray-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-gray-200">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                      <FileCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-600 flex-shrink-0" />
+                      <span className="text-[10px] sm:text-xs font-medium text-gray-600 truncate">Total</span>
                     </div>
-                    <p className="text-2xl font-bold text-gray-900">{dashboardStats.offers?.total || 0}</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">{dashboardStats.offers?.total || 0}</p>
                   </div>
                   
-                  <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Clock className="h-4 w-4 text-yellow-600" />
-                      <span className="text-xs font-medium text-yellow-700">Pending</span>
+                  <div className="bg-yellow-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-yellow-200">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                      <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-yellow-600 flex-shrink-0" />
+                      <span className="text-[10px] sm:text-xs font-medium text-yellow-700 truncate">Pending</span>
                     </div>
-                    <p className="text-2xl font-bold text-yellow-900">{dashboardStats.offers?.pending || 0}</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-yellow-900">{dashboardStats.offers?.pending || 0}</p>
                   </div>
                   
-                  <div className="bg-green-50 rounded-lg p-4 border border-green-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <CheckCircle2 className="h-4 w-4 text-green-600" />
-                      <span className="text-xs font-medium text-green-700">Accepted</span>
+                  <div className="bg-green-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-green-200">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                      <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-600 flex-shrink-0" />
+                      <span className="text-[10px] sm:text-xs font-medium text-green-700 truncate">Accepted</span>
                     </div>
-                    <p className="text-2xl font-bold text-green-900">{dashboardStats.offers?.accepted || 0}</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-green-900">{dashboardStats.offers?.accepted || 0}</p>
                   </div>
                   
-                  <div className="bg-red-50 rounded-lg p-4 border border-red-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <XCircle className="h-4 w-4 text-red-600" />
-                      <span className="text-xs font-medium text-red-700">Declined</span>
+                  <div className="bg-red-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-red-200">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                      <XCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-red-600 flex-shrink-0" />
+                      <span className="text-[10px] sm:text-xs font-medium text-red-700 truncate">Declined</span>
                     </div>
-                    <p className="text-2xl font-bold text-red-900">{dashboardStats.offers?.declined || 0}</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-red-900">{dashboardStats.offers?.declined || 0}</p>
                   </div>
                   
-                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <X className="h-4 w-4 text-gray-600" />
-                      <span className="text-xs font-medium text-gray-600">Withdrawn</span>
+                  <div className="bg-gray-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-gray-200">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                      <X className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-600 flex-shrink-0" />
+                      <span className="text-[10px] sm:text-xs font-medium text-gray-600 truncate">Withdrawn</span>
                     </div>
-                    <p className="text-2xl font-bold text-gray-900">{dashboardStats.offers?.withdrawn || 0}</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">{dashboardStats.offers?.withdrawn || 0}</p>
                   </div>
                   
-                  <div className="bg-orange-50 rounded-lg p-4 border border-orange-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Clock className="h-4 w-4 text-orange-600" />
-                      <span className="text-xs font-medium text-orange-700">Expired</span>
+                  <div className="bg-orange-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-orange-200">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                      <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-orange-600 flex-shrink-0" />
+                      <span className="text-[10px] sm:text-xs font-medium text-orange-700 truncate">Expired</span>
                     </div>
-                    <p className="text-2xl font-bold text-orange-900">{dashboardStats.offers?.expired || 0}</p>
-            </div>
-        </div>
-      </div>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-orange-900">{dashboardStats.offers?.expired || 0}</p>
+                  </div>
+                </div>
+              </div>
 
               {/* Staff Statistics */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
-                    <Users className="h-5 w-5 text-emerald-600" />
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6 mb-3 sm:mb-4">
+                <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Users className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-semibold text-gray-900">Staff</h2>
-                    <p className="text-sm text-gray-600">Internal team staff statistics</p>
+                    <h2 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900">Staff</h2>
+                    <p className="text-xs text-gray-600 hidden sm:block">Internal team staff statistics</p>
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <FileCheck className="h-4 w-4 text-gray-600" />
-                      <span className="text-xs font-medium text-gray-600">Total</span>
+                <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                  <div className="bg-gray-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-gray-200">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                      <FileCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-600 flex-shrink-0" />
+                      <span className="text-[10px] sm:text-xs font-medium text-gray-600 truncate">Total</span>
                     </div>
-                    <p className="text-2xl font-bold text-gray-900">{dashboardStats.staff?.total || 0}</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">{dashboardStats.staff?.total || 0}</p>
                   </div>
                   
-                  <div className="bg-green-50 rounded-lg p-4 border border-green-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <CheckCircle2 className="h-4 w-4 text-green-600" />
-                      <span className="text-xs font-medium text-green-700">Active</span>
+                  <div className="bg-green-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-green-200">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                      <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-600 flex-shrink-0" />
+                      <span className="text-[10px] sm:text-xs font-medium text-green-700 truncate">Active</span>
                     </div>
-                    <p className="text-2xl font-bold text-green-900">{dashboardStats.staff?.active || 0}</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-green-900">{dashboardStats.staff?.active || 0}</p>
                   </div>
                 </div>
-        </div>
+              </div>
         
               {/* Candidate Statuses Statistics */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 bg-cyan-100 rounded-lg flex items-center justify-center">
-                    <TrendingUp className="h-5 w-5 text-cyan-600" />
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6">
+                <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-cyan-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-cyan-600" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-semibold text-gray-900">Candidate Statuses</h2>
-                    <p className="text-sm text-gray-600">Candidate status breakdown</p>
+                    <h2 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900">Candidate Statuses</h2>
+                    <p className="text-xs text-gray-600 hidden sm:block">Candidate status breakdown</p>
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-9 gap-4">
-                  <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Mail className="h-4 w-4 text-blue-600" />
-                      <span className="text-xs font-medium text-blue-700">Contacted</span>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-9 gap-2 sm:gap-3">
+                  <div className="bg-blue-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-blue-200">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                      <Mail className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-blue-600 flex-shrink-0" />
+                      <span className="text-[10px] sm:text-xs font-medium text-blue-700 truncate">Contacted</span>
                     </div>
-                    <p className="text-2xl font-bold text-blue-900">{dashboardStats.candidate_statuses?.contacted || 0}</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-900">{dashboardStats.candidate_statuses?.contacted || 0}</p>
                   </div>
                   
-                  <div className="bg-indigo-50 rounded-lg p-4 border border-indigo-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Clock className="h-4 w-4 text-indigo-600" />
-                      <span className="text-xs font-medium text-indigo-700">Interview Scheduled</span>
+                  <div className="bg-indigo-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-indigo-200">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                      <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-indigo-600 flex-shrink-0" />
+                      <span className="text-[10px] sm:text-xs font-medium text-indigo-700 truncate">Interview Scheduled</span>
                     </div>
-                    <p className="text-2xl font-bold text-indigo-900">{dashboardStats.candidate_statuses?.interview_scheduled || 0}</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-indigo-900">{dashboardStats.candidate_statuses?.interview_scheduled || 0}</p>
                   </div>
                   
-                  <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <UserCheck className="h-4 w-4 text-purple-600" />
-                      <span className="text-xs font-medium text-purple-700">Interviewed</span>
+                  <div className="bg-purple-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-purple-200">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                      <UserCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-purple-600 flex-shrink-0" />
+                      <span className="text-[10px] sm:text-xs font-medium text-purple-700 truncate">Interviewed</span>
                     </div>
-                    <p className="text-2xl font-bold text-purple-900">{dashboardStats.candidate_statuses?.interviewed || 0}</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-purple-900">{dashboardStats.candidate_statuses?.interviewed || 0}</p>
                   </div>
                   
-                  <div className="bg-orange-50 rounded-lg p-4 border border-orange-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Briefcase className="h-4 w-4 text-orange-600" />
-                      <span className="text-xs font-medium text-orange-700">Offer Made</span>
+                  <div className="bg-orange-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-orange-200">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                      <Briefcase className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-orange-600 flex-shrink-0" />
+                      <span className="text-[10px] sm:text-xs font-medium text-orange-700 truncate">Offer Made</span>
                     </div>
-                    <p className="text-2xl font-bold text-orange-900">{dashboardStats.candidate_statuses?.offer_made || 0}</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-orange-900">{dashboardStats.candidate_statuses?.offer_made || 0}</p>
                   </div>
                   
-                  <div className="bg-green-50 rounded-lg p-4 border border-green-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <CheckCircle2 className="h-4 w-4 text-green-600" />
-                      <span className="text-xs font-medium text-green-700">Offer Accepted</span>
+                  <div className="bg-green-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-green-200">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                      <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-600 flex-shrink-0" />
+                      <span className="text-[10px] sm:text-xs font-medium text-green-700 truncate">Offer Accepted</span>
                     </div>
-                    <p className="text-2xl font-bold text-green-900">{dashboardStats.candidate_statuses?.offer_accepted || 0}</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-green-900">{dashboardStats.candidate_statuses?.offer_accepted || 0}</p>
                   </div>
                   
-                  <div className="bg-red-50 rounded-lg p-4 border border-red-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <XCircle className="h-4 w-4 text-red-600" />
-                      <span className="text-xs font-medium text-red-700">Offer Declined</span>
+                  <div className="bg-red-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-red-200">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                      <XCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-red-600 flex-shrink-0" />
+                      <span className="text-[10px] sm:text-xs font-medium text-red-700 truncate">Offer Declined</span>
                     </div>
-                    <p className="text-2xl font-bold text-red-900">{dashboardStats.candidate_statuses?.offer_declined || 0}</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-red-900">{dashboardStats.candidate_statuses?.offer_declined || 0}</p>
                   </div>
                   
-                  <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <XCircle className="h-4 w-4 text-yellow-600" />
-                      <span className="text-xs font-medium text-yellow-700">Not Interested</span>
+                  <div className="bg-yellow-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-yellow-200">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                      <XCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-yellow-600 flex-shrink-0" />
+                      <span className="text-[10px] sm:text-xs font-medium text-yellow-700 truncate">Not Interested</span>
                     </div>
-                    <p className="text-2xl font-bold text-yellow-900">{dashboardStats.candidate_statuses?.not_interested || 0}</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-yellow-900">{dashboardStats.candidate_statuses?.not_interested || 0}</p>
                   </div>
                   
-                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <UserX className="h-4 w-4 text-gray-600" />
-                      <span className="text-xs font-medium text-gray-600">Unavailable</span>
+                  <div className="bg-gray-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-gray-200">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                      <UserX className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-600 flex-shrink-0" />
+                      <span className="text-[10px] sm:text-xs font-medium text-gray-600 truncate">Unavailable</span>
                     </div>
-                    <p className="text-2xl font-bold text-gray-900">{dashboardStats.candidate_statuses?.unavailable || 0}</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">{dashboardStats.candidate_statuses?.unavailable || 0}</p>
                   </div>
                   
-                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Ban className="h-4 w-4 text-gray-600" />
-                      <span className="text-xs font-medium text-gray-600">Blocked</span>
+                  <div className="bg-gray-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-gray-200">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                      <Ban className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-600 flex-shrink-0" />
+                      <span className="text-[10px] sm:text-xs font-medium text-gray-600 truncate">Blocked</span>
                     </div>
-                    <p className="text-2xl font-bold text-gray-900">{dashboardStats.candidate_statuses?.blocked || 0}</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">{dashboardStats.candidate_statuses?.blocked || 0}</p>
                   </div>
                 </div>
               </div>
             </>
           ) : (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-              <AlertCircle className="h-12 w-12 mx-auto text-gray-300 mb-3" />
-              <p className="text-gray-500 text-sm font-medium">No dashboard statistics available</p>
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 sm:p-12 text-center">
+              <AlertCircle className="h-8 w-8 sm:h-12 sm:w-12 mx-auto text-gray-300 mb-2 sm:mb-3" />
+              <p className="text-xs sm:text-sm text-gray-500 font-medium">No dashboard statistics available</p>
             </div>
           )}
         </div>

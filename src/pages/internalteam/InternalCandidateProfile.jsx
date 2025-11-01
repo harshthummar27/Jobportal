@@ -198,8 +198,7 @@ const InternalCandidateProfile = () => {
               <UserCheck className="h-8 w-8 text-blue-600" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">{formattedCandidate.full_name}</h1>
-              <p className="text-lg text-blue-600 font-semibold">{formattedCandidate.candidate_code}</p>
+              <h1 className="text-2xl font-bold text-blue-600">{formattedCandidate.candidate_code}</h1>
               <div className="flex items-center gap-4 mt-2">
                 <div className="flex items-center gap-1">
                   <Star className="h-4 w-4 text-yellow-500" />

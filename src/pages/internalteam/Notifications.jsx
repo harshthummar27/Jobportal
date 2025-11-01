@@ -479,59 +479,59 @@ const Notifications = () => {
   return (
     <div className="w-full max-w-none">
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-        <div className="bg-white rounded-lg shadow-md p-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 mb-3 sm:mb-4">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-2 sm:p-3 lg:p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Total Notifications</p>
-              <p className="text-2xl font-bold text-blue-600">{statusCounts.total}</p>
+              <p className="text-[10px] sm:text-xs font-medium text-gray-600">Total Notifications</p>
+              <p className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-600">{statusCounts.total}</p>
             </div>
-            <Bell className="h-8 w-8 text-blue-600" />
+            <Bell className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600 flex-shrink-0" />
           </div>
         </div>
         
-        <div className="bg-white rounded-lg shadow-md p-4">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-2 sm:p-3 lg:p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Unread</p>
-              <p className="text-2xl font-bold text-yellow-600">{statusCounts.unread}</p>
+              <p className="text-[10px] sm:text-xs font-medium text-gray-600">Unread</p>
+              <p className="text-lg sm:text-xl lg:text-2xl font-bold text-yellow-600">{statusCounts.unread}</p>
             </div>
-            <Clock className="h-8 w-8 text-yellow-600" />
+            <Clock className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-600 flex-shrink-0" />
           </div>
         </div>
         
-        <div className="bg-white rounded-lg shadow-md p-4">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-2 sm:p-3 lg:p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Read</p>
-              <p className="text-2xl font-bold text-green-600">{statusCounts.read}</p>
+              <p className="text-[10px] sm:text-xs font-medium text-gray-600">Read</p>
+              <p className="text-lg sm:text-xl lg:text-2xl font-bold text-green-600">{statusCounts.read}</p>
             </div>
-            <CheckCircle className="h-8 w-8 text-green-600" />
+            <CheckCircle className="h-6 w-6 sm:h-8 sm:w-8 text-green-600 flex-shrink-0" />
           </div>
         </div>
         
-        <div className="bg-white rounded-lg shadow-md p-4">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-2 sm:p-3 lg:p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">High Priority</p>
-              <p className="text-2xl font-bold text-red-600">{statusCounts.highPriority}</p>
+              <p className="text-[10px] sm:text-xs font-medium text-gray-600">High Priority</p>
+              <p className="text-lg sm:text-xl lg:text-2xl font-bold text-red-600">{statusCounts.highPriority}</p>
             </div>
-            <AlertCircle className="h-8 w-8 text-red-600" />
+            <AlertCircle className="h-6 w-6 sm:h-8 sm:w-8 text-red-600 flex-shrink-0" />
           </div>
         </div>
         
       </div>
 
       {/* Filters and Actions */}
-      <div className="bg-white rounded-lg shadow-md p-4 mb-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4 text-gray-500" />
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6 mb-3 sm:mb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <Filter className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-500 flex-shrink-0" />
               <select
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                className="px-2 py-1.5 sm:px-3 sm:py-2 border border-gray-300 rounded-md text-xs sm:text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
               >
                 <option value="all">All Notifications</option>
                 <option value="unread">Unread Only</option>
@@ -542,19 +542,19 @@ const Notifications = () => {
             
             <button
               onClick={() => fetchNotifications(currentPage, 20, filter === 'unread')}
-              className="flex items-center gap-1 px-3 py-2 bg-emerald-500 text-white text-sm rounded-md hover:bg-emerald-600 transition-colors"
+              className="flex items-center gap-1 px-2 py-1.5 sm:px-3 sm:py-2 bg-emerald-500 text-white text-xs sm:text-sm rounded-md hover:bg-emerald-600 transition-colors"
             >
-              <RefreshCw className="h-4 w-4" />
-              Refresh
+              <RefreshCw className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Refresh</span>
             </button>
           </div>
 
           {selectedNotifications.length > 0 && (
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">
+              <span className="text-xs sm:text-sm text-gray-600">
                 {selectedNotifications.length} selected
               </span>
-              <button onClick={handleMarkSelectedAsRead} className="px-3 py-2 bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600 transition-colors">
+              <button onClick={handleMarkSelectedAsRead} className="px-2 py-1.5 sm:px-3 sm:py-2 bg-blue-500 text-white text-xs sm:text-sm rounded-md hover:bg-blue-600 transition-colors">
                 Mark as Read
               </button>
             </div>
@@ -563,12 +563,12 @@ const Notifications = () => {
       </div>
 
       {/* Notifications List */}
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
         {filteredNotifications.length === 0 ? (
-          <div className="text-center py-12">
-            <Bell className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No notifications found</h3>
-            <p className="text-gray-500">
+          <div className="text-center py-8 sm:py-12">
+            <Bell className="mx-auto h-8 w-8 sm:h-12 sm:w-12 text-gray-400 mb-2 sm:mb-4" />
+            <h3 className="text-sm sm:text-base lg:text-lg font-medium text-gray-900 mb-1 sm:mb-2">No notifications found</h3>
+            <p className="text-xs sm:text-sm text-gray-500">
               {searchTerm ? "No notifications match your search criteria." : "No notifications available."}
             </p>
           </div>
@@ -591,8 +591,8 @@ const Notifications = () => {
                   key={notification.id}
                   className={`p-3 md:p-4 transition-colors relative ${
                     isUnread 
-                      ? 'bg-blue-50 hover:bg-blue-100 border-l-4 border-blue-500' 
-                      : 'bg-white hover:bg-gray-50 border-l-4 border-transparent'
+                      ? 'bg-blue-50 hover:bg-blue-100' 
+                      : 'bg-white hover:bg-gray-50'
                   }`}
                 >
                   {/* Unread indicator dot (like LinkedIn) */}
@@ -600,114 +600,112 @@ const Notifications = () => {
                     <div className="absolute left-2 top-6 w-[6px] h-[6px] bg-blue-600 rounded-full"></div>
                   )}
                   
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-2 sm:gap-3">
+                    <div className="flex-1 min-w-0 overflow-hidden">
                       {/* Mobile (smaller) layout: two lines */}
                       <div className="block md:hidden">
-                        <div className="flex items-center gap-2 mb-1">
+                        <div className="flex items-start gap-2 mb-1">
                           {isUnread && (
                             <input
                               type="checkbox"
                               checked={selectedNotifications.includes(notification.id)}
                               onChange={() => handleSelectNotification(notification.id)}
-                              className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+                              className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 mt-0.5 flex-shrink-0"
                             />
                           )}
-                          <h3 className={`text-sm flex items-center gap-2 ${
-                            isUnread 
-                              ? 'font-bold text-gray-900' 
-                              : 'font-semibold text-gray-700'
+                          <h3 className={`text-sm font-semibold text-gray-900 break-words overflow-wrap-anywhere ${
+                            isUnread ? 'font-bold' : 'font-semibold'
                           }`}>
                             {displayTitle}
                           </h3>
                         </div>
-                        <div className="flex items-center gap-2 whitespace-nowrap overflow-hidden text-ellipsis">
+                        <div className="flex items-center gap-2 flex-wrap">
                           {getPriorityBadge(notification.priority)}
-                          <span className="flex items-center gap-1 text-xs text-gray-500">
-                            <Calendar className="h-4 w-4" />
+                          <span className="flex items-center gap-1 text-xs text-gray-500 whitespace-nowrap">
+                            <Calendar className="h-3.5 w-3.5 flex-shrink-0" />
                             {formatDate(notification.created_at)}
                           </span>
                         </div>
                       </div>
 
                       {/* Desktop layout: single line */}
-                      <div className="hidden md:flex items-center gap-2 mb-1">
+                      <div className="hidden md:flex items-center gap-2 mb-1 flex-wrap">
                         {isUnread && (
                           <input
                             type="checkbox"
                             checked={selectedNotifications.includes(notification.id)}
                             onChange={() => handleSelectNotification(notification.id)}
-                            className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+                            className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 flex-shrink-0"
                           />
                         )}
-                        <h3 className={`text-base flex items-center gap-2 ${
-                          isUnread 
-                            ? 'font-bold text-gray-900' 
-                            : 'font-semibold text-gray-700'
+                        <h3 className={`text-sm sm:text-base font-semibold text-gray-900 break-words overflow-wrap-anywhere min-w-0 flex-1 ${
+                          isUnread ? 'font-bold' : 'font-semibold'
                         }`}>
                           {displayTitle}
                         </h3>
-                        {getPriorityBadge(notification.priority)}
-                        <span className="flex items-center gap-1 text-xs text-gray-500">
-                          <Calendar className="h-4 w-4" />
-                          {formatDate(notification.created_at)}
-                        </span>
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          {getPriorityBadge(notification.priority)}
+                          <span className="flex items-center gap-1 text-xs text-gray-500 whitespace-nowrap">
+                            <Calendar className="h-4 w-4 flex-shrink-0" />
+                            {formatDate(notification.created_at)}
+                          </span>
+                        </div>
                       </div>
 
                       {isExpanded && (
-                        <div className="mt-2">
+                        <div className="mt-2 overflow-hidden w-full max-w-full">
 
                           {/* Candidate and Recruiter Info */}
                           {candidateSelection && (
-                            <div className={`rounded-lg p-4 md:p-3 mb-2 ${
-                              isUnread ? 'bg-blue-100/50 border-2 md:border border-blue-200' : 'bg-gray-50'
+                            <div className={`rounded-lg p-3 sm:p-4 md:p-3 mb-2 overflow-hidden w-full max-w-full ${
+                              isUnread ? 'bg-blue-100/50 border border-blue-200' : 'bg-gray-50 border border-gray-200'
                             }`}>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-3">
-                                <div>
-                                  <h4 className="font-medium text-gray-900 mb-1 md:mb-2 flex items-center gap-2 text-xs md:text-sm">
-                                    <User className="h-4 w-4" />
-                                    Candidate Details
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-3 w-full">
+                                <div className="min-w-0 overflow-hidden">
+                                  <h4 className="font-medium text-gray-900 mb-1.5 md:mb-2 flex items-center gap-1.5 sm:gap-2 text-xs md:text-sm">
+                                    <User className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
+                                    <span className="truncate">Candidate Details</span>
                                   </h4>
                                   {candidateProfile && (
-                                    <div className="space-y-1 text-[11px] md:text-xs">
-                                      <p><strong>Name:</strong> {candidateProfile.full_name}</p>
-                                      <p><strong>Code:</strong> {candidateProfile.candidate_code}</p>
-                                      <p><strong>Email:</strong> {candidateProfile.contact_email}</p>
-                                      <p><strong>Phone:</strong> {candidateProfile.contact_phone}</p>
-                                      <p><strong>Location:</strong> {candidateProfile.city}, {candidateProfile.state}</p>
+                                    <div className="space-y-1 text-[10px] sm:text-[11px] md:text-xs break-words overflow-wrap-anywhere">
+                                      <p className="break-words"><strong>Name:</strong> <span className="break-words">{candidateProfile.full_name || 'N/A'}</span></p>
+                                      <p className="break-words"><strong>Code:</strong> <span className="break-words">{candidateProfile.candidate_code || 'N/A'}</span></p>
+                                      <p className="break-words"><strong>Email:</strong> <span className="break-all">{candidateProfile.contact_email || 'N/A'}</span></p>
+                                      <p className="break-words"><strong>Phone:</strong> <span className="break-words">{candidateProfile.contact_phone || 'N/A'}</span></p>
+                                      <p className="break-words"><strong>Location:</strong> <span className="break-words">{candidateProfile.city || ''}, {candidateProfile.state || ''}</span></p>
                                     </div>
                                   )}
                                 </div>
                                 
-                                <div>
-                                  <h4 className="font-medium text-gray-900 mb-1 md:mb-2 flex items-center gap-2 text-xs md:text-sm">
-                                    <Building2 className="h-4 w-4" />
-                                    Recruiter Details
+                                <div className="min-w-0 overflow-hidden">
+                                  <h4 className="font-medium text-gray-900 mb-1.5 md:mb-2 flex items-center gap-1.5 sm:gap-2 text-xs md:text-sm">
+                                    <Building2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
+                                    <span className="truncate">Recruiter Details</span>
                                   </h4>
                                   {recruiterProfile && (
-                                    <div className="space-y-1 text-[11px] md:text-xs">
-                                      <p><strong>Company:</strong> {recruiterProfile.company_name}</p>
-                                      <p><strong>Contact:</strong> {candidateSelection.recruiter.name}</p>
-                                      <p><strong>Email:</strong> {candidateSelection.recruiter.email}</p>
-                                      <p><strong>Phone:</strong> {candidateSelection.recruiter.mobile_number}</p>
+                                    <div className="space-y-1 text-[10px] sm:text-[11px] md:text-xs break-words overflow-wrap-anywhere">
+                                      <p className="break-words"><strong>Company:</strong> <span className="break-words">{recruiterProfile.company_name || 'N/A'}</span></p>
+                                      <p className="break-words"><strong>Contact:</strong> <span className="break-words">{candidateSelection.recruiter?.name || 'N/A'}</span></p>
+                                      <p className="break-words"><strong>Email:</strong> <span className="break-all">{candidateSelection.recruiter?.email || 'N/A'}</span></p>
+                                      <p className="break-words"><strong>Phone:</strong> <span className="break-words">{candidateSelection.recruiter?.mobile_number || 'N/A'}</span></p>
                                     </div>
                                   )}
                                 </div>
                               </div>
                               
-                              <div className="mt-2 pt-2 border-t border-gray-200">
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-3 text-[11px] md:text-xs">
-                                  <div>
-                                    <p><strong>Job Title:</strong> {candidateSelection.job_title}</p>
-                                    <p><strong>Location:</strong> {candidateSelection.location}</p>
+                              <div className="mt-2 pt-2 border-t border-gray-200 w-full overflow-hidden">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-3 text-[10px] sm:text-[11px] md:text-xs w-full">
+                                  <div className="min-w-0 overflow-hidden">
+                                    <p className="break-words"><strong>Job Title:</strong> <span className="break-words">{candidateSelection.job_title || 'N/A'}</span></p>
+                                    <p className="break-words"><strong>Location:</strong> <span className="break-words">{candidateSelection.location || 'N/A'}</span></p>
                                   </div>
-                                  <div>
-                                    <p><strong>Salary Range:</strong> ${candidateSelection.offered_salary_min} - ${candidateSelection.offered_salary_max}</p>
-                                    <p><strong>Priority:</strong> {candidateSelection.is_priority ? 'Yes' : 'No'}</p>
+                                  <div className="min-w-0 overflow-hidden">
+                                    <p className="break-words"><strong>Salary Range:</strong> <span className="break-words">${candidateSelection.offered_salary_min || '0'} - ${candidateSelection.offered_salary_max || '0'}</span></p>
+                                    <p className="break-words"><strong>Priority:</strong> <span className="break-words">{candidateSelection.is_priority ? 'Yes' : 'No'}</span></p>
                                   </div>
-                                  <div>
-                                    <p><strong>Status:</strong> {candidateSelection.selection_status}</p>
-                                    <p><strong>Notes:</strong> {candidateSelection.notes || 'None'}</p>
+                                  <div className="min-w-0 overflow-hidden">
+                                    <p className="break-words"><strong>Status:</strong> <span className="break-words">{candidateSelection.selection_status || 'N/A'}</span></p>
+                                    <p className="break-words"><strong>Notes:</strong> <span className="break-words">{candidateSelection.notes || 'None'}</span></p>
                                   </div>
                                 </div>
                               </div>
@@ -715,36 +713,38 @@ const Notifications = () => {
                           )}
 
                           {/* Action Buttons (expanded) */}
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 flex-wrap">
                             {!notification.is_read && (
                               <button
                                 onClick={() => markAsRead(notification.id)}
-                                className="flex items-center gap-1 px-2 py-1 bg-blue-500 text-white text-xs rounded-md hover:bg-blue-600 transition-colors"
+                                className="flex items-center gap-1 px-2 py-1 bg-blue-500 text-white text-xs rounded-md hover:bg-blue-600 transition-colors whitespace-nowrap"
                               >
-                                <Eye className="h-4 w-4" />
-                                Mark as Read
+                                <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
+                                <span className="hidden sm:inline">Mark as Read</span>
+                                <span className="sm:hidden">Read</span>
                               </button>
                             )}
                             {candidateSelection && (
                               <button
                                 onClick={() => handleCreateOfferClick(notification)}
-                                className="flex items-center gap-1 px-2 py-1 bg-emerald-500 text-white text-xs rounded-md hover:bg-emerald-600 transition-colors"
+                                className="flex items-center gap-1 px-2 py-1 bg-emerald-500 text-white text-xs rounded-md hover:bg-emerald-600 transition-colors whitespace-nowrap"
                               >
-                                <Plus className="h-4 w-4" />
-                                Create Offer
+                                <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
+                                <span className="hidden sm:inline">Create Offer</span>
+                                <span className="sm:hidden">Offer</span>
                               </button>
                             )}
                           </div>
                         </div>
                       )}
                     </div>
-                    <div className="ml-3">
+                    <div className="ml-2 sm:ml-3 flex-shrink-0">
                       <button
                         onClick={() => toggleExpanded(notification.id)}
-                        className="flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-md hover:bg-gray-200 transition-colors"
+                        className="flex items-center gap-1 px-1.5 sm:px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-md hover:bg-gray-200 transition-colors whitespace-nowrap"
                       >
-                        {isExpanded ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                        {isExpanded ? 'Collapse' : 'Expand'}
+                        {isExpanded ? <EyeOff className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> : <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
+                        <span className="hidden sm:inline">{isExpanded ? 'Collapse' : 'Expand'}</span>
                       </button>
                     </div>
                   </div>
@@ -757,33 +757,35 @@ const Notifications = () => {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="bg-white rounded-lg shadow-md p-4 mt-6">
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-700">
-              Showing {((currentPage - 1) * 20) + 1} to {Math.min(currentPage * 20, totalNotifications)} of {totalNotifications} notifications
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6 mt-3 sm:mt-4">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-2">
+            <div className="text-xs sm:text-sm text-gray-700 text-center sm:text-left order-2 sm:order-1">
+              <span className="hidden sm:inline">Showing </span>
+              {((currentPage - 1) * 20) + 1} to {Math.min(currentPage * 20, totalNotifications)} of {totalNotifications}
+              <span className="hidden sm:inline"> notifications</span>
             </div>
             
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center sm:justify-end gap-2 order-1 sm:order-2 w-full sm:w-auto">
               <button
                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="flex items-center gap-1 px-3 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="flex items-center gap-1 px-2 py-1.5 sm:px-3 sm:py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-xs sm:text-sm"
               >
-                <ChevronLeft className="h-4 w-4" />
-                Previous
+                <ChevronLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">Previous</span>
               </button>
               
-              <span className="px-3 py-2 text-sm text-gray-700">
+              <span className="px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm text-gray-700 whitespace-nowrap">
                 Page {currentPage} of {totalPages}
               </span>
               
               <button
                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages}
-                className="flex items-center gap-1 px-3 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="flex items-center gap-1 px-2 py-1.5 sm:px-3 sm:py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-xs sm:text-sm"
               >
-                Next
-                <ChevronRight className="h-4 w-4" />
+                <span className="hidden sm:inline">Next</span>
+                <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               </button>
             </div>
           </div>
