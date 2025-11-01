@@ -323,37 +323,37 @@ const RecruiterDashboard = () => {
   return (
     <RecruiterLayout>
       <div className="w-full max-w-none">
-        <div className="mx-auto px-4 sm:px-6 lg:px-8 py-2 lg:py-4">
+        <div className="mx-auto">
           {/* Welcome Section */}
-          <div className="mb-6">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="mb-3">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
               <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Welcome back!</h1>
-                <p className="text-gray-600 mt-1">Manage your candidate selections and track your hiring progress</p>
+                <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">Welcome back!</h1>
+                <p className="text-xs sm:text-sm text-gray-600 mt-0.5 hidden sm:block">Manage your candidate selections and track your hiring progress</p>
               </div>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <Users className="h-4 w-4" />
-                  <span>{pagination.total} Total Candidates</span>
-                </div>
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-600" />
+                <span className="text-xs sm:text-sm text-gray-600">{pagination.total} Total Candidates</span>
               </div>
             </div>
+          </div>
+
           {/* Search & Filters */}
-          <div className="mb-5">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-5 mt-[1vh]">
-              <div className="mb-3 md:mb-4">
-                <div className="flex items-start md:items-center justify-between gap-3">
-                  <div className="flex items-center gap-2">
-                    <Search className="h-4 w-4 text-gray-600" />
+          <div className="mb-3 sm:mb-4">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6">
+              <div className="mb-2 sm:mb-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <Search className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-600 flex-shrink-0" />
                     <div>
-                      <h3 className="text-sm font-semibold text-gray-900">Find Candidates</h3>
-                      <p className="hidden md:block text-xs text-gray-500">Use filters to narrow down results. Leave blank to view all.</p>
+                      <h3 className="text-xs sm:text-sm font-semibold text-gray-900">Find Candidates</h3>
+                      <p className="text-[10px] sm:text-xs text-gray-500 hidden sm:block">Use filters to narrow down results. Leave blank to view all.</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
                     <button
                       onClick={handleClearSearch}
-                      className="px-3 py-1.5 text-xs border border-gray-200 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
+                      className="px-2 py-1.5 sm:px-3 sm:py-1.5 text-[10px] sm:text-xs border border-gray-200 text-gray-700 rounded-md hover:bg-gray-50 transition-colors flex-shrink-0"
                       aria-label="Clear filters"
                     >
                       Clear
@@ -361,18 +361,18 @@ const RecruiterDashboard = () => {
                     <button
                       onClick={handleSearch}
                       disabled={isSearching}
-                      className="px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                      className="px-2 py-1.5 sm:px-3 sm:py-1.5 bg-blue-600 text-white text-[10px] sm:text-xs font-medium rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap flex items-center gap-1"
                       aria-label="Search candidates"
                     >
                       {isSearching ? (
                         <>
-                          <Loader2 className="h-3 w-3 animate-spin inline mr-1" />
-                          Searching...
+                          <Loader2 className="h-3 w-3 sm:h-3.5 sm:w-3.5 animate-spin" />
+                          <span className="hidden sm:inline">Searching...</span>
                         </>
                       ) : (
                         <>
-                          <Search className="h-3 w-3 inline mr-1" />
-                          Search
+                          <Search className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                          <span className="hidden sm:inline">Search</span>
                         </>
                       )}
                     </button>
@@ -380,96 +380,96 @@ const RecruiterDashboard = () => {
                 </div>
               </div>
 
-              <div className="border-t border-gray-100 pt-3">
+              <div className="border-t border-gray-100 pt-2 sm:pt-3">
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Job Role</label>
+                    <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Job Role</label>
                     <input
                       type="text"
                       placeholder="e.g., Data Scientist"
                       value={searchParams.job_role}
                       onChange={(e) => handleSearchParamChange('job_role', e.target.value)}
-                      className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500/30 focus:border-blue-500"
+                      className="w-full px-1.5 py-1 sm:px-2 sm:py-1.5 text-[10px] sm:text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500/30 focus:border-blue-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Preferred Locations</label>
+                    <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Preferred Locations</label>
                     <input
                       type="text"
                       placeholder="e.g., New York, Austin"
                       value={searchParams.preferred_locations}
                       onChange={(e) => handleSearchParamChange('preferred_locations', e.target.value)}
-                      className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500/30 focus:border-blue-500"
+                      className="w-full px-1.5 py-1 sm:px-2 sm:py-1.5 text-[10px] sm:text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500/30 focus:border-blue-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Skills</label>
+                    <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Skills</label>
                     <input
                       type="text"
                       placeholder="e.g., Python, ML"
                       value={searchParams.skills}
                       onChange={(e) => handleSearchParamChange('skills', e.target.value)}
-                      className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500/30 focus:border-blue-500"
+                      className="w-full px-1.5 py-1 sm:px-2 sm:py-1.5 text-[10px] sm:text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500/30 focus:border-blue-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Min Exp</label>
+                    <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Min Exp</label>
                     <input
                       type="number"
                       placeholder="0"
                       value={searchParams.years_experience_min}
                       onChange={(e) => handleSearchParamChange('years_experience_min', e.target.value)}
-                      className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500/30 focus:border-blue-500"
+                      className="w-full px-1.5 py-1 sm:px-2 sm:py-1.5 text-[10px] sm:text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500/30 focus:border-blue-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Max Exp</label>
+                    <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Max Exp</label>
                     <input
                       type="number"
                       placeholder="10"
                       value={searchParams.years_experience_max}
                       onChange={(e) => handleSearchParamChange('years_experience_max', e.target.value)}
-                      className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500/30 focus:border-blue-500"
+                      className="w-full px-1.5 py-1 sm:px-2 sm:py-1.5 text-[10px] sm:text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500/30 focus:border-blue-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Salary Range</label>
-                    <div className="flex gap-1.5">
+                    <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Salary Range</label>
+                    <div className="flex gap-1">
                       <input
                         type="number"
                         placeholder="Min"
                         value={searchParams.salary_min}
                         onChange={(e) => handleSearchParamChange('salary_min', e.target.value)}
-                        className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500/30 focus:border-blue-500"
+                        className="w-full px-1.5 py-1 sm:px-2 sm:py-1.5 text-[10px] sm:text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500/30 focus:border-blue-500"
                       />
-                      <span className="text-xs text-gray-400 self-center px-1">-</span>
+                      <span className="text-[10px] sm:text-xs text-gray-400 self-center px-0.5 sm:px-1">-</span>
                       <input
                         type="number"
                         placeholder="Max"
                         value={searchParams.salary_max}
                         onChange={(e) => handleSearchParamChange('salary_max', e.target.value)}
-                        className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500/30 focus:border-blue-500"
+                        className="w-full px-1.5 py-1 sm:px-2 sm:py-1.5 text-[10px] sm:text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500/30 focus:border-blue-500"
                       />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Visa Status</label>
+                    <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Visa Status</label>
                     <input
                       type="text"
                       placeholder="e.g., opt_cpt, h1b, citizen"
                       value={searchParams.visa_status}
                       onChange={(e) => handleSearchParamChange('visa_status', e.target.value)}
-                      className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500/30 focus:border-blue-500"
+                      className="w-full px-1.5 py-1 sm:px-2 sm:py-1.5 text-[10px] sm:text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500/30 focus:border-blue-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Min Score</label>
+                    <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Min Score</label>
                     <input
                       type="number"
                       placeholder="0"
                       value={searchParams.candidate_score_min}
                       onChange={(e) => handleSearchParamChange('candidate_score_min', e.target.value)}
-                      className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500/30 focus:border-blue-500"
+                      className="w-full px-1.5 py-1 sm:px-2 sm:py-1.5 text-[10px] sm:text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500/30 focus:border-blue-500"
                     />
                   </div>
                 </div>
@@ -479,23 +479,23 @@ const RecruiterDashboard = () => {
 
 
           {/* Approved Candidates Table */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 border-b border-gray-100 bg-gray-50">
-              <div className="flex items-center justify-between">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 border-b border-gray-200 bg-gray-50">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
                 <div className="flex items-center gap-2 sm:gap-3">
-                  <div className="h-8 w-8 sm:h-10 sm:w-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
                     <Users className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" />
                   </div>
                   <div>
-                    <h2 className="text-base sm:text-lg font-semibold text-gray-900">Approved Candidates</h2>
-                    <p className="text-xs sm:text-sm text-gray-600 hidden sm:block">Candidates available for selection</p>
+                    <h2 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900">Approved Candidates</h2>
+                    <p className="text-xs text-gray-600 hidden sm:block">Candidates available for selection</p>
                   </div>
                 </div>
                 <div className="text-xs sm:text-sm text-gray-500">
                   {loading ? (
-                    <div className="flex items-center gap-2">
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      Loading...
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                      <Loader2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 animate-spin" />
+                      <span className="hidden sm:inline">Loading...</span>
                     </div>
                   ) : (
                     `${candidates.length} candidates`
@@ -505,7 +505,7 @@ const RecruiterDashboard = () => {
             </div>
             
             {error && (
-              <div className="px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 bg-red-50 border-b border-red-100">
+              <div className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 bg-red-50 border-b border-red-200">
                 <div className="flex items-center gap-2 text-red-600">
                   <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5" />
                   <span className="text-xs sm:text-sm font-medium">Error: {error}</span>
@@ -514,25 +514,25 @@ const RecruiterDashboard = () => {
             )}
             
             {loading ? (
-              <div className="p-4 sm:p-6 md:p-8 text-center">
-                <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin mx-auto text-gray-400" />
-                <p className="text-xs sm:text-sm text-gray-500 mt-2">Loading candidates...</p>
+              <div className="p-8 sm:p-12 text-center">
+                <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin mx-auto text-gray-400 mb-2 sm:mb-3" />
+                <p className="text-xs sm:text-sm text-gray-500 font-medium">Loading candidates...</p>
               </div>
             ) : candidates.length === 0 ? (
-              <div className="p-4 sm:p-6 md:p-8 text-center">
-                <Users className="h-8 w-8 sm:h-12 sm:w-12 mx-auto text-gray-300" />
-                <p className="text-xs sm:text-sm text-gray-500 mt-2">No candidates found</p>
+              <div className="p-8 sm:p-12 text-center">
+                <Users className="h-8 w-8 sm:h-12 sm:w-12 mx-auto text-gray-300 mb-2 sm:mb-3" />
+                <p className="text-xs sm:text-sm text-gray-500 font-medium">No candidates found</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-50 border-b border-gray-100">
+                  <thead className="bg-gray-50 border-b border-gray-200">
                     <tr>
-                      <th className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-[10px] sm:text-xs font-medium text-gray-500 uppercase tracking-wider">Candidate</th>
-                      <th className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-[10px] sm:text-xs font-medium text-gray-500 uppercase tracking-wider">Role & Experience</th>
-                      <th className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-[10px] sm:text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-                      <th className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-[10px] sm:text-xs font-medium text-gray-500 uppercase tracking-wider">Salary</th>
-                      <th className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-[10px] sm:text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                      <th className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-left text-[10px] sm:text-xs font-bold text-gray-700 uppercase tracking-wider">Candidate</th>
+                      <th className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-left text-[10px] sm:text-xs font-bold text-gray-700 uppercase tracking-wider">Role & Experience</th>
+                      <th className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-left text-[10px] sm:text-xs font-bold text-gray-700 uppercase tracking-wider">Location</th>
+                      <th className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-left text-[10px] sm:text-xs font-bold text-gray-700 uppercase tracking-wider">Salary</th>
+                      <th className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-left text-[10px] sm:text-xs font-bold text-gray-700 uppercase tracking-wider">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-100">
@@ -540,41 +540,41 @@ const RecruiterDashboard = () => {
                       const formattedCandidate = formatCandidateData(candidate);
                       return (
                         <tr key={candidate.id} className="hover:bg-gray-50 transition-colors">
-                          <td className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 whitespace-nowrap">
+                          <td className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 lg:py-5 whitespace-nowrap">
                             <div>
-                              <div className="text-[11px] sm:text-xs md:text-sm font-semibold text-indigo-600">{formattedCandidate.code}</div>
-                              <div className="text-[11px] sm:text-xs md:text-sm text-gray-900">{formattedCandidate.name}</div>
-                              <div className="text-[10px] sm:text-xs text-gray-500">{formattedCandidate.shortlistedDate}</div>
+                              <div className="text-[10px] sm:text-xs font-semibold text-indigo-600 truncate">{formattedCandidate.code}</div>
+                              <div className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">{formattedCandidate.name}</div>
+                              <div className="text-[10px] sm:text-xs text-gray-500 truncate">{formattedCandidate.shortlistedDate}</div>
                             </div>
                           </td>
-                          <td className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4">
+                          <td className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 lg:py-5">
                             <div>
-                              <div className="text-[11px] sm:text-xs md:text-sm font-medium text-gray-900">{formattedCandidate.role}</div>
-                              <div className="text-[10px] sm:text-xs text-gray-500">{formattedCandidate.experience}</div>
-                              <div className="text-[10px] sm:text-xs text-gray-400 sm:mt-1">
+                              <div className="text-[10px] sm:text-xs font-medium text-gray-900 truncate">{formattedCandidate.role}</div>
+                              <div className="text-[10px] sm:text-xs text-gray-500 truncate">{formattedCandidate.experience}</div>
+                              <div className="text-[10px] sm:text-xs text-gray-400 mt-0.5 sm:mt-1 truncate">
                                 {formattedCandidate.skills.slice(0, 3).join(', ')}
                                 {formattedCandidate.skills.length > 3 && '...'}
                               </div>
                             </div>
                           </td>
-                          <td className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 whitespace-nowrap">
-                            <div className="text-[11px] sm:text-xs md:text-sm text-gray-900">{formattedCandidate.location}</div>
-                            <div className="text-[10px] sm:text-xs text-gray-500">{formattedCandidate.visaStatus}</div>
+                          <td className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 lg:py-5 whitespace-nowrap">
+                            <div className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">{formattedCandidate.location}</div>
+                            <div className="text-[10px] sm:text-xs text-gray-500 truncate">{formattedCandidate.visaStatus}</div>
                           </td>
-                          <td className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 whitespace-nowrap">
-                            <div className="text-[11px] sm:text-xs md:text-sm text-gray-900">{formattedCandidate.salary}</div>
+                          <td className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 lg:py-5 whitespace-nowrap">
+                            <div className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">{formattedCandidate.salary}</div>
                           </td>
-                          <td className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 whitespace-nowrap text-[11px] sm:text-xs md:text-sm font-medium">
-                            <div className="flex items-center gap-1 sm:gap-2">
+                          <td className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 lg:py-5 whitespace-nowrap">
+                            <div className="flex items-center gap-1 sm:gap-1.5">
                               <Link
                                 to={`/recruiter/candidate/${formattedCandidate.code}`}
-                                className="text-indigo-600 hover:text-indigo-900 px-1.5 sm:px-2 md:px-3 py-0.5 sm:py-1 border border-indigo-200 rounded-md hover:bg-indigo-50 transition-colors text-[10px] sm:text-xs"
+                                className="text-indigo-600 hover:text-indigo-900 px-1.5 py-0.5 sm:px-2 sm:py-1 border border-indigo-200 rounded-md hover:bg-indigo-50 transition-colors text-[10px] sm:text-xs font-medium flex-shrink-0"
                               >
                                 View
                               </Link>
                               <button 
                                 onClick={() => handleSelectCandidate(candidate)}
-                                className="text-green-600 hover:text-green-900 px-1.5 sm:px-2 md:px-3 py-0.5 sm:py-1 border border-green-200 rounded-md hover:bg-green-50 transition-colors text-[10px] sm:text-xs"
+                                className="text-green-600 hover:text-green-900 px-1.5 py-0.5 sm:px-2 sm:py-1 border border-green-200 rounded-md hover:bg-green-50 transition-colors text-[10px] sm:text-xs font-medium flex-shrink-0"
                               >
                                 Select
                               </button>
@@ -590,160 +590,160 @@ const RecruiterDashboard = () => {
             
             {/* Pagination */}
             {!loading && candidates.length > 0 && pagination.last_page > 1 && (
-              <div className="px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 border-t border-gray-100 bg-gray-50">
+              <div className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 border-t border-gray-200 bg-gray-50">
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-0">
-                  <div className="text-xs sm:text-sm text-gray-500">
-                    Showing {pagination.from} to {pagination.to} of {pagination.total} results
+                  <div className="text-xs sm:text-sm text-gray-700">
+                    <span className="font-medium">
+                      Showing {pagination.from} to {pagination.to} of {pagination.total} results
+                    </span>
                   </div>
-                  <div className="flex items-center gap-1 sm:gap-2">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
                     <button
                       onClick={() => setPagination(prev => ({ ...prev, current_page: prev.current_page - 1 }))}
                       disabled={pagination.current_page === 1}
-                      className="px-2 sm:px-3 py-1 text-xs sm:text-sm border border-gray-200 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex items-center gap-1"
                     >
-                      Previous
+                      <span className="hidden sm:inline">Previous</span>
                     </button>
-                    <span className="px-2 sm:px-3 py-1 text-xs sm:text-sm text-gray-700">
+                    <span className="px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm text-gray-700">
                       Page {pagination.current_page} of {pagination.last_page}
                     </span>
                     <button
                       onClick={() => setPagination(prev => ({ ...prev, current_page: prev.current_page + 1 }))}
                       disabled={pagination.current_page === pagination.last_page}
-                      className="px-2 sm:px-3 py-1 text-xs sm:text-sm border border-gray-200 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex items-center gap-1"
                     >
-                      Next
+                      <span className="hidden sm:inline">Next</span>
                     </button>
                   </div>
                 </div>
               </div>
             )}
           </div>
-
-          </div>
         </div>
       </div>
       {/* Select Candidate Modal */}
     {showSelectModal && (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-          <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-gray-900">Select Candidate</h3>
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+        <div className="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
+          <div className="sticky top-0 bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between z-10 rounded-t-xl">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900">Select Candidate</h3>
             <button
               onClick={() => setShowSelectModal(false)}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
+              disabled={isSelecting}
+              className="text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <X className="h-5 w-5" />
             </button>
           </div>
           
-          <div className="p-6">
+          <div className="px-4 sm:px-6 py-4 sm:py-6">
             {/* Form */}
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Job Title *</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Job Title *</label>
                 <input
                   type="text"
                   value={selectFormData.job_title}
                   onChange={(e) => setSelectFormData(prev => ({ ...prev, job_title: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Job Description *</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Job Description *</label>
                 <textarea
                   value={selectFormData.job_description}
                   onChange={(e) => setSelectFormData(prev => ({ ...prev, job_description: e.target.value }))}
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Min Salary ($) *</label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Min Salary ($) *</label>
                   <input
                     type="number"
                     value={selectFormData.offered_salary_min}
                     onChange={(e) => setSelectFormData(prev => ({ ...prev, offered_salary_min: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Max Salary ($) *</label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Max Salary ($) *</label>
                   <input
                     type="number"
                     value={selectFormData.offered_salary_max}
                     onChange={(e) => setSelectFormData(prev => ({ ...prev, offered_salary_max: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     required
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Location *</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Location *</label>
                 <input
                   type="text"
                   value={selectFormData.location}
                   onChange={(e) => setSelectFormData(prev => ({ ...prev, location: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
               </div>
 
-              <div className="flex items-center gap-4">
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="is_priority"
-                    checked={selectFormData.is_priority}
-                    onChange={(e) => setSelectFormData(prev => ({ ...prev, is_priority: e.target.checked }))}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                  />
-                  <label htmlFor="is_priority" className="ml-2 text-sm font-medium text-gray-700">
-                    Priority Selection
-                  </label>
-                </div>
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="is_priority"
+                  checked={selectFormData.is_priority}
+                  onChange={(e) => setSelectFormData(prev => ({ ...prev, is_priority: e.target.checked }))}
+                  className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                />
+                <label htmlFor="is_priority" className="ml-2 text-xs sm:text-sm font-medium text-gray-700">
+                  Priority Selection
+                </label>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Notes</label>
                 <textarea
                   value={selectFormData.notes}
                   onChange={(e) => setSelectFormData(prev => ({ ...prev, notes: e.target.value }))}
                   rows={2}
                   placeholder="Additional notes about this selection..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
             </div>
           </div>
 
-          <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-end gap-3">
+          <div className="px-4 sm:px-6 py-3 sm:py-4 border-t border-gray-200 flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 rounded-b-xl">
             <button
               onClick={() => setShowSelectModal(false)}
-              className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+              disabled={isSelecting}
+              className="px-3 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed order-2 sm:order-1"
             >
               Cancel
             </button>
             <button
               onClick={selectCandidate}
               disabled={isSelecting || !selectFormData.job_title || !selectFormData.job_description || !selectFormData.offered_salary_min || !selectFormData.offered_salary_max || !selectFormData.location}
-              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-3 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 order-1 sm:order-2"
             >
               {isSelecting ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin inline mr-2" />
-                  Selecting...
+                  <Loader2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 animate-spin" />
+                  <span>Selecting...</span>
                 </>
               ) : (
                 <>
-                  <CheckCircle className="h-4 w-4 inline mr-2" />
-                  Select Candidate
+                  <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  <span>Select Candidate</span>
                 </>
               )}
             </button>

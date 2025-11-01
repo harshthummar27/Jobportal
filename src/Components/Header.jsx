@@ -1041,7 +1041,7 @@ const Header = ({ onEditProfile, userData }) => {
                   {/* User Avatar - Always visible */}
                   <button
                     onClick={handleUserDropdownToggle}
-                    className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center cursor-pointer hover:from-indigo-600 hover:to-purple-700 transition-all duration-200 border border-indigo-200/50 shadow-sm flex-shrink-0"
+                    className="w-8 h-8 sm:w-10 sm:h-10 bg-[#273469] rounded-full flex items-center justify-center cursor-pointer hover:bg-[#1e2749] transition-all duration-200 border border-[#273469]/20 shadow-sm flex-shrink-0"
                   >
                     <span className="text-white font-bold text-xs sm:text-sm">
                       {getUserInitial()}
@@ -1055,7 +1055,7 @@ const Header = ({ onEditProfile, userData }) => {
                     {/* User Info Header */}
                     <div className="px-3 sm:px-4 py-3 border-b border-gray-300">
                       <div className="flex items-center gap-2 sm:gap-3">
-                        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#273469] rounded-full flex items-center justify-center flex-shrink-0">
                           <span className="text-white font-bold text-xs sm:text-sm">
                             {getUserInitial()}
                           </span>
@@ -1067,7 +1067,7 @@ const Header = ({ onEditProfile, userData }) => {
                           <div className="text-[10px] sm:text-xs text-gray-500 truncate">
                             {getUserDisplayEmail()}
                           </div>
-                          <div className="text-[10px] sm:text-xs text-indigo-600 font-medium">{getRoleDisplayName()}</div>
+                          <div className="text-[10px] sm:text-xs text-[#273469] font-medium">{getRoleDisplayName()}</div>
                         </div>
                       </div>
                     </div>

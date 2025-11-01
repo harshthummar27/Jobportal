@@ -4,13 +4,13 @@ import { Loader2 } from "lucide-react";
 
 const Field = ({ label, value }) => (
   <div className="flex flex-col">
-    <span className="text-xs text-gray-500">{label}</span>
-    <span className="text-sm font-medium text-gray-900 break-all">{value ?? '—'}</span>
+    <span className="text-[10px] sm:text-xs text-gray-500">{label}</span>
+    <span className="text-[10px] sm:text-xs font-semibold text-gray-900 break-all">{value ?? '—'}</span>
   </div>
 );
 
 const BoolBadge = ({ value, trueText = 'Yes', falseText = 'No' }) => (
-  <span className={`inline-flex items-center px-2 py-0.5 text-xs font-medium rounded border ${value ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'}`}>
+  <span className={`inline-flex items-center px-1.5 py-0.5 sm:px-2 sm:py-0.5 text-[10px] sm:text-xs font-medium rounded-full border ${value ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'}`}>
     {value ? trueText : falseText}
   </span>
 );
@@ -53,28 +53,30 @@ const RecruiterProfile = () => {
   return (
     <RecruiterLayout>
       <div className="w-full max-w-none">
-        <div className="mx-auto px-4 sm:px-6 lg:px-8 py-2 lg:py-4">
-          <div className="mb-4">
-            <h1 className="text-lg font-semibold text-gray-900">My Profile</h1>
-            <p className="text-sm text-gray-600">View your company, contact and verification details</p>
+        <div className="mx-auto">
+          <div className="mb-3">
+            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">My Profile</h1>
+            <p className="text-xs sm:text-sm text-gray-600 mt-0.5 hidden sm:block">View your company, contact and verification details</p>
           </div>
 
           {loading && (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
-              <Loader2 className="h-6 w-6 animate-spin text-gray-400 mx-auto" />
-              <p className="text-sm text-gray-600 mt-2">Loading profile...</p>
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 sm:p-12 text-center">
+              <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin text-gray-400 mx-auto mb-2 sm:mb-3" />
+              <p className="text-xs sm:text-sm text-gray-600 font-medium">Loading profile...</p>
             </div>
           )}
 
           {error && (
-            <div className="bg-red-50 rounded border border-red-200 p-4 text-sm text-red-700">{error}</div>
+            <div className="bg-red-50 rounded-lg border border-red-200 p-3 sm:p-4 mb-3 sm:mb-4">
+              <p className="text-xs sm:text-sm text-red-700 font-medium">{error}</p>
+            </div>
           )}
 
           {!loading && !error && profile && (
-            <div className="space-y-6">
+            <div className="space-y-3 sm:space-y-4">
               {/* Overview */}
-              <div className="bg-white rounded border border-gray-200 p-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
                   <Field label="Company" value={profile.company_name} />
                   <Field label="Contact Person" value={profile.contact_person_name} />
                   <Field label="Email" value={profile.contact_email} />
@@ -82,11 +84,11 @@ const RecruiterProfile = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 sm:gap-3">
                 {/* Company Information */}
-                <div className="lg:col-span-2 bg-white rounded border border-gray-200 p-4 space-y-4">
-                  <h2 className="text-sm font-semibold text-gray-800">Company Information</h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="lg:col-span-2 bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6 space-y-2 sm:space-y-3">
+                  <h2 className="text-xs sm:text-sm font-semibold text-gray-800">Company Information</h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                     <Field label="Company Website" value={profile.company_website} />
                     <Field label="Company Size" value={profile.company_size} />
                     <Field label="Industry" value={profile.industry} />
@@ -99,29 +101,29 @@ const RecruiterProfile = () => {
                     <Field label="Office Address" value={profile.office_address} />
                   </div>
                   <div>
-                    <span className="text-xs text-gray-500">Company Description</span>
-                    <p className="mt-1 text-sm text-gray-800 whitespace-pre-wrap">{profile.company_description ?? '—'}</p>
+                    <span className="text-[10px] sm:text-xs text-gray-500">Company Description</span>
+                    <p className="mt-0.5 sm:mt-1 text-[10px] sm:text-xs text-gray-800 whitespace-pre-wrap">{profile.company_description ?? '—'}</p>
                   </div>
                 </div>
 
                 {/* Verification (from verification_status) */}
-                <div className="bg-white rounded border border-gray-200 p-4 space-y-4">
-                  <h2 className="text-sm font-semibold text-gray-800">Verification</h2>
-                  <div className="grid grid-cols-1 gap-3">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6 space-y-2 sm:space-y-3">
+                  <h2 className="text-xs sm:text-sm font-semibold text-gray-800">Verification</h2>
+                  <div className="grid grid-cols-1 gap-2 sm:gap-2.5">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-500">Email Verified</span>
+                      <span className="text-[10px] sm:text-xs text-gray-500">Email Verified</span>
                       <BoolBadge value={Boolean(verification?.email_verified)} />
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-500">Agreement Accepted</span>
+                      <span className="text-[10px] sm:text-xs text-gray-500">Agreement Accepted</span>
                       <BoolBadge value={Boolean(verification?.agreement_accepted)} />
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-500">Fully Verified</span>
+                      <span className="text-[10px] sm:text-xs text-gray-500">Fully Verified</span>
                       <BoolBadge value={Boolean(verification?.fully_verified)} />
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-500">Can Access Candidates</span>
+                      <span className="text-[10px] sm:text-xs text-gray-500">Can Access Candidates</span>
                       <BoolBadge value={Boolean(verification?.can_access_candidates)} />
                     </div>
                   </div>
@@ -129,27 +131,27 @@ const RecruiterProfile = () => {
               </div>
 
               {/* Agreement Details */}
-              <div className="bg-white rounded border border-gray-200 p-4 space-y-4">
-                <h2 className="text-sm font-semibold text-gray-800">Agreement Details</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6 space-y-2 sm:space-y-3">
+                <h2 className="text-xs sm:text-sm font-semibold text-gray-800">Agreement Details</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
                   <div>
-                    <span className="text-xs text-gray-500">Agreement Accepted</span>
-                    <div className="mt-1"><BoolBadge value={Boolean(profile.agreement_accepted)} /></div>
+                    <span className="text-[10px] sm:text-xs text-gray-500">Agreement Accepted</span>
+                    <div className="mt-0.5 sm:mt-1"><BoolBadge value={Boolean(profile.agreement_accepted)} /></div>
                   </div>
                   <Field label="Agreement Version" value={profile.agreement_version} />
                   <Field label="Agreement Accepted At" value={profile.agreement_accepted_at} />
                   <Field label="Email Verified At" value={profile.email_verified_at} />
                 </div>
                 <div>
-                  <span className="text-xs text-gray-500">Agreement Terms</span>
-                  <p className="mt-1 text-sm text-gray-800 whitespace-pre-wrap">{profile.agreement_terms ?? '—'}</p>
+                  <span className="text-[10px] sm:text-xs text-gray-500">Agreement Terms</span>
+                  <p className="mt-0.5 sm:mt-1 text-[10px] sm:text-xs text-gray-800 whitespace-pre-wrap">{profile.agreement_terms ?? '—'}</p>
                 </div>
               </div>
 
               {/* Contact Information */}
-              <div className="bg-white rounded border border-gray-200 p-4 space-y-4">
-                <h2 className="text-sm font-semibold text-gray-800">Contact Information</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6 space-y-2 sm:space-y-3">
+                <h2 className="text-xs sm:text-sm font-semibold text-gray-800">Contact Information</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                   <Field label="Contact Person" value={profile.contact_person_name} />
                   <Field label="Title" value={profile.contact_person_title} />
                   <Field label="Email" value={profile.contact_email} />
@@ -158,16 +160,16 @@ const RecruiterProfile = () => {
               </div>
 
               {/* Account Status and Meta */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <div className="bg-white rounded border border-gray-200 p-4 space-y-3">
-                  <h2 className="text-sm font-semibold text-gray-800">Account Status</h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6 space-y-2 sm:space-y-2.5">
+                  <h2 className="text-xs sm:text-sm font-semibold text-gray-800">Account Status</h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-500">Email Verified (Profile)</span>
+                      <span className="text-[10px] sm:text-xs text-gray-500">Email Verified (Profile)</span>
                       <BoolBadge value={Boolean(profile.email_verified)} />
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-500">Active</span>
+                      <span className="text-[10px] sm:text-xs text-gray-500">Active</span>
                       <BoolBadge value={Boolean(profile.is_active)} />
                     </div>
                     <Field label="Created At" value={profile.created_at} />
@@ -175,9 +177,9 @@ const RecruiterProfile = () => {
                   </div>
                 </div>
 
-                <div className="bg-white rounded border border-gray-200 p-4 space-y-3">
-                  <h2 className="text-sm font-semibold text-gray-800">System & Meta</h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6 space-y-2 sm:space-y-2.5">
+                  <h2 className="text-xs sm:text-sm font-semibold text-gray-800">System & Meta</h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5">
                     <Field label="Profile ID" value={profile.id} />
                     <Field label="User ID" value={profile.user_id} />
                     <Field label="Verification Token" value={profile.verification_token ?? '—'} />
