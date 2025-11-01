@@ -172,15 +172,28 @@ const PendingRecruitersIT = () => {
 
   const formatCellValue = (value) => {
     if (value === null || value === undefined) return '';
-    if (typeof value === 'object') return JSON.stringify(value);
     
-    const str = String(value);
-    // Check if it looks like an ISO datetime string (e.g., "2025-10-29T06:17:34.000000Z")
-    if (str.includes('T') && /^\d{4}-\d{2}-\d{2}T/.test(str)) {
-      // Extract just the date part (YYYY-MM-DD)
-      return str.split('T')[0];
+    // Format ISO date strings to readable format
+    if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(value)) {
+      try {
+        const date = new Date(value);
+        return date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      } catch (e) {
+        return value;
+      }
     }
-    return str;
+    
+    if (typeof value === 'object') return JSON.stringify(value);
+    if (Array.isArray(value)) {
+      return value.join(', ');
+    }
+    return String(value);
   };
 
   const columns = useMemo(() => {

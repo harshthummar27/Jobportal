@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Search, Filter, RefreshCw, ChevronLeft, ChevronRight, AlertCircle, Users, ChevronUp, ChevronDown } from "lucide-react";
+import { Search, RefreshCw, ChevronLeft, ChevronRight, AlertCircle, Users, ChevronUp, ChevronDown } from "lucide-react";
 
 const AllRecruiters = () => {
   const [recruiters, setRecruiters] = useState([]);
@@ -9,7 +9,6 @@ const AllRecruiters = () => {
   const [page, setPage] = useState(1);
   const perPage = 25;
   const [search, setSearch] = useState("");
-  const [status, setStatus] = useState(""); // pending, approve, decline
   const [sortBy, setSortBy] = useState("");
   const [sortDirection, setSortDirection] = useState("asc");
 
@@ -27,10 +26,6 @@ const AllRecruiters = () => {
       params.set('page', String(page));
       params.set('per_page', String(perPage));
       if (search) params.set('search', search);
-      // Backend expects: pending, approve, decline
-      const STATUS_MAP = { pending: 'pending', approve: 'approve', decline: 'decline' };
-      const mappedStatus = STATUS_MAP[status] || '';
-      if (mappedStatus) params.set('status', mappedStatus);
       if (sortBy) params.set('sort_by', sortBy);
       if (sortDirection) params.set('sort_direction', sortDirection);
 
@@ -65,7 +60,7 @@ const AllRecruiters = () => {
   useEffect(() => {
     fetchRecruiters();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, status, sortBy, sortDirection]);
+  }, [page, sortBy, sortDirection]);
 
   useEffect(() => {
     if (searchDebounceRef.current) {
@@ -101,6 +96,34 @@ const AllRecruiters = () => {
     return Object.keys(first);
   }, [recruiters]);
 
+  const formatValue = (value) => {
+    if (value === null || value === undefined) return '-';
+    
+    // Format ISO date strings to readable format
+    if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(value)) {
+      try {
+        const date = new Date(value);
+        return date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      } catch (e) {
+        return value;
+      }
+    }
+    
+    if (typeof value === 'object' && value !== null) {
+      return JSON.stringify(value);
+    }
+    if (Array.isArray(value)) {
+      return value.join(', ');
+    }
+    return String(value);
+  };
+
   return (
     <div className="w-full max-w-none">
       {/* Header */}
@@ -115,50 +138,31 @@ const AllRecruiters = () => {
 
       {/* Controls */}
       <div className="bg-white border border-gray-200 rounded-lg p-4 mb-4">
-        <form onSubmit={handleSearchSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <div className="md:col-span-2">
-            <div className="relative">
-              <Search className="h-4 w-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                placeholder="Search by name, email, company, etc."
-                className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-            </div>
+        <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
+          <div className="relative flex-1">
+            <Search className="h-4 w-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              placeholder="Search by name, email, company, etc."
+              className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-emerald-500"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
           </div>
-
-          <div className="flex items-center gap-2">
-            <div className="relative flex-1">
-              <Filter className="h-4 w-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <select
-                className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-white"
-                value={status}
-                onChange={(e) => { setStatus(e.target.value); setPage(1); }}
-              >
-                <option value="">All Status</option>
-                <option value="pending">Pending</option>
-                <option value="approve">Approve</option>
-                <option value="decline">Decline</option>
-              </select>
-            </div>
-
-            <button
-              type="submit"
-              className="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition-colors"
-              disabled={loading}
-            >
-              {loading ? 'Searching...' : 'Search'}
-            </button>
-            <button
-              type="button"
-              onClick={() => { setSearch(""); setStatus(""); setPage(1); fetchRecruiters(); }}
-              className="px-3 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 flex items-center gap-1"
-            >
-              <RefreshCw className="h-4 w-4" /> Reset
-            </button>
-          </div>
+          <button
+            type="submit"
+            className="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition-colors whitespace-nowrap"
+            disabled={loading}
+          >
+            {loading ? 'Searching...' : 'Search'}
+          </button>
+          <button
+            type="button"
+            onClick={() => { setSearch(""); setPage(1); fetchRecruiters(); }}
+            className="px-3 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 flex items-center gap-1 whitespace-nowrap"
+          >
+            <RefreshCw className="h-4 w-4" /> Reset
+          </button>
         </form>
       </div>
 
@@ -214,7 +218,7 @@ const AllRecruiters = () => {
                     <tr key={idx} className="hover:bg-gray-50">
                       {columns.map((col) => (
                         <td key={col} className="px-4 py-2 text-sm text-gray-700 max-w-[28rem] break-words">
-                          {typeof row[col] === 'object' && row[col] !== null ? JSON.stringify(row[col]) : String(row[col] ?? '')}
+                          {formatValue(row[col])}
                         </td>
                       ))}
                     </tr>

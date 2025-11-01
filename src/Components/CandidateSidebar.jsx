@@ -2,43 +2,35 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
-  Users,
   UserCircle,
+  Briefcase,
   ChevronRight,
-  Briefcase
 } from "lucide-react";
 
-const RecruiterSidebar = ({ isCollapsed, setIsCollapsed, onMobileClose, isMobile, mobileSidebarOpen }) => {
+const CandidateSidebar = ({ isCollapsed, setIsCollapsed, onMobileClose, isMobile, mobileSidebarOpen }) => {
   const location = useLocation();
 
   const menuItems = [
     {
       name: "Dashboard",
-      path: "/recruiter/dashboard",
+      path: "/candidate/dashboard",
       icon: LayoutDashboard,
       color: "text-indigo-600",
       bgColor: "bg-indigo-100"
     },
     {
-      name: "Shortlisted Candidates",
-      path: "/recruiter/shortlisted",
-      icon: Users,
-      color: "text-purple-600",
-      bgColor: "bg-purple-100"
-    },
-    {
-      name: "Offered Candidates",
-      path: "/recruiter/offered-candidates",
-      icon: Briefcase,
-      color: "text-blue-600",
-      bgColor: "bg-blue-100"
-    },
-    {
       name: "My Profile",
-      path: "/recruiter/profile",
+      path: "/candidate/profile",
       icon: UserCircle,
       color: "text-emerald-600",
       bgColor: "bg-emerald-100"
+    },
+    {
+      name: "Offers",
+      path: "/candidate/offers",
+      icon: Briefcase,
+      color: "text-blue-600",
+      bgColor: "bg-blue-100"
     },
   ];
 
@@ -112,6 +104,5 @@ const RecruiterSidebar = ({ isCollapsed, setIsCollapsed, onMobileClose, isMobile
   );
 };
 
-export default RecruiterSidebar;
-
+export default CandidateSidebar;
 

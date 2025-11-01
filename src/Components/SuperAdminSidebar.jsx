@@ -2,12 +2,7 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { 
   LayoutDashboard,
-  Users,
-  UserCheck,
-  UserX,
-  Building2,
-  Shield,
-  Menu
+  Shield
 } from "lucide-react";
 
 const SuperAdminSidebar = ({ isCollapsed, setIsCollapsed, onMobileClose, isMobile, mobileSidebarOpen }) => {
@@ -19,24 +14,6 @@ const SuperAdminSidebar = ({ isCollapsed, setIsCollapsed, onMobileClose, isMobil
       path: "/superadmin/dashboard",
       icon: LayoutDashboard,
       description: "Overview and statistics"
-    },
-    {
-      name: "Pending Candidates",
-      path: "/superadmin/pending-candidates",
-      icon: UserX,
-      description: "Review pending registrations"
-    },
-    {
-      name: "Approved Candidates",
-      path: "/superadmin/approved-candidates",
-      icon: UserCheck,
-      description: "Manage approved candidates"
-    },
-    {
-      name: "Recruiters",
-      path: "/superadmin/recruiters",
-      icon: Building2,
-      description: "Manage recruiter accounts"
     },
     {
       name: "Internal Team",
@@ -59,24 +36,6 @@ const SuperAdminSidebar = ({ isCollapsed, setIsCollapsed, onMobileClose, isMobil
       }
       ${!isMobile ? 'lg:translate-x-0' : ''}
     `}>
-        {/* Header */}
-        <div className={`flex items-center justify-center border-b border-gray-200 ${(isCollapsed && !isMobile) ? 'p-2 sm:p-3' : 'p-2 sm:p-3 md:p-4'}`}>
-          {(isCollapsed && !isMobile) ? (
-            <div className="p-1.5 sm:p-2 bg-indigo-100 rounded-lg">
-              <Shield className="h-4 w-4 sm:h-6 sm:w-6 text-indigo-600" />
-            </div>
-          ) : (
-            <div className="flex items-center gap-2 sm:gap-3 w-full">
-              <div className="p-1.5 sm:p-2 bg-indigo-100 rounded-lg">
-                <Shield className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-indigo-600" />
-              </div>
-              <div className="overflow-hidden">
-                <p className="text-xs sm:text-sm text-gray-500 truncate">VettedPool</p>
-              </div>
-            </div>
-          )}
-        </div>
-
         {/* Navigation */}
         <nav className={`flex-1 py-2 sm:py-3 md:py-6 space-y-1 sm:space-y-2 ${(isCollapsed && !isMobile) ? 'px-1 sm:px-2' : 'px-2 sm:px-3 md:px-4'}`}>
           {menuItems.map((item) => {

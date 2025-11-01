@@ -5,13 +5,8 @@ import {
   Users,
   UserCheck,
   Bell, 
-  Calendar, 
-  FileText, 
-  Shield, 
-  UserX, 
-  Activity,
-  ChevronRight,
-  X
+  FileText,
+  ChevronRight
 } from "lucide-react";
 
 const InternalTeamSidebar = ({ isCollapsed, setIsCollapsed, onMobileClose, isMobile, mobileSidebarOpen }) => {
@@ -58,32 +53,16 @@ const InternalTeamSidebar = ({ isCollapsed, setIsCollapsed, onMobileClose, isMob
       bgColor: "bg-blue-100"
     },
     {
-      name: "Interview Scheduling",
-      path: "/internal-team/interview-scheduling",
-      icon: Calendar,
-      color: "text-purple-600",
-      bgColor: "bg-purple-100"
-    },
-    {
       name: "Offer Management",
-      path: "/internal-team/offer-management",
       icon: FileText,
       color: "text-orange-600",
-      bgColor: "bg-orange-100"
-    },
-    {
-      name: "Screening & Blocking",
-      path: "/internal-team/screening-blocking",
-      icon: Shield,
-      color: "text-red-600",
-      bgColor: "bg-red-100"
-    },
-    {
-      name: "Blocked Candidates",
-      path: "/internal-team/blocked-candidates",
-      icon: UserX,
-      color: "text-gray-600",
-      bgColor: "bg-gray-100"
+      bgColor: "bg-orange-100",
+      children: [
+        { name: "Pending Offers", path: "/internal-team/pending-offers" },
+        { name: "Accepted Offers", path: "/internal-team/approved-offers" },
+        { name: "Declined Offers", path: "/internal-team/declined-offers" },
+        { name: "Withdrawn Offers", path: "/internal-team/withdrawn-offers" }
+      ]
     }
   ];
 
@@ -117,24 +96,6 @@ const InternalTeamSidebar = ({ isCollapsed, setIsCollapsed, onMobileClose, isMob
 
   return (
     <div className={sidebarClasses}>
-      {/* Mobile Close Button */}
-      {isMobile && (
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <div className="flex items-center">
-            <span className="text-lg font-semibold text-gray-800">Internal Team</span>
-          </div>
-          <button
-            onClick={onMobileClose}
-            className="p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-      )}
-
-      {/* Desktop header removed */}
-
-      {/* Navigation Menu */}
       <nav className={`space-y-2 transition-all duration-300 ${isCollapsed && !isMobile ? 'p-2' : 'p-4'}`}>
         {menuItems.map((item) => {
           const IconComponent = item.icon;

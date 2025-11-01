@@ -8,21 +8,17 @@ import CandidateInfo from "./pages/CandidateInfo";
 import RecruiterInfo from "./pages/RecruiterInfo";
 import ProfileSetup from "./pages/candidate/ProfileSetup";
 import CandidateRegistration from "./pages/candidate/CandidateRegistration";
-// COMMENTED OUT: Email verification component - not used for now
-// import CandidateVerification from "./pages/candidate/CandidateVerification";
 import CandidatePreferences from "./pages/candidate/CandidatePreferences";
 import CandidateDashboard from "./pages/candidate/CandidateDashboard";
+import CandidateMyProfile from "./pages/candidate/CandidateMyProfile";
+import CandidateOffers from "./pages/candidate/CandidateOffers";
 import CandidateProfile from "./pages/recruiter/CandidateProfile";
 import RecruiterDashboard from "./pages/recruiter/RecruiterDashboard";
 import RecruiterRegistration from "./pages/recruiter/RecruiterRegistration";
-// COMMENTED OUT: Email verification component - not used for now
-// import EmailVerification from "./pages/recruiter/EmailVerification";
 import ShortlistedCandidates from "./pages/recruiter/ShortlistedCandidates";
+import OfferedCandidates from "./pages/recruiter/OfferedCandidates";
 import RecruiterProfile from "./pages/recruiter/RecruiterProfile";
 import SuperAdminDashboard from "./pages/superadmin/SuperAdminDashboard";
-import PendingCandidates from "./pages/superadmin/PendingCandidates";
-import ApprovedCandidates from "./pages/superadmin/ApprovedCandidates";
-import Recruiters from "./pages/superadmin/Recruiters";
 import InternalTeam from "./pages/superadmin/InternalTeam";
 import NotFound from "./pages/NotFound";
 import SuperAdminLayout from "./Components/SuperAdminLayout";
@@ -34,10 +30,10 @@ import PrivateRoute from "./Components/Auth/PrivateRoute";
 // Internal Team Pages
 import InternalTeamDashboard from "./pages/internalteam/InternalTeamDashboard";
 import Notifications from "./pages/internalteam/Notifications";
-import InterviewScheduling from "./pages/internalteam/InterviewScheduling";
-import OfferManagement from "./pages/internalteam/OfferManagement";
-import ScreeningBlocking from "./pages/internalteam/ScreeningBlocking";
-import BlockedCandidates from "./pages/internalteam/BlockedCandidates";
+import PendingOffers from "./pages/internalteam/PendingOffers";
+import ApprovedOffers from "./pages/internalteam/ApprovedOffers";
+import DeclinedOffers from "./pages/internalteam/DeclinedOffers";
+import WithdrawnOffers from "./pages/internalteam/WithdrawnOffers";
 import AllCandidates from "./pages/internalteam/AllCandidates";
 import AllRecruiters from "./pages/internalteam/AllRecruiters";
 import InternalPendingCandidate from "./pages/internalteam/InternalPendingCandidate";
@@ -46,7 +42,7 @@ import InternalDeclinedCandidate from "./pages/internalteam/InternalDeclinedCand
 import InternalPendingRecruiter from "./pages/internalteam/InternalPendingRecruiter";
 import InternalApprovedRecruiter from "./pages/internalteam/InternalApprovedRecruiter";
 import InternalDeclinedRecruiter from "./pages/internalteam/InternalDeclinedRecruiter";
-// import NotFound from "./pages/NotFound";
+import InternalCandidateProfile from "./pages/internalteam/InternalCandidateProfile";
 
 export default function App() {
   return (
@@ -125,6 +121,22 @@ export default function App() {
             </PrivateRoute>
           } 
         />
+        <Route 
+          path="/candidate/profile" 
+          element={
+            <PrivateRoute>
+              <CandidateMyProfile />
+            </PrivateRoute>
+          } 
+        />
+        <Route 
+          path="/candidate/offers" 
+          element={
+            <PrivateRoute>
+              <CandidateOffers />
+            </PrivateRoute>
+          } 
+        />
         
         {/* Recruiter Protected Routes */}
         <Route 
@@ -154,6 +166,15 @@ export default function App() {
         />
         
         <Route 
+          path="/recruiter/offered-candidates" 
+          element={
+            <PrivateRoute>
+              <OfferedCandidates />
+            </PrivateRoute>
+          } 
+        />
+        
+        <Route 
           path="/recruiter/profile" 
           element={
             <PrivateRoute>
@@ -169,36 +190,6 @@ export default function App() {
             <PrivateRoute>
               <SuperAdminLayout>
                 <SuperAdminDashboard />
-              </SuperAdminLayout>
-            </PrivateRoute>
-          } 
-        />
-        <Route 
-          path="/superadmin/pending-candidates" 
-          element={
-            <PrivateRoute>
-              <SuperAdminLayout>
-                <PendingCandidates />
-              </SuperAdminLayout>
-            </PrivateRoute>
-          } 
-        />
-        <Route 
-          path="/superadmin/approved-candidates" 
-          element={
-            <PrivateRoute>
-              <SuperAdminLayout>
-                <ApprovedCandidates />
-              </SuperAdminLayout>
-            </PrivateRoute>
-          } 
-        />
-        <Route 
-          path="/superadmin/recruiters" 
-          element={
-            <PrivateRoute>
-              <SuperAdminLayout>
-                <Recruiters />
               </SuperAdminLayout>
             </PrivateRoute>
           } 
@@ -235,42 +226,43 @@ export default function App() {
             </PrivateRoute>
           } 
         />
+        
         <Route 
-          path="/internal-team/interview-scheduling" 
+          path="/internal-team/pending-offers" 
           element={
             <PrivateRoute>
               <InternalTeamLayout>
-                <InterviewScheduling />
+                <PendingOffers />
               </InternalTeamLayout>
             </PrivateRoute>
           } 
         />
         <Route 
-          path="/internal-team/offer-management" 
+          path="/internal-team/approved-offers" 
           element={
             <PrivateRoute>
               <InternalTeamLayout>
-                <OfferManagement />
+                <ApprovedOffers />
               </InternalTeamLayout>
             </PrivateRoute>
           } 
         />
         <Route 
-          path="/internal-team/screening-blocking" 
+          path="/internal-team/declined-offers" 
           element={
             <PrivateRoute>
               <InternalTeamLayout>
-                <ScreeningBlocking />
+                <DeclinedOffers />
               </InternalTeamLayout>
             </PrivateRoute>
           } 
         />
         <Route 
-          path="/internal-team/blocked-candidates" 
+          path="/internal-team/withdrawn-offers" 
           element={
             <PrivateRoute>
               <InternalTeamLayout>
-                <BlockedCandidates />
+                <WithdrawnOffers />
               </InternalTeamLayout>
             </PrivateRoute>
           } 
@@ -282,6 +274,16 @@ export default function App() {
             <PrivateRoute>
               <InternalTeamLayout>
                 <AllCandidates />
+              </InternalTeamLayout>
+            </PrivateRoute>
+          } 
+        />
+        <Route 
+          path="/internal-team/candidate/:code" 
+          element={
+            <PrivateRoute>
+              <InternalTeamLayout>
+                <InternalCandidateProfile />
               </InternalTeamLayout>
             </PrivateRoute>
           } 

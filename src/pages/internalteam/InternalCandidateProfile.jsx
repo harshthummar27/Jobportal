@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Star, MapPin, Briefcase, DollarSign, Clock, Shield, UserCheck, AlertCircle, Loader2, Calendar } from "lucide-react";
-import RecruiterLayout from "../../Components/RecruiterLayout";
 
-const CandidateProfile = () => {
+const InternalCandidateProfile = () => {
   const { code } = useParams();
   const navigate = useNavigate();
   const [candidate, setCandidate] = useState(null);
@@ -64,6 +63,7 @@ const CandidateProfile = () => {
       id: candidate.id,
       user_id: candidate.user_id,
       candidate_code: candidate.candidate_code || code,
+      full_name: candidate.full_name || candidate.name || 'N/A',
       city: candidate.city,
       state: candidate.state,
       willing_to_relocate: candidate.willing_to_relocate,
@@ -96,7 +96,9 @@ const CandidateProfile = () => {
       score_updated_at: candidate.score_updated_at,
       created_at: candidate.created_at ? new Date(candidate.created_at).toLocaleDateString() : null,
       updated_at: candidate.updated_at,
-      scored_by: candidate.scored_by
+      scored_by: candidate.scored_by,
+      contact_email: candidate.contact_email || candidate.email || 'N/A',
+      contact_phone: candidate.contact_phone || candidate.mobile_number || 'N/A'
     };
   };
 
@@ -130,103 +132,96 @@ const CandidateProfile = () => {
 
   if (loading) {
     return (
-      <RecruiterLayout>
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <Loader2 className="h-8 w-8 animate-spin mx-auto text-gray-400" />
-            <p className="text-gray-500 mt-2">Loading candidate details...</p>
-          </div>
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto text-gray-400" />
+          <p className="text-gray-500 mt-2">Loading candidate details...</p>
         </div>
-      </RecruiterLayout>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <RecruiterLayout>
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <AlertCircle className="h-12 w-12 mx-auto text-red-400" />
-            <p className="text-red-600 mt-2 font-medium">Error: {error}</p>
-            <button
-              onClick={() => navigate('/recruiter/dashboard')}
-              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-            >
-              Back to Dashboard
-            </button>
-          </div>
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <AlertCircle className="h-12 w-12 mx-auto text-red-400" />
+          <p className="text-red-600 mt-2 font-medium">Error: {error}</p>
+          <button
+            onClick={() => navigate('/internal-team/all-candidates')}
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          >
+            Back to All Candidates
+          </button>
         </div>
-      </RecruiterLayout>
+      </div>
     );
   }
 
   if (!candidate) {
     return (
-      <RecruiterLayout>
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <UserCheck className="h-12 w-12 mx-auto text-gray-300" />
-            <p className="text-gray-500 mt-2">Candidate not found</p>
-            <button
-              onClick={() => navigate('/recruiter/dashboard')}
-              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-            >
-              Back to Dashboard
-            </button>
-          </div>
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <UserCheck className="h-12 w-12 mx-auto text-gray-300" />
+          <p className="text-gray-500 mt-2">Candidate not found</p>
+          <button
+            onClick={() => navigate('/internal-team/all-candidates')}
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          >
+            Back to All Candidates
+          </button>
         </div>
-      </RecruiterLayout>
+      </div>
     );
   }
 
   const formattedCandidate = formatCandidateData(candidate);
 
   return (
-    <RecruiterLayout>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Back Button */}
-          <div className="mb-6">
-            <button
-              onClick={() => navigate('/recruiter/dashboard')}
-              className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Back to Dashboard
-            </button>
-          </div>
+    <div className="w-full max-w-none">
+      {/* Back Button */}
+      <div className="mb-6">
+        <button
+          onClick={() => navigate('/internal-team/all-candidates')}
+          className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to All Candidates
+        </button>
+      </div>
 
-          {/* Candidate Header */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <div className="h-16 w-16 bg-blue-100 rounded-full flex items-center justify-center">
-                  <UserCheck className="h-8 w-8 text-blue-600" />
+      {/* Candidate Header */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="h-16 w-16 bg-blue-100 rounded-full flex items-center justify-center">
+              <UserCheck className="h-8 w-8 text-blue-600" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">{formattedCandidate.full_name}</h1>
+              <p className="text-lg text-blue-600 font-semibold">{formattedCandidate.candidate_code}</p>
+              <div className="flex items-center gap-4 mt-2">
+                <div className="flex items-center gap-1">
+                  <Star className="h-4 w-4 text-yellow-500" />
+                  <span className="text-sm font-medium text-gray-700">Score: {formattedCandidate.candidate_score || 'N/A'}</span>
                 </div>
-              <div>
-                  <h1 className="text-2xl font-bold text-gray-900">{formattedCandidate.full_name}</h1>
-                  <p className="text-lg text-blue-600 font-semibold">{formattedCandidate.candidate_code}</p>
-                  <div className="flex items-center gap-4 mt-2">
-                    <div className="flex items-center gap-1">
-                      <Star className="h-4 w-4 text-yellow-500" />
-                      <span className="text-sm font-medium text-gray-700">Score: {formattedCandidate.candidate_score}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Calendar className="h-4 w-4 text-gray-400" />
-                      <span className="text-sm text-gray-500">Added: {formattedCandidate.created_at}</span>
-                    </div>
-                  </div>
+                <div className="flex items-center gap-1">
+                  <Calendar className="h-4 w-4 text-gray-400" />
+                  <span className="text-sm text-gray-500">Added: {formattedCandidate.created_at || 'N/A'}</span>
                 </div>
-              </div>
-              <div className="flex items-center gap-3">
-                {formattedCandidate.visa_status && getVisaStatusBadge(formattedCandidate.visa_status)}
               </div>
             </div>
           </div>
+          <div className="flex items-center gap-3">
+            {formattedCandidate.visa_status && getVisaStatusBadge(formattedCandidate.visa_status)}
+          </div>
+        </div>
+      </div>
 
-            {/* Main Content */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Left Column - Basic Info */}
-            <div className="lg:col-span-2 space-y-6">
+      {/* Main Content */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left Column - Basic Info */}
+        <div className="lg:col-span-2 space-y-6">
               {/* Basic Information */}
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">Basic Information</h2>
@@ -241,6 +236,18 @@ const CandidateProfile = () => {
                     <div>
                       <label className="block text-sm font-medium text-gray-600 mb-1">State</label>
                       <p className="text-sm text-gray-900">{formattedCandidate.state}</p>
+                    </div>
+                  )}
+                  {formattedCandidate.contact_email && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 mb-1">Email</label>
+                      <p className="text-sm text-gray-900">{formattedCandidate.contact_email}</p>
+                    </div>
+                  )}
+                  {formattedCandidate.contact_phone && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 mb-1">Phone</label>
+                      <p className="text-sm text-gray-900">{formattedCandidate.contact_phone}</p>
                     </div>
                   )}
                   {formattedCandidate.availability_date && (
@@ -268,16 +275,20 @@ const CandidateProfile = () => {
                       <div>
                     <label className="block text-sm font-medium text-gray-600 mb-1">Desired Job Roles</label>
                     <div className="flex flex-wrap gap-1">
-                      {formattedCandidate.desired_job_roles.map((role, index) => (
-                        <span key={index} className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-medium">
-                          {role}
-                        </span>
-                      ))}
+                      {formattedCandidate.desired_job_roles && formattedCandidate.desired_job_roles.length > 0 ? (
+                        formattedCandidate.desired_job_roles.map((role, index) => (
+                          <span key={index} className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-medium">
+                            {role}
+                          </span>
+                        ))
+                      ) : (
+                        <span className="text-sm text-gray-500">N/A</span>
+                      )}
                     </div>
                   </div>
                       <div>
                     <label className="block text-sm font-medium text-gray-600 mb-1">Experience</label>
-                    <p className="text-sm text-gray-900">{formattedCandidate.total_years_experience} years</p>
+                    <p className="text-sm text-gray-900">{formattedCandidate.total_years_experience || 0} years</p>
                       </div>
                   {formattedCandidate.desired_annual_package && (
                     <div>
@@ -294,19 +305,25 @@ const CandidateProfile = () => {
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-600 mb-1">Preferred Industries</label>
                     <div className="flex flex-wrap gap-1">
-                      {formattedCandidate.preferred_industries.map((ind, index) => (
-                        <span key={index} className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs font-medium">{ind}</span>
-                      ))}
-                      {formattedCandidate.preferred_industries.length === 0 && null}
+                      {formattedCandidate.preferred_industries && formattedCandidate.preferred_industries.length > 0 ? (
+                        formattedCandidate.preferred_industries.map((ind, index) => (
+                          <span key={index} className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs font-medium">{ind}</span>
+                        ))
+                      ) : (
+                        <span className="text-sm text-gray-500">N/A</span>
+                      )}
                     </div>
                   </div>
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-600 mb-1">Employment Types</label>
                     <div className="flex flex-wrap gap-1">
-                      {formattedCandidate.employment_types.map((type, index) => (
-                        <span key={index} className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs font-medium">{type}</span>
-                      ))}
-                      {formattedCandidate.employment_types.length === 0 && null}
+                      {formattedCandidate.employment_types && formattedCandidate.employment_types.length > 0 ? (
+                        formattedCandidate.employment_types.map((type, index) => (
+                          <span key={index} className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs font-medium">{type}</span>
+                        ))
+                      ) : (
+                        <span className="text-sm text-gray-500">N/A</span>
+                      )}
                     </div>
                   </div>
                   {formattedCandidate.willing_to_relocate !== null && (
@@ -324,10 +341,13 @@ const CandidateProfile = () => {
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-600 mb-1">Preferred Locations</label>
                     <div className="flex flex-wrap gap-1">
-                      {formattedCandidate.preferred_locations.map((loc, index) => (
-                        <span key={index} className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs font-medium">{loc}</span>
-                      ))}
-                      {formattedCandidate.preferred_locations.length === 0 && null}
+                      {formattedCandidate.preferred_locations && formattedCandidate.preferred_locations.length > 0 ? (
+                        formattedCandidate.preferred_locations.map((loc, index) => (
+                          <span key={index} className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs font-medium">{loc}</span>
+                        ))
+                      ) : (
+                        <span className="text-sm text-gray-500">N/A</span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -340,19 +360,22 @@ const CandidateProfile = () => {
                   Skills
                 </h2>
                 <div className="flex flex-wrap gap-2">
-                  {formattedCandidate.skills.map((skill, index) => (
-                    <span key={index} className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium">
-                      {skill}
-                    </span>
-                  ))}
-                  {formattedCandidate.skills.length === 0 && null}
+                  {formattedCandidate.skills && formattedCandidate.skills.length > 0 ? (
+                    formattedCandidate.skills.map((skill, index) => (
+                      <span key={index} className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium">
+                        {skill}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-sm text-gray-500">N/A</span>
+                  )}
                 </div>
                 </div>
 
               {/* Job History */}
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">Job History</h2>
-                {formattedCandidate.job_history.length > 0 && (
+                {formattedCandidate.job_history && formattedCandidate.job_history.length > 0 ? (
                   <div className="space-y-4">
                     {formattedCandidate.job_history.map((job, idx) => (
                       <div key={idx} className="border border-gray-100 rounded-lg p-4">
@@ -368,13 +391,15 @@ const CandidateProfile = () => {
                       </div>
                     ))}
                   </div>
+                ) : (
+                  <p className="text-sm text-gray-500">No job history available</p>
                 )}
               </div>
 
               {/* Education */}
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">Education</h2>
-                {formattedCandidate.education.length > 0 && (
+                {formattedCandidate.education && formattedCandidate.education.length > 0 ? (
                   <div className="space-y-4">
                     {formattedCandidate.education.map((edu, idx) => (
                       <div key={idx} className="border border-gray-100 rounded-lg p-4">
@@ -383,13 +408,15 @@ const CandidateProfile = () => {
                       </div>
                     ))}
                   </div>
+                ) : (
+                  <p className="text-sm text-gray-500">No education information available</p>
                 )}
               </div>
 
               {/* Certifications */}
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">Certifications</h2>
-                {formattedCandidate.certifications.length > 0 && (
+                {formattedCandidate.certifications && formattedCandidate.certifications.length > 0 ? (
                   <div className="space-y-2">
                     {formattedCandidate.certifications.map((cert, idx) => {
                       const isObject = cert && typeof cert === 'object' && !Array.isArray(cert);
@@ -413,6 +440,8 @@ const CandidateProfile = () => {
                       );
                     })}
                   </div>
+                ) : (
+                  <p className="text-sm text-gray-500">No certifications available</p>
                 )}
               </div>
               </div>
@@ -459,19 +488,21 @@ const CandidateProfile = () => {
               {/* Languages */}
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">Languages</h2>
-                {formattedCandidate.languages_spoken.length > 0 && (
+                {formattedCandidate.languages_spoken && formattedCandidate.languages_spoken.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
                     {formattedCandidate.languages_spoken.map((lang, idx) => (
                       <span key={idx} className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium">{lang}</span>
                     ))}
                   </div>
+                ) : (
+                  <p className="text-sm text-gray-500">N/A</p>
                 )}
               </div>
 
               {/* References */}
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">References</h2>
-                {formattedCandidate.references.length > 0 && (
+                {formattedCandidate.references && formattedCandidate.references.length > 0 ? (
                   <div className="space-y-3">
                     {formattedCandidate.references.map((ref, idx) => (
                       <div key={idx} className="border border-gray-100 rounded-lg p-3">
@@ -486,26 +517,32 @@ const CandidateProfile = () => {
                       </div>
                     ))}
                   </div>
+                ) : (
+                  <p className="text-sm text-gray-500">No references available</p>
                 )}
               </div>
 
               {/* Blocked Companies */}
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">Blocked Companies</h2>
-                {formattedCandidate.blocked_companies.length > 0 && (
+                {formattedCandidate.blocked_companies && formattedCandidate.blocked_companies.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
                     {formattedCandidate.blocked_companies.map((comp, idx) => (
                       <span key={idx} className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium">{comp}</span>
                     ))}
                   </div>
+                ) : (
+                  <p className="text-sm text-gray-500">None</p>
                 )}
               </div>
 
               {/* Additional Notes */}
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">Additional Notes</h2>
-                {formattedCandidate.additional_notes && (
+                {formattedCandidate.additional_notes ? (
                   <p className="text-sm text-gray-700">{formattedCandidate.additional_notes}</p>
+                ) : (
+                  <p className="text-sm text-gray-500">No additional notes</p>
                 )}
               </div>
 
@@ -521,13 +558,15 @@ const CandidateProfile = () => {
                   >
                     Download {formattedCandidate.resume_file_name || 'Resume'}
                   </a>
-                ) : null}
+                ) : (
+                  <p className="text-sm text-gray-500">No resume available</p>
+                )}
               </div>
             </div>
           </div>
         </div>
-    </RecruiterLayout>
   );
 };
 
-export default CandidateProfile;
+export default InternalCandidateProfile;
+

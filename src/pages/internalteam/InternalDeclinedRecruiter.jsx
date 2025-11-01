@@ -97,6 +97,34 @@ const DeclinedRecruitersIT = () => {
     return Object.keys(first);
   }, [recruiters]);
 
+  const formatValue = (value) => {
+    if (value === null || value === undefined) return '-';
+    
+    // Format ISO date strings to readable format
+    if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(value)) {
+      try {
+        const date = new Date(value);
+        return date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      } catch (e) {
+        return value;
+      }
+    }
+    
+    if (typeof value === 'object' && value !== null) {
+      return JSON.stringify(value);
+    }
+    if (Array.isArray(value)) {
+      return value.join(', ');
+    }
+    return String(value);
+  };
+
   return (
     <div className="w-full max-w-none">
       <div className="mb-4 flex items-center justify-between">
@@ -186,7 +214,7 @@ const DeclinedRecruitersIT = () => {
                     <tr key={idx} className="hover:bg-gray-50">
                       {columns.map((col) => (
                         <td key={col} className="px-4 py-2 text-sm text-gray-700 max-w-[28rem] break-words">
-                          {typeof row[col] === 'object' && row[col] !== null ? JSON.stringify(row[col]) : String(row[col] ?? '')}
+                          {formatValue(row[col])}
                         </td>
                       ))}
                     </tr>

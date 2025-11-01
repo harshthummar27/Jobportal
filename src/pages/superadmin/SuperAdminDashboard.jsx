@@ -1,69 +1,37 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { 
-  Users, 
-  UserCheck, 
-  UserX, 
-  Building2, 
   TrendingUp, 
   Calendar,
-  Shield,
-  Settings
+  UserCheck,
+  Settings,
+  Shield
 } from "lucide-react";
 // SuperAdminLayout is now provided at the route level
 
 const SuperAdminDashboard = () => {
   // Mock data - in real app, replace with API calls
   const stats = {
-    allCandidates: 2847,
-    pendingCandidates: 156,
-    approvedCandidates: 2691,
-    allRecruiters: 342,
-    internalTeam: 18,
     totalUsers: 3197,
     recentRegistrations: 47,
-    activeRecruiters: 298,
     totalRevenue: 1250000,
     monthlyRevenue: 125000,
     successfulPlacements: 892,
-    averageTimeToHire: 18
+    averageTimeToHire: 18,
+    internalTeamMembers: 18
   };
 
   const recentActivities = [
     {
       id: 1,
-      type: "candidate_approved",
-      message: "Candidate TSC-2024-2847 has been approved by Sarah HR",
-      time: "2 hours ago",
-      icon: UserCheck,
-      color: "text-green-600"
-    },
-    {
-      id: 2,
-      type: "recruiter_registered",
-      message: "New recruiter from CloudFirst Technologies registered",
-      time: "4 hours ago",
-      icon: Building2,
-      color: "text-blue-600"
-    },
-    {
-      id: 3,
-      type: "candidate_pending",
-      message: "23 new candidate registrations pending approval",
-      time: "6 hours ago",
-      icon: Users,
-      color: "text-yellow-600"
-    },
-    {
-      id: 4,
       type: "internal_team",
       message: "Internal team member Amanda Quality added",
-      time: "1 day ago",
+      time: "2 hours ago",
       icon: Shield,
       color: "text-purple-600"
     },
     {
-      id: 5,
+      id: 2,
       type: "placement_success",
       message: "Successful placement: Grace Chen → CyberSec Pro",
       time: "1 day ago",
@@ -71,23 +39,7 @@ const SuperAdminDashboard = () => {
       color: "text-green-600"
     },
     {
-      id: 6,
-      type: "recruiter_approved",
-      message: "Recruiter AI Innovations has been approved",
-      time: "2 days ago",
-      icon: Building2,
-      color: "text-blue-600"
-    },
-    {
-      id: 7,
-      type: "candidate_rejected",
-      message: "Candidate application rejected due to incomplete profile",
-      time: "2 days ago",
-      icon: UserX,
-      color: "text-red-600"
-    },
-    {
-      id: 8,
+      id: 3,
       type: "system_update",
       message: "System maintenance completed successfully",
       time: "3 days ago",
@@ -95,19 +47,11 @@ const SuperAdminDashboard = () => {
       color: "text-gray-600"
     },
     {
-      id: 9,
+      id: 4,
       type: "revenue_milestone",
       message: "Monthly revenue target achieved: $125,000",
       time: "3 days ago",
       icon: TrendingUp,
-      color: "text-green-600"
-    },
-    {
-      id: 10,
-      type: "bulk_approval",
-      message: "Bulk approval: 15 candidates approved by Mike Tech",
-      time: "4 days ago",
-      icon: UserCheck,
       color: "text-green-600"
     }
   ];
@@ -138,36 +82,36 @@ const SuperAdminDashboard = () => {
         {/* Stats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-6">
           <StatCard
-            title="All Candidates"
-            value={stats.allCandidates}
-            icon={Users}
-            color="text-blue-600"
-            bgColor="bg-blue-100"
+            title="Total Users"
+            value={stats.totalUsers}
+            icon={Shield}
+            color="text-indigo-600"
+            bgColor="bg-indigo-100"
             change="+18% from last month"
           />
           <StatCard
-            title="Pending Candidates"
-            value={stats.pendingCandidates}
-            icon={UserX}
-            color="text-yellow-600"
-            bgColor="bg-yellow-100"
-            change="+12 new today"
-          />
-          <StatCard
-            title="Approved Candidates"
-            value={stats.approvedCandidates}
-            icon={UserCheck}
-            color="text-green-600"
-            bgColor="bg-green-100"
-            change="+47 this week"
-          />
-          <StatCard
-            title="All Recruiters"
-            value={stats.allRecruiters}
-            icon={Building2}
+            title="Internal Team Members"
+            value={stats.internalTeamMembers}
+            icon={Shield}
             color="text-purple-600"
             bgColor="bg-purple-100"
-            change="+8 new this week"
+            change="Manage team"
+          />
+          <StatCard
+            title="Recent Registrations"
+            value={stats.recentRegistrations}
+            icon={TrendingUp}
+            color="text-blue-600"
+            bgColor="bg-blue-100"
+            change="This week"
+          />
+          <StatCard
+            title="Successful Placements"
+            value={stats.successfulPlacements}
+            icon={TrendingUp}
+            color="text-green-600"
+            bgColor="bg-green-100"
+            change="+32 this month"
           />
         </div>
 
@@ -210,48 +154,15 @@ const SuperAdminDashboard = () => {
         {/* Quick Actions */}
         <div className="bg-white rounded-lg shadow-md p-4 lg:p-6 mb-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            <Link
-              to="/superadmin/pending-candidates"
-              className="flex items-center p-3 border rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <UserX className="h-6 w-6 text-yellow-600 mr-3 flex-shrink-0" />
-              <div className="min-w-0">
-                <p className="font-medium text-gray-900 truncate">Pending Candidates</p>
-                <p className="text-sm text-gray-500 truncate">{stats.pendingCandidates} awaiting approval</p>
-              </div>
-            </Link>
-            
-            <Link
-              to="/superadmin/approved-candidates"
-              className="flex items-center p-3 border rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <UserCheck className="h-6 w-6 text-green-600 mr-3 flex-shrink-0" />
-              <div className="min-w-0">
-                <p className="font-medium text-gray-900 truncate">Approved Candidates</p>
-                <p className="text-sm text-gray-500 truncate">Manage approved candidates</p>
-              </div>
-            </Link>
-            
-            <Link
-              to="/superadmin/recruiters"
-              className="flex items-center p-3 border rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <Building2 className="h-6 w-6 text-purple-600 mr-3 flex-shrink-0" />
-              <div className="min-w-0">
-                <p className="font-medium text-gray-900 truncate">Manage Recruiters</p>
-                <p className="text-sm text-gray-500 truncate">{stats.allRecruiters} total recruiters</p>
-              </div>
-            </Link>
-            
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-3">
             <Link
               to="/superadmin/internal-team"
               className="flex items-center p-3 border rounded-lg hover:bg-gray-50 transition-colors"
             >
-              <Shield className="h-6 w-6 text-indigo-600 mr-3 flex-shrink-0" />
+              <Shield className="h-6 w-6 text-purple-600 mr-3 flex-shrink-0" />
               <div className="min-w-0">
                 <p className="font-medium text-gray-900 truncate">Internal Team</p>
-                <p className="text-sm text-gray-500 truncate">{stats.internalTeam} team members</p>
+                <p className="text-sm text-gray-500 truncate">{stats.internalTeamMembers} team members</p>
               </div>
             </Link>
           </div>

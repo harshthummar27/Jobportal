@@ -18,8 +18,11 @@ import {
   ChevronRight,
   User,
   Phone,
-  Mail
+  Mail,
+  Plus,
+  XCircle
 } from "lucide-react";
+import { toast } from 'react-toastify';
 import { useSearch } from "../../Components/InternalTeamLayout";
 
 const Notifications = () => {
@@ -32,7 +35,39 @@ const Notifications = () => {
   const [selectedNotifications, setSelectedNotifications] = useState([]);
   const [filter, setFilter] = useState('all'); // all, unread, read, high_priority
   const [expandedNotifications, setExpandedNotifications] = useState(new Set());
+  const [showOfferModal, setShowOfferModal] = useState(false);
+  const [selectedNotificationForOffer, setSelectedNotificationForOffer] = useState(null);
+  const [isCreatingOffer, setIsCreatingOffer] = useState(false);
+  const [offerErrors, setOfferErrors] = useState({});
   const { searchTerm } = useSearch();
+
+  const [newOffer, setNewOffer] = useState({
+    candidate_code: "",
+    candidate_selection_id: "",
+    job_title: "",
+    job_description: "",
+    offered_salary: "",
+    location: "",
+    benefits: [],
+    start_date: "",
+    offer_deadline: "",
+    offer_notes: ""
+  });
+
+  const benefitOptions = [
+    "Health Insurance", "401k", "Stock Options", "Flexible Hours", 
+    "Remote Work", "Learning Budget", "Gym Membership", "Commuter Benefits", 
+    "Equity", "Dental Insurance", "Vision Insurance", "Life Insurance"
+  ];
+
+  // API Base URL from environment variable
+  const baseURL = import.meta.env.VITE_API_BASE_URL;
+
+  // Get today's date in YYYY-MM-DD format for min date
+  const getTodayDate = () => {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  };
 
   // Fetch notifications from API
   const fetchNotifications = async (page = 1, perPage = 20, unreadOnly = false) => {
@@ -41,7 +76,7 @@ const Notifications = () => {
       setError(null);
       
       const token = localStorage.getItem('token');
-      const response = await fetch(`https://vettedpool.com/backend/api/internal/notifications?page=${page}&per_page=${perPage}&unread_only=${unreadOnly}`, {
+      const response = await fetch(`${baseURL}/api/internal/notifications?page=${page}&per_page=${perPage}&unread_only=${unreadOnly}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -76,7 +111,7 @@ const Notifications = () => {
   const markAsRead = async (notificationId) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`https://vettedpool.com/backend/api/internal/notifications/${notificationId}/read`, {
+      const response = await fetch(`${baseURL}/api/internal/notifications/${notificationId}/read`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -155,6 +190,199 @@ const Notifications = () => {
       }
       return newSet;
     });
+  };
+
+  // Handle create offer button click
+  const handleCreateOfferClick = (notification) => {
+    const candidateSelection = notification.candidate_selection;
+    const candidateProfile = candidateSelection?.candidate_profile;
+    
+    // Pre-fill form with data from notification
+    setNewOffer({
+      candidate_code: candidateProfile?.candidate_code || "",
+      candidate_selection_id: candidateSelection?.id || "",
+      job_title: candidateSelection?.job_title || "",
+      job_description: candidateSelection?.job_description || "",
+      offered_salary: candidateSelection?.offered_salary_max || candidateSelection?.offered_salary_min || "",
+      location: candidateSelection?.location || "",
+      benefits: [],
+      start_date: "",
+      offer_deadline: "",
+      offer_notes: candidateSelection?.notes || ""
+    });
+    setSelectedNotificationForOffer(notification);
+    setOfferErrors({});
+    setShowOfferModal(true);
+  };
+
+  // Validate offer form
+  const validateOffer = () => {
+    const newErrors = {};
+
+    // Candidate code and selection ID are automatically taken from notification
+    // So we don't validate them or show errors to user
+    if (!newOffer.candidate_code?.trim()) {
+      console.error("Candidate code is missing - this should be auto-filled from notification");
+    }
+
+    if (!newOffer.candidate_selection_id?.toString().trim()) {
+      console.error("Candidate selection ID is missing - this should be auto-filled from notification");
+    } else if (isNaN(Number(newOffer.candidate_selection_id))) {
+      console.error("Candidate selection ID must be a valid number");
+    }
+
+    if (!newOffer.job_title?.trim()) {
+      newErrors.job_title = "Job title is required";
+    }
+
+    if (!newOffer.job_description?.trim()) {
+      newErrors.job_description = "Job description is required";
+    }
+
+    if (!newOffer.offered_salary?.toString().trim()) {
+      newErrors.offered_salary = "Offered salary is required";
+    } else if (isNaN(Number(newOffer.offered_salary)) || Number(newOffer.offered_salary) <= 0) {
+      newErrors.offered_salary = "Offered salary must be a valid positive number";
+    }
+
+    if (!newOffer.location?.trim()) {
+      newErrors.location = "Location is required";
+    }
+
+    if (!newOffer.benefits || newOffer.benefits.length === 0) {
+      newErrors.benefits = "At least one benefit is required";
+    }
+
+    if (!newOffer.start_date) {
+      newErrors.start_date = "Start date is required";
+    } else {
+      const startDate = new Date(newOffer.start_date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (startDate < today) {
+        newErrors.start_date = "Start date cannot be in the past";
+      }
+    }
+
+    if (!newOffer.offer_deadline) {
+      newErrors.offer_deadline = "Offer deadline is required";
+    } else {
+      const deadline = new Date(newOffer.offer_deadline);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (deadline < today) {
+        newErrors.offer_deadline = "Offer deadline cannot be in the past";
+      }
+    }
+
+    if (!newOffer.offer_notes?.trim()) {
+      newErrors.offer_notes = "Offer notes is required";
+    }
+
+    setOfferErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // Handle save offer
+  const handleSaveOffer = async () => {
+    if (!validateOffer()) {
+      toast.error("Please fill in all required fields correctly");
+      return;
+    }
+
+    setIsCreatingOffer(true);
+    setOfferErrors({});
+
+    try {
+      // Get authentication token
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      
+      if (!token) {
+        toast.error("Authentication token not found. Please login again.");
+        setIsCreatingOffer(false);
+        return;
+      }
+
+      // Prepare API data
+      const offerData = {
+        candidate_code: newOffer.candidate_code.trim(),
+        candidate_selection_id: Number(newOffer.candidate_selection_id),
+        job_title: newOffer.job_title.trim(),
+        job_description: newOffer.job_description.trim(),
+        offered_salary: Number(newOffer.offered_salary),
+        location: newOffer.location.trim(),
+        benefits: newOffer.benefits,
+        start_date: newOffer.start_date,
+        offer_deadline: newOffer.offer_deadline,
+        offer_notes: newOffer.offer_notes.trim()
+      };
+
+      // Make API call
+      const response = await fetch(`${baseURL}/api/internal/offers`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify(offerData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error("API Error Response:", data);
+        console.error("Response Status:", response.status);
+        
+        // Handle specific error messages from API
+        let errorMessage = data.message || data.error || 'Failed to create offer';
+        
+        // If API returns field-specific errors
+        if (data.errors) {
+          const fieldErrors = {};
+          Object.keys(data.errors).forEach(key => {
+            fieldErrors[key] = Array.isArray(data.errors[key]) 
+              ? data.errors[key][0] 
+              : data.errors[key];
+          });
+          setOfferErrors(fieldErrors);
+          toast.error("Please correct the errors in the form");
+        } else {
+          toast.error(errorMessage);
+        }
+        
+        setIsCreatingOffer(false);
+        return;
+      }
+
+      console.log("Offer created successfully:", data);
+      
+      // Show success toast
+      toast.success("Offer created successfully!");
+      
+      // Close modal and reset form
+      setShowOfferModal(false);
+      setNewOffer({
+        candidate_code: "",
+        candidate_selection_id: "",
+        job_title: "",
+        job_description: "",
+        offered_salary: "",
+        location: "",
+        benefits: [],
+        start_date: "",
+        offer_deadline: "",
+        offer_notes: ""
+      });
+      setOfferErrors({});
+      setSelectedNotificationForOffer(null);
+      
+    } catch (error) {
+      console.error("Error creating offer:", error);
+      toast.error(error.message || "Failed to create offer. Please try again.");
+    } finally {
+      setIsCreatingOffer(false);
+    }
   };
 
   // Get priority badge
@@ -497,6 +725,15 @@ const Notifications = () => {
                                 Mark as Read
                               </button>
                             )}
+                            {candidateSelection && (
+                              <button
+                                onClick={() => handleCreateOfferClick(notification)}
+                                className="flex items-center gap-1 px-2 py-1 bg-emerald-500 text-white text-xs rounded-md hover:bg-emerald-600 transition-colors"
+                              >
+                                <Plus className="h-4 w-4" />
+                                Create Offer
+                              </button>
+                            )}
                           </div>
                         </div>
                       )}
@@ -547,6 +784,289 @@ const Notifications = () => {
               >
                 Next
                 <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Create Offer Modal */}
+      {showOfferModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Create New Offer
+              </h3>
+              <button
+                onClick={() => {
+                  setShowOfferModal(false);
+                  setSelectedNotificationForOffer(null);
+                  setOfferErrors({});
+                }}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <XCircle className="h-6 w-6" />
+              </button>
+            </div>
+            
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Offer Details */}
+                <div className="space-y-4 md:col-span-2">
+                  <h4 className="text-md font-medium text-gray-900">Offer Details</h4>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Job Title <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={newOffer.job_title}
+                      onChange={(e) => {
+                        setNewOffer(prev => ({ ...prev, job_title: e.target.value }));
+                        if (offerErrors.job_title) {
+                          setOfferErrors(prev => ({ ...prev, job_title: "" }));
+                        }
+                      }}
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-transparent ${
+                        offerErrors.job_title ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                      }`}
+                      placeholder="Senior Software Engineer"
+                    />
+                    {offerErrors.job_title && (
+                      <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                        <AlertCircle className="h-3 w-3" />
+                        {offerErrors.job_title}
+                      </p>
+                    )}
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Job Description <span className="text-red-500">*</span>
+                    </label>
+                    <textarea
+                      rows={4}
+                      value={newOffer.job_description}
+                      onChange={(e) => {
+                        setNewOffer(prev => ({ ...prev, job_description: e.target.value }));
+                        if (offerErrors.job_description) {
+                          setOfferErrors(prev => ({ ...prev, job_description: "" }));
+                        }
+                      }}
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-transparent resize-none ${
+                        offerErrors.job_description ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                      }`}
+                      placeholder="Lead development team and work on high-impact projects..."
+                    />
+                    {offerErrors.job_description && (
+                      <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                        <AlertCircle className="h-3 w-3" />
+                        {offerErrors.job_description}
+                      </p>
+                    )}
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Offered Salary <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="number"
+                        value={newOffer.offered_salary}
+                        onChange={(e) => {
+                          setNewOffer(prev => ({ ...prev, offered_salary: e.target.value }));
+                          if (offerErrors.offered_salary) {
+                            setOfferErrors(prev => ({ ...prev, offered_salary: "" }));
+                          }
+                        }}
+                        className={`w-full px-3 py-2 border rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-transparent ${
+                          offerErrors.offered_salary ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                        }`}
+                        placeholder="1200000"
+                        min="0"
+                      />
+                      {offerErrors.offered_salary && (
+                        <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                          <AlertCircle className="h-3 w-3" />
+                          {offerErrors.offered_salary}
+                        </p>
+                      )}
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Location <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={newOffer.location}
+                        onChange={(e) => {
+                          setNewOffer(prev => ({ ...prev, location: e.target.value }));
+                          if (offerErrors.location) {
+                            setOfferErrors(prev => ({ ...prev, location: "" }));
+                          }
+                        }}
+                        className={`w-full px-3 py-2 border rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-transparent ${
+                          offerErrors.location ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                        }`}
+                        placeholder="Mumbai, India"
+                      />
+                      {offerErrors.location && (
+                        <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                          <AlertCircle className="h-3 w-3" />
+                          {offerErrors.location}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Start Date <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="date"
+                        value={newOffer.start_date}
+                        onChange={(e) => {
+                          setNewOffer(prev => ({ ...prev, start_date: e.target.value }));
+                          if (offerErrors.start_date) {
+                            setOfferErrors(prev => ({ ...prev, start_date: "" }));
+                          }
+                        }}
+                        min={getTodayDate()}
+                        className={`w-full px-3 py-2 border rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-transparent ${
+                          offerErrors.start_date ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                        }`}
+                      />
+                      {offerErrors.start_date && (
+                        <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                          <AlertCircle className="h-3 w-3" />
+                          {offerErrors.start_date}
+                        </p>
+                      )}
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Offer Deadline <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="date"
+                        value={newOffer.offer_deadline}
+                        onChange={(e) => {
+                          setNewOffer(prev => ({ ...prev, offer_deadline: e.target.value }));
+                          if (offerErrors.offer_deadline) {
+                            setOfferErrors(prev => ({ ...prev, offer_deadline: "" }));
+                          }
+                        }}
+                        min={getTodayDate()}
+                        className={`w-full px-3 py-2 border rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-transparent ${
+                          offerErrors.offer_deadline ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                        }`}
+                      />
+                      {offerErrors.offer_deadline && (
+                        <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                          <AlertCircle className="h-3 w-3" />
+                          {offerErrors.offer_deadline}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Benefits <span className="text-red-500">*</span>
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {benefitOptions.map(benefit => (
+                        <label key={benefit} className="flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={newOffer.benefits.includes(benefit)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setNewOffer(prev => ({ ...prev, benefits: [...prev.benefits, benefit] }));
+                              } else {
+                                setNewOffer(prev => ({ ...prev, benefits: prev.benefits.filter(b => b !== benefit) }));
+                              }
+                              if (offerErrors.benefits) {
+                                setOfferErrors(prev => ({ ...prev, benefits: "" }));
+                              }
+                            }}
+                            className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+                          />
+                          <span className="ml-2 text-sm text-gray-700">{benefit}</span>
+                        </label>
+                      ))}
+                    </div>
+                    {offerErrors.benefits && (
+                      <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                        <AlertCircle className="h-3 w-3" />
+                        {offerErrors.benefits}
+                      </p>
+                    )}
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Offer Notes <span className="text-red-500">*</span>
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={newOffer.offer_notes}
+                      onChange={(e) => {
+                        setNewOffer(prev => ({ ...prev, offer_notes: e.target.value }));
+                        if (offerErrors.offer_notes) {
+                          setOfferErrors(prev => ({ ...prev, offer_notes: "" }));
+                        }
+                      }}
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-transparent resize-none ${
+                        offerErrors.offer_notes ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                      }`}
+                      placeholder="Great opportunity to grow with a leading tech company"
+                    />
+                    {offerErrors.offer_notes && (
+                      <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                        <AlertCircle className="h-3 w-3" />
+                        {offerErrors.offer_notes}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex items-center justify-end gap-3 p-6 border-t">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowOfferModal(false);
+                  setSelectedNotificationForOffer(null);
+                  setOfferErrors({});
+                }}
+                disabled={isCreatingOffer}
+                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md border border-gray-300 hover:bg-gray-200 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveOffer}
+                disabled={isCreatingOffer}
+                className="px-4 py-2 bg-emerald-500 text-white rounded-md border border-emerald-600 hover:bg-emerald-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {isCreatingOffer ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    Creating...
+                  </>
+                ) : (
+                  "Create Offer"
+                )}
               </button>
             </div>
           </div>

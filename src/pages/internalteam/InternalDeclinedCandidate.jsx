@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Search, RefreshCw, ChevronLeft, ChevronRight, AlertCircle, Users, ChevronUp, ChevronDown } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Search, RefreshCw, ChevronLeft, ChevronRight, AlertCircle, Users, ChevronUp, ChevronDown, Eye } from "lucide-react";
 
 const DeclinedCandidatesIT = () => {
   const [candidates, setCandidates] = useState([]);
@@ -25,7 +26,7 @@ const DeclinedCandidatesIT = () => {
       const params = new URLSearchParams();
       params.set('page', String(page));
       params.set('per_page', String(perPage));
-      params.set('status', 'declined');
+      params.set('status', 'decline');
       if (search) params.set('search', search);
       if (sortBy) params.set('sort_by', sortBy);
       if (sortDirection) params.set('sort_direction', sortDirection);
@@ -96,6 +97,67 @@ const DeclinedCandidatesIT = () => {
     const first = candidates[0];
     return Object.keys(first);
   }, [candidates]);
+
+  const formatValue = (value, col) => {
+    if (value === null || value === undefined) return '-';
+    
+    // Format ISO date strings to readable format
+    if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(value)) {
+      try {
+        const date = new Date(value);
+        return date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      } catch (e) {
+        return value;
+      }
+    }
+    
+    // For candidate_profile column, return special marker
+    if (col === 'candidate_profile' && typeof value === 'object' && value !== null) {
+      return 'PROFILE_BUTTON';
+    }
+    
+    if (typeof value === 'object' && value !== null) {
+      return JSON.stringify(value);
+    }
+    if (Array.isArray(value)) {
+      return value.join(', ');
+    }
+    return String(value);
+  };
+
+  // Get candidate code from row data
+  const getCandidateCode = (row) => {
+    // Try to get from candidate_profile object
+    if (row.candidate_profile && typeof row.candidate_profile === 'object') {
+      const profileData = row.candidate_profile;
+      if (profileData.candidate_code || profileData.candidateCode) {
+        return profileData.candidate_code || profileData.candidateCode;
+      }
+    }
+    // Try to get from candidate_profile string
+    if (row.candidate_profile && typeof row.candidate_profile === 'string') {
+      try {
+        const profileData = JSON.parse(row.candidate_profile);
+        if (profileData.candidate_code || profileData.candidateCode) {
+          return profileData.candidate_code || profileData.candidateCode;
+        }
+      } catch (e) {
+        // Not valid JSON, ignore
+      }
+    }
+    // Try other common fields
+    if (row.candidate_code) return row.candidate_code;
+    if (row.code) return row.code;
+    // Fallback to ID
+    if (row.id) return `CAND${row.id}`;
+    return null;
+  };
 
   return (
     <div className="w-full max-w-none">
@@ -184,11 +246,29 @@ const DeclinedCandidatesIT = () => {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {candidates.map((row, idx) => (
                     <tr key={idx} className="hover:bg-gray-50">
-                      {columns.map((col) => (
-                        <td key={col} className="px-4 py-2 text-sm text-gray-700 max-w-[28rem] break-words">
-                          {typeof row[col] === 'object' && row[col] !== null ? JSON.stringify(row[col]) : String(row[col] ?? '')}
-                        </td>
-                      ))}
+                      {columns.map((col) => {
+                        const formattedValue = formatValue(row[col], col);
+                        const candidateCode = getCandidateCode(row);
+                        return (
+                          <td key={col} className="px-4 py-2 text-sm text-gray-700 max-w-[28rem] break-words">
+                            {formattedValue === 'PROFILE_BUTTON' ? (
+                              candidateCode ? (
+                                <Link
+                                  to={`/internal-team/candidate/${candidateCode}`}
+                                  className="px-3 py-1 bg-blue-600 text-white text-xs font-medium rounded-md hover:bg-blue-700 transition-colors flex items-center gap-1 inline-flex"
+                                >
+                                  <Eye className="h-3 w-3" />
+                                  View
+                                </Link>
+                              ) : (
+                                <span className="text-gray-400 text-xs">N/A</span>
+                              )
+                            ) : (
+                              formattedValue
+                            )}
+                          </td>
+                        );
+                      })}
                     </tr>
                   ))}
                 </tbody>

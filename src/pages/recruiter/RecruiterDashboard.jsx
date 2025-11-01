@@ -272,7 +272,8 @@ const RecruiterDashboard = () => {
         .replace(/^,\s*/, '')
         .replace(/,\s*$/, ''),
       offered_salary_min: candidate.candidate_profile?.desired_annual_package || candidate.desired_annual_package || '',
-      offered_salary_max: candidate.candidate_profile?.desired_annual_package || candidate.desired_annual_package || ''
+      offered_salary_max: candidate.candidate_profile?.desired_annual_package || candidate.desired_annual_package || '',
+      selection_status: 'shortlisted' // Always set to shortlisted
     }));
     setShowSelectModal(true);
   };
@@ -683,30 +684,15 @@ const RecruiterDashboard = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Location *</label>
-                  <input
-                    type="text"
-                    value={selectFormData.location}
-                    onChange={(e) => setSelectFormData(prev => ({ ...prev, location: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Selection Status *</label>
-                  <select
-                    value={selectFormData.selection_status}
-                    onChange={(e) => setSelectFormData(prev => ({ ...prev, selection_status: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    <option value="shortlisted">Shortlisted</option>
-                    <option value="selected">Selected</option>
-                    <option value="rejected">Rejected</option>
-                    <option value="on_hold">On Hold</option>
-                  </select>
-                </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Location *</label>
+                <input
+                  type="text"
+                  value={selectFormData.location}
+                  onChange={(e) => setSelectFormData(prev => ({ ...prev, location: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
               </div>
 
               <div className="flex items-center gap-4">

@@ -1,32 +1,19 @@
-import React, { useState, useEffect, createContext, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { Menu, User, LogOut, AlertTriangle, Lock, Eye, EyeOff, Loader2, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from 'react-toastify';
-import RecruiterSidebar from "./RecruiterSidebar";
+import CandidateSidebar from "./CandidateSidebar";
 
-const SearchContext = createContext();
-
-export const useRecruiterSearch = () => {
-  const context = useContext(SearchContext);
-  if (!context) {
-    console.warn('useRecruiterSearch called outside of provider, returning defaults');
-    return { searchTerm: '', onSearch: () => {} };
-  }
-  return context;
-};
-
-const RecruiterLayout = ({ children }) => {
-  // No route-based title; always show "Recruiter Dashboard"
-
+const CandidateLayout = ({ children }) => {
   const [isCollapsed, setIsCollapsed] = useState(() => {
-    const saved = localStorage.getItem('recruiterSidebarCollapsed');
+    const saved = localStorage.getItem('candidateSidebarCollapsed');
     return saved ? JSON.parse(saved) : false;
   });
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [displayName, setDisplayName] = useState("Recruiter");
-  const [displayEmail, setDisplayEmail] = useState("recruiter@vettedpool.com");
+  const [displayName, setDisplayName] = useState("Candidate");
+  const [displayEmail, setDisplayEmail] = useState("candidate@vettedpool.com");
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
@@ -43,10 +30,10 @@ const RecruiterLayout = ({ children }) => {
     confirm: false
   });
 
-  const getPageName = () => 'Recruiter Dashboard';
+  const getPageName = () => 'Candidate Dashboard';
 
   useEffect(() => {
-    localStorage.setItem('recruiterSidebarCollapsed', JSON.stringify(isCollapsed));
+    localStorage.setItem('candidateSidebarCollapsed', JSON.stringify(isCollapsed));
   }, [isCollapsed]);
 
   useEffect(() => {
@@ -91,14 +78,10 @@ const RecruiterLayout = ({ children }) => {
       });
 
       if (response.ok) {
-        // Clear any local storage or session data
         localStorage.clear();
-        
-        // Show success toast
         toast.success("Logged out successfully!");
         setShowLogoutModal(false);
         
-        // Redirect to login page after a short delay
         setTimeout(() => {
           window.location.href = '/login';
         }, 1500);
@@ -120,11 +103,9 @@ const RecruiterLayout = ({ children }) => {
     setShowLogoutModal(false);
   };
 
-  // Handle Change Password click
   const handleChangePassword = () => {
     setUserDropdownOpen(false);
     setShowChangePasswordModal(true);
-    // Reset form data
     setPasswordFormData({
       current_password: '',
       new_password: '',
@@ -138,7 +119,6 @@ const RecruiterLayout = ({ children }) => {
     });
   };
 
-  // Close change password modal
   const closeChangePasswordModal = () => {
     setShowChangePasswordModal(false);
     setPasswordFormData({
@@ -154,14 +134,12 @@ const RecruiterLayout = ({ children }) => {
     });
   };
 
-  // Handle password form input changes
   const handlePasswordInputChange = (e) => {
     const { name, value } = e.target;
     setPasswordFormData(prev => ({
       ...prev,
       [name]: value
     }));
-    // Clear error for this field when user starts typing
     if (passwordErrors[name]) {
       setPasswordErrors(prev => {
         const newErrors = { ...prev };
@@ -171,7 +149,6 @@ const RecruiterLayout = ({ children }) => {
     }
   };
 
-  // Validate password form
   const validatePasswordForm = () => {
     const errors = {};
     
@@ -199,7 +176,6 @@ const RecruiterLayout = ({ children }) => {
     return Object.keys(errors).length === 0;
   };
 
-  // Handle change password submission
   const handleChangePasswordSubmit = async (e) => {
     e.preventDefault();
     
@@ -228,7 +204,6 @@ const RecruiterLayout = ({ children }) => {
         }),
       });
 
-      // Parse response data
       const contentType = response.headers.get('content-type');
       const data = contentType && contentType.includes('application/json') 
         ? await response.json() 
@@ -237,20 +212,16 @@ const RecruiterLayout = ({ children }) => {
       if (!response.ok) {
         const newErrors = {};
         
-        // Handle field-specific validation errors
         if (data.errors && typeof data.errors === 'object') {
-          // Handle each field error
           Object.keys(data.errors).forEach(field => {
             if (['current_password', 'new_password', 'confirm_password'].includes(field)) {
               const fieldErrors = data.errors[field];
-              // Get first error message from array or use string directly
               const errorMessage = Array.isArray(fieldErrors) ? fieldErrors[0] : String(fieldErrors);
               newErrors[field] = errorMessage;
             }
           });
         }
         
-        // If no field-specific errors found, show general error
         if (Object.keys(newErrors).length === 0) {
           const errorMessage = data.message || data.error || data.detail || 'Failed to change password';
           toast.error(errorMessage);
@@ -260,7 +231,6 @@ const RecruiterLayout = ({ children }) => {
         return;
       }
 
-      // Success
       toast.success('Password changed successfully!');
       closeChangePasswordModal();
     } catch (error) {
@@ -273,7 +243,6 @@ const RecruiterLayout = ({ children }) => {
     }
   };
 
-  // Toggle password visibility
   const togglePasswordVisibility = (field) => {
     setShowPasswords(prev => ({
       ...prev,
@@ -281,7 +250,6 @@ const RecruiterLayout = ({ children }) => {
     }));
   };
 
-  // Prevent background scrolling when modal is open
   useEffect(() => {
     if (showLogoutModal || showChangePasswordModal) {
       document.body.style.overflow = 'hidden';
@@ -289,7 +257,6 @@ const RecruiterLayout = ({ children }) => {
       document.body.style.overflow = 'unset';
     }
 
-    // Cleanup function to restore scrolling when component unmounts
     return () => {
       document.body.style.overflow = 'unset';
     };
@@ -305,7 +272,6 @@ const RecruiterLayout = ({ children }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [userDropdownOpen]);
 
-  // Load user display info
   useEffect(() => {
     try {
       const userStr = localStorage.getItem('user');
@@ -322,258 +288,245 @@ const RecruiterLayout = ({ children }) => {
     }
   }, []);
 
-  // Get user initial (first letter of name)
   const getUserInitial = () => {
-    if (displayName && displayName !== "Recruiter") {
-      // Get first letter and make it uppercase
+    if (displayName && displayName !== "Candidate") {
       return displayName.charAt(0).toUpperCase();
     }
-    // Fallback to "R" if no valid name found
-    return "R";
+    return "C";
   };
 
   return (
-    <SearchContext.Provider value={{ searchTerm: "", onSearch: () => {} }}>
-      <>
-        {/* Logout Confirmation Modal */}
-        {showLogoutModal && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
-            <div className="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 animate-in zoom-in-95 duration-200">
-              <div className="p-6">
-                {/* Modal Header */}
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <AlertTriangle className="h-5 w-5 text-red-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">Confirm Logout</h3>
-                    <p className="text-sm text-gray-500">Are you sure you want to logout?</p>
-                  </div>
+    <>
+      {/* Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 animate-in zoom-in-95 duration-200">
+            <div className="p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <AlertTriangle className="h-5 w-5 text-red-600" />
                 </div>
-
-                {/* Modal Content */}
-                <div className="mb-6">
-                  <p className="text-sm text-gray-600">
-                    You will be redirected to the login page and will need to sign in again to access your account.
-                  </p>
-                </div>
-
-                {/* Modal Actions */}
-                <div className="flex gap-3 justify-end">
-                  <button
-                    onClick={cancelLogout}
-                    disabled={isLoggingOut}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={confirmLogout}
-                    disabled={isLoggingOut}
-                    className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                  >
-                    {isLoggingOut ? (
-                      <>
-                        <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Logging out...
-                      </>
-                    ) : (
-                      'Logout'
-                    )}
-                  </button>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Confirm Logout</h3>
+                  <p className="text-sm text-gray-500">Are you sure you want to logout?</p>
                 </div>
               </div>
-            </div>
-          </div>
-        )}
 
-        {/* Change Password Modal */}
-        {showChangePasswordModal && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
-            <div className="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 animate-in zoom-in-95 duration-200">
-              {/* Modal Header */}
-              <div className="sticky top-0 bg-white border-b border-gray-200 px-4 sm:px-6 py-4 flex items-center justify-between z-10 rounded-t-xl">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Lock className="h-5 w-5 text-indigo-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-base sm:text-lg font-semibold text-gray-900">Change Password</h3>
-                    <p className="text-xs text-gray-500 hidden sm:block">Update your account password</p>
-                  </div>
-                </div>
+              <div className="mb-6">
+                <p className="text-sm text-gray-600">
+                  You will be redirected to the login page and will need to sign in again to access your account.
+                </p>
+              </div>
+
+              <div className="flex gap-3 justify-end">
                 <button
-                  onClick={closeChangePasswordModal}
-                  disabled={isChangingPassword}
-                  className="text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={cancelLogout}
+                  disabled={isLoggingOut}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <X className="h-5 w-5" />
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmLogout}
+                  disabled={isLoggingOut}
+                  className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                  {isLoggingOut ? (
+                    <>
+                      <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Logging out...
+                    </>
+                  ) : (
+                    'Logout'
+                  )}
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
 
-              {/* Modal Content */}
-              <form onSubmit={handleChangePasswordSubmit} className="px-4 sm:px-6 py-4 sm:py-6">
-                {/* Current Password Field */}
-                <div className="mb-4">
-                  <label htmlFor="current_password" className="block text-sm font-medium text-gray-700 mb-2">
-                    Current Password
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showPasswords.current ? 'text' : 'password'}
-                      id="current_password"
-                      name="current_password"
-                      value={passwordFormData.current_password}
-                      onChange={handlePasswordInputChange}
-                      disabled={isChangingPassword}
-                      className={`w-full px-3 py-2 sm:px-4 sm:py-2.5 border rounded-lg text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all ${
-                        passwordErrors.current_password
-                          ? 'border-red-300 bg-red-50'
-                          : 'border-gray-300 bg-white'
-                      } disabled:opacity-50 disabled:cursor-not-allowed pr-10`}
-                      placeholder="Enter your current password"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => togglePasswordVisibility('current')}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                      disabled={isChangingPassword}
-                    >
-                      {showPasswords.current ? (
-                        <EyeOff className="h-4 w-4 sm:h-5 sm:w-5" />
-                      ) : (
-                        <Eye className="h-4 w-4 sm:h-5 sm:w-5" />
-                      )}
-                    </button>
-                  </div>
-                  {passwordErrors.current_password && (
-                    <p className="mt-1.5 text-xs sm:text-sm text-red-600 flex items-center gap-1">
-                      <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0" />
-                      {passwordErrors.current_password}
-                    </p>
-                  )}
+      {/* Change Password Modal */}
+      {showChangePasswordModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 animate-in zoom-in-95 duration-200">
+            <div className="sticky top-0 bg-white border-b border-gray-200 px-4 sm:px-6 py-4 flex items-center justify-between z-10 rounded-t-xl">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Lock className="h-5 w-5 text-indigo-600" />
                 </div>
-
-                {/* New Password Field */}
-                <div className="mb-4">
-                  <label htmlFor="new_password" className="block text-sm font-medium text-gray-700 mb-2">
-                    New Password
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showPasswords.new ? 'text' : 'password'}
-                      id="new_password"
-                      name="new_password"
-                      value={passwordFormData.new_password}
-                      onChange={handlePasswordInputChange}
-                      disabled={isChangingPassword}
-                      className={`w-full px-3 py-2 sm:px-4 sm:py-2.5 border rounded-lg text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all ${
-                        passwordErrors.new_password
-                          ? 'border-red-300 bg-red-50'
-                          : 'border-gray-300 bg-white'
-                      } disabled:opacity-50 disabled:cursor-not-allowed pr-10`}
-                      placeholder="Enter your new password"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => togglePasswordVisibility('new')}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                      disabled={isChangingPassword}
-                    >
-                      {showPasswords.new ? (
-                        <EyeOff className="h-4 w-4 sm:h-5 sm:w-5" />
-                      ) : (
-                        <Eye className="h-4 w-4 sm:h-5 sm:w-5" />
-                      )}
-                    </button>
-                  </div>
-                  {passwordErrors.new_password && (
-                    <p className="mt-1.5 text-xs sm:text-sm text-red-600 flex items-center gap-1">
-                      <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0" />
-                      {passwordErrors.new_password}
-                    </p>
-                  )}
-                  <p className="mt-1.5 text-xs text-gray-500">Must be at least 6 characters long</p>
+                <div>
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900">Change Password</h3>
+                  <p className="text-xs text-gray-500 hidden sm:block">Update your account password</p>
                 </div>
+              </div>
+              <button
+                onClick={closeChangePasswordModal}
+                disabled={isChangingPassword}
+                className="text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
 
-                {/* Confirm Password Field */}
-                <div className="mb-6">
-                  <label htmlFor="confirm_password" className="block text-sm font-medium text-gray-700 mb-2">
-                    Confirm New Password
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showPasswords.confirm ? 'text' : 'password'}
-                      id="confirm_password"
-                      name="confirm_password"
-                      value={passwordFormData.confirm_password}
-                      onChange={handlePasswordInputChange}
-                      disabled={isChangingPassword}
-                      className={`w-full px-3 py-2 sm:px-4 sm:py-2.5 border rounded-lg text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all ${
-                        passwordErrors.confirm_password
-                          ? 'border-red-300 bg-red-50'
-                          : 'border-gray-300 bg-white'
-                      } disabled:opacity-50 disabled:cursor-not-allowed pr-10`}
-                      placeholder="Confirm your new password"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => togglePasswordVisibility('confirm')}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                      disabled={isChangingPassword}
-                    >
-                      {showPasswords.confirm ? (
-                        <EyeOff className="h-4 w-4 sm:h-5 sm:w-5" />
-                      ) : (
-                        <Eye className="h-4 w-4 sm:h-5 sm:w-5" />
-                      )}
-                    </button>
-                  </div>
-                  {passwordErrors.confirm_password && (
-                    <p className="mt-1.5 text-xs sm:text-sm text-red-600 flex items-center gap-1">
-                      <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0" />
-                      {passwordErrors.confirm_password}
-                    </p>
-                  )}
-                </div>
-
-                {/* Modal Actions */}
-                <div className="flex flex-col sm:flex-row gap-3 sm:justify-end">
+            <form onSubmit={handleChangePasswordSubmit} className="px-4 sm:px-6 py-4 sm:py-6">
+              <div className="mb-4">
+                <label htmlFor="current_password" className="block text-sm font-medium text-gray-700 mb-2">
+                  Current Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPasswords.current ? 'text' : 'password'}
+                    id="current_password"
+                    name="current_password"
+                    value={passwordFormData.current_password}
+                    onChange={handlePasswordInputChange}
+                    disabled={isChangingPassword}
+                    className={`w-full px-3 py-2 sm:px-4 sm:py-2.5 border rounded-lg text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all ${
+                      passwordErrors.current_password
+                        ? 'border-red-300 bg-red-50'
+                        : 'border-gray-300 bg-white'
+                    } disabled:opacity-50 disabled:cursor-not-allowed pr-10`}
+                    placeholder="Enter your current password"
+                  />
                   <button
                     type="button"
-                    onClick={closeChangePasswordModal}
+                    onClick={() => togglePasswordVisibility('current')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                     disabled={isChangingPassword}
-                    className="px-4 py-2.5 text-sm sm:text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed order-2 sm:order-1"
                   >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={isChangingPassword}
-                    className="px-4 py-2.5 text-sm sm:text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 order-1 sm:order-2"
-                  >
-                    {isChangingPassword ? (
-                      <>
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        <span>Changing...</span>
-                      </>
+                    {showPasswords.current ? (
+                      <EyeOff className="h-4 w-4 sm:h-5 sm:w-5" />
                     ) : (
-                      <>
-                        <Lock className="h-4 w-4" />
-                        <span>Change Password</span>
-                      </>
+                      <Eye className="h-4 w-4 sm:h-5 sm:w-5" />
                     )}
                   </button>
                 </div>
-              </form>
-            </div>
-          </div>
-        )}
+                {passwordErrors.current_password && (
+                  <p className="mt-1.5 text-xs sm:text-sm text-red-600 flex items-center gap-1">
+                    <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0" />
+                    {passwordErrors.current_password}
+                  </p>
+                )}
+              </div>
 
-        <div className="bg-gray-50">
+              <div className="mb-4">
+                <label htmlFor="new_password" className="block text-sm font-medium text-gray-700 mb-2">
+                  New Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPasswords.new ? 'text' : 'password'}
+                    id="new_password"
+                    name="new_password"
+                    value={passwordFormData.new_password}
+                    onChange={handlePasswordInputChange}
+                    disabled={isChangingPassword}
+                    className={`w-full px-3 py-2 sm:px-4 sm:py-2.5 border rounded-lg text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all ${
+                      passwordErrors.new_password
+                        ? 'border-red-300 bg-red-50'
+                        : 'border-gray-300 bg-white'
+                    } disabled:opacity-50 disabled:cursor-not-allowed pr-10`}
+                    placeholder="Enter your new password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => togglePasswordVisibility('new')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                    disabled={isChangingPassword}
+                  >
+                    {showPasswords.new ? (
+                      <EyeOff className="h-4 w-4 sm:h-5 sm:w-5" />
+                    ) : (
+                      <Eye className="h-4 w-4 sm:h-5 sm:w-5" />
+                    )}
+                  </button>
+                </div>
+                {passwordErrors.new_password && (
+                  <p className="mt-1.5 text-xs sm:text-sm text-red-600 flex items-center gap-1">
+                    <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0" />
+                    {passwordErrors.new_password}
+                  </p>
+                )}
+                <p className="mt-1.5 text-xs text-gray-500">Must be at least 6 characters long</p>
+              </div>
+
+              <div className="mb-6">
+                <label htmlFor="confirm_password" className="block text-sm font-medium text-gray-700 mb-2">
+                  Confirm New Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPasswords.confirm ? 'text' : 'password'}
+                    id="confirm_password"
+                    name="confirm_password"
+                    value={passwordFormData.confirm_password}
+                    onChange={handlePasswordInputChange}
+                    disabled={isChangingPassword}
+                    className={`w-full px-3 py-2 sm:px-4 sm:py-2.5 border rounded-lg text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all ${
+                      passwordErrors.confirm_password
+                        ? 'border-red-300 bg-red-50'
+                        : 'border-gray-300 bg-white'
+                    } disabled:opacity-50 disabled:cursor-not-allowed pr-10`}
+                    placeholder="Confirm your new password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => togglePasswordVisibility('confirm')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                    disabled={isChangingPassword}
+                  >
+                    {showPasswords.confirm ? (
+                      <EyeOff className="h-4 w-4 sm:h-5 sm:w-5" />
+                    ) : (
+                      <Eye className="h-4 w-4 sm:h-5 sm:w-5" />
+                    )}
+                  </button>
+                </div>
+                {passwordErrors.confirm_password && (
+                  <p className="mt-1.5 text-xs sm:text-sm text-red-600 flex items-center gap-1">
+                    <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0" />
+                    {passwordErrors.confirm_password}
+                  </p>
+                )}
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3 sm:justify-end">
+                <button
+                  type="button"
+                  onClick={closeChangePasswordModal}
+                  disabled={isChangingPassword}
+                  className="px-4 py-2.5 text-sm sm:text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed order-2 sm:order-1"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isChangingPassword}
+                  className="px-4 py-2.5 text-sm sm:text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 order-1 sm:order-2"
+                >
+                  {isChangingPassword ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span>Changing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Lock className="h-4 w-4" />
+                      <span>Change Password</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      <div className="bg-gray-50">
         {mobileSidebarOpen && isMobile && (
           <div 
             className="fixed top-12 left-0 right-0 bottom-0 bg-white/20 backdrop-blur-sm z-40 transition-opacity duration-300"
@@ -584,7 +537,7 @@ const RecruiterLayout = ({ children }) => {
 
         <div className="fixed top-0 left-0 right-0 h-12 bg-white/95 backdrop-blur-sm border-b border-gray-200/50 shadow-sm px-2 sm:px-3 md:px-4 lg:px-6 py-1.5 z-50 flex items-center">
           <div className="flex items-center justify-between gap-1 sm:gap-2 md:gap-4 w-full">
-              <div className="flex items-center gap-1 sm:gap-2 md:gap-5 flex-shrink-0">
+            <div className="flex items-center gap-1 sm:gap-2 md:gap-5 flex-shrink-0">
               <button
                 onClick={handleHamburgerToggle}
                 className="ml-[-0.5vw] p-1.5 sm:p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100/80 transition-all duration-200 active:scale-95 touch-manipulation"
@@ -595,7 +548,7 @@ const RecruiterLayout = ({ children }) => {
               </button>
               <Link to="/" className="flex items-center gap-1 sm:gap-2 cursor-pointer hover:opacity-90 transition-opacity">
                 <div className="w-6 h-6 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-lg flex items-center justify-center shadow-sm flex-shrink-0">
-                  <span className="text-white font-bold text-xs">RC</span>
+                  <span className="text-white font-bold text-xs">VC</span>
                 </div>
                 <div className="min-w-0 hidden md:block">
                   <h4 className="text-sm lg:text-base font-semibold text-gray-800 truncate">{getPageName()}</h4>
@@ -633,7 +586,7 @@ const RecruiterLayout = ({ children }) => {
                       <div className="flex-1 min-w-0">
                         <div className="text-xs sm:text-sm font-semibold text-gray-900 truncate">{displayName}</div>
                         <div className="text-[10px] sm:text-xs text-gray-500 truncate">{displayEmail}</div>
-                        <div className="text-[10px] sm:text-xs text-indigo-600 font-medium">Recruiter</div>
+                        <div className="text-[10px] sm:text-xs text-indigo-600 font-medium">Candidate</div>
                       </div>
                     </div>
                   </div>
@@ -663,7 +616,7 @@ const RecruiterLayout = ({ children }) => {
 
         <div className="flex h-[calc(100vh-3rem)] overflow-hidden mt-12">
           <div className={`${isMobile ? (mobileSidebarOpen ? 'block' : 'hidden') : 'block'}`}>
-            <RecruiterSidebar
+            <CandidateSidebar
               isCollapsed={isCollapsed}
               setIsCollapsed={setIsCollapsed}
               onMobileClose={handleMobileClose}
@@ -678,11 +631,9 @@ const RecruiterLayout = ({ children }) => {
           </div>
         </div>
       </div>
-      </>
-    </SearchContext.Provider>
+    </>
   );
 };
 
-export default RecruiterLayout;
-
+export default CandidateLayout;
 
