@@ -20,7 +20,6 @@ const CandidateOffers = () => {
 
   // Filter and sort states - all null by default
   const [page, setPage] = useState(null);
-  const [perPage, setPerPage] = useState(null);
   const [offerStatus, setOfferStatus] = useState(null);
   const [sortBy, setSortBy] = useState(null);
   const [sortDirection, setSortDirection] = useState(null);
@@ -41,7 +40,7 @@ const CandidateOffers = () => {
       // Build query params - only include non-null values
       const params = new URLSearchParams();
       if (page !== null) params.append('page', page);
-      if (perPage !== null) params.append('per_page', perPage);
+      params.append('per_page', '25'); // Always set to 25 items per page
       if (offerStatus !== null) params.append('offer_status', offerStatus);
       if (sortBy !== null) params.append('sort_by', sortBy);
       if (sortDirection !== null) params.append('sort_direction', sortDirection);
@@ -76,9 +75,9 @@ const CandidateOffers = () => {
       } else if (data.total !== undefined || data.current_page !== undefined) {
         paginationData = {
           current_page: data.current_page || (page || 1),
-          per_page: data.per_page || perPage || 25,
+          per_page: data.per_page || 25,
           total: data.total || 0,
-          total_pages: data.total_pages || Math.ceil((data.total || 0) / (data.per_page || perPage || 25))
+          total_pages: data.total_pages || Math.ceil((data.total || 0) / (data.per_page || 25))
         };
       }
       
@@ -119,7 +118,7 @@ const CandidateOffers = () => {
 
   useEffect(() => {
     fetchOffers();
-  }, [page, perPage, offerStatus, sortBy, sortDirection]);
+  }, [page, offerStatus, sortBy, sortDirection]);
 
   const getStatusBadge = (status) => {
     const statusLower = status?.toLowerCase();
@@ -254,32 +253,11 @@ const CandidateOffers = () => {
                 </select>
               </div>
 
-              {/* Per Page */}
-              <div>
-                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">Items Per Page</label>
-                <select
-                  value={perPage || ''}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setPerPage(value ? parseInt(value) : null);
-                    setPage(1); // Reset to first page when changing per page
-                  }}
-                  className="w-full px-2 py-2 sm:px-3 sm:py-2.5 bg-white border border-gray-300 rounded-md shadow-sm hover:border-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none cursor-pointer transition-all duration-200 text-xs sm:text-sm font-medium text-gray-700"
-                >
-                  <option value="">Default</option>
-                  <option value="10">10</option>
-                  <option value="25">25</option>
-                  <option value="50">50</option>
-                  <option value="100">100</option>
-                </select>
-              </div>
-
               {/* Reset Filters */}
               <div className="sm:col-span-2 lg:col-span-1 flex items-end">
                 <button
                   onClick={() => {
                     setPage(null);
-                    setPerPage(null);
                     setOfferStatus(null);
                     setSortBy(null);
                     setSortDirection(null);

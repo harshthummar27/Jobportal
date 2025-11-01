@@ -162,6 +162,14 @@ const RecruiterRegistration = () => {
 
   const totalSteps = 5;
 
+  // Scroll to top when step changes
+  useEffect(() => {
+    // Use requestAnimationFrame for better timing with DOM updates
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }, [currentStep]);
+
   const handleInputChange = useCallback((e) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
@@ -370,12 +378,89 @@ const RecruiterRegistration = () => {
         body: JSON.stringify(registrationData),
       });
 
-      const data = await response.json();
+      // Parse response JSON
+      let data;
+      try {
+        const text = await response.text();
+        data = text ? JSON.parse(text) : {};
+      } catch (parseError) {
+        console.error("JSON Parse Error:", parseError);
+        throw new Error("Invalid response from server. Please try again.");
+      }
 
       if (!response.ok) {
         console.error("API Error Response:", data);
         console.error("Response Status:", response.status);
-        throw new Error(data.message || data.error || 'Registration failed');
+        
+        // Handle validation errors from backend
+        const newErrors = {};
+        let hasFieldErrors = false;
+        
+        // Check if backend returns errors object with field-specific errors
+        if (data.errors && typeof data.errors === 'object') {
+          // Map each field error to form errors
+          Object.keys(data.errors).forEach(field => {
+            const fieldErrors = data.errors[field];
+            // Handle array of error messages (take first one) or single string
+            if (Array.isArray(fieldErrors) && fieldErrors.length > 0) {
+              newErrors[field] = fieldErrors[0];
+            } else if (typeof fieldErrors === 'string') {
+              newErrors[field] = fieldErrors;
+            } else if (fieldErrors) {
+              newErrors[field] = String(fieldErrors);
+            }
+            hasFieldErrors = true;
+          });
+          
+          // Set field-specific errors
+          if (hasFieldErrors) {
+            setErrors(prev => ({ ...prev, ...newErrors }));
+            
+            // Navigate to the appropriate step based on which field has error
+            const fieldToStepMap = {
+              name: 1,
+              email: 1,
+              password: 1,
+              mobile_number: 1,
+              company_name: 2,
+              company_website: 2,
+              company_size: 2,
+              industry: 2,
+              company_description: 2,
+              contact_person_name: 3,
+              contact_person_title: 3,
+              contact_email: 3,
+              contact_phone: 3,
+              office_address: 4,
+              city: 4,
+              state: 4,
+              country: 4,
+              postal_code: 4,
+              agreement_accepted: 5
+            };
+            
+            // Find the first step that has an error
+            const errorStep = Object.keys(newErrors).reduce((minStep, field) => {
+              const step = fieldToStepMap[field] || 1;
+              return step < minStep ? step : minStep;
+            }, 5);
+            
+            setCurrentStep(errorStep);
+            
+            // Show general error message
+            const generalMessage = data.message || 'Please correct the errors below and try again.';
+            toast.error("Registration failed. Please try again.");
+            
+            setIsLoading(false);
+            return;
+          }
+        }
+        
+        // Handle general error messages
+        const errorMessage = data.message || data.error || 'Registration failed';
+        toast.error(errorMessage);
+        setIsLoading(false);
+        return;
       }
 
       console.log("Registration response:", data);
@@ -394,13 +479,30 @@ const RecruiterRegistration = () => {
     } catch (error) {
       console.error("Registration error:", error);
       
-      // Handle specific error messages
-      if (error.message.includes("email")) {
-        setErrors(prev => ({ ...prev, email: "Email already exists. Please use a different email." }));
-      } else if (error.message.includes("mobile")) {
-        setErrors(prev => ({ ...prev, mobile_number: "Mobile number already exists. Please use a different number." }));
+      // Handle network errors or other exceptions
+      if (error.message) {
+        // Check if it's a JSON parse error or network error
+        if (error.message.includes('JSON') || error.message.includes('Failed to fetch')) {
+          toast.error("Network error. Please check your connection and try again.");
+        } else {
+          // For other errors, check if they contain field information
+          const newErrors = {};
+          if (error.message.toLowerCase().includes("email")) {
+            newErrors.email = "Email already exists. Please use a different email.";
+          }
+          if (error.message.toLowerCase().includes("mobile") || error.message.toLowerCase().includes("phone")) {
+            newErrors.mobile_number = "Mobile number already exists. Please use a different number.";
+          }
+          
+          if (Object.keys(newErrors).length > 0) {
+            setErrors(prev => ({ ...prev, ...newErrors }));
+            toast.error("Please correct the errors and try again.");
+          } else {
+            toast.error(error.message || "Registration failed. Please try again.");
+          }
+        }
       } else {
-        toast.error(error.message || "Registration failed. Please try again.");
+        toast.error("Registration failed. Please try again.");
       }
     } finally {
       setIsLoading(false);

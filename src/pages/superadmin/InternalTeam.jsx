@@ -19,7 +19,6 @@ import {
   CheckCircle,
   AlertCircle
 } from "lucide-react";
-import { useSearch } from "../../Components/SuperAdminLayout";
 import { toast } from 'react-toastify';
 
 const InternalTeam = () => {
@@ -27,11 +26,11 @@ const InternalTeam = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
   const [deletingMember, setDeletingMember] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [viewingMember, setViewingMember] = useState(null);
   const [editingMember, setEditingMember] = useState(null);
-  const { searchTerm } = useSearch();
   const [teamMembers, setTeamMembers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState("");
@@ -58,6 +57,7 @@ const InternalTeam = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [errors, setErrors] = useState({});
 
   // Fetch staff members from API
   const fetchStaffMembers = useCallback(async () => {
@@ -74,7 +74,6 @@ const InternalTeam = () => {
       const params = new URLSearchParams({
         page: currentPage.toString(),
         per_page: perPage.toString(),
-        search: searchTerm || "",
         sort_by: sortBy,
         sort_direction: sortDirection
       });
@@ -116,12 +115,7 @@ const InternalTeam = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, searchTerm, sortBy, sortDirection, perPage]);
-
-  // Reset to page 1 when search term changes
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm]);
+  }, [currentPage, sortBy, sortDirection, perPage]);
 
   // Fetch data on mount and when dependencies change
   useEffect(() => {
@@ -168,6 +162,7 @@ const InternalTeam = () => {
       mobile_number: member.mobile_number || ""
     });
     setError("");
+    setErrors({});
     setShowAddModal(true);
   };
 
@@ -244,18 +239,57 @@ const InternalTeam = () => {
 
   const handleBulkDelete = () => {
     if (selectedMembers.length === 0) return;
+    setShowBulkDeleteModal(true);
+  };
+
+  const confirmBulkDelete = async () => {
+    if (selectedMembers.length === 0) return;
     
-    if (window.confirm(`Are you sure you want to delete ${selectedMembers.length} team members?`)) {
-      try {
-        setTeamMembers(prev => prev.filter(member => !selectedMembers.includes(member.id)));
-        toast.success(`${selectedMembers.length} team members have been deleted!`);
-        setSelectedMembers([]);
-        // Optionally refetch data after bulk delete
-        fetchStaffMembers();
-      } catch (error) {
-        console.error('Bulk delete error:', error);
-        toast.error(error.message || 'Failed to delete team members');
+    setIsDeleting(true);
+    
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found');
       }
+
+      // Delete each selected member
+      const deletePromises = selectedMembers.map(async (memberId) => {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/admin/staff/delete`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id: memberId
+          })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          const errorMsg = extractErrorMessage(new Error(result.message || 'Failed to delete staff member'), result);
+          throw new Error(errorMsg);
+        }
+
+        return result;
+      });
+
+      await Promise.all(deletePromises);
+
+      toast.success(`${selectedMembers.length} team member(s) deleted successfully!`);
+      setSelectedMembers([]);
+      setShowBulkDeleteModal(false);
+      
+      // Refetch data after bulk delete
+      fetchStaffMembers();
+    } catch (error) {
+      console.error('Bulk delete error:', error);
+      const errorMsg = error.message || 'Failed to delete team members. Please try again.';
+      toast.error(errorMsg);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -269,6 +303,7 @@ const InternalTeam = () => {
     });
     setEditingMember(null);
     setError("");
+    setErrors({});
     setShowAddModal(true);
   };
 
@@ -295,6 +330,28 @@ const InternalTeam = () => {
       return errorMessages.join('\n');
     }
     return error.message || 'An error occurred. Please try again.';
+  };
+
+  // Extract and set field-specific errors from backend response
+  const extractFieldErrors = (responseData) => {
+    const fieldErrors = {};
+    
+    if (responseData?.errors && typeof responseData.errors === 'object' && !Array.isArray(responseData.errors)) {
+      // Handle validation errors object from backend
+      Object.keys(responseData.errors).forEach((field) => {
+        const fieldError = responseData.errors[field];
+        // Handle array of errors for a field (take first one)
+        if (Array.isArray(fieldError) && fieldError.length > 0) {
+          fieldErrors[field] = fieldError[0];
+        } else if (typeof fieldError === 'string') {
+          fieldErrors[field] = fieldError;
+        } else if (fieldError) {
+          fieldErrors[field] = String(fieldError);
+        }
+      });
+    }
+    
+    return fieldErrors;
   };
 
   const handleSaveMember = async () => {
@@ -335,7 +392,8 @@ const InternalTeam = () => {
 
     setIsLoading(true);
     setError("");
-
+    setErrors({});
+    
     try {
       const token = localStorage.getItem('token');
       if (!token) {
@@ -364,8 +422,19 @@ const InternalTeam = () => {
         result = await response.json();
 
         if (!response.ok) {
-          const errorMsg = extractErrorMessage(new Error(result.message || 'Failed to update staff member'), result);
-          throw new Error(errorMsg);
+          // Extract field-specific errors
+          const fieldErrors = extractFieldErrors(result);
+          if (Object.keys(fieldErrors).length > 0) {
+            setErrors(fieldErrors);
+            setError(""); // Clear general error when we have field-specific errors
+            toast.error('Please correct the errors and try again.');
+          } else {
+            // Only set general error if no field-specific errors
+            const generalError = result.message || result.error || 'Failed to update staff member. Please try again.';
+            setError(generalError);
+            toast.error(generalError);
+          }
+          return;
         }
 
         toast.success(result.message || 'Staff member updated successfully!');
@@ -386,11 +455,33 @@ const InternalTeam = () => {
           })
         });
 
-        result = await response.json();
+        // Try to parse JSON response
+        let data;
+        try {
+          const text = await response.text();
+          data = text ? JSON.parse(text) : {};
+          result = data;
+        } catch (parseError) {
+          console.error("Error parsing response:", parseError);
+          setError("Invalid response from server. Please try again.");
+          toast.error("Invalid response from server. Please try again.");
+          return;
+        }
 
         if (!response.ok) {
-          const errorMsg = extractErrorMessage(new Error(result.message || 'Failed to register team member'), result);
-          throw new Error(errorMsg);
+          // Extract field-specific errors
+          const fieldErrors = extractFieldErrors(result);
+          if (Object.keys(fieldErrors).length > 0) {
+            setErrors(fieldErrors);
+            setError(""); // Clear general error when we have field-specific errors
+            toast.error('Please correct the errors and try again.');
+          } else {
+            // Only set general error if no field-specific errors
+            const generalError = result.message || result.error || 'Failed to register team member. Please try again.';
+            setError(generalError);
+            toast.error(generalError);
+          }
+          return;
         }
 
         toast.success(result.message || 'Team member registered successfully!');
@@ -398,6 +489,7 @@ const InternalTeam = () => {
 
       setShowAddModal(false);
       setEditingMember(null);
+      setErrors({});
       
       // Reset form
       setNewMember({
@@ -412,9 +504,35 @@ const InternalTeam = () => {
       fetchStaffMembers();
     } catch (error) {
       console.error(isEditMode ? 'Update error:' : 'Registration error:', error);
-      const errorMsg = error.message || (isEditMode ? 'Failed to update staff member. Please try again.' : 'Failed to register team member. Please try again.');
-      setError(errorMsg);
-      toast.error(errorMsg);
+      
+      // Handle network errors
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        setError("Network error. Please check your internet connection and try again.");
+        toast.error("Network error. Please check your internet connection and try again.");
+      } else {
+        // Try to map error to specific fields
+        const errorMessage = error.message || (isEditMode ? 'Failed to update staff member. Please try again.' : 'Failed to register team member. Please try again.');
+        const newErrors = {};
+        
+        if (errorMessage.toLowerCase().includes("email")) {
+          newErrors.email = errorMessage;
+        } else if (errorMessage.toLowerCase().includes("mobile") || errorMessage.toLowerCase().includes("phone")) {
+          newErrors.mobile_number = errorMessage;
+        } else if (errorMessage.toLowerCase().includes("password")) {
+          newErrors.password = errorMessage;
+        } else if (errorMessage.toLowerCase().includes("name")) {
+          newErrors.name = errorMessage;
+        } else {
+          setError(errorMessage);
+        }
+        
+        if (Object.keys(newErrors).length > 0) {
+          setErrors(newErrors);
+          toast.error("Please correct the errors and try again.");
+        } else {
+          toast.error(errorMessage);
+        }
+      }
     } finally {
       setIsLoading(false);
     }
@@ -515,7 +633,8 @@ const InternalTeam = () => {
               <div className="flex items-center gap-1">
                 <button
                   onClick={handleBulkDelete}
-                  className="flex items-center gap-1 px-2 py-1 bg-red-500 text-white text-xs rounded-md border border-red-600 hover:bg-red-600 transition-all duration-200 shadow-sm"
+                  disabled={isDeleting}
+                  className="flex items-center gap-1 px-2 py-1 bg-red-500 text-white text-xs rounded-md border border-red-600 hover:bg-red-600 transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Trash2 className="h-3 w-3" />
                   Delete
@@ -576,9 +695,6 @@ const InternalTeam = () => {
                       )}
                     </div>
                   </th>
-                  <th className="px-2 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
                   <th className="px-2 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
                     Created At
                   </th>
@@ -590,7 +706,7 @@ const InternalTeam = () => {
               <tbody className="bg-white divide-y divide-gray-200">
                 {loading ? (
                   <tr>
-                    <td colSpan="8" className="px-2 py-8 text-center">
+                    <td colSpan="7" className="px-2 py-8 text-center">
                       <div className="flex items-center justify-center gap-2">
                         <Loader2 className="h-5 w-5 animate-spin text-indigo-600" />
                         <span className="text-sm text-gray-600">Loading staff members...</span>
@@ -599,11 +715,11 @@ const InternalTeam = () => {
                   </tr>
                 ) : teamMembers.length === 0 ? (
                   <tr>
-                    <td colSpan="8" className="px-2 py-8 text-center">
+                    <td colSpan="7" className="px-2 py-8 text-center">
                       <Shield className="mx-auto h-8 w-8 text-gray-400" />
                       <h3 className="mt-2 text-xs font-medium text-gray-900">No staff members found</h3>
                       <p className="mt-1 text-[10px] text-gray-500">
-                        {searchTerm ? "No staff members match your search criteria." : "No staff members have been added yet."}
+                        No staff members have been added yet.
                       </p>
                     </td>
                   </tr>
@@ -642,9 +758,6 @@ const InternalTeam = () => {
                       </td>
                       <td className="px-2 py-2 hidden lg:table-cell">
                         <div className="text-[10px] text-gray-900 font-medium">{member.role}</div>
-                      </td>
-                      <td className="px-2 py-2">
-                        {getStatusBadge(member.status)}
                       </td>
                       <td className="px-2 py-2 hidden md:table-cell">
                         <div className="text-[10px] text-gray-900">
@@ -761,6 +874,7 @@ const InternalTeam = () => {
                   setShowAddModal(false);
                   setEditingMember(null);
                   setError("");
+                  setErrors({});
                 }}
                 className="text-gray-400 hover:text-gray-600 cursor-pointer transition-colors duration-200 p-1 hover:bg-gray-100 rounded-full"
                 aria-label="Close modal"
@@ -770,7 +884,8 @@ const InternalTeam = () => {
             </div>
             
             <div className="p-4 sm:p-5 md:p-6 space-y-4 sm:space-y-5">
-              {error && (
+              {/* Only show general error if there are no field-specific errors */}
+              {error && Object.keys(errors).length === 0 && (
                 <div className="bg-red-50 border-l-4 border-red-400 rounded-lg p-3 sm:p-4">
                   <div className="flex items-center gap-2">
                     <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-red-600 flex-shrink-0" />
@@ -787,11 +902,24 @@ const InternalTeam = () => {
                   <input
                     type="text"
                     value={newMember.name}
-                    onChange={(e) => setNewMember(prev => ({ ...prev, name: e.target.value }))}
-                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 text-sm sm:text-base"
+                    onChange={(e) => {
+                      setNewMember(prev => ({ ...prev, name: e.target.value }));
+                      if (errors.name) {
+                        setErrors(prev => ({ ...prev, name: "" }));
+                      }
+                    }}
+                    className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 border rounded-lg focus:ring-2 transition-all duration-200 text-sm sm:text-base ${
+                      errors.name ? 'border-red-300 bg-red-50 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
+                    }`}
                     placeholder="Enter full name"
                     disabled={isLoading}
                   />
+                  {errors.name && (
+                    <p className="mt-1 text-xs sm:text-sm text-red-600 flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3" />
+                      {errors.name}
+                    </p>
+                  )}
                 </div>
                 
                 <div className="md:col-span-1">
@@ -801,11 +929,24 @@ const InternalTeam = () => {
                   <input
                     type="email"
                     value={newMember.email}
-                    onChange={(e) => setNewMember(prev => ({ ...prev, email: e.target.value }))}
-                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 text-sm sm:text-base"
+                    onChange={(e) => {
+                      setNewMember(prev => ({ ...prev, email: e.target.value }));
+                      if (errors.email) {
+                        setErrors(prev => ({ ...prev, email: "" }));
+                      }
+                    }}
+                    className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 border rounded-lg focus:ring-2 transition-all duration-200 text-sm sm:text-base ${
+                      errors.email ? 'border-red-300 bg-red-50 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
+                    }`}
                     placeholder="Enter email address"
                     disabled={isLoading}
                   />
+                  {errors.email && (
+                    <p className="mt-1 text-xs sm:text-sm text-red-600 flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3" />
+                      {errors.email}
+                    </p>
+                  )}
                 </div>
                 
                 {!editingMember && (
@@ -816,11 +957,24 @@ const InternalTeam = () => {
                     <input
                       type="password"
                       value={newMember.password}
-                      onChange={(e) => setNewMember(prev => ({ ...prev, password: e.target.value }))}
-                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 text-sm sm:text-base"
+                      onChange={(e) => {
+                        setNewMember(prev => ({ ...prev, password: e.target.value }));
+                        if (errors.password) {
+                          setErrors(prev => ({ ...prev, password: "" }));
+                        }
+                      }}
+                      className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 border rounded-lg focus:ring-2 transition-all duration-200 text-sm sm:text-base ${
+                        errors.password ? 'border-red-300 bg-red-50 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
+                      }`}
                       placeholder="Enter password"
                       disabled={isLoading}
                     />
+                    {errors.password && (
+                      <p className="mt-1 text-xs sm:text-sm text-red-600 flex items-center gap-1">
+                        <AlertCircle className="h-3 w-3" />
+                        {errors.password}
+                      </p>
+                    )}
                   </div>
                 )}
                 
@@ -831,11 +985,24 @@ const InternalTeam = () => {
                   <input
                     type="tel"
                     value={newMember.mobile_number}
-                    onChange={(e) => setNewMember(prev => ({ ...prev, mobile_number: e.target.value }))}
-                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 text-sm sm:text-base"
+                    onChange={(e) => {
+                      setNewMember(prev => ({ ...prev, mobile_number: e.target.value }));
+                      if (errors.mobile_number) {
+                        setErrors(prev => ({ ...prev, mobile_number: "" }));
+                      }
+                    }}
+                    className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 border rounded-lg focus:ring-2 transition-all duration-200 text-sm sm:text-base ${
+                      errors.mobile_number ? 'border-red-300 bg-red-50 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
+                    }`}
                     placeholder="Enter mobile number"
                     disabled={isLoading}
                   />
+                  {errors.mobile_number && (
+                    <p className="mt-1 text-xs sm:text-sm text-red-600 flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3" />
+                      {errors.mobile_number}
+                    </p>
+                  )}
                 </div>
               </div>
               
@@ -854,6 +1021,7 @@ const InternalTeam = () => {
                   setShowAddModal(false);
                   setEditingMember(null);
                   setError("");
+                  setErrors({});
                 }}
                 className="w-full sm:w-auto px-4 sm:px-5 py-2.5 sm:py-3 bg-white text-gray-700 rounded-lg border border-gray-300 hover:bg-gray-50 transition-all duration-200 shadow-sm font-medium text-sm sm:text-base"
                 disabled={isLoading}
@@ -1047,6 +1215,59 @@ const InternalTeam = () => {
                     <>
                       <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
                       <span>Delete Member</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Bulk Delete Confirmation Modal */}
+        {showBulkDeleteModal && selectedMembers.length > 0 && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-[9999] p-3 sm:p-4 md:p-6">
+            <div className="bg-white rounded-xl sm:rounded-2xl shadow-2xl border border-gray-200 max-w-md w-full">
+              <div className="p-4 sm:p-5 md:p-6">
+                <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full">
+                  <AlertCircle className="h-8 w-8 text-red-600" />
+                </div>
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 text-center mb-2">
+                  Delete Team Members?
+                </h3>
+                <p className="text-sm sm:text-base text-gray-600 text-center mb-6">
+                  Are you sure you want to delete <span className="font-semibold text-gray-900">{selectedMembers.length}</span> team member(s)? This action cannot be undone.
+                </p>
+                <div className="bg-gray-50 rounded-lg p-3 sm:p-4 mb-6">
+                  <p className="text-xs sm:text-sm text-gray-600 text-center">
+                    <span className="font-medium">Selected Members:</span> {selectedMembers.length} member(s)
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 p-4 sm:p-5 md:p-6 border-t border-gray-200 bg-gray-50">
+                <button
+                  onClick={() => {
+                    setShowBulkDeleteModal(false);
+                  }}
+                  className="w-full sm:w-auto px-4 sm:px-5 py-2.5 sm:py-3 bg-white text-gray-700 rounded-lg border border-gray-300 hover:bg-gray-50 transition-all duration-200 shadow-sm font-medium text-sm sm:text-base"
+                  disabled={isDeleting}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmBulkDelete}
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 bg-red-600 text-white rounded-lg border border-red-700 hover:bg-red-700 transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed font-medium text-sm sm:text-base"
+                  disabled={isDeleting}
+                >
+                  {isDeleting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
+                      <span>Deleting...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
+                      <span>Delete Members</span>
                     </>
                   )}
                 </button>

@@ -198,6 +198,8 @@ const CandidateRegistration = () => {
     }
 
     setIsLoading(true);
+    // Clear previous errors
+    setErrors({});
     
     try {
       // Prepare registration data
@@ -218,25 +220,62 @@ const CandidateRegistration = () => {
         body: JSON.stringify(registrationData),
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Registration failed');
+      // Try to parse JSON response
+      let data;
+      try {
+        const text = await response.text();
+        data = text ? JSON.parse(text) : {};
+      } catch (parseError) {
+        console.error("Error parsing response:", parseError);
+        toast.error("Invalid response from server. Please try again.");
+        return;
       }
 
-      console.log("Registration response:", data);
-      
-      // Show success toast
-      toast.success("Registration successful! Please login to continue");
-      
-      // COMMENTED OUT: Navigate to email verification
-      // navigate("/candidate/verification", { 
-      //   state: { 
-      //     email: formData.email, 
-      //     type: "registration",
-      //     userId: data.user?.id || data.id
-      //   }
-      // });
+      if (!response.ok) {
+        // Handle backend error response
+        const backendErrors = {};
+        let generalError = null;
+
+        // Check for validation errors (field-specific errors)
+        // Backend might return errors in format: { errors: { email: ["Email is required"], name: "Name is required" } }
+        if (data.errors && typeof data.errors === 'object' && !Array.isArray(data.errors)) {
+          // Handle validation errors object
+          Object.keys(data.errors).forEach((field) => {
+            const fieldError = data.errors[field];
+            // Handle array of errors for a field
+            if (Array.isArray(fieldError)) {
+              backendErrors[field] = fieldError[0] || fieldError.join(', ');
+            } else if (typeof fieldError === 'string') {
+              backendErrors[field] = fieldError;
+            }
+          });
+        }
+
+        // Check for error message or error field (various backend formats)
+        if (data.message) {
+          generalError = data.message;
+        } else if (data.error) {
+          generalError = data.error;
+        } else if (data.errors && typeof data.errors === 'string') {
+          generalError = data.errors;
+        } else if (data.errors && Array.isArray(data.errors) && data.errors.length > 0) {
+          generalError = data.errors[0] || data.errors.join(', ');
+        } else if (!Object.keys(backendErrors).length) {
+          generalError = 'Registration failed. Please try again.';
+        }
+
+        // Set field-specific errors next to input fields
+        if (Object.keys(backendErrors).length > 0) {
+          setErrors(prev => ({ ...prev, ...backendErrors }));
+        }
+
+        // Show general error message
+        if (generalError) {
+          // Show general error as toast
+          toast.error("Registration failed. Please try again.");
+        }
+        return;
+      }
       
       // TEMPORARY: Navigate directly to login after registration
       navigate("/candidate/login", { 
@@ -248,13 +287,23 @@ const CandidateRegistration = () => {
     } catch (error) {
       console.error("Registration error:", error);
       
-      // Handle specific error messages
-      if (error.message.includes("email")) {
-        setErrors(prev => ({ ...prev, email: "Email already exists. Please use a different email." }));
-      } else if (error.message.includes("mobile")) {
-        setErrors(prev => ({ ...prev, mobile_number: "Mobile number already exists. Please use a different number." }));
+      // Handle network errors or other unexpected errors
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        toast.error("Network error. Please check your internet connection and try again.");
       } else {
-        toast.error(error.message || "Registration failed. Please try again.");
+        // Try to parse error message from the error object
+        let errorMessage = error.message || "Registration failed. Please try again.";
+        
+        // Check if error message contains common backend error patterns
+        if (errorMessage.toLowerCase().includes("email")) {
+          setErrors(prev => ({ ...prev, email: errorMessage }));
+        } else if (errorMessage.toLowerCase().includes("mobile") || errorMessage.toLowerCase().includes("phone")) {
+          setErrors(prev => ({ ...prev, mobile_number: errorMessage }));
+        } else if (errorMessage.toLowerCase().includes("password")) {
+          setErrors(prev => ({ ...prev, password: errorMessage }));
+        } else {
+          toast.error(errorMessage);
+        }
       }
     } finally {
       setIsLoading(false);
@@ -431,16 +480,6 @@ const CandidateRegistration = () => {
                     </div>
                   </div>
                 </div>
-
-                {/* Submit Error */}
-                {errors.submit && (
-                  <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4">
-                    <p className="text-sm text-red-600 flex items-center gap-2">
-                      <AlertCircle className="h-4 w-4" />
-                      {errors.submit}
-                    </p>
-                  </div>
-                )}
 
                 {/* Submit Button */}
                 <button

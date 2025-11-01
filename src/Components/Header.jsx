@@ -1017,12 +1017,12 @@ const Header = ({ onEditProfile, userData }) => {
 
       {/* Header - Same style for both logged in and logged out */}
     <header className="border-b border-gray-100 bg-white fixed top-0 left-0 right-0 z-50 shadow-sm">
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2 sm:py-3">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-3">
         <div className="flex justify-between items-center">
             {/* Logo - Always show VettedPool logo */}
           <Link to="/" className="flex items-center hover:opacity-90 transition-opacity">
             <img 
-              className="h-8 w-auto sm:h-10 md:h-12 max-w-[180px] sm:max-w-[220px] md:max-w-none object-contain" 
+              className="h-10 w-auto sm:h-10 md:h-12 max-w-[200px] sm:max-w-[220px] md:max-w-none object-contain" 
               src={logo} 
               alt="VettedPool Logo" 
             />
@@ -1043,9 +1043,9 @@ const Header = ({ onEditProfile, userData }) => {
                   {/* User Avatar - Always visible */}
                   <button
                     onClick={handleUserDropdownToggle}
-                    className="w-8 h-8 sm:w-10 sm:h-10 bg-[#273469] rounded-full flex items-center justify-center cursor-pointer hover:bg-[#1e2749] transition-all duration-200 border border-[#273469]/20 shadow-sm flex-shrink-0"
+                    className="w-10 h-10 sm:w-10 sm:h-10 bg-[#273469] rounded-full flex items-center justify-center cursor-pointer hover:bg-[#1e2749] transition-all duration-200 border border-[#273469]/20 shadow-sm flex-shrink-0"
                   >
-                    <span className="text-white font-bold text-xs sm:text-sm">
+                    <span className="text-white font-bold text-sm sm:text-sm">
                       {getUserInitial()}
                     </span>
                   </button>
@@ -1057,8 +1057,8 @@ const Header = ({ onEditProfile, userData }) => {
                     {/* User Info Header */}
                     <div className="px-3 sm:px-4 py-3 border-b border-gray-300">
                       <div className="flex items-center gap-2 sm:gap-3">
-                        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#273469] rounded-full flex items-center justify-center flex-shrink-0">
-                          <span className="text-white font-bold text-xs sm:text-sm">
+                        <div className="w-10 h-10 sm:w-10 sm:h-10 bg-[#273469] rounded-full flex items-center justify-center flex-shrink-0">
+                          <span className="text-white font-bold text-sm sm:text-sm">
                             {getUserInitial()}
                           </span>
                         </div>

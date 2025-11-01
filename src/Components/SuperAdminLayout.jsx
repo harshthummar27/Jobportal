@@ -1,22 +1,8 @@
-import React, { useState, useEffect, createContext, useContext } from "react";
-import { Menu, Search, X, User, LogOut, AlertTriangle, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Menu, X, User, LogOut, AlertTriangle, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
+import { useLocation, Link } from "react-router-dom";
 import { toast } from 'react-toastify';
 import SuperAdminSidebar from "./SuperAdminSidebar";
-
-// Create context for global search
-const SearchContext = createContext();
-
-// Hook to use search context
-export const useSearch = () => {
-  const context = useContext(SearchContext);
-  if (!context) {
-    // Return default values if context is not available (fallback)
-    console.warn('useSearch called outside of SearchProvider, returning default values');
-    return { searchTerm: '', onSearch: () => {} };
-  }
-  return context;
-};
 
 
 const SuperAdminLayout = ({ children }) => {
@@ -29,7 +15,6 @@ const SuperAdminLayout = ({ children }) => {
   });
   
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const [globalSearchTerm, setGlobalSearchTerm] = useState("");
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -104,16 +89,6 @@ const SuperAdminLayout = ({ children }) => {
       // Desktop: Toggle collapsed state
       setIsCollapsed(!isCollapsed);
     }
-  };
-
-  // Global search handlers
-  const handleGlobalSearch = (e) => {
-    const newValue = e.target.value;
-    setGlobalSearchTerm(newValue);
-  };
-
-  const clearGlobalSearch = () => {
-    setGlobalSearchTerm("");
   };
 
   // User dropdown handlers
@@ -385,9 +360,8 @@ const SuperAdminLayout = ({ children }) => {
 
 
   return (
-    <SearchContext.Provider value={{ searchTerm: globalSearchTerm, onSearch: setGlobalSearchTerm }}>
-      <>
-        {/* Logout Confirmation Modal */}
+    <>
+      {/* Logout Confirmation Modal */}
         {showLogoutModal && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
             <div className="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 animate-in zoom-in-95 duration-200">
@@ -651,37 +625,16 @@ const SuperAdminLayout = ({ children }) => {
               </button>
               
               {/* Logo */}
-              <div className="flex items-center gap-1 sm:gap-2">
-                <div className="w-6 h-6 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-lg flex items-center justify-center shadow-sm flex-shrink-0">
-                  <span className="text-white font-bold text-xs">VP</span>
-                </div>
-                {/* Page Name - Hidden on small screens, visible on md+ */}
-                <div className="min-w-0 hidden md:block">
-                  <h4 className="text-sm lg:text-base font-semibold text-gray-800 truncate">{getPageName()}</h4>
-                </div>
-              </div>
-            </div>
-            
-            {/* Center Section - Global Search Bar */}
-            <div className="flex-1 flex justify-center px-2 sm:px-4 md:px-6 lg:px-8">
-              <div className="relative w-full max-w-[200px] sm:max-w-[300px] md:max-w-[400px] lg:max-w-[500px] xl:max-w-[600px]">
-                <Search className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  value={globalSearchTerm}
-                  onChange={handleGlobalSearch}
-                  className="w-full pl-6 sm:pl-8 pr-6 sm:pr-8 py-1 sm:py-1.5 text-[10px] sm:text-xs bg-gray-50/80 border border-gray-200/60 rounded-md focus:ring-1 focus:ring-indigo-500/20 focus:border-indigo-300 focus:bg-white transition-all duration-200 placeholder-gray-400"
+              <Link to="/superadmin/dashboard" className="flex items-center gap-1 sm:gap-2 cursor-pointer hover:opacity-90 transition-opacity">
+                <img 
+                  src="/vettedpool-fav.png" 
+                  alt="VettedPool Logo" 
+                  className="w-6 h-6 object-contain flex-shrink-0"
                 />
-                {globalSearchTerm && (
-                  <button
-                    onClick={clearGlobalSearch}
-                    className="absolute right-1.5 sm:right-2.5 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                  >
-                    <X className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                  </button>
-                )}
-              </div>
+                <div className="min-w-0">
+                  <h4 className="text-xs sm:text-sm lg:text-base font-semibold text-gray-800 truncate">{getPageName()}</h4>
+                </div>
+              </Link>
             </div>
 
             {/* Right Section - User Section */}
@@ -695,9 +648,9 @@ const SuperAdminLayout = ({ children }) => {
                 {/* User Avatar - Always visible */}
                 <button
                   onClick={handleUserDropdownToggle}
-                  className="w-6 h-6 sm:w-7 sm:h-7 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full flex items-center justify-center cursor-pointer hover:from-indigo-200 hover:to-purple-200 transition-all duration-200 border border-indigo-200/50 shadow-sm flex-shrink-0"
+                  className="w-6 h-6 sm:w-7 sm:h-7 bg-[#273469] rounded-full flex items-center justify-center cursor-pointer hover:bg-[#1e2749] transition-all duration-200 border border-[#273469]/20 shadow-sm flex-shrink-0"
                 >
-                  <span className="text-indigo-600 font-bold text-[10px] sm:text-xs">
+                  <span className="text-white font-bold text-[10px] sm:text-xs">
                     {getUserInitial()}
                   </span>
                 </button>
@@ -709,7 +662,7 @@ const SuperAdminLayout = ({ children }) => {
                   {/* User Info Header */}
                   <div className="px-3 sm:px-4 py-3 border-b border-gray-300">
                     <div className="flex items-center gap-2 sm:gap-3">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#273469] rounded-full flex items-center justify-center flex-shrink-0">
                         <span className="text-white font-bold text-xs sm:text-sm">
                           {getUserInitial()}
                         </span>
@@ -717,7 +670,7 @@ const SuperAdminLayout = ({ children }) => {
                       <div className="flex-1 min-w-0">
                         <div className="text-xs sm:text-sm font-semibold text-gray-900 truncate">{displayName}</div>
                         <div className="text-[10px] sm:text-xs text-gray-500 truncate">{displayEmail}</div>
-                        <div className="text-[10px] sm:text-xs text-indigo-600 font-medium">Super Admin</div>
+                        <div className="text-[10px] sm:text-xs text-[#273469] font-medium">Super Admin</div>
                       </div>
                     </div>
                   </div>
@@ -778,8 +731,7 @@ const SuperAdminLayout = ({ children }) => {
           </div>
         </div>
       </div>
-      </>
-    </SearchContext.Provider>
+    </>
   );
 };
 
