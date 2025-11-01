@@ -530,3 +530,4 @@ const OfferedCandidates = () => {
 
 export default OfferedCandidates;
 
+

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Shield, User, Edit, LogOut, AlertTriangle, UserCircle, Building, Globe, Phone, Mail, MapPin, CheckCircle, X, Loader2, Lock, Eye, EyeOff } from "lucide-react";
 import { toast } from 'react-toastify';
+import logo from '../../public/vettedpool-logo.webp';
 
 const Header = ({ onEditProfile, userData }) => {
   const location = useLocation();
@@ -1021,8 +1022,7 @@ const Header = ({ onEditProfile, userData }) => {
             {/* Logo - Always show Shield logo and VettedPool */}
           <Link to="/">
           <div className="flex items-center gap-2">
-            <Shield className="h-8 w-8 text-indigo-600" />
-            <span className="text-2xl font-bold text-gray-800">VettedPool</span>
+           <img className="h-10 w-[100%] text-indigo-600" src={logo} alt="" />
           </div>
           </Link>
 

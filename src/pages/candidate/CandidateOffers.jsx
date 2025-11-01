@@ -125,17 +125,17 @@ const CandidateOffers = () => {
     const statusLower = status?.toLowerCase();
     switch (statusLower) {
       case 'pending':
-        return <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">Pending</span>;
+        return <span className="bg-yellow-100 text-yellow-800 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium">Pending</span>;
       case 'accepted':
-        return <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">Accepted</span>;
+        return <span className="bg-green-100 text-green-800 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium">Accepted</span>;
       case 'declined':
-        return <span className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium">Declined</span>;
+        return <span className="bg-red-100 text-red-800 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium">Declined</span>;
       case 'withdrawn':
-        return <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-medium">Withdrawn</span>;
+        return <span className="bg-gray-100 text-gray-800 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium">Withdrawn</span>;
       case 'expired':
-        return <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded-full text-xs font-medium">Expired</span>;
+        return <span className="bg-orange-100 text-orange-800 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium">Expired</span>;
       default:
-        return <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-medium">{status || 'N/A'}</span>;
+        return <span className="bg-gray-100 text-gray-800 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium">{status || 'N/A'}</span>;
     }
   };
 
@@ -180,20 +180,20 @@ const CandidateOffers = () => {
   return (
     <CandidateLayout>
       <div className="w-full max-w-none">
-        <div className="mx-auto px-4 sm:px-6 lg:px-8 py-2 lg:py-4">
+        <div className="mx-auto">
           {/* Page Header */}
-          <div className="mb-6">
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Offers</h1>
-            <p className="text-gray-600 mt-1">View all job offers you have received</p>
+          <div className="mb-3">
+            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">Offers</h1>
+            <p className="text-xs sm:text-sm text-gray-600 mt-0.5 hidden sm:block">View all job offers you have received</p>
           </div>
 
           {/* Filters and Sort Controls */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-5 mb-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6 mb-3 sm:mb-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
               {/* Offer Status Filter */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  <Filter className="inline h-4 w-4 mr-1" />
+                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">
+                  <Filter className="inline h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                   Offer Status
                 </label>
                 <select
@@ -202,7 +202,7 @@ const CandidateOffers = () => {
                     setOfferStatus(e.target.value || null);
                     setPage(1); // Reset to page 1 when filter changes
                   }}
-                  className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm hover:border-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none cursor-pointer transition-all duration-200 text-sm font-medium text-gray-700"
+                  className="w-full px-2 py-2 sm:px-3 sm:py-2.5 bg-white border border-gray-300 rounded-md shadow-sm hover:border-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none cursor-pointer transition-all duration-200 text-xs sm:text-sm font-medium text-gray-700"
                 >
                   <option value="">All Status</option>
                   <option value="pending">Pending</option>
@@ -216,8 +216,8 @@ const CandidateOffers = () => {
 
               {/* Sort By */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  <ArrowUpDown className="inline h-4 w-4 mr-1" />
+                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">
+                  <ArrowUpDown className="inline h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                   Sort By
                 </label>
                 <select
@@ -226,7 +226,7 @@ const CandidateOffers = () => {
                     setSortBy(e.target.value || null);
                     setPage(1); // Reset to page 1 when sort changes
                   }}
-                  className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm hover:border-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none cursor-pointer transition-all duration-200 text-sm font-medium text-gray-700"
+                  className="w-full px-2 py-2 sm:px-3 sm:py-2.5 bg-white border border-gray-300 rounded-md shadow-sm hover:border-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none cursor-pointer transition-all duration-200 text-xs sm:text-sm font-medium text-gray-700"
                 >
                   <option value="">Default</option>
                   <option value="offered_at">Offered Date</option>
@@ -239,14 +239,14 @@ const CandidateOffers = () => {
 
               {/* Sort Direction */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Sort Direction</label>
+                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">Sort Direction</label>
                 <select
                   value={sortDirection || ''}
                   onChange={(e) => {
                     setSortDirection(e.target.value || null);
                     setPage(1); // Reset to page 1 when sort direction changes
                   }}
-                  className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm hover:border-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none cursor-pointer transition-all duration-200 text-sm font-medium text-gray-700"
+                  className="w-full px-2 py-2 sm:px-3 sm:py-2.5 bg-white border border-gray-300 rounded-md shadow-sm hover:border-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none cursor-pointer transition-all duration-200 text-xs sm:text-sm font-medium text-gray-700"
                 >
                   <option value="">Default</option>
                   <option value="asc">Ascending</option>
@@ -256,7 +256,7 @@ const CandidateOffers = () => {
 
               {/* Per Page */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Items Per Page</label>
+                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">Items Per Page</label>
                 <select
                   value={perPage || ''}
                   onChange={(e) => {
@@ -264,7 +264,7 @@ const CandidateOffers = () => {
                     setPerPage(value ? parseInt(value) : null);
                     setPage(1); // Reset to first page when changing per page
                   }}
-                  className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm hover:border-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none cursor-pointer transition-all duration-200 text-sm font-medium text-gray-700"
+                  className="w-full px-2 py-2 sm:px-3 sm:py-2.5 bg-white border border-gray-300 rounded-md shadow-sm hover:border-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none cursor-pointer transition-all duration-200 text-xs sm:text-sm font-medium text-gray-700"
                 >
                   <option value="">Default</option>
                   <option value="10">10</option>
@@ -284,7 +284,7 @@ const CandidateOffers = () => {
                     setSortBy(null);
                     setSortDirection(null);
                   }}
-                  className="w-full px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors duration-200"
+                  className="w-full px-3 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors duration-200"
                 >
                   Reset Filters
                 </button>
@@ -294,10 +294,10 @@ const CandidateOffers = () => {
 
           {/* Error Message */}
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-3">
               <div className="flex items-center gap-2 text-red-600">
-                <AlertCircle className="h-5 w-5" />
-                <span className="text-sm font-medium">Error: {error}</span>
+                <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5" />
+                <span className="text-xs sm:text-sm font-medium">Error: {error}</span>
               </div>
             </div>
           )}
@@ -305,15 +305,15 @@ const CandidateOffers = () => {
           {/* Offers Table */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
             {loading ? (
-              <div className="p-12 text-center">
-                <Loader2 className="h-8 w-8 animate-spin mx-auto text-indigo-600" />
-                <p className="text-gray-500 mt-3 text-sm font-medium">Loading offers...</p>
+              <div className="p-8 sm:p-12 text-center">
+                <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin mx-auto text-indigo-600 mb-2 sm:mb-3" />
+                <p className="text-xs sm:text-sm text-gray-500 font-medium">Loading offers...</p>
               </div>
             ) : offers.length === 0 ? (
-              <div className="p-12 text-center">
-                <Briefcase className="h-12 w-12 mx-auto text-gray-300" />
-                <p className="text-gray-500 mt-3 text-sm font-medium">No offers found</p>
-                <p className="text-xs text-gray-400 mt-1">You haven't received any job offers yet</p>
+              <div className="p-8 sm:p-12 text-center">
+                <Briefcase className="h-8 w-8 sm:h-12 sm:w-12 mx-auto text-gray-300 mb-2 sm:mb-3" />
+                <p className="text-xs sm:text-sm text-gray-500 font-medium">No offers found</p>
+                <p className="text-[10px] sm:text-xs text-gray-400 mt-1 hidden sm:block">You haven't received any job offers yet</p>
               </div>
             ) : (
               <>
@@ -322,35 +322,35 @@ const CandidateOffers = () => {
                   <table className="w-full">
                     <thead className="bg-gray-50 border-b-2 border-gray-200">
                       <tr>
-                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Job Details</th>
-                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Offer Details</th>
-                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Status</th>
-                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Dates</th>
+                        <th className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-left text-[10px] sm:text-xs font-bold text-gray-700 uppercase tracking-wider">Job Details</th>
+                        <th className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-left text-[10px] sm:text-xs font-bold text-gray-700 uppercase tracking-wider">Offer Details</th>
+                        <th className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-left text-[10px] sm:text-xs font-bold text-gray-700 uppercase tracking-wider">Status</th>
+                        <th className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-left text-[10px] sm:text-xs font-bold text-gray-700 uppercase tracking-wider">Dates</th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-100">
                       {offers.map((offer) => (
                         <tr key={offer.offer_id || offer.id} className="hover:bg-gray-50 transition-colors duration-150">
                           {/* Job Details */}
-                          <td className="px-6 py-5 align-top">
+                          <td className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 lg:py-5 align-top">
                             <div>
-                              <div className="flex items-center gap-2 mb-2">
-                                <Briefcase className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                                <div className="text-sm font-semibold text-gray-900">{offer.job_title || 'N/A'}</div>
+                              <div className="flex items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+                                <Briefcase className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400 flex-shrink-0" />
+                                <div className="text-xs sm:text-sm font-semibold text-gray-900 truncate">{offer.job_title || 'N/A'}</div>
                               </div>
-                              <div className="text-xs text-gray-600 mb-3 leading-relaxed line-clamp-3">{offer.job_description || 'N/A'}</div>
+                              <div className="text-[10px] sm:text-xs text-gray-600 mb-2 sm:mb-3 leading-relaxed line-clamp-3">{offer.job_description || 'N/A'}</div>
                               {offer.location && (
-                                <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-2">
-                                  <MapPin className="h-3.5 w-3.5 flex-shrink-0" />
-                                  <span>{offer.location}</span>
+                                <div className="flex items-center gap-1 text-xs text-gray-500 mb-1.5 sm:mb-2">
+                                  <MapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5 flex-shrink-0" />
+                                  <span className="truncate">{offer.location}</span>
                                 </div>
                               )}
                               {offer.benefits && offer.benefits.length > 0 && (
-                                <div className="mt-3">
-                                  <div className="text-xs font-semibold text-gray-700 mb-2">Benefits:</div>
-                                  <div className="flex flex-wrap gap-1.5">
+                                <div className="mt-2 sm:mt-3">
+                                  <div className="text-[10px] sm:text-xs font-semibold text-gray-700 mb-1.5 sm:mb-2">Benefits:</div>
+                                  <div className="flex flex-wrap gap-1">
                                     {offer.benefits.map((benefit, idx) => (
-                                      <span key={idx} className="text-xs bg-blue-50 text-blue-700 px-2.5 py-1 rounded-md font-medium border border-blue-100">
+                                      <span key={idx} className="text-[10px] sm:text-xs bg-blue-50 text-blue-700 px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-md font-medium border border-blue-100">
                                         {benefit}
                                       </span>
                                     ))}
@@ -361,73 +361,73 @@ const CandidateOffers = () => {
                           </td>
 
                           {/* Offer Details */}
-                          <td className="px-6 py-5 align-top">
+                          <td className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 lg:py-5 align-top">
                             <div>
                               {offer.offered_salary && (
-                                <div className="flex items-center gap-2 mb-3">
-                                  <DollarSign className="h-4 w-4 text-green-600 flex-shrink-0" />
-                                  <span className="text-sm font-bold text-gray-900">{formatCurrency(offer.offered_salary)}</span>
+                                <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
+                                  <DollarSign className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-600 flex-shrink-0" />
+                                  <span className="text-xs sm:text-sm font-bold text-gray-900">{formatCurrency(offer.offered_salary)}</span>
                                 </div>
                               )}
                               {offer.offer_notes && (
-                                <div className="text-xs text-gray-600 mb-3">
-                                  <div className="font-semibold text-gray-700 mb-1">Notes:</div>
+                                <div className="text-[10px] sm:text-xs text-gray-600 mb-2 sm:mb-3">
+                                  <div className="font-semibold text-gray-700 mb-0.5 sm:mb-1">Notes:</div>
                                   <div className="leading-relaxed line-clamp-3">{offer.offer_notes}</div>
                                 </div>
                               )}
                               {offer.decline_reason && (
-                                <div className="text-xs text-red-700 mb-3">
-                                  <div className="font-semibold mb-1">Decline Reason:</div>
+                                <div className="text-[10px] sm:text-xs text-red-700 mb-2 sm:mb-3">
+                                  <div className="font-semibold mb-0.5 sm:mb-1">Decline Reason:</div>
                                   <div className="leading-relaxed line-clamp-2">{offer.decline_reason}</div>
                                 </div>
                               )}
                               {offer.is_expired !== undefined && (
-                                <div className={`text-xs font-medium px-2 py-1 rounded-md inline-block ${offer.is_expired ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-green-50 text-green-700 border border-green-200'}`}>
+                                <div className={`text-[10px] sm:text-xs font-medium px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md inline-block ${offer.is_expired ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-green-50 text-green-700 border border-green-200'}`}>
                                   {offer.is_expired ? 'Expired' : 'Active'}
                                 </div>
                               )}
                               {offer.offered_by && (
-                                <div className="text-xs text-gray-500 mt-3 pt-3 border-t border-gray-100">
-                                  <div className="font-semibold text-gray-700 mb-1">Offered by:</div>
+                                <div className="text-[10px] sm:text-xs text-gray-500 mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-gray-100">
+                                  <div className="font-semibold text-gray-700 mb-0.5 sm:mb-1">Offered by:</div>
                                   <div className="truncate">{offer.offered_by.name}</div>
-                                  <div className="text-gray-500">{offer.offered_by.email}</div>
+                                  <div className="text-gray-500 truncate">{offer.offered_by.email}</div>
                                 </div>
                               )}
                             </div>
                           </td>
 
                           {/* Status */}
-                          <td className="px-6 py-5 align-top">
+                          <td className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 lg:py-5 align-top">
                             <div>
-                              <div className="mb-3">{getStatusBadge(offer.offer_status)}</div>
+                              <div className="mb-2 sm:mb-3">{getStatusBadge(offer.offer_status)}</div>
                             </div>
                           </td>
 
                           {/* Dates */}
-                          <td className="px-6 py-5 align-top">
-                            <div className="text-xs space-y-2">
+                          <td className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 lg:py-5 align-top">
+                            <div className="text-[10px] sm:text-xs space-y-1.5 sm:space-y-2">
                               {offer.offered_at && (
-                                <div className="pb-2 border-b border-gray-100">
-                                  <div className="font-semibold text-gray-700 mb-1">Offered:</div>
-                                  <div className="text-gray-600">{formatDateTime(offer.offered_at)}</div>
+                                <div className="pb-1.5 sm:pb-2 border-b border-gray-100">
+                                  <div className="font-semibold text-gray-700 mb-0.5 sm:mb-1">Offered:</div>
+                                  <div className="text-gray-600 truncate">{formatDateTime(offer.offered_at)}</div>
                                 </div>
                               )}
                               {offer.start_date && (
                                 <div>
-                                  <div className="font-semibold text-gray-700 mb-1">Start Date:</div>
-                                  <div className="text-gray-600">{formatDate(offer.start_date)}</div>
+                                  <div className="font-semibold text-gray-700 mb-0.5 sm:mb-1">Start Date:</div>
+                                  <div className="text-gray-600 truncate">{formatDate(offer.start_date)}</div>
                                 </div>
                               )}
                               {offer.offer_deadline && (
-                                <div className="pt-2 border-t border-gray-100">
-                                  <div className="font-semibold text-gray-700 mb-1">Deadline:</div>
-                                  <div className="text-gray-600">{formatDate(offer.offer_deadline)}</div>
+                                <div className="pt-1.5 sm:pt-2 border-t border-gray-100">
+                                  <div className="font-semibold text-gray-700 mb-0.5 sm:mb-1">Deadline:</div>
+                                  <div className="text-gray-600 truncate">{formatDate(offer.offer_deadline)}</div>
                                 </div>
                               )}
                               {offer.responded_at && (
-                                <div className="pt-2">
-                                  <div className="font-semibold text-gray-700 mb-1">Responded:</div>
-                                  <div className="text-gray-600">{formatDateTime(offer.responded_at)}</div>
+                                <div className="pt-1.5 sm:pt-2">
+                                  <div className="font-semibold text-gray-700 mb-0.5 sm:mb-1">Responded:</div>
+                                  <div className="text-gray-600 truncate">{formatDateTime(offer.responded_at)}</div>
                                 </div>
                               )}
                             </div>
@@ -441,34 +441,34 @@ const CandidateOffers = () => {
                 {/* Mobile/Tablet Card View */}
                 <div className="lg:hidden divide-y divide-gray-200">
                   {offers.map((offer) => (
-                    <div key={offer.offer_id || offer.id} className="p-4 sm:p-5 hover:bg-gray-50 transition-colors duration-150">
+                    <div key={offer.offer_id || offer.id} className="p-3 sm:p-4 lg:p-5 hover:bg-gray-50 transition-colors duration-150">
                       {/* Status Badge */}
-                      <div className="mb-4 pb-4 border-b border-gray-200">
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="text-sm font-semibold text-gray-900">{offer.job_title || 'N/A'}</div>
-                          <div>{getStatusBadge(offer.offer_status)}</div>
+                      <div className="mb-3 sm:mb-4 pb-3 sm:pb-4 border-b border-gray-200">
+                        <div className="flex items-center justify-between mb-1.5 sm:mb-2 gap-2">
+                          <div className="text-xs sm:text-sm font-semibold text-gray-900 truncate">{offer.job_title || 'N/A'}</div>
+                          <div className="flex-shrink-0">{getStatusBadge(offer.offer_status)}</div>
                         </div>
                       </div>
 
                       {/* Job Details Card */}
-                      <div className="mb-4 pb-4 border-b border-gray-200">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Briefcase className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                          <div className="text-sm font-semibold text-gray-900">Job Details</div>
+                      <div className="mb-3 sm:mb-4 pb-3 sm:pb-4 border-b border-gray-200">
+                        <div className="flex items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+                          <Briefcase className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400 flex-shrink-0" />
+                          <div className="text-xs sm:text-sm font-semibold text-gray-900">Job Details</div>
                         </div>
-                        <div className="text-xs text-gray-600 mb-2 leading-relaxed line-clamp-2">{offer.job_description || 'N/A'}</div>
+                        <div className="text-[10px] sm:text-xs text-gray-600 mb-1.5 sm:mb-2 leading-relaxed line-clamp-2">{offer.job_description || 'N/A'}</div>
                         {offer.location && (
-                          <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-3">
-                            <MapPin className="h-3.5 w-3.5 flex-shrink-0" />
-                            <span>{offer.location}</span>
+                          <div className="flex items-center gap-1 text-xs text-gray-500 mb-2 sm:mb-3">
+                            <MapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5 flex-shrink-0" />
+                            <span className="truncate">{offer.location}</span>
                           </div>
                         )}
                         {offer.benefits && offer.benefits.length > 0 && (
                           <div>
-                            <div className="text-xs font-semibold text-gray-700 mb-2">Benefits:</div>
-                            <div className="flex flex-wrap gap-1.5">
+                            <div className="text-[10px] sm:text-xs font-semibold text-gray-700 mb-1.5 sm:mb-2">Benefits:</div>
+                            <div className="flex flex-wrap gap-1">
                               {offer.benefits.map((benefit, idx) => (
-                                <span key={idx} className="text-xs bg-blue-50 text-blue-700 px-2.5 py-1 rounded-md font-medium border border-blue-100">
+                                <span key={idx} className="text-[10px] sm:text-xs bg-blue-50 text-blue-700 px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-md font-medium border border-blue-100">
                                   {benefit}
                                 </span>
                               ))}
@@ -478,64 +478,64 @@ const CandidateOffers = () => {
                       </div>
 
                       {/* Offer Details Card */}
-                      <div className="mb-4 pb-4 border-b border-gray-200">
+                      <div className="mb-3 sm:mb-4 pb-3 sm:pb-4 border-b border-gray-200">
                         {offer.offered_salary && (
-                          <div className="flex items-center gap-2 mb-3">
-                            <DollarSign className="h-4 w-4 text-green-600 flex-shrink-0" />
-                            <span className="text-sm font-bold text-gray-900">{formatCurrency(offer.offered_salary)}</span>
+                          <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
+                            <DollarSign className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-600 flex-shrink-0" />
+                            <span className="text-xs sm:text-sm font-bold text-gray-900">{formatCurrency(offer.offered_salary)}</span>
                           </div>
                         )}
                         {offer.offer_notes && (
-                          <div className="text-xs text-gray-600 mb-2">
-                            <div className="font-semibold text-gray-700 mb-1">Notes:</div>
+                          <div className="text-[10px] sm:text-xs text-gray-600 mb-1.5 sm:mb-2">
+                            <div className="font-semibold text-gray-700 mb-0.5 sm:mb-1">Notes:</div>
                             <div className="leading-relaxed line-clamp-2">{offer.offer_notes}</div>
                           </div>
                         )}
                         {offer.decline_reason && (
-                          <div className="text-xs text-red-700 mb-2">
-                            <div className="font-semibold mb-1">Decline Reason:</div>
+                          <div className="text-[10px] sm:text-xs text-red-700 mb-1.5 sm:mb-2">
+                            <div className="font-semibold mb-0.5 sm:mb-1">Decline Reason:</div>
                             <div className="leading-relaxed line-clamp-2">{offer.decline_reason}</div>
                           </div>
                         )}
                         {offer.is_expired !== undefined && (
-                          <div className={`text-xs font-medium px-2 py-1 rounded-md inline-block ${offer.is_expired ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-green-50 text-green-700 border border-green-200'}`}>
+                          <div className={`text-[10px] sm:text-xs font-medium px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md inline-block ${offer.is_expired ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-green-50 text-green-700 border border-green-200'}`}>
                             {offer.is_expired ? 'Expired' : 'Active'}
                           </div>
                         )}
                         {offer.offered_by && (
-                          <div className="text-xs text-gray-500 mt-3">
-                            <div className="font-semibold text-gray-700 mb-1">Offered by:</div>
-                            <div>{offer.offered_by.name}</div>
-                            <div className="text-gray-500">{offer.offered_by.email}</div>
+                          <div className="text-[10px] sm:text-xs text-gray-500 mt-2 sm:mt-3">
+                            <div className="font-semibold text-gray-700 mb-0.5 sm:mb-1">Offered by:</div>
+                            <div className="truncate">{offer.offered_by.name}</div>
+                            <div className="text-gray-500 truncate">{offer.offered_by.email}</div>
                           </div>
                         )}
                       </div>
 
                       {/* Dates Card */}
                       <div>
-                        <div className="grid grid-cols-2 gap-3 text-xs">
+                        <div className="grid grid-cols-2 gap-2 sm:gap-3 text-[10px] sm:text-xs">
                           {offer.offered_at && (
                             <div>
-                              <div className="font-semibold text-gray-700 mb-1">Offered:</div>
-                              <div className="text-gray-600">{formatDateTime(offer.offered_at)}</div>
+                              <div className="font-semibold text-gray-700 mb-0.5 sm:mb-1">Offered:</div>
+                              <div className="text-gray-600 truncate">{formatDateTime(offer.offered_at)}</div>
                             </div>
                           )}
                           {offer.start_date && (
                             <div>
-                              <div className="font-semibold text-gray-700 mb-1">Start Date:</div>
-                              <div className="text-gray-600">{formatDate(offer.start_date)}</div>
+                              <div className="font-semibold text-gray-700 mb-0.5 sm:mb-1">Start Date:</div>
+                              <div className="text-gray-600 truncate">{formatDate(offer.start_date)}</div>
                             </div>
                           )}
                           {offer.offer_deadline && (
                             <div>
-                              <div className="font-semibold text-gray-700 mb-1">Deadline:</div>
-                              <div className="text-gray-600">{formatDate(offer.offer_deadline)}</div>
+                              <div className="font-semibold text-gray-700 mb-0.5 sm:mb-1">Deadline:</div>
+                              <div className="text-gray-600 truncate">{formatDate(offer.offer_deadline)}</div>
                             </div>
                           )}
                           {offer.responded_at && (
                             <div>
-                              <div className="font-semibold text-gray-700 mb-1">Responded:</div>
-                              <div className="text-gray-600">{formatDateTime(offer.responded_at)}</div>
+                              <div className="font-semibold text-gray-700 mb-0.5 sm:mb-1">Responded:</div>
+                              <div className="text-gray-600 truncate">{formatDateTime(offer.responded_at)}</div>
                             </div>
                           )}
                         </div>
@@ -548,23 +548,23 @@ const CandidateOffers = () => {
 
             {/* Pagination Controls - Only show when there's data */}
             {pagination && pagination.total_pages > 1 && offers.length > 0 && (
-              <div className="bg-gray-50 border-t border-gray-200 px-4 sm:px-6 py-4">
-                <div className="flex items-center justify-between">
-                  <div className="text-sm text-gray-700">
+              <div className="bg-gray-50 border-t border-gray-200 px-3 sm:px-4 lg:px-6 py-3 sm:py-4">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-0">
+                  <div className="text-xs sm:text-sm text-gray-700">
                     <span className="font-medium">
                       Showing {((pagination.current_page - 1) * pagination.per_page) + 1} to{' '}
                       {Math.min(pagination.current_page * pagination.per_page, pagination.total)} of{' '}
                       {pagination.total} offers
                     </span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
                     <button
                       onClick={() => setPage(pagination.current_page - 1)}
                       disabled={pagination.current_page <= 1}
-                      className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex items-center gap-1"
+                      className="px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex items-center gap-1"
                     >
-                      <ChevronLeft className="h-4 w-4" />
-                      Previous
+                      <ChevronLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                      <span className="hidden sm:inline">Previous</span>
                     </button>
                     <div className="flex items-center gap-1">
                       {Array.from({ length: Math.min(5, pagination.total_pages) }, (_, i) => {
@@ -582,7 +582,7 @@ const CandidateOffers = () => {
                           <button
                             key={pageNum}
                             onClick={() => setPage(pageNum)}
-                            className={`px-3 py-2 text-sm font-medium rounded-md transition-colors duration-200 ${
+                            className={`px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm font-medium rounded-md transition-colors duration-200 ${
                               pagination.current_page === pageNum
                                 ? 'bg-indigo-600 text-white'
                                 : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
@@ -596,10 +596,10 @@ const CandidateOffers = () => {
                     <button
                       onClick={() => setPage(pagination.current_page + 1)}
                       disabled={pagination.current_page >= pagination.total_pages || offers.length === 0}
-                      className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex items-center gap-1"
+                      className="px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex items-center gap-1"
                     >
-                      Next
-                      <ChevronRight className="h-4 w-4" />
+                      <span className="hidden sm:inline">Next</span>
+                      <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                     </button>
                   </div>
                 </div>
@@ -608,15 +608,15 @@ const CandidateOffers = () => {
 
             {/* Simple Page Input (if no pagination info but user wants to paginate) */}
             {(!pagination || pagination.total_pages <= 1) && offers.length > 0 && (
-              <div className="bg-gray-50 border-t border-gray-200 px-4 sm:px-6 py-4">
-                <div className="flex items-center justify-between gap-4">
-                  <div className="text-sm text-gray-700">
+              <div className="bg-gray-50 border-t border-gray-200 px-3 sm:px-4 lg:px-6 py-3 sm:py-4">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4">
+                  <div className="text-xs sm:text-sm text-gray-700">
                     <span className="font-medium">
                       {offers.length} {offers.length === 1 ? 'offer' : 'offers'} shown
                     </span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <label className="text-sm text-gray-700 font-medium">Page:</label>
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <label className="text-xs sm:text-sm text-gray-700 font-medium">Page:</label>
                     <input
                       type="number"
                       min="1"
@@ -626,7 +626,7 @@ const CandidateOffers = () => {
                         setPage(value ? parseInt(value) : null);
                       }}
                       placeholder="1"
-                      className="w-20 px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      className="w-16 sm:w-20 px-2 py-1.5 text-xs sm:text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                     />
                     <button
                       onClick={() => {
@@ -635,9 +635,9 @@ const CandidateOffers = () => {
                         }
                       }}
                       disabled={!page || page <= 1 || offers.length === 0}
-                      className="px-2 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex items-center gap-1"
+                      className="px-2 py-1.5 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex items-center gap-1"
                     >
-                      <ChevronLeft className="h-4 w-4" />
+                      <ChevronLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                     </button>
                     <button
                       onClick={() => {
@@ -647,9 +647,9 @@ const CandidateOffers = () => {
                         }
                       }}
                       disabled={offers.length === 0}
-                      className="px-2 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex items-center gap-1"
+                      className="px-2 py-1.5 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex items-center gap-1"
                     >
-                      <ChevronRight className="h-4 w-4" />
+                      <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                     </button>
                   </div>
                 </div>
