@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";  
 import { Link, useLocation } from "react-router-dom";
 import { 
   LayoutDashboard, 
@@ -9,9 +9,10 @@ import {
   ChevronRight
 } from "lucide-react";
 
-const InternalTeamSidebar = ({ isCollapsed, setIsCollapsed, onMobileClose, isMobile, mobileSidebarOpen }) => {
+const InternalTeamSidebar = ({ isCollapsed, onMobileClose, isMobile, mobileSidebarOpen }) => {
   const location = useLocation();
   const [expandedGroups, setExpandedGroups] = useState({});
+  const [manuallyClosed, setManuallyClosed] = useState({});
 
   const menuItems = [
     {
@@ -73,15 +74,32 @@ const InternalTeamSidebar = ({ isCollapsed, setIsCollapsed, onMobileClose, isMob
   const computedExpanded = useMemo(() => {
     const next = { ...expandedGroups };
     menuItems.forEach((item) => {
-      if (item.children && isGroupActive(item.children)) {
+      if (item.children && isGroupActive(item.children) && !manuallyClosed[item.name]) {
         next[item.name] = true;
       }
     });
     return next;
-  }, [expandedGroups, location.pathname]);
+  }, [expandedGroups, location.pathname, manuallyClosed]);
 
   const toggleGroup = (name) => {
-    setExpandedGroups((prev) => ({ ...prev, [name]: !prev[name] }));
+    setExpandedGroups((prev) => {
+      const newState = !prev[name];
+      if (newState) {
+        setManuallyClosed((prevClosed) => {
+          const { [name]: _, ...rest } = prevClosed;
+          return rest;
+        });
+      }
+      return { ...prev, [name]: newState };
+    });
+  };
+
+  const handleChildClick = (parentName) => () => {
+    setExpandedGroups((prev) => ({ ...prev, [parentName]: false }));
+    setManuallyClosed((prev) => ({ ...prev, [parentName]: true }));
+    if (isMobile && onMobileClose) {
+      onMobileClose();
+    }
   };
 
   const sidebarClasses = `
@@ -119,13 +137,10 @@ const InternalTeamSidebar = ({ isCollapsed, setIsCollapsed, onMobileClose, isMob
                   title={isCollapsed && !isMobile ? item.name : ''}
                 >
                   <div className={`
-                    flex-shrink-0 rounded-md transition-colors
+                    flex-shrink-0 rounded-md p-1.5 transition-colors
                     ${active ? item.bgColor : 'group-hover:bg-gray-200'}
-                    ${isCollapsed && !isMobile ? 'p-1.5' : 'p-1.5'}
                   `}>
-                    {IconComponent && (
-                      <IconComponent className={`h-4 w-4 ${active ? item.color : 'text-gray-500 group-hover:text-gray-700'}`} />
-                    )}
+                    <IconComponent className={`h-4 w-4 ${active ? item.color : 'text-gray-500 group-hover:text-gray-700'}`} />
                   </div>
 
                   {(!isCollapsed || isMobile) && (
@@ -155,7 +170,7 @@ const InternalTeamSidebar = ({ isCollapsed, setIsCollapsed, onMobileClose, isMob
                         <Link
                           key={child.path}
                           to={child.path}
-                          onClick={isMobile ? onMobileClose : undefined}
+                          onClick={handleChildClick(item.name)}
                           className={`
                             flex items-center rounded-lg transition-all duration-200 group relative
                             ${childActive 
@@ -191,13 +206,10 @@ const InternalTeamSidebar = ({ isCollapsed, setIsCollapsed, onMobileClose, isMob
               title={isCollapsed && !isMobile ? item.name : ''}
             >
               <div className={`
-                flex-shrink-0 rounded-md transition-colors
+                flex-shrink-0 rounded-md p-1.5 transition-colors
                 ${active ? item.bgColor : 'group-hover:bg-gray-200'}
-                ${isCollapsed && !isMobile ? 'p-1.5' : 'p-1.5'}
               `}>
-                {IconComponent && (
-                  <IconComponent className={`h-4 w-4 ${active ? item.color : 'text-gray-500 group-hover:text-gray-700'}`} />
-                )}
+                <IconComponent className={`h-4 w-4 ${active ? item.color : 'text-gray-500 group-hover:text-gray-700'}`} />
               </div>
               
               {(!isCollapsed || isMobile) && (
@@ -218,7 +230,6 @@ const InternalTeamSidebar = ({ isCollapsed, setIsCollapsed, onMobileClose, isMob
           );
         })}
       </nav>
-
     </div>
   );
 };
