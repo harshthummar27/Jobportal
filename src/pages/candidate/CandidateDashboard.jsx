@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { User, Briefcase, AlertCircle, RefreshCw, Loader2, Clock, FileCheck, XCircle, X, CheckCircle2, Mail, Send, Ban } from "lucide-react";
+import { Link } from "react-router-dom";
 import { toast } from 'react-toastify';
 import CandidateLayout from "../../Components/CandidateLayout";
 
@@ -7,6 +8,7 @@ const CandidateDashboard = () => {
   const [dashboardStats, setDashboardStats] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [hasProfile, setHasProfile] = useState(false);
 
   // Fetch dashboard stats from API
   const fetchDashboardStats = async () => {
@@ -40,7 +42,11 @@ const CandidateDashboard = () => {
     } catch (error) {
       console.error("Dashboard stats fetch error:", error);
       
-      if (error.message.includes("token") || error.message.includes("unauthorized")) {
+      // Only show toast for non-profile-related errors
+      if (error.message.includes("Unauthorized. Only candidates with profiles")) {
+        // Don't show toast, just set error state - UI will handle it
+        setError("No profile available");
+      } else if (error.message.includes("token") || error.message.includes("unauthorized")) {
         toast.error("Session expired. Please log in again.");
         setError("Session expired");
       } else if (error.message.includes("network") || error.message.includes("fetch")) {
@@ -64,12 +70,33 @@ const CandidateDashboard = () => {
       return;
     }
 
-    fetchDashboardStats();
+    // Check if user has profile
+    const hasProfileStatus = localStorage.getItem('has_profile');
+    const hasProfileValue = hasProfileStatus === 'true';
+    setHasProfile(hasProfileValue);
+
+    if (hasProfileValue) {
+      // Only fetch from API if user has profile
+      fetchDashboardStats();
+    } else {
+      // User doesn't have profile, don't fetch dashboard data
+      setIsLoading(false);
+    }
   }, []);
 
   // Handle refresh button click
   const handleRefresh = () => {
-    fetchDashboardStats();
+    // Check if user has profile first
+    const hasProfileStatus = localStorage.getItem('has_profile');
+    const hasProfileValue = hasProfileStatus === 'true';
+    
+    if (hasProfileValue) {
+      // User has profile, fetch fresh data
+      fetchDashboardStats();
+    } else {
+      // User doesn't have profile, just reload the page to show the same state
+      window.location.reload();
+    }
   };
 
   return (
@@ -94,8 +121,8 @@ const CandidateDashboard = () => {
             </div>
           </div>
 
-          {/* Error Message */}
-          {error && (
+          {/* Error Message - Only show if not a profile-related error */}
+          {error && error !== "No profile available" && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-3">
               <div className="flex items-center gap-2 text-red-600">
                 <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -239,10 +266,27 @@ const CandidateDashboard = () => {
               </div>
             </>
           ) : (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 sm:p-12 text-center">
-              <AlertCircle className="h-8 w-8 sm:h-12 sm:w-12 mx-auto text-gray-300 mb-2 sm:mb-3" />
-              <p className="text-xs sm:text-sm text-gray-500 font-medium">No dashboard statistics available</p>
-            </div>
+            <>
+              {/* Show no profile message if user doesn't have profile */}
+              {!hasProfile ? (
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 sm:p-12 text-center">
+                  <User className="h-8 w-8 sm:h-12 sm:w-12 mx-auto text-gray-300 mb-2 sm:mb-3" />
+                  <p className="text-xs sm:text-sm text-gray-500 font-medium">No profile data available</p>
+                  <Link
+                    to="/candidate/profile-setup"
+                    className="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all duration-200 text-xs sm:text-sm font-medium mt-3"
+                  >
+                    <User className="h-3 w-3" />
+                    Complete Profile Setup
+                  </Link>
+                </div>
+              ) : (
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 sm:p-12 text-center">
+                  <AlertCircle className="h-8 w-8 sm:h-12 sm:w-12 mx-auto text-gray-300 mb-2 sm:mb-3" />
+                  <p className="text-xs sm:text-sm text-gray-500 font-medium">No dashboard statistics available</p>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

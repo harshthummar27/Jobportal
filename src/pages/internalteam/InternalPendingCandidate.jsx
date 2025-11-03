@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "react-router-dom";
-import { Search, RefreshCw, ChevronLeft, ChevronRight, AlertCircle, Users, ChevronUp, ChevronDown, Eye } from "lucide-react";
+import { Search, RefreshCw, ChevronLeft, ChevronRight, AlertCircle, Users, ChevronUp, ChevronDown } from "lucide-react";
 import { toast } from 'react-toastify';
 
 const PendingCandidatesIT = () => {
@@ -171,7 +170,7 @@ const PendingCandidatesIT = () => {
     setPage(1);
   };
 
-  const formatValue = (value, col) => {
+  const formatValue = (value) => {
     if (value === null || value === undefined) return '-';
     
     // Format ISO date strings to readable format
@@ -190,11 +189,6 @@ const PendingCandidatesIT = () => {
       }
     }
     
-    // For candidate_profile column, return special marker
-    if (col === 'candidate_profile' && typeof value === 'object' && value !== null) {
-      return 'PROFILE_BUTTON';
-    }
-    
     if (typeof value === 'object' && value !== null) {
       return JSON.stringify(value);
     }
@@ -204,38 +198,14 @@ const PendingCandidatesIT = () => {
     return String(value);
   };
 
-  // Get candidate code from row data
-  const getCandidateCode = (row) => {
-    // Try to get from candidate_profile object
-    if (row.candidate_profile && typeof row.candidate_profile === 'object') {
-      const profileData = row.candidate_profile;
-      if (profileData.candidate_code || profileData.candidateCode) {
-        return profileData.candidate_code || profileData.candidateCode;
-      }
-    }
-    // Try to get from candidate_profile string
-    if (row.candidate_profile && typeof row.candidate_profile === 'string') {
-      try {
-        const profileData = JSON.parse(row.candidate_profile);
-        if (profileData.candidate_code || profileData.candidateCode) {
-          return profileData.candidate_code || profileData.candidateCode;
-        }
-      } catch (e) {
-        // Not valid JSON, ignore
-      }
-    }
-    // Try other common fields
-    if (row.candidate_code) return row.candidate_code;
-    if (row.code) return row.code;
-    // Fallback to ID
-    if (row.id) return `CAND${row.id}`;
-    return null;
-  };
-
   const columns = useMemo(() => {
     if (!candidates || candidates.length === 0) return [];
     const first = candidates[0];
-    return Object.keys(first);
+    const excludedColumns = ['candidate_profile', 'candidate_status', 'is_blocked', 'block_info', 'letest_offer', 'latest_offer'];
+    return Object.keys(first).filter(col => {
+      const colLower = col.toLowerCase();
+      return !excludedColumns.some(excluded => excluded.toLowerCase() === colLower);
+    });
   }, [candidates]);
 
   return (
@@ -332,25 +302,10 @@ const PendingCandidatesIT = () => {
                   {candidates.map((row, idx) => (
                     <tr key={idx} className="hover:bg-gray-50">
                       {columns.map((col) => {
-                        const formattedValue = formatValue(row[col], col);
-                        const candidateCode = getCandidateCode(row);
+                        const formattedValue = formatValue(row[col]);
                         return (
                           <td key={col} className="px-4 py-2 text-sm text-gray-700 max-w-[28rem] break-words">
-                            {formattedValue === 'PROFILE_BUTTON' ? (
-                              candidateCode ? (
-                                <Link
-                                  to={`/internal-team/candidate/${candidateCode}`}
-                                  className="px-3 py-1 bg-blue-600 text-white text-xs font-medium rounded-md hover:bg-blue-700 transition-colors flex items-center gap-1 inline-flex"
-                                >
-                                  <Eye className="h-3 w-3" />
-                                  View
-                                </Link>
-                              ) : (
-                                <span className="text-gray-400 text-xs">N/A</span>
-                              )
-                            ) : (
-                              formattedValue
-                            )}
+                            {formattedValue}
                           </td>
                         );
                       })}

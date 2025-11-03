@@ -49,25 +49,42 @@ const CandidateMyProfile = () => {
     } catch (error) {
       console.error("Profile fetch error:", error);
       
-      // Handle specific error messages
-      if (error.message.includes("token") || error.message.includes("unauthorized")) {
-        toast.error("Session expired. Please log in again.");
-        setError("Session expired");
-      } else if (error.message.includes("network") || error.message.includes("fetch")) {
-        toast.error("Network error. Please check your connection.");
-        setError("Network error");
+      // Check if it's a "profile not found" error - don't show toast for these
+      const isProfileNotFound = error.message?.toLowerCase().includes("profile not found") || 
+                                error.message?.toLowerCase().includes("not found") ||
+                                error.message?.toLowerCase().includes("profile does not exist");
+      
+      if (isProfileNotFound) {
+        // Don't show toast for profile not found errors - UI will handle it
+        setError(error.message || "Profile not found");
       } else {
-        toast.error(error.message || "Failed to load profile data");
-        setError(error.message || "Failed to load profile");
+        // Handle other specific error messages - show toast only once
+        if (error.message.includes("token") || error.message.includes("unauthorized")) {
+          toast.error("Session expired. Please log in again.");
+          setError("Session expired");
+        } else if (error.message.includes("network") || error.message.includes("fetch")) {
+          toast.error("Network error. Please check your connection.");
+          setError("Network error");
+        } else {
+          toast.error(error.message || "Failed to load profile data");
+          setError(error.message || "Failed to load profile");
+        }
       }
 
-      // Fallback to localStorage data if API fails
-      const savedProfileData = localStorage.getItem('candidateProfileData');
-      if (savedProfileData) {
-        const parsedData = JSON.parse(savedProfileData);
-        setProfileData(parsedData);
-        setCandidateCode(parsedData.candidate_code || parsedData.candidateCode || "");
-        toast.info("Using cached profile data");
+      // Only use cached data if it's not a "profile not found" error
+      if (!isProfileNotFound) {
+        const savedProfileData = localStorage.getItem('candidateProfileData');
+        if (savedProfileData) {
+          try {
+            const parsedData = JSON.parse(savedProfileData);
+            setProfileData(parsedData);
+            setCandidateCode(parsedData.candidate_code || parsedData.candidateCode || "");
+            // Show cache toast only once after successfully loading cached data
+            toast.info("Using cached profile data");
+          } catch (parseError) {
+            console.error("Error parsing cached profile data:", parseError);
+          }
+        }
       }
     } finally {
       setIsLoading(false);
@@ -174,18 +191,43 @@ const CandidateMyProfile = () => {
       <CandidateLayout>
         <div className="w-full max-w-none">
           <div className="mx-auto">
-            <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-3">
-              <div className="flex items-center gap-2 text-red-600 mb-3">
-                <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5" />
-                <span className="text-xs sm:text-sm font-medium">Error: {error}</span>
+            <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 sm:p-8 lg:p-12 max-w-2xl mx-auto">
+              <div className="flex flex-col items-center text-center">
+                {/* Icon Container */}
+                <div className="mb-4 sm:mb-6">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 mx-auto bg-gradient-to-br from-red-50 to-orange-50 rounded-full flex items-center justify-center shadow-inner">
+                    <AlertCircle className="h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 text-red-500" />
+                  </div>
+                </div>
+                
+                {/* Error Title */}
+                <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-2 sm:mb-3">
+                  Profile Not Found
+                </h2>
+                
+                {/* Error Message */}
+                <p className="text-sm sm:text-base lg:text-lg text-gray-600 mb-4 sm:mb-6 max-w-md mx-auto leading-relaxed">
+                  {error.includes("Profile not found") || error.includes("not found")
+                    ? "We couldn't find your profile information. Please try refreshing or set up your profile."
+                    : "There was an issue loading your profile. Please try again."}
+                </p>
+                
+                {/* Action Button */}
+                <div className="flex items-center justify-center w-full">
+                  <button
+                    onClick={() => fetchProfileData()}
+                    className="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-200 transition-all duration-200 text-sm sm:text-base font-semibold shadow-md hover:shadow-lg w-full sm:w-auto min-w-[140px]"
+                  >
+                    <RefreshCw className="h-4 w-4 sm:h-5 sm:w-5" />
+                    Try Again
+                  </button>
+                </div>
+                
+                {/* Additional Help Text */}
+                <p className="text-xs sm:text-sm text-gray-500 mt-6 sm:mt-8 max-w-sm mx-auto">
+                  If the problem persists, please contact support or try logging out and back in.
+                </p>
               </div>
-              <button
-                onClick={() => fetchProfileData()}
-                className="inline-flex items-center gap-2 px-3 py-1.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all duration-200 text-xs sm:text-sm font-medium"
-              >
-                <RefreshCw className="h-3 w-3" />
-                Try Again
-              </button>
             </div>
           </div>
         </div>

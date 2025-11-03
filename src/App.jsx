@@ -8,7 +8,6 @@ import CandidateInfo from "./pages/CandidateInfo";
 import RecruiterInfo from "./pages/RecruiterInfo";
 import ProfileSetup from "./pages/candidate/ProfileSetup";
 import CandidateRegistration from "./pages/candidate/CandidateRegistration";
-import CandidatePreferences from "./pages/candidate/CandidatePreferences";
 import CandidateDashboard from "./pages/candidate/CandidateDashboard";
 import CandidateMyProfile from "./pages/candidate/CandidateMyProfile";
 import CandidateOffers from "./pages/candidate/CandidateOffers";
@@ -110,14 +109,6 @@ export default function App() {
           element={
             <PrivateRoute>
               <CandidateDashboard />
-            </PrivateRoute>
-          } 
-        />
-        <Route 
-          path="/candidate/preferences" 
-          element={
-            <PrivateRoute>
-              <CandidatePreferences />
             </PrivateRoute>
           } 
         />
@@ -366,7 +357,7 @@ export default function App() {
       {/* Toast Container */}
       <ToastContainer
         position="top-right"
-        autoClose={1000}
+        autoClose={1500}
         hideProgressBar={false}
         newestOnTop={true}
         closeOnClick

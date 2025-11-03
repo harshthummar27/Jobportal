@@ -34,17 +34,35 @@ const ProfileSetup = () => {
   const [errors, setErrors] = useState({});
   const [resumeFile, setResumeFile] = useState(null);
   const [resumePreview, setResumePreview] = useState(null);
+  const hasCheckedProfile = useRef(false);
 
   // Scroll to top when component mounts and check authentication
   useEffect(() => {
+    // Prevent duplicate checks (especially in React Strict Mode)
+    if (hasCheckedProfile.current) return;
+    
     window.scrollTo(0, 0);
     
     // Check if user is authenticated
     const token = localStorage.getItem('token');
     if (!token) {
+      hasCheckedProfile.current = true;
       toast.error("Please log in to access this page.");
       navigate("/candidate/login");
+      return;
     }
+    
+    // Check if user already has a profile
+    const hasProfile = localStorage.getItem('has_profile');
+    const profileComplete = localStorage.getItem('candidateProfileComplete');
+    if (hasProfile === 'true') {
+      hasCheckedProfile.current = true;
+      toast.info("You already have a profile. Redirecting to dashboard...");
+      navigate("/candidate/dashboard");
+      return;
+    }
+    
+    hasCheckedProfile.current = true;
   }, [navigate]);
 
   const [formData, setFormData] = useState({
@@ -151,14 +169,32 @@ const ProfileSetup = () => {
   const visaStatuses = [
     "us_citizen",
     "permanent_resident",
-    "h1_b",
+    "h1b",
     "opt_cpt",
     "other"
   ];
 
+  // Visa status display labels mapping
+  const visaStatusLabels = {
+    "us_citizen": "US Citizen",
+    "permanent_resident": "Permanent Resident",
+    "h1b": "H1B",
+    "opt_cpt": "OPT/CPT",
+    "other": "Other"
+  };
+
   const jobSeekingStatuses = [
-    "actively_looking"
+    "actively_looking",
+    "open_to_offers",
+    "not_looking"
   ];
+
+  // Job seeking status display labels mapping
+  const jobSeekingStatusLabels = {
+    "actively_looking": "Actively Looking",
+    "open_to_offers": "Open to Offers",
+    "not_looking": "Not Looking"
+  };
 
   const relocationOptions = [
     "by_self",
@@ -490,16 +526,119 @@ const ProfileSetup = () => {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Accept': 'application/json',
         },
         body: JSON.stringify(profileData)
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Profile creation failed');
+      // Parse response JSON
+      let data;
+      try {
+        const text = await response.text();
+        data = text ? JSON.parse(text) : {};
+      } catch (parseError) {
+        console.error("JSON Parse Error:", parseError);
+        throw new Error("Invalid response from server. Please try again.");
       }
 
+      if (!response.ok) {
+        console.error("API Error Response:", data);
+        console.error("Response Status:", response.status);
+        
+        // Handle validation errors from backend
+        const newErrors = {};
+        let hasFieldErrors = false;
+        
+        // Check if backend returns errors object with field-specific errors
+        if (data.errors && typeof data.errors === 'object') {
+          // Map each field error to form errors
+          Object.keys(data.errors).forEach(field => {
+            const fieldErrors = data.errors[field];
+            // Handle array of error messages (take first one) or single string
+            if (Array.isArray(fieldErrors) && fieldErrors.length > 0) {
+              newErrors[field] = fieldErrors[0];
+            } else if (typeof fieldErrors === 'string') {
+              newErrors[field] = fieldErrors;
+            } else if (fieldErrors) {
+              newErrors[field] = String(fieldErrors);
+            }
+            hasFieldErrors = true;
+          });
+          
+          // Set field-specific errors
+          if (hasFieldErrors) {
+            setErrors(prev => ({ ...prev, ...newErrors }));
+            
+            // Navigate to the appropriate step based on which field has error
+            const fieldToStepMap = {
+              city: 1,
+              state: 1,
+              willing_to_relocate: 1,
+              preferred_locations: 1,
+              relocation_willingness: 1,
+              availability_date: 1,
+              desired_job_roles: 2,
+              preferred_industries: 2,
+              employment_types: 2,
+              total_years_experience: 3,
+              job_history: 3,
+              current_employer: 3,
+              skills: 3,
+              visa_status: 3,
+              job_seeking_status: 3,
+              desired_annual_package: 3,
+              ethnicity: 3,
+              education: 4,
+              certifications: 4,
+              languages_spoken: 4,
+              references: 4,
+              resume_file_path: 4,
+              resume_file_name: 4,
+              resume_mime_type: 4,
+              additional_notes: 4,
+              veteran_status: 4,
+              disability_status: 4
+            };
+            
+            // Find the first step that has an error
+            const errorStep = Object.keys(newErrors).reduce((minStep, field) => {
+              const step = fieldToStepMap[field] || 1;
+              return step < minStep ? step : minStep;
+            }, 4);
+            
+            setCurrentStep(errorStep);
+            
+            // Scroll to top after setting step
+            setTimeout(() => {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 100);
+            
+            // Show general error message
+            toast.error("Failed to create profile. Please try again.");
+            
+            setIsLoading(false);
+            return;
+          }
+        }
+        
+        // Handle general error messages
+        const errorMessage = data.message || data.error || 'Profile creation failed';
+        
+        // Check for authentication errors
+        if (errorMessage.toLowerCase().includes("token") || errorMessage.toLowerCase().includes("unauthorized") || response.status === 401) {
+          toast.error("Session expired. Please log in again.");
+          navigate("/candidate/login");
+          setIsLoading(false);
+          return;
+        }
+        
+        toast.error(errorMessage);
+        setIsLoading(false);
+        return;
+      }
+
+      console.log("Profile creation response:", data);
+      
       const result = data;
       
       // Generate unique candidate code (if not provided by API)
@@ -526,14 +665,16 @@ const ProfileSetup = () => {
     } catch (error) {
       console.error("Profile creation error:", error);
       
-      // Handle specific error messages
-      if (error.message.includes("token") || error.message.includes("unauthorized")) {
-        toast.error("Session expired. Please log in again.");
-        navigate("/candidate/login");
-      } else if (error.message.includes("validation") || error.message.includes("required")) {
-        toast.error("Please check your form data and try again.");
+      // Handle network errors or other exceptions
+      if (error.message) {
+        // Check if it's a JSON parse error or network error
+        if (error.message.includes('JSON') || error.message.includes('Failed to fetch')) {
+          toast.error("Network error. Please check your connection and try again.");
+        } else {
+          toast.error(error.message || "Failed to create profile. Please try again.");
+        }
       } else {
-        toast.error(error.message || "Failed to create profile. Please try again.");
+        toast.error("Failed to create profile. Please try again.");
       }
     } finally {
       setIsLoading(false);
@@ -898,7 +1039,7 @@ const ProfileSetup = () => {
             <option value="">Select visa status</option>
             {visaStatuses.map((status) => (
               <option key={status} value={status}>
-                {status.replace('_', ' ').toUpperCase()}
+                {visaStatusLabels[status]}
               </option>
             ))}
           </select>
@@ -925,7 +1066,7 @@ const ProfileSetup = () => {
             <option value="">Select status</option>
             {jobSeekingStatuses.map((status) => (
               <option key={status} value={status}>
-                {status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                {jobSeekingStatusLabels[status]}
               </option>
             ))}
           </select>

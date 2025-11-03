@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Search, RefreshCw, ChevronLeft, ChevronRight, AlertCircle, Users, ChevronUp, ChevronDown, Eye } from "lucide-react";
 
+const EXCLUDED_FIELDS = ['candidate_status', 'is_blocked', 'block_info', 'latest_offer', 'letest_offer'];
+
 const ApprovedCandidatesIT = () => {
   const [candidates, setCandidates] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -28,8 +30,11 @@ const ApprovedCandidatesIT = () => {
       params.set('per_page', String(perPage));
       params.set('status', 'approve');
       if (search) params.set('search', search);
-      if (sortBy) params.set('sort_by', sortBy);
-      if (sortDirection) params.set('sort_direction', sortDirection);
+      // Only add sort params if sortBy is not an excluded field
+      if (sortBy && !EXCLUDED_FIELDS.includes(sortBy)) {
+        params.set('sort_by', sortBy);
+        params.set('sort_direction', sortDirection);
+      }
 
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/internal/candidates?${params.toString()}` , {
         method: 'GET',
@@ -83,6 +88,10 @@ const ApprovedCandidatesIT = () => {
   };
 
   const toggleSort = (field) => {
+    // Prevent sorting by excluded fields
+    if (EXCLUDED_FIELDS.includes(field)) {
+      return;
+    }
     if (sortBy === field) {
       setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
     } else {
@@ -95,8 +104,16 @@ const ApprovedCandidatesIT = () => {
   const columns = useMemo(() => {
     if (!candidates || candidates.length === 0) return [];
     const first = candidates[0];
-    return Object.keys(first);
+    return Object.keys(first).filter(key => !EXCLUDED_FIELDS.includes(key));
   }, [candidates]);
+
+  // Reset sortBy if it's set to an excluded field
+  useEffect(() => {
+    if (sortBy && EXCLUDED_FIELDS.includes(sortBy)) {
+      setSortBy("");
+      setSortDirection("asc");
+    }
+  }, [sortBy]);
 
   const formatValue = (value, col) => {
     if (value === null || value === undefined) return '-';

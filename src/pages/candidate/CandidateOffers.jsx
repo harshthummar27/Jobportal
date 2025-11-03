@@ -8,8 +8,10 @@ import {
   Filter,
   ArrowUpDown,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  User
 } from "lucide-react";
+import { Link } from "react-router-dom";
 import { toast } from 'react-toastify';
 import CandidateLayout from "../../Components/CandidateLayout";
 
@@ -17,6 +19,7 @@ const CandidateOffers = () => {
   const [offers, setOffers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [hasProfile, setHasProfile] = useState(false);
 
   // Filter and sort states - all null by default
   const [page, setPage] = useState(null);
@@ -56,11 +59,15 @@ const CandidateOffers = () => {
         },
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
       const data = await response.json();
+
+      if (!response.ok) {
+        // Check for specific error messages
+        if (response.status === 403 || data.message?.includes("Unauthorized. Only candidates with profiles")) {
+          throw new Error("No profile available");
+        }
+        throw new Error(data.message || `HTTP error! status: ${response.status}`);
+      }
 
       if (!data.success) {
         throw new Error(data.message || 'Failed to fetch offers');
@@ -108,16 +115,34 @@ const CandidateOffers = () => {
 
     } catch (error) {
       console.error('Error fetching offers:', error);
-      setError(error.message || 'Failed to fetch offers');
+      
+      // Only show toast for non-profile-related errors
+      if (error.message.includes("No profile available") || error.message.includes("Unauthorized. Only candidates with profiles")) {
+        // Don't show toast, just set error state - UI will handle it
+        setError("No profile available");
+      } else {
+        setError(error.message || 'Failed to fetch offers');
+        toast.error(error.message || 'Failed to fetch offers');
+      }
       setOffers([]);
-      toast.error(error.message || 'Failed to fetch offers');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchOffers();
+    // Check if user has profile first
+    const hasProfileStatus = localStorage.getItem('has_profile');
+    const hasProfileValue = hasProfileStatus === 'true';
+    setHasProfile(hasProfileValue);
+
+    if (hasProfileValue) {
+      // Only fetch from API if user has profile
+      fetchOffers();
+    } else {
+      // User doesn't have profile, don't fetch offers
+      setLoading(false);
+    }
   }, [page, offerStatus, sortBy, sortDirection]);
 
   const getStatusBadge = (status) => {
@@ -186,8 +211,9 @@ const CandidateOffers = () => {
             <p className="text-xs sm:text-sm text-gray-600 mt-0.5 hidden sm:block">View all job offers you have received</p>
           </div>
 
-          {/* Filters and Sort Controls */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6 mb-3 sm:mb-4">
+          {/* Filters and Sort Controls - Only show if user has profile */}
+          {hasProfile && (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6 mb-3 sm:mb-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
               {/* Offer Status Filter */}
               <div>
@@ -269,9 +295,10 @@ const CandidateOffers = () => {
               </div>
             </div>
           </div>
+          )}
 
-          {/* Error Message */}
-          {error && (
+          {/* Error Message - Only show if not a profile-related error */}
+          {error && error !== "No profile available" && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-3">
               <div className="flex items-center gap-2 text-red-600">
                 <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -280,8 +307,24 @@ const CandidateOffers = () => {
             </div>
           )}
 
-          {/* Offers Table */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          {/* No Profile Message */}
+          {!hasProfile && (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 sm:p-12 text-center">
+              <User className="h-8 w-8 sm:h-12 sm:w-12 mx-auto text-gray-300 mb-2 sm:mb-3" />
+              <p className="text-xs sm:text-sm text-gray-500 font-medium">No profile data available</p>
+              <Link
+                to="/candidate/profile-setup"
+                className="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all duration-200 text-xs sm:text-sm font-medium mt-3"
+              >
+                <User className="h-3 w-3" />
+                Complete Profile Setup
+              </Link>
+            </div>
+          )}
+
+          {/* Offers Table - Only show if user has profile */}
+          {hasProfile && (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
             {loading ? (
               <div className="p-8 sm:p-12 text-center">
                 <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin mx-auto text-indigo-600 mb-2 sm:mb-3" />
@@ -634,6 +677,7 @@ const CandidateOffers = () => {
               </div>
             )}
           </div>
+          )}
         </div>
       </div>
     </CandidateLayout>
