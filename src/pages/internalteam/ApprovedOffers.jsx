@@ -365,9 +365,9 @@ const ApprovedOffers = () => {
       return (
         <Link
           to={`/internal-team/candidate/${candidateCode}`}
-          className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors font-medium text-xs"
+          className="inline-flex items-center gap-1 sm:gap-1.5 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-blue-50 text-blue-700 rounded-md hover:bg-blue-100 transition-colors font-medium text-[9px] sm:text-[10px] lg:text-xs"
         >
-          <Eye className="h-3.5 w-3.5" />
+          <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
           View Profile
         </Link>
       );
@@ -377,13 +377,13 @@ const ApprovedOffers = () => {
       return (
         <div className="flex flex-col min-w-0">
           {value.name && (
-            <span className="font-medium text-gray-900 truncate">{value.name}</span>
+            <span className="font-medium text-[10px] sm:text-xs text-gray-900 truncate">{value.name}</span>
           )}
           {value.email && (
-            <span className="text-xs text-gray-600 truncate">{value.email}</span>
+            <span className="text-[9px] sm:text-[10px] text-gray-600 truncate">{value.email}</span>
           )}
           {!value.name && !value.email && value.id && (
-            <span className="text-xs text-gray-500">ID: {value.id}</span>
+            <span className="text-[9px] sm:text-[10px] text-gray-500">ID: {value.id}</span>
           )}
         </div>
       );
@@ -393,24 +393,24 @@ const ApprovedOffers = () => {
       return (
         <div className="flex flex-col min-w-0 gap-0.5">
           {value.company_name && (
-            <span className="font-medium text-gray-900 truncate">{value.company_name}</span>
+            <span className="font-medium text-[10px] sm:text-xs text-gray-900 truncate">{value.company_name}</span>
           )}
           {value.recruiter_name && (
-            <span className="text-xs text-gray-700 truncate">{value.recruiter_name}</span>
+            <span className="text-[9px] sm:text-[10px] text-gray-700 truncate">{value.recruiter_name}</span>
           )}
           {value.recruiter_email && (
-            <span className="text-xs text-gray-600 truncate">{value.recruiter_email}</span>
+            <span className="text-[9px] sm:text-[10px] text-gray-600 truncate">{value.recruiter_email}</span>
           )}
         </div>
       );
     }
     
     if (formattedValue && typeof formattedValue === 'object' && formattedValue.type === 'currency') {
-      return <span className="font-medium text-gray-900">{formattedValue.value}</span>;
+      return <span className="font-medium text-[10px] sm:text-xs text-gray-900">{formattedValue.value}</span>;
     }
     
     if (formattedValue && typeof formattedValue === 'object' && formattedValue.type === 'date') {
-      return <span className="text-gray-700">{formattedValue.value}</span>;
+      return <span className="text-[10px] sm:text-xs text-gray-700">{formattedValue.value}</span>;
     }
     
     if (formattedValue && typeof formattedValue === 'object' && formattedValue.type === 'array') {
@@ -420,14 +420,14 @@ const ApprovedOffers = () => {
       const visibleItems = isRowExpanded ? arrayValue : arrayValue.slice(0, maxVisible);
       
       return (
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-wrap gap-0.5 sm:gap-1">
           {visibleItems.map((item, i) => (
-            <span key={i} className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
+            <span key={i} className="inline-flex items-center px-1 py-0.5 sm:px-1.5 sm:py-0.5 rounded text-[8px] sm:text-[9px] lg:text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
               {String(item)}
             </span>
           ))}
           {hasMore && !isRowExpanded && (
-            <span className="text-blue-600 text-xs">+{arrayValue.length - maxVisible}</span>
+            <span className="text-blue-600 text-[9px] sm:text-[10px]">+{arrayValue.length - maxVisible}</span>
           )}
         </div>
       );
@@ -443,54 +443,54 @@ const ApprovedOffers = () => {
           className={`transition-all ${isRowExpanded ? '' : 'line-clamp-2'} break-words`}
           style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
         >
-          <span className="text-gray-700 break-words">{stringValue}</span>
+          <span className="text-[10px] sm:text-xs text-gray-700 break-words">{stringValue}</span>
           {!isRowExpanded && (
-            <span className="text-blue-600 text-xs ml-1">...</span>
+            <span className="text-blue-600 text-[9px] sm:text-[10px] ml-1">...</span>
           )}
         </div>
       );
     }
     
-    return <span className="text-gray-700">{stringValue}</span>;
+    return <span className="text-[10px] sm:text-xs text-gray-700">{stringValue}</span>;
   };
 
   return (
-    <div className="w-full max-w-none space-y-6">
+    <div className="w-full max-w-none space-y-3 sm:space-y-4">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-600 shadow-sm">
-            <CheckCircle className="h-6 w-6" />
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="p-1.5 sm:p-2 lg:p-2.5 rounded-lg bg-emerald-50 text-emerald-600 shadow-sm">
+            <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Accepted Offers</h1>
-            <p className="text-sm text-gray-500 mt-0.5">View and manage accepted job offers</p>
+            <h1 className="text-base sm:text-lg lg:text-xl font-bold text-gray-900">Accepted Offers</h1>
+            <p className="text-[10px] sm:text-xs lg:text-sm text-gray-500 mt-0.5">View and manage accepted job offers</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={fetchOffers}
             disabled={loading}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2 shadow-sm disabled:opacity-50"
+            className="px-2 py-1 sm:px-3 sm:py-1.5 lg:px-4 lg:py-2 text-[10px] sm:text-xs lg:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors flex items-center gap-1.5 sm:gap-2 shadow-sm disabled:opacity-50"
           >
-            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 ${loading ? 'animate-spin' : ''}`} />
             Refresh
           </button>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="relative flex-1 min-w-[180px]">
-            <ArrowUpDown className="h-4 w-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+      <div className="bg-white border border-gray-200 rounded-lg p-2 sm:p-3 lg:p-4 shadow-sm">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <div className="relative flex-1 min-w-[140px] sm:min-w-[180px]">
+            <ArrowUpDown className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 text-gray-400 absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             <select
               value={sortBy}
               onChange={(e) => {
                 setSortBy(e.target.value);
                 setPage(1);
               }}
-              className="w-full pl-9 pr-8 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent appearance-none bg-white"
+              className="w-full pl-7 sm:pl-8 lg:pl-9 pr-7 sm:pr-8 py-1.5 sm:py-2 lg:py-2.5 text-[10px] sm:text-xs lg:text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent appearance-none bg-white"
             >
               <option value="offered_at">Offered Date</option>
               <option value="job_title">Job Title</option>
@@ -499,7 +499,7 @@ const ApprovedOffers = () => {
               <option value="offer_deadline">Deadline</option>
               <option value="start_date">Start Date</option>
             </select>
-            <ChevronDown className="h-4 w-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <ChevronDown className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 text-gray-400 absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
           </div>
           
           <div className="relative">
@@ -509,12 +509,12 @@ const ApprovedOffers = () => {
                 setSortDirection(e.target.value);
                 setPage(1);
               }}
-              className="pl-3 pr-8 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent appearance-none bg-white"
+              className="pl-2 sm:pl-3 pr-7 sm:pr-8 py-1.5 sm:py-2 lg:py-2.5 text-[10px] sm:text-xs lg:text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent appearance-none bg-white"
             >
               <option value="desc">Descending</option>
               <option value="asc">Ascending</option>
             </select>
-            <ChevronDown className="h-4 w-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <ChevronDown className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 text-gray-400 absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
           </div>
           
           {(sortBy !== "offered_at" || sortDirection !== "desc") && (
@@ -525,9 +525,9 @@ const ApprovedOffers = () => {
                 setSortDirection("desc");
                 setPage(1);
               }}
-              className="px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-50 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors flex items-center gap-2 whitespace-nowrap"
+              className="px-2 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2.5 text-[10px] sm:text-xs lg:text-sm font-medium text-gray-700 bg-gray-50 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors flex items-center gap-1.5 sm:gap-2 whitespace-nowrap"
             >
-              <RefreshCw className="h-4 w-4" />
+              <RefreshCw className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4" />
               Reset
             </button>
           )}
@@ -536,36 +536,36 @@ const ApprovedOffers = () => {
 
       {/* Loading State */}
       {loading && (
-        <div className="flex items-center justify-center h-64 bg-white rounded-xl border border-gray-200 shadow-sm">
-          <div className="flex flex-col items-center gap-3 text-gray-600">
-            <RefreshCw className="h-8 w-8 animate-spin text-emerald-600" />
-            <span className="text-sm font-medium">Loading offers...</span>
+        <div className="flex items-center justify-center h-48 sm:h-64 bg-white rounded-lg border border-gray-200 shadow-sm">
+          <div className="flex flex-col items-center gap-2 sm:gap-3 text-gray-600">
+            <RefreshCw className="h-6 w-6 sm:h-8 sm:w-8 animate-spin text-emerald-600" />
+            <span className="text-xs sm:text-sm font-medium">Loading offers...</span>
           </div>
         </div>
       )}
 
       {/* Error State */}
       {!loading && error && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-4 shadow-sm">
-          <div className="flex items-center gap-3 text-red-700">
-            <AlertCircle className="h-5 w-5 flex-shrink-0" />
-            <span className="text-sm font-medium">{error}</span>
+        <div className="bg-red-50 border border-red-200 rounded-lg p-2 sm:p-3 lg:p-4 shadow-sm">
+          <div className="flex items-center gap-2 sm:gap-3 text-red-700">
+            <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+            <span className="text-[10px] sm:text-xs lg:text-sm font-medium">{error}</span>
           </div>
         </div>
       )}
 
       {/* Table */}
       {!loading && !error && (
-        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             {offers.length === 0 ? (
-              <div className="p-12 text-center">
-                <CheckCircle className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-                <p className="text-sm font-medium text-gray-600">No accepted offers found</p>
-                <p className="text-xs text-gray-500 mt-1">Accepted offers will appear here</p>
+              <div className="p-8 sm:p-12 text-center">
+                <CheckCircle className="h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 text-gray-400 mx-auto mb-2 sm:mb-3" />
+                <p className="text-xs sm:text-sm font-medium text-gray-600">No accepted offers found</p>
+                <p className="text-[10px] sm:text-xs text-gray-500 mt-1">Accepted offers will appear here</p>
               </div>
             ) : (
-              <table className="min-w-full divide-y divide-gray-200 text-xs table-fixed">
+              <table className="min-w-full divide-y divide-gray-200 text-[10px] sm:text-xs table-fixed">
                 <thead className="bg-gray-50">
                   <tr>
                     {/* First column */}
@@ -573,13 +573,13 @@ const ApprovedOffers = () => {
                       <th
                         key={columns[0]}
                         scope="col"
-                        className="px-2 py-1 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                        className="px-1.5 sm:px-2 py-1 text-left text-[9px] sm:text-[10px] lg:text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
                         onClick={() => toggleSort(columns[0])}
                       >
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-1">
                           <span>{formatColumnName(columns[0])}</span>
                           {sortBy === columns[0] && (
-                            sortDirection === 'asc' ? <ChevronUp className="h-3.5 w-3.5 text-emerald-600" /> : <ChevronDown className="h-3.5 w-3.5 text-emerald-600" />
+                            sortDirection === 'asc' ? <ChevronUp className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-3.5 lg:w-3.5 text-emerald-600" /> : <ChevronDown className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-3.5 lg:w-3.5 text-emerald-600" />
                           )}
                         </div>
                       </th>
@@ -587,7 +587,7 @@ const ApprovedOffers = () => {
                     {/* Offer Status as 2nd column */}
                     <th
                       scope="col"
-                      className="px-2 py-1 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
+                      className="px-1.5 sm:px-2 py-1 text-left text-[9px] sm:text-[10px] lg:text-xs font-semibold text-gray-700 uppercase tracking-wider"
                     >
                       Offer Status
                     </th>
@@ -596,13 +596,13 @@ const ApprovedOffers = () => {
                       <th
                         key={col}
                         scope="col"
-                        className="px-2 py-1 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                        className="px-1.5 sm:px-2 py-1 text-left text-[9px] sm:text-[10px] lg:text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
                         onClick={() => toggleSort(col)}
                       >
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-1">
                           <span>{formatColumnName(col)}</span>
                           {sortBy === col && (
-                            sortDirection === 'asc' ? <ChevronUp className="h-3.5 w-3.5 text-emerald-600" /> : <ChevronDown className="h-3.5 w-3.5 text-emerald-600" />
+                            sortDirection === 'asc' ? <ChevronUp className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-3.5 lg:w-3.5 text-emerald-600" /> : <ChevronDown className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-3.5 lg:w-3.5 text-emerald-600" />
                           )}
                         </div>
                       </th>
@@ -610,7 +610,7 @@ const ApprovedOffers = () => {
                     {/* Status dropdown header at last position */}
                     <th
                       scope="col"
-                      className="px-2 py-1 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
+                      className="px-1.5 sm:px-2 py-1 text-left text-[9px] sm:text-[10px] lg:text-xs font-semibold text-gray-700 uppercase tracking-wider"
                     >
                       Actions
                     </th>
@@ -627,7 +627,7 @@ const ApprovedOffers = () => {
                         return (
                           <td 
                             key={col} 
-                            className={`px-2 py-1 text-xs text-gray-900 max-w-[120px] ${expandedRow === idx ? 'whitespace-normal break-words' : 'whitespace-nowrap truncate'}`}
+                            className={`px-1.5 sm:px-2 py-1 text-[10px] sm:text-xs text-gray-900 max-w-[100px] sm:max-w-[120px] ${expandedRow === idx ? 'whitespace-normal break-words' : 'whitespace-nowrap truncate'}`}
                             onClick={() => {
                               const hasExpandable = hasExpandableContent(row);
                               if (hasExpandable) toggleRowExpansion(idx);
@@ -639,12 +639,12 @@ const ApprovedOffers = () => {
                         );
                       })()}
                       {/* Offer Status as 2nd column - show badge only */}
-                      <td className="px-2 py-1 whitespace-nowrap">
+                      <td className="px-1.5 sm:px-2 py-1 whitespace-nowrap">
                         {(() => {
                           const current = (row.status ?? '').toString().toLowerCase() || 'accepted';
                           const badgeStyle = getStatusBadge(current);
                           return (
-                            <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${badgeStyle.bg} ${badgeStyle.text} border ${badgeStyle.border}`}>
+                            <span className={`inline-flex items-center px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md text-[9px] sm:text-[10px] lg:text-xs font-medium ${badgeStyle.bg} ${badgeStyle.text} border ${badgeStyle.border}`}>
                               {current.charAt(0).toUpperCase() + current.slice(1)}
                             </span>
                           );
@@ -657,7 +657,7 @@ const ApprovedOffers = () => {
                         return (
                           <td 
                             key={col} 
-                            className={`px-2 py-1 text-xs text-gray-900 max-w-[120px] ${expandedRow === idx ? 'whitespace-normal break-words' : 'whitespace-nowrap truncate'}`}
+                            className={`px-1.5 sm:px-2 py-1 text-[10px] sm:text-xs text-gray-900 max-w-[100px] sm:max-w-[120px] ${expandedRow === idx ? 'whitespace-normal break-words' : 'whitespace-nowrap truncate'}`}
                             onClick={() => {
                               const hasExpandable = hasExpandableContent(row);
                               if (hasExpandable) toggleRowExpansion(idx);
@@ -669,7 +669,7 @@ const ApprovedOffers = () => {
                         );
                       })}
                       {/* Status dropdown at last position */}
-                      <td className="px-2 py-1 whitespace-nowrap">
+                      <td className="px-1.5 sm:px-2 py-1 whitespace-nowrap">
                         {(() => {
                           const offerId = row.id ?? row.offer_id ?? row.ID;
                           const isLoadingThisRow = actionLoadingKey && actionLoadingKey.startsWith(`${offerId}:`);
@@ -677,7 +677,7 @@ const ApprovedOffers = () => {
                           return (
                             <div className="relative inline-flex items-center">
                               <select
-                                className={`appearance-none pr-8 pl-3 py-1.5 text-xs border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors ${isLoadingThisRow ? 'opacity-70 cursor-not-allowed' : 'hover:border-gray-400'}`}
+                                className={`appearance-none pr-7 sm:pr-8 pl-2 sm:pl-3 py-1 sm:py-1.5 text-[9px] sm:text-[10px] lg:text-xs border rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors ${isLoadingThisRow ? 'opacity-70 cursor-not-allowed' : 'hover:border-gray-400'}`}
                                 value={current}
                                 onChange={(e) => handleStatusChange(row, e.target.value)}
                                 disabled={!!isLoadingThisRow}
@@ -687,11 +687,11 @@ const ApprovedOffers = () => {
                                 <option value="declined">Declined</option>
                                 <option value="withdrawn">Withdrawn</option>
                               </select>
-                              <div className="pointer-events-none absolute right-2">
+                              <div className="pointer-events-none absolute right-1.5 sm:right-2">
                                 {isLoadingThisRow ? (
-                                  <RefreshCw className="h-3.5 w-3.5 animate-spin text-gray-500" />
+                                  <RefreshCw className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-3.5 lg:w-3.5 animate-spin text-gray-500" />
                                 ) : (
-                                  <ChevronDown className="h-3.5 w-3.5 text-gray-500" />
+                                  <ChevronDown className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-3.5 lg:w-3.5 text-gray-500" />
                                 )}
                               </div>
                             </div>
@@ -706,40 +706,40 @@ const ApprovedOffers = () => {
           </div>
 
           {actionError && (
-            <div className="px-6 py-3 bg-red-50 border-t border-red-200">
-              <p className="text-sm text-red-700">{actionError}</p>
+            <div className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 bg-red-50 border-t border-red-200">
+              <p className="text-[10px] sm:text-xs lg:text-sm text-red-700">{actionError}</p>
             </div>
           )}
 
           {/* Status Update Modal */}
           {modalOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
               <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={closeModal}></div>
-              <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                  <h3 className="text-lg font-bold text-gray-900">Update Offer Status</h3>
+              <div className="relative bg-white rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden">
+                <div className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 border-b border-gray-200 bg-gray-50">
+                  <h3 className="text-sm sm:text-base lg:text-lg font-bold text-gray-900">Update Offer Status</h3>
                 </div>
-                <div className="px-6 py-5 space-y-4">
+                <div className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 lg:py-5 space-y-3 sm:space-y-4">
                   {modalOffer && (
-                    <div className="text-xs text-gray-500 font-medium">
+                    <div className="text-[9px] sm:text-[10px] lg:text-xs text-gray-500 font-medium">
                       Offer ID: <span className="text-gray-700">{String(modalOffer.id ?? modalOffer.offer_id ?? modalOffer.ID ?? 'N/A')}</span>
                     </div>
                   )}
                   
-                  <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <div className="p-2 sm:p-3 bg-gray-50 rounded-md border border-gray-200">
+                    <label className="block text-[10px] sm:text-xs lg:text-sm font-medium text-gray-700 mb-1">
                       New Status
                     </label>
-                    <span className="text-base font-bold text-gray-900 capitalize">
+                    <span className="text-xs sm:text-sm lg:text-base font-bold text-gray-900 capitalize">
                       {modalStatus}
                     </span>
                   </div>
 
                   {(modalStatus === 'declined' || modalStatus === 'withdrawn') && (
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      <label className="block text-[10px] sm:text-xs lg:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">
                         Reason <span className="text-red-500">*</span>
-                        <span className="ml-2 text-xs font-normal text-gray-500">
+                        <span className="ml-2 text-[9px] sm:text-[10px] font-normal text-gray-500">
                           ({modalReason.length}/1000 characters)
                         </span>
                       </label>
@@ -751,7 +751,7 @@ const ApprovedOffers = () => {
                           }
                         }}
                         placeholder="Please provide a reason for declining or withdrawing the offer..."
-                        className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none transition-all"
+                        className="w-full px-3 sm:px-4 py-2 sm:py-3 text-[10px] sm:text-xs lg:text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none transition-all"
                         rows={4}
                         maxLength={1000}
                         disabled={!!actionLoadingKey}
@@ -759,10 +759,10 @@ const ApprovedOffers = () => {
                     </div>
                   )}
                 </div>
-                <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex items-center justify-end gap-3">
+                <div className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 border-t border-gray-200 bg-gray-50 flex items-center justify-end gap-2 sm:gap-3">
                   <button
                     type="button"
-                    className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-3 py-1.5 sm:px-4 sm:py-2 lg:px-5 lg:py-2.5 text-[10px] sm:text-xs lg:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     onClick={closeModal}
                     disabled={!!actionLoadingKey}
                   >
@@ -770,13 +770,13 @@ const ApprovedOffers = () => {
                   </button>
                   <button
                     type="button"
-                    className="px-5 py-2.5 text-sm font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-sm"
+                    className="px-3 py-1.5 sm:px-4 sm:py-2 lg:px-5 lg:py-2.5 text-[10px] sm:text-xs lg:text-sm font-medium text-white bg-emerald-600 rounded-md hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 sm:gap-2 shadow-sm"
                     onClick={confirmStatusUpdate}
                     disabled={!!actionLoadingKey}
                   >
                     {actionLoadingKey ? (
                       <>
-                        <RefreshCw className="h-4 w-4 animate-spin" />
+                        <RefreshCw className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 animate-spin" />
                         Updating...
                       </>
                     ) : (
@@ -789,8 +789,8 @@ const ApprovedOffers = () => {
           )}
 
           {/* Pagination */}
-          <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div className="text-sm text-gray-600">
+          <div className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 border-t border-gray-200 bg-gray-50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 lg:gap-4">
+            <div className="text-[9px] sm:text-[10px] lg:text-xs text-gray-600 text-center sm:text-left order-2 sm:order-1">
               <span className="font-medium">Page {meta.current_page}</span> of <span className="font-medium">{meta.last_page}</span>
               {' · '}
               <span className="font-medium">{meta.total}</span> total offers
@@ -798,22 +798,23 @@ const ApprovedOffers = () => {
                 <span className="text-gray-500"> ({meta.from}–{meta.to} shown)</span>
               )}
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto justify-between sm:justify-end order-1 sm:order-2">
               <button
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 shadow-sm"
+                className="flex items-center justify-center gap-1 px-2 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2 text-[10px] sm:text-xs lg:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm flex-1 sm:flex-initial min-w-[80px] sm:min-w-0"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page <= 1}
               >
-                <ChevronLeft className="h-4 w-4" />
-                Previous
+                <ChevronLeft className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4" />
+                <span className="hidden sm:inline">Previous</span>
+                <span className="sm:hidden">Prev</span>
               </button>
               <button
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 shadow-sm"
+                className="flex items-center justify-center gap-1 px-2 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2 text-[10px] sm:text-xs lg:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm flex-1 sm:flex-initial min-w-[80px] sm:min-w-0"
                 onClick={() => setPage((p) => Math.min(meta.last_page || p + 1, p + 1))}
                 disabled={page >= (meta.last_page || 1)}
               >
-                Next
-                <ChevronRight className="h-4 w-4" />
+                <span>Next</span>
+                <ChevronRight className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4" />
               </button>
             </div>
           </div>

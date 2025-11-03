@@ -204,8 +204,7 @@ const CandidateProfile = () => {
                   <UserCheck className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
                 </div>
               <div>
-                  <h1 className="text-base sm:text-lg lg:text-xl font-bold text-gray-900">{formattedCandidate.full_name}</h1>
-                  <p className="text-xs sm:text-sm lg:text-base text-blue-600 font-semibold">{formattedCandidate.candidate_code}</p>
+                  <p className="text-base sm:text-lg lg:text-xl text-blue-600 font-bold">{formattedCandidate.candidate_code}</p>
                   <div className="flex items-center gap-2 sm:gap-3 mt-1">
                     <div className="flex items-center gap-1">
                       <Star className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-yellow-500" />

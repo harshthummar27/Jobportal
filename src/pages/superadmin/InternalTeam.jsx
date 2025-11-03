@@ -570,15 +570,15 @@ const InternalTeam = () => {
   };
 
   return (
-    <div className="w-full max-w-none">
+    <div className="w-full max-w-none space-y-2 sm:space-y-3">
         {/* Add Team Member Button */}
-        <div className="mb-6">
+        <div className="mb-2 sm:mb-3">
           <div className="flex justify-end">
             <button
               onClick={handleAddMember}
-              className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-green-500 text-white rounded-md border border-green-600 hover:bg-green-600 transition-all duration-200 shadow-sm text-sm sm:text-base"
+              className="flex items-center justify-center gap-1 sm:gap-1.5 px-2 py-1 sm:px-3 sm:py-1.5 lg:px-4 lg:py-2 bg-green-500 text-white rounded-md border border-green-600 hover:bg-green-600 transition-all duration-200 shadow-sm text-[10px] sm:text-xs lg:text-sm"
             >
-              <Plus className="h-4 w-4" />
+              <Plus className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4" />
               <span className="hidden sm:inline">Add Team Member</span>
               <span className="sm:hidden">Add Member</span>
             </button>
@@ -586,38 +586,38 @@ const InternalTeam = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
-          <div className="bg-white rounded-lg shadow-md p-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 mb-2 sm:mb-3">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-2 sm:p-3">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Members</p>
-                <p className="text-2xl font-bold text-indigo-600">{total}</p>
+                <p className="text-[10px] sm:text-xs font-medium text-gray-600">Total Members</p>
+                <p className="text-base sm:text-lg lg:text-xl font-bold text-indigo-600">{total}</p>
               </div>
-              <User className="h-8 w-8 text-indigo-600" />
+              <User className="h-5 w-5 sm:h-6 sm:w-6 lg:h-8 lg:w-8 text-indigo-600" />
             </div>
           </div>
           
-          <div className="bg-white rounded-lg shadow-md p-3">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-2 sm:p-3">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Approved Members</p>
-                <p className="text-2xl font-bold text-green-600">
+                <p className="text-[10px] sm:text-xs font-medium text-gray-600">Approved Members</p>
+                <p className="text-base sm:text-lg lg:text-xl font-bold text-green-600">
                   {teamMembers.filter(m => m.status?.toLowerCase() === 'approve').length}
                 </p>
               </div>
-              <UserCheck className="h-8 w-8 text-green-600" />
+              <UserCheck className="h-5 w-5 sm:h-6 sm:w-6 lg:h-8 lg:w-8 text-green-600" />
             </div>
           </div>
           
-          <div className="bg-white rounded-lg shadow-md p-3">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-2 sm:p-3">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Showing</p>
-                <p className="text-2xl font-bold text-blue-600">
+                <p className="text-[10px] sm:text-xs font-medium text-gray-600">Showing</p>
+                <p className="text-base sm:text-lg lg:text-xl font-bold text-blue-600">
                   {from}-{to} of {total}
                 </p>
               </div>
-              <Shield className="h-8 w-8 text-blue-600" />
+              <Shield className="h-5 w-5 sm:h-6 sm:w-6 lg:h-8 lg:w-8 text-blue-600" />
             </div>
           </div>
         </div>
@@ -625,18 +625,18 @@ const InternalTeam = () => {
 
         {/* Bulk Actions */}
         {selectedMembers.length > 0 && (
-          <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-2 mb-3">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-              <span className="text-indigo-800 font-medium text-sm">
+          <div className="bg-indigo-50 border border-indigo-200 rounded-md p-1.5 sm:p-2 mb-2 sm:mb-3">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-2">
+              <span className="text-indigo-800 font-medium text-[10px] sm:text-xs">
                 {selectedMembers.length} member(s) selected
               </span>
               <div className="flex items-center gap-1">
                 <button
                   onClick={handleBulkDelete}
                   disabled={isDeleting}
-                  className="flex items-center gap-1 px-2 py-1 bg-red-500 text-white text-xs rounded-md border border-red-600 hover:bg-red-600 transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center gap-0.5 sm:gap-1 px-1.5 py-0.5 sm:px-2 sm:py-1 bg-red-500 text-white text-[9px] sm:text-[10px] lg:text-xs rounded-md border border-red-600 hover:bg-red-600 transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Trash2 className="h-3 w-3" />
+                  <Trash2 className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                   Delete
                 </button>
               </div>
@@ -646,59 +646,154 @@ const InternalTeam = () => {
 
         {/* Error Message */}
         {fetchError && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
-            <p className="text-red-800 text-sm">Error: {fetchError}</p>
+          <div className="bg-red-50 border border-red-200 rounded-md p-2 sm:p-3 mb-2 sm:mb-3">
+            <p className="text-red-800 text-[10px] sm:text-xs lg:text-sm">Error: {fetchError}</p>
           </div>
         )}
 
         {/* Team Members Table */}
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          <div className="overflow-x-auto">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          {/* Mobile Card View */}
+          <div className="sm:hidden">
+            {loading ? (
+              <div className="px-2 py-6 text-center">
+                <div className="flex items-center justify-center gap-1.5">
+                  <Loader2 className="h-4 w-4 animate-spin text-indigo-600" />
+                  <span className="text-[10px] text-gray-600">Loading staff members...</span>
+                </div>
+              </div>
+            ) : teamMembers.length === 0 ? (
+              <div className="px-2 py-6 text-center">
+                <Shield className="mx-auto h-6 w-6 text-gray-400" />
+                <h3 className="mt-1.5 text-[10px] font-medium text-gray-900">No staff members found</h3>
+                <p className="mt-0.5 text-[9px] text-gray-500">
+                  No staff members have been added yet.
+                </p>
+              </div>
+            ) : (
+              <div className="divide-y divide-gray-200">
+                {teamMembers.map((member) => (
+                  <div key={member.id} className="p-2 bg-white">
+                    {/* Checkbox and Header */}
+                    <div className="flex items-start gap-1.5 mb-2">
+                      <input
+                        type="checkbox"
+                        checked={selectedMembers.includes(member.id)}
+                        onChange={() => handleSelectMember(member.id)}
+                        className="mt-0.5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 h-3 w-3"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center gap-1.5 mb-0.5">
+                          <div className="w-6 h-6 bg-indigo-100 rounded-full flex items-center justify-center">
+                            <User className="h-3 w-3 text-indigo-600" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-xs font-medium text-gray-900 truncate">{member.name}</div>
+                            <div className="text-[9px] text-gray-500">ID: {member.id}</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* All Data Fields */}
+                    <div className="space-y-1 mb-2 ml-4">
+                      <div>
+                        <span className="text-[9px] font-medium text-gray-600">Email:</span>
+                        <div className="text-[10px] text-gray-900 break-words">{member.email || "N/A"}</div>
+                      </div>
+                      {member.mobile_number && (
+                        <div>
+                          <span className="text-[9px] font-medium text-gray-600">Mobile:</span>
+                          <div className="text-[10px] text-gray-900">{member.mobile_number}</div>
+                        </div>
+                      )}
+                      <div>
+                        <span className="text-[9px] font-medium text-gray-600">Role:</span>
+                        <div className="text-[10px] text-gray-900 capitalize">{member.role || "N/A"}</div>
+                      </div>
+                      <div>
+                        <span className="text-[9px] font-medium text-gray-600">Created:</span>
+                        <div className="text-[10px] text-gray-900">{formatDate(member.created_at)}</div>
+                      </div>
+                    </div>
+
+                    {/* Action Buttons at Bottom */}
+                    <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-gray-200">
+                      <button
+                        onClick={() => handleEdit(member)}
+                        className="flex-1 flex items-center justify-center gap-0.5 px-1.5 py-1.5 bg-green-500 text-white text-[10px] rounded border border-green-600 hover:bg-green-600 transition-all duration-200 shadow-sm"
+                      >
+                        <Edit className="h-3 w-3" />
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleView(member)}
+                        className="flex-1 flex items-center justify-center gap-0.5 px-1.5 py-1.5 bg-gray-100 text-gray-700 text-[10px] rounded border border-gray-300 hover:bg-gray-200 transition-all duration-200 shadow-sm"
+                      >
+                        <Eye className="h-3 w-3" />
+                        View
+                      </button>
+                      <button
+                        onClick={() => handleDelete(member)}
+                        className="flex-1 flex items-center justify-center gap-0.5 px-1.5 py-1.5 bg-red-500 text-white text-[10px] rounded border border-red-600 hover:bg-red-600 transition-all duration-200 shadow-sm"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="hidden sm:block overflow-x-auto">
             <table className="w-full min-w-[800px]">
               <thead className="bg-gray-50 border-b">
                 <tr>
-                  <th className="px-2 py-2 text-left">
+                  <th className="px-1.5 sm:px-2 py-1 text-left">
                     <input
                       type="checkbox"
                       checked={selectedMembers.length === teamMembers.length && teamMembers.length > 0}
                       onChange={handleSelectAll}
-                      className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                      className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 h-3 w-3 sm:h-3.5 sm:w-3.5"
                     />
                   </th>
-                  <th className="px-2 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  <th className="px-1.5 sm:px-2 py-1 text-left text-[9px] sm:text-[10px] lg:text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                       onClick={() => handleSort("name")}>
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-0.5 sm:gap-1">
                       Team Member
                       {sortBy === "name" && (
-                        <span className="text-indigo-600">{sortDirection === "asc" ? "↑" : "↓"}</span>
+                        <span className="text-indigo-600 text-[9px] sm:text-[10px]">{sortDirection === "asc" ? "↑" : "↓"}</span>
                       )}
                     </div>
                   </th>
-                  <th className="px-2 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell cursor-pointer hover:bg-gray-100"
+                  <th className="px-1.5 sm:px-2 py-1 text-left text-[9px] sm:text-[10px] lg:text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                       onClick={() => handleSort("email")}>
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-0.5 sm:gap-1">
                       Email
                       {sortBy === "email" && (
-                        <span className="text-indigo-600">{sortDirection === "asc" ? "↑" : "↓"}</span>
+                        <span className="text-indigo-600 text-[9px] sm:text-[10px]">{sortDirection === "asc" ? "↑" : "↓"}</span>
                       )}
                     </div>
                   </th>
-                  <th className="px-2 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
+                  <th className="px-1.5 sm:px-2 py-1 text-left text-[9px] sm:text-[10px] lg:text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Mobile Number
                   </th>
-                  <th className="px-2 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell cursor-pointer hover:bg-gray-100"
+                  <th className="px-1.5 sm:px-2 py-1 text-left text-[9px] sm:text-[10px] lg:text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                       onClick={() => handleSort("role")}>
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-0.5 sm:gap-1">
                       Role
                       {sortBy === "role" && (
-                        <span className="text-indigo-600">{sortDirection === "asc" ? "↑" : "↓"}</span>
+                        <span className="text-indigo-600 text-[9px] sm:text-[10px]">{sortDirection === "asc" ? "↑" : "↓"}</span>
                       )}
                     </div>
                   </th>
-                  <th className="px-2 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
+                  <th className="px-1.5 sm:px-2 py-1 text-left text-[9px] sm:text-[10px] lg:text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Created At
                   </th>
-                  <th className="px-2 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-1.5 sm:px-2 py-1 text-left text-[9px] sm:text-[10px] lg:text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -706,19 +801,19 @@ const InternalTeam = () => {
               <tbody className="bg-white divide-y divide-gray-200">
                 {loading ? (
                   <tr>
-                    <td colSpan="7" className="px-2 py-8 text-center">
-                      <div className="flex items-center justify-center gap-2">
-                        <Loader2 className="h-5 w-5 animate-spin text-indigo-600" />
-                        <span className="text-sm text-gray-600">Loading staff members...</span>
+                    <td colSpan="7" className="px-2 py-6 sm:py-8 text-center">
+                      <div className="flex items-center justify-center gap-1.5 sm:gap-2">
+                        <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin text-indigo-600" />
+                        <span className="text-[10px] sm:text-xs lg:text-sm text-gray-600">Loading staff members...</span>
                       </div>
                     </td>
                   </tr>
                 ) : teamMembers.length === 0 ? (
                   <tr>
-                    <td colSpan="7" className="px-2 py-8 text-center">
-                      <Shield className="mx-auto h-8 w-8 text-gray-400" />
-                      <h3 className="mt-2 text-xs font-medium text-gray-900">No staff members found</h3>
-                      <p className="mt-1 text-[10px] text-gray-500">
+                    <td colSpan="7" className="px-2 py-6 sm:py-8 text-center">
+                      <Shield className="mx-auto h-6 w-6 sm:h-8 sm:w-8 text-gray-400" />
+                      <h3 className="mt-1.5 sm:mt-2 text-[10px] sm:text-xs font-medium text-gray-900">No staff members found</h3>
+                      <p className="mt-0.5 sm:mt-1 text-[9px] sm:text-[10px] text-gray-500">
                         No staff members have been added yet.
                       </p>
                     </td>
@@ -726,65 +821,64 @@ const InternalTeam = () => {
                 ) : (
                   teamMembers.map((member) => (
                     <tr key={member.id} className="hover:bg-gray-50">
-                      <td className="px-2 py-2">
+                      <td className="px-1.5 sm:px-2 py-1">
                         <input
                           type="checkbox"
                           checked={selectedMembers.includes(member.id)}
                           onChange={() => handleSelectMember(member.id)}
-                          className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                          className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 h-3 w-3 sm:h-3.5 sm:w-3.5"
                         />
                       </td>
-                      <td className="px-2 py-2">
+                      <td className="px-1.5 sm:px-2 py-1">
                         <div className="flex items-center">
-                          <div className="w-6 h-6 bg-indigo-100 rounded-full flex items-center justify-center">
-                            <User className="h-3 w-3 text-indigo-600" />
+                          <div className="w-5 h-5 sm:w-6 sm:h-6 bg-indigo-100 rounded-full flex items-center justify-center">
+                            <User className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-indigo-600" />
                           </div>
-                          <div className="ml-2 min-w-0">
-                            <div className="text-xs font-medium text-gray-900 truncate">{member.name}</div>
-                            <div className="text-[10px] text-gray-500">ID: {member.id}</div>
-                            <div className="text-[10px] text-gray-500 sm:hidden">{member.role}</div>
+                          <div className="ml-1.5 sm:ml-2 min-w-0">
+                            <div className="text-[10px] sm:text-xs font-medium text-gray-900 truncate">{member.name}</div>
+                            <div className="text-[9px] sm:text-[10px] text-gray-500">ID: {member.id}</div>
                           </div>
                         </div>
                       </td>
-                      <td className="px-2 py-2 hidden sm:table-cell">
-                        <div className="text-[10px] text-gray-900 truncate">
+                      <td className="px-1.5 sm:px-2 py-1">
+                        <div className="text-[10px] sm:text-xs text-gray-900 truncate">
                           {member.email}
                         </div>
                       </td>
-                      <td className="px-2 py-2 hidden md:table-cell">
-                        <div className="text-[10px] text-gray-500 truncate">
-                          {member.mobile_number}
+                      <td className="px-1.5 sm:px-2 py-1">
+                        <div className="text-[10px] sm:text-xs text-gray-500 truncate">
+                          {member.mobile_number || "N/A"}
                         </div>
                       </td>
-                      <td className="px-2 py-2 hidden lg:table-cell">
-                        <div className="text-[10px] text-gray-900 font-medium">{member.role}</div>
+                      <td className="px-1.5 sm:px-2 py-1">
+                        <div className="text-[10px] sm:text-xs text-gray-900 font-medium">{member.role}</div>
                       </td>
-                      <td className="px-2 py-2 hidden md:table-cell">
-                        <div className="text-[10px] text-gray-900">
+                      <td className="px-1.5 sm:px-2 py-1">
+                        <div className="text-[10px] sm:text-xs text-gray-900">
                           {formatDate(member.created_at)}
                         </div>
                       </td>
-                      <td className="px-2 py-2">
-                        <div className="flex items-center gap-1">
+                      <td className="px-1.5 sm:px-2 py-1">
+                        <div className="flex items-center gap-0.5 sm:gap-1">
                           <button
                             onClick={() => handleEdit(member)}
-                            className="flex items-center gap-0.5 px-1.5 py-0.5 bg-green-500 text-white text-[9px] rounded border border-green-600 hover:bg-green-600 transition-all duration-200 shadow-sm"
+                            className="flex items-center gap-0.5 px-1 py-0.5 sm:px-1.5 sm:py-0.5 bg-green-500 text-white text-[8px] sm:text-[9px] rounded border border-green-600 hover:bg-green-600 transition-all duration-200 shadow-sm"
                           >
-                            <Edit className="h-2.5 w-2.5" />
+                            <Edit className="h-2 w-2 sm:h-2.5 sm:w-2.5" />
                             Edit
                           </button>
                           <button
                             onClick={() => handleView(member)}
-                            className="flex items-center gap-0.5 px-1.5 py-0.5 bg-gray-100 text-gray-700 text-[9px] rounded border border-gray-300 hover:bg-gray-200 transition-all duration-200 shadow-sm"
+                            className="flex items-center gap-0.5 px-1 py-0.5 sm:px-1.5 sm:py-0.5 bg-gray-100 text-gray-700 text-[8px] sm:text-[9px] rounded border border-gray-300 hover:bg-gray-200 transition-all duration-200 shadow-sm"
                           >
-                            <Eye className="h-2.5 w-2.5" />
+                            <Eye className="h-2 w-2 sm:h-2.5 sm:w-2.5" />
                             View
                           </button>
                         <button
                           onClick={() => handleDelete(member)}
-                          className="flex items-center gap-0.5 px-1.5 py-0.5 bg-red-500 text-white text-[9px] rounded border border-red-600 hover:bg-red-600 transition-all duration-200 shadow-sm"
+                          className="flex items-center gap-0.5 px-1 py-0.5 sm:px-1.5 sm:py-0.5 bg-red-500 text-white text-[8px] sm:text-[9px] rounded border border-red-600 hover:bg-red-600 transition-all duration-200 shadow-sm"
                         >
-                          <Trash2 className="h-2.5 w-2.5" />
+                          <Trash2 className="h-2 w-2 sm:h-2.5 sm:w-2.5" />
                           Delete
                         </button>
                         </div>
@@ -798,20 +892,21 @@ const InternalTeam = () => {
           
           {/* Pagination */}
           {!loading && total > 0 && (
-            <div className="bg-gray-50 px-4 py-3 flex items-center justify-between border-t border-gray-200">
-              <div className="flex items-center gap-2 text-xs text-gray-700">
+            <div className="bg-gray-50 px-2 sm:px-3 lg:px-4 py-2 sm:py-3 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-2 border-t border-gray-200">
+              <div className="flex items-center gap-1.5 sm:gap-2 text-[9px] sm:text-[10px] lg:text-xs text-gray-700 text-center sm:text-left order-2 sm:order-1">
                 <span>Showing {from} to {to} of {total} results</span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 sm:gap-1.5 w-full sm:w-auto justify-between sm:justify-end order-1 sm:order-2">
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="px-2 py-1 text-xs border border-gray-300 rounded-md hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                  className="flex items-center justify-center gap-0.5 sm:gap-1 px-2 py-1 sm:px-2.5 sm:py-1.5 text-[9px] sm:text-[10px] lg:text-xs border border-gray-300 rounded-md hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm flex-1 sm:flex-initial min-w-[70px] sm:min-w-0"
                 >
-                  <ChevronLeft className="h-3 w-3" />
-                  Previous
+                  <ChevronLeft className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                  <span className="hidden sm:inline">Previous</span>
+                  <span className="sm:hidden">Prev</span>
                 </button>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-0.5 sm:gap-1">
                   {Array.from({ length: Math.min(lastPage, 5) }, (_, i) => {
                     let pageNum;
                     if (lastPage <= 5) {
@@ -827,7 +922,7 @@ const InternalTeam = () => {
                       <button
                         key={pageNum}
                         onClick={() => handlePageChange(pageNum)}
-                        className={`px-2 py-1 text-xs border rounded-md ${
+                        className={`px-1.5 sm:px-2 py-1 text-[9px] sm:text-[10px] lg:text-xs border rounded-md ${
                           currentPage === pageNum
                             ? "bg-indigo-600 text-white border-indigo-600"
                             : "border-gray-300 hover:bg-gray-100"
@@ -841,10 +936,10 @@ const InternalTeam = () => {
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === lastPage}
-                  className="px-2 py-1 text-xs border border-gray-300 rounded-md hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                  className="flex items-center justify-center gap-0.5 sm:gap-1 px-2 py-1 sm:px-2.5 sm:py-1.5 text-[9px] sm:text-[10px] lg:text-xs border border-gray-300 rounded-md hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm flex-1 sm:flex-initial min-w-[70px] sm:min-w-0"
                 >
-                  Next
-                  <ChevronRight className="h-3 w-3" />
+                  <span>Next</span>
+                  <ChevronRight className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                 </button>
               </div>
             </div>
@@ -853,18 +948,18 @@ const InternalTeam = () => {
 
         {/* Add/Edit Modal */}
         {showAddModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-[9999] p-3 sm:p-4 md:p-6">
-          <div className="bg-white rounded-xl sm:rounded-2xl shadow-2xl border border-gray-200 max-w-2xl w-full max-h-[95vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-4 sm:p-5 md:p-6 border-b border-gray-200">
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 flex items-center gap-2">
+        <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-[9999] p-2 sm:p-3 md:p-4">
+          <div className="bg-white rounded-lg shadow-xl border border-gray-200 max-w-2xl w-full max-h-[95vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-2 sm:p-3 lg:p-4 border-b border-gray-200">
+              <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900 flex items-center gap-1.5 sm:gap-2">
                 {editingMember ? (
                   <>
-                    <Edit className="h-5 w-5 text-indigo-600" />
+                    <Edit className="h-4 w-4 sm:h-4.5 sm:w-4.5 lg:h-5 lg:w-5 text-indigo-600" />
                     Edit Team Member
                   </>
                 ) : (
                   <>
-                    <Plus className="h-5 w-5 text-green-600" />
+                    <Plus className="h-4 w-4 sm:h-4.5 sm:w-4.5 lg:h-5 lg:w-5 text-green-600" />
                     Add New Team Member
                   </>
                 )}
@@ -876,27 +971,27 @@ const InternalTeam = () => {
                   setError("");
                   setErrors({});
                 }}
-                className="text-gray-400 hover:text-gray-600 cursor-pointer transition-colors duration-200 p-1 hover:bg-gray-100 rounded-full"
+                className="text-gray-400 hover:text-gray-600 cursor-pointer transition-colors duration-200 p-0.5 sm:p-1 hover:bg-gray-100 rounded-full"
                 aria-label="Close modal"
               >
-                <X className="h-5 w-5 sm:h-6 sm:w-6" />
+                <X className="h-4 w-4 sm:h-5 sm:w-5" />
               </button>
             </div>
             
-            <div className="p-4 sm:p-5 md:p-6 space-y-4 sm:space-y-5">
+            <div className="p-2 sm:p-3 lg:p-4 space-y-3 sm:space-y-4">
               {/* Only show general error if there are no field-specific errors */}
               {error && Object.keys(errors).length === 0 && (
-                <div className="bg-red-50 border-l-4 border-red-400 rounded-lg p-3 sm:p-4">
-                  <div className="flex items-center gap-2">
-                    <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-red-600 flex-shrink-0" />
-                    <p className="text-red-800 text-sm sm:text-base">{error}</p>
+                <div className="bg-red-50 border-l-4 border-red-400 rounded-md p-2 sm:p-3">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <AlertCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-red-600 flex-shrink-0" />
+                    <p className="text-red-800 text-[10px] sm:text-xs lg:text-sm">{error}</p>
                   </div>
                 </div>
               )}
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3 lg:gap-4">
                 <div className="md:col-span-1">
-                  <label className="block text-sm sm:text-base font-medium text-gray-700 mb-2">
+                  <label className="block text-[10px] sm:text-xs lg:text-sm font-medium text-gray-700 mb-1 sm:mb-1.5">
                     Name <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -908,22 +1003,22 @@ const InternalTeam = () => {
                         setErrors(prev => ({ ...prev, name: "" }));
                       }
                     }}
-                    className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 border rounded-lg focus:ring-2 transition-all duration-200 text-sm sm:text-base ${
+                    className={`w-full px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 lg:py-2.5 border rounded-md focus:ring-2 transition-all duration-200 text-[10px] sm:text-xs lg:text-sm ${
                       errors.name ? 'border-red-300 bg-red-50 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
                     }`}
                     placeholder="Enter full name"
                     disabled={isLoading}
                   />
                   {errors.name && (
-                    <p className="mt-1 text-xs sm:text-sm text-red-600 flex items-center gap-1">
-                      <AlertCircle className="h-3 w-3" />
+                    <p className="mt-0.5 sm:mt-1 text-[9px] sm:text-[10px] lg:text-xs text-red-600 flex items-center gap-0.5 sm:gap-1">
+                      <AlertCircle className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                       {errors.name}
                     </p>
                   )}
                 </div>
                 
                 <div className="md:col-span-1">
-                  <label className="block text-sm sm:text-base font-medium text-gray-700 mb-2">
+                  <label className="block text-[10px] sm:text-xs lg:text-sm font-medium text-gray-700 mb-1 sm:mb-1.5">
                     Email <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -935,15 +1030,15 @@ const InternalTeam = () => {
                         setErrors(prev => ({ ...prev, email: "" }));
                       }
                     }}
-                    className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 border rounded-lg focus:ring-2 transition-all duration-200 text-sm sm:text-base ${
+                    className={`w-full px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 lg:py-2.5 border rounded-md focus:ring-2 transition-all duration-200 text-[10px] sm:text-xs lg:text-sm ${
                       errors.email ? 'border-red-300 bg-red-50 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
                     }`}
                     placeholder="Enter email address"
                     disabled={isLoading}
                   />
                   {errors.email && (
-                    <p className="mt-1 text-xs sm:text-sm text-red-600 flex items-center gap-1">
-                      <AlertCircle className="h-3 w-3" />
+                    <p className="mt-0.5 sm:mt-1 text-[9px] sm:text-[10px] lg:text-xs text-red-600 flex items-center gap-0.5 sm:gap-1">
+                      <AlertCircle className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                       {errors.email}
                     </p>
                   )}
@@ -951,7 +1046,7 @@ const InternalTeam = () => {
                 
                 {!editingMember && (
                   <div className="md:col-span-1">
-                    <label className="block text-sm sm:text-base font-medium text-gray-700 mb-2">
+                    <label className="block text-[10px] sm:text-xs lg:text-sm font-medium text-gray-700 mb-1 sm:mb-1.5">
                       Password <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -963,15 +1058,15 @@ const InternalTeam = () => {
                           setErrors(prev => ({ ...prev, password: "" }));
                         }
                       }}
-                      className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 border rounded-lg focus:ring-2 transition-all duration-200 text-sm sm:text-base ${
+                      className={`w-full px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 lg:py-2.5 border rounded-md focus:ring-2 transition-all duration-200 text-[10px] sm:text-xs lg:text-sm ${
                         errors.password ? 'border-red-300 bg-red-50 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
                       }`}
                       placeholder="Enter password"
                       disabled={isLoading}
                     />
                     {errors.password && (
-                      <p className="mt-1 text-xs sm:text-sm text-red-600 flex items-center gap-1">
-                        <AlertCircle className="h-3 w-3" />
+                      <p className="mt-0.5 sm:mt-1 text-[9px] sm:text-[10px] lg:text-xs text-red-600 flex items-center gap-0.5 sm:gap-1">
+                        <AlertCircle className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                         {errors.password}
                       </p>
                     )}
@@ -979,7 +1074,7 @@ const InternalTeam = () => {
                 )}
                 
                 <div className="md:col-span-1">
-                  <label className="block text-sm sm:text-base font-medium text-gray-700 mb-2">
+                  <label className="block text-[10px] sm:text-xs lg:text-sm font-medium text-gray-700 mb-1 sm:mb-1.5">
                     Mobile Number <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -991,15 +1086,15 @@ const InternalTeam = () => {
                         setErrors(prev => ({ ...prev, mobile_number: "" }));
                       }
                     }}
-                    className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 border rounded-lg focus:ring-2 transition-all duration-200 text-sm sm:text-base ${
+                    className={`w-full px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 lg:py-2.5 border rounded-md focus:ring-2 transition-all duration-200 text-[10px] sm:text-xs lg:text-sm ${
                       errors.mobile_number ? 'border-red-300 bg-red-50 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
                     }`}
                     placeholder="Enter mobile number"
                     disabled={isLoading}
                   />
                   {errors.mobile_number && (
-                    <p className="mt-1 text-xs sm:text-sm text-red-600 flex items-center gap-1">
-                      <AlertCircle className="h-3 w-3" />
+                    <p className="mt-0.5 sm:mt-1 text-[9px] sm:text-[10px] lg:text-xs text-red-600 flex items-center gap-0.5 sm:gap-1">
+                      <AlertCircle className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                       {errors.mobile_number}
                     </p>
                   )}
@@ -1007,15 +1102,15 @@ const InternalTeam = () => {
               </div>
               
               {!editingMember && (
-                <div className="bg-blue-50 border-l-4 border-blue-400 rounded-lg p-3 sm:p-4">
-                  <p className="text-blue-800 text-sm sm:text-base">
+                <div className="bg-blue-50 border-l-4 border-blue-400 rounded-md p-2 sm:p-3">
+                  <p className="text-blue-800 text-[10px] sm:text-xs lg:text-sm">
                     <strong>Note:</strong> The role is automatically set to "staff" for all new team members.
                   </p>
                 </div>
               )}
             </div>
             
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 p-4 sm:p-5 md:p-6 border-t border-gray-200 bg-gray-50">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 p-2 sm:p-3 lg:p-4 border-t border-gray-200 bg-gray-50">
               <button
                 onClick={() => {
                   setShowAddModal(false);
@@ -1023,24 +1118,24 @@ const InternalTeam = () => {
                   setError("");
                   setErrors({});
                 }}
-                className="w-full sm:w-auto px-4 sm:px-5 py-2.5 sm:py-3 bg-white text-gray-700 rounded-lg border border-gray-300 hover:bg-gray-50 transition-all duration-200 shadow-sm font-medium text-sm sm:text-base"
+                className="w-full sm:w-auto px-3 sm:px-4 lg:px-5 py-1.5 sm:py-2 lg:py-2.5 bg-white text-gray-700 rounded-md border border-gray-300 hover:bg-gray-50 transition-all duration-200 shadow-sm font-medium text-[10px] sm:text-xs lg:text-sm"
                 disabled={isLoading}
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveMember}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 bg-indigo-600 text-white rounded-lg border border-indigo-700 hover:bg-indigo-700 transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed font-medium text-sm sm:text-base"
+                className="w-full sm:w-auto flex items-center justify-center gap-1 sm:gap-2 px-3 sm:px-4 lg:px-5 py-1.5 sm:py-2 lg:py-2.5 bg-indigo-600 text-white rounded-md border border-indigo-700 hover:bg-indigo-700 transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed font-medium text-[10px] sm:text-xs lg:text-sm"
                 disabled={isLoading}
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
+                    <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 animate-spin" />
                     <span>{editingMember ? "Updating..." : "Registering..."}</span>
                   </>
                 ) : (
                   <>
-                    <Save className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <Save className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5" />
                     <span>{editingMember ? "Update Member" : "Register Member"}</span>
                   </>
                 )}
@@ -1052,11 +1147,11 @@ const InternalTeam = () => {
 
         {/* View Modal */}
         {showViewModal && viewingMember && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-[9999] p-3 sm:p-4 md:p-6">
-            <div className="bg-white rounded-xl sm:rounded-2xl shadow-2xl border border-gray-200 max-w-2xl w-full max-h-[95vh] overflow-y-auto">
-              <div className="flex items-center justify-between p-4 sm:p-5 md:p-6 border-b border-gray-200">
-                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 flex items-center gap-2">
-                  <User className="h-5 w-5 sm:h-6 sm:w-6 text-indigo-600" />
+          <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-[9999] p-2 sm:p-3 md:p-4">
+            <div className="bg-white rounded-lg shadow-xl border border-gray-200 max-w-2xl w-full max-h-[95vh] overflow-y-auto">
+              <div className="flex items-center justify-between p-2 sm:p-3 lg:p-4 border-b border-gray-200">
+                <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900 flex items-center gap-1.5 sm:gap-2">
+                  <User className="h-4 w-4 sm:h-4.5 sm:w-4.5 lg:h-5 lg:w-5 text-indigo-600" />
                   Staff Member Details
                 </h3>
                 <button
@@ -1064,78 +1159,78 @@ const InternalTeam = () => {
                     setShowViewModal(false);
                     setViewingMember(null);
                   }}
-                  className="text-gray-400 hover:text-gray-600 cursor-pointer transition-colors duration-200 p-1 hover:bg-gray-100 rounded-full"
+                  className="text-gray-400 hover:text-gray-600 cursor-pointer transition-colors duration-200 p-0.5 sm:p-1 hover:bg-gray-100 rounded-full"
                   aria-label="Close modal"
                 >
-                  <X className="h-5 w-5 sm:h-6 sm:w-6" />
+                  <X className="h-4 w-4 sm:h-5 sm:w-5" />
                 </button>
               </div>
               
-              <div className="p-4 sm:p-5 md:p-6 space-y-6">
+              <div className="p-2 sm:p-3 lg:p-4 space-y-3 sm:space-y-4 lg:space-y-6">
                 {/* Profile Header */}
-                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5 pb-5 sm:pb-6 border-b border-gray-200">
-                  <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-full flex items-center justify-center shadow-lg">
-                    <User className="h-10 w-10 sm:h-12 sm:w-12 text-white" />
+                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-2 sm:gap-3 lg:gap-4 pb-3 sm:pb-4 lg:pb-5 border-b border-gray-200">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-full flex items-center justify-center shadow-lg">
+                    <User className="h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 text-white" />
                   </div>
                   <div className="flex-1 text-center sm:text-left">
-                    <h4 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">{viewingMember.name}</h4>
-                    <p className="text-sm sm:text-base text-gray-500">ID: {viewingMember.id}</p>
+                    <h4 className="text-base sm:text-lg lg:text-xl font-bold text-gray-900 mb-0.5 sm:mb-1">{viewingMember.name}</h4>
+                    <p className="text-[10px] sm:text-xs lg:text-sm text-gray-500">ID: {viewingMember.id}</p>
                   </div>
                 </div>
 
                 {/* Details Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                  <div className="bg-gray-50 rounded-lg p-4 sm:p-5 border border-gray-200 hover:shadow-md transition-shadow duration-200">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-                        <Mail className="h-5 w-5 text-indigo-600" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 lg:gap-4">
+                  <div className="bg-gray-50 rounded-md p-2 sm:p-3 lg:p-4 border border-gray-200 hover:shadow-sm transition-shadow duration-200">
+                    <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-indigo-100 rounded-md flex items-center justify-center">
+                        <Mail className="h-4 w-4 sm:h-5 sm:w-5 text-indigo-600" />
                       </div>
-                      <span className="text-sm sm:text-base font-semibold text-gray-700">Email Address</span>
+                      <span className="text-[10px] sm:text-xs lg:text-sm font-semibold text-gray-700">Email Address</span>
                     </div>
-                    <p className="text-sm sm:text-base text-gray-900 font-medium break-words">{viewingMember.email || "N/A"}</p>
+                    <p className="text-[10px] sm:text-xs lg:text-sm text-gray-900 font-medium break-words">{viewingMember.email || "N/A"}</p>
                   </div>
 
-                  <div className="bg-gray-50 rounded-lg p-4 sm:p-5 border border-gray-200 hover:shadow-md transition-shadow duration-200">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                        <Phone className="h-5 w-5 text-green-600" />
+                  <div className="bg-gray-50 rounded-md p-2 sm:p-3 lg:p-4 border border-gray-200 hover:shadow-sm transition-shadow duration-200">
+                    <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-100 rounded-md flex items-center justify-center">
+                        <Phone className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
                       </div>
-                      <span className="text-sm sm:text-base font-semibold text-gray-700">Mobile Number</span>
+                      <span className="text-[10px] sm:text-xs lg:text-sm font-semibold text-gray-700">Mobile Number</span>
                     </div>
-                    <p className="text-sm sm:text-base text-gray-900 font-medium">{viewingMember.mobile_number || "N/A"}</p>
+                    <p className="text-[10px] sm:text-xs lg:text-sm text-gray-900 font-medium">{viewingMember.mobile_number || "N/A"}</p>
                   </div>
 
-                  <div className="bg-gray-50 rounded-lg p-4 sm:p-5 border border-gray-200 hover:shadow-md transition-shadow duration-200">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                        <Shield className="h-5 w-5 text-purple-600" />
+                  <div className="bg-gray-50 rounded-md p-2 sm:p-3 lg:p-4 border border-gray-200 hover:shadow-sm transition-shadow duration-200">
+                    <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-purple-100 rounded-md flex items-center justify-center">
+                        <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" />
                       </div>
-                      <span className="text-sm sm:text-base font-semibold text-gray-700">Role</span>
+                      <span className="text-[10px] sm:text-xs lg:text-sm font-semibold text-gray-700">Role</span>
                     </div>
-                    <p className="text-sm sm:text-base text-gray-900 font-medium capitalize">{viewingMember.role || "N/A"}</p>
+                    <p className="text-[10px] sm:text-xs lg:text-sm text-gray-900 font-medium capitalize">{viewingMember.role || "N/A"}</p>
                   </div>
 
-                  <div className="bg-gray-50 rounded-lg p-4 sm:p-5 border border-gray-200 hover:shadow-md transition-shadow duration-200">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <Calendar className="h-5 w-5 text-blue-600" />
+                  <div className="bg-gray-50 rounded-md p-2 sm:p-3 lg:p-4 border border-gray-200 hover:shadow-sm transition-shadow duration-200">
+                    <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 rounded-md flex items-center justify-center">
+                        <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
                       </div>
-                      <span className="text-sm sm:text-base font-semibold text-gray-700">Created At</span>
+                      <span className="text-[10px] sm:text-xs lg:text-sm font-semibold text-gray-700">Created At</span>
                     </div>
-                    <p className="text-sm sm:text-base text-gray-900 font-medium">
+                    <p className="text-[10px] sm:text-xs lg:text-sm text-gray-900 font-medium">
                       {formatDate(viewingMember.created_at)}
                     </p>
                   </div>
 
                   {viewingMember.email_verified_at && (
-                    <div className="bg-gray-50 rounded-lg p-4 sm:p-5 border border-gray-200 hover:shadow-md transition-shadow duration-200 sm:col-span-2">
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                          <CheckCircle className="h-5 w-5 text-green-600" />
+                    <div className="bg-gray-50 rounded-md p-2 sm:p-3 lg:p-4 border border-gray-200 hover:shadow-sm transition-shadow duration-200 sm:col-span-2">
+                      <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-100 rounded-md flex items-center justify-center">
+                          <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
                         </div>
-                        <span className="text-sm sm:text-base font-semibold text-gray-700">Email Verified At</span>
+                        <span className="text-[10px] sm:text-xs lg:text-sm font-semibold text-gray-700">Email Verified At</span>
                       </div>
-                      <p className="text-sm sm:text-base text-gray-900 font-medium">
+                      <p className="text-[10px] sm:text-xs lg:text-sm text-gray-900 font-medium">
                         {formatDate(viewingMember.email_verified_at)}
                       </p>
                     </div>
@@ -1143,13 +1238,13 @@ const InternalTeam = () => {
                 </div>
               </div>
               
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 p-4 sm:p-5 md:p-6 border-t border-gray-200 bg-gray-50">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 p-2 sm:p-3 lg:p-4 border-t border-gray-200 bg-gray-50">
                 <button
                   onClick={() => {
                     setShowViewModal(false);
                     setViewingMember(null);
                   }}
-                  className="w-full sm:w-auto px-4 sm:px-5 py-2.5 sm:py-3 bg-white text-gray-700 rounded-lg border border-gray-300 hover:bg-gray-50 transition-all duration-200 shadow-sm font-medium text-sm sm:text-base"
+                  className="w-full sm:w-auto px-3 sm:px-4 lg:px-5 py-1.5 sm:py-2 lg:py-2.5 bg-white text-gray-700 rounded-md border border-gray-300 hover:bg-gray-50 transition-all duration-200 shadow-sm font-medium text-[10px] sm:text-xs lg:text-sm"
                 >
                   Close
                 </button>
@@ -1159,9 +1254,9 @@ const InternalTeam = () => {
                     setViewingMember(null);
                     handleEdit(viewingMember);
                   }}
-                  className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 bg-indigo-600 text-white rounded-lg border border-indigo-700 hover:bg-indigo-700 transition-all duration-200 shadow-sm font-medium text-sm sm:text-base"
+                  className="w-full sm:w-auto flex items-center justify-center gap-1 sm:gap-2 px-3 sm:px-4 lg:px-5 py-1.5 sm:py-2 lg:py-2.5 bg-indigo-600 text-white rounded-md border border-indigo-700 hover:bg-indigo-700 transition-all duration-200 shadow-sm font-medium text-[10px] sm:text-xs lg:text-sm"
                 >
-                  <Edit className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <Edit className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5" />
                   Edit Member
                 </button>
               </div>
@@ -1171,49 +1266,49 @@ const InternalTeam = () => {
 
         {/* Delete Confirmation Modal */}
         {showDeleteModal && deletingMember && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-[9999] p-3 sm:p-4 md:p-6">
-            <div className="bg-white rounded-xl sm:rounded-2xl shadow-2xl border border-gray-200 max-w-md w-full">
-              <div className="p-4 sm:p-5 md:p-6">
-                <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full">
-                  <AlertCircle className="h-8 w-8 text-red-600" />
+          <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-[9999] p-2 sm:p-3 md:p-4">
+            <div className="bg-white rounded-lg shadow-xl border border-gray-200 max-w-md w-full">
+              <div className="p-3 sm:p-4 lg:p-5">
+                <div className="flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 mx-auto mb-3 sm:mb-4 bg-red-100 rounded-full">
+                  <AlertCircle className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-red-600" />
                 </div>
-                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 text-center mb-2">
+                <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900 text-center mb-1.5 sm:mb-2">
                   Delete Staff Member?
                 </h3>
-                <p className="text-sm sm:text-base text-gray-600 text-center mb-6">
+                <p className="text-[10px] sm:text-xs lg:text-sm text-gray-600 text-center mb-3 sm:mb-4 lg:mb-6">
                   Are you sure you want to delete <span className="font-semibold text-gray-900">{deletingMember.name}</span>? This action cannot be undone.
                 </p>
-                <div className="bg-gray-50 rounded-lg p-3 sm:p-4 mb-6">
-                  <p className="text-xs sm:text-sm text-gray-600 text-center">
+                <div className="bg-gray-50 rounded-md p-2 sm:p-3 lg:p-4 mb-3 sm:mb-4 lg:mb-6">
+                  <p className="text-[9px] sm:text-[10px] lg:text-xs text-gray-600 text-center">
                     <span className="font-medium">Email:</span> {deletingMember.email}
                   </p>
                 </div>
               </div>
               
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 p-4 sm:p-5 md:p-6 border-t border-gray-200 bg-gray-50">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 p-2 sm:p-3 lg:p-4 border-t border-gray-200 bg-gray-50">
                 <button
                   onClick={() => {
                     setShowDeleteModal(false);
                     setDeletingMember(null);
                   }}
-                  className="w-full sm:w-auto px-4 sm:px-5 py-2.5 sm:py-3 bg-white text-gray-700 rounded-lg border border-gray-300 hover:bg-gray-50 transition-all duration-200 shadow-sm font-medium text-sm sm:text-base"
+                  className="w-full sm:w-auto px-3 sm:px-4 lg:px-5 py-1.5 sm:py-2 lg:py-2.5 bg-white text-gray-700 rounded-md border border-gray-300 hover:bg-gray-50 transition-all duration-200 shadow-sm font-medium text-[10px] sm:text-xs lg:text-sm"
                   disabled={isDeleting}
                 >
                   Cancel
                 </button>
                 <button
                   onClick={confirmDelete}
-                  className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 bg-red-600 text-white rounded-lg border border-red-700 hover:bg-red-700 transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed font-medium text-sm sm:text-base"
+                  className="w-full sm:w-auto flex items-center justify-center gap-1 sm:gap-2 px-3 sm:px-4 lg:px-5 py-1.5 sm:py-2 lg:py-2.5 bg-red-600 text-white rounded-md border border-red-700 hover:bg-red-700 transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed font-medium text-[10px] sm:text-xs lg:text-sm"
                   disabled={isDeleting}
                 >
                   {isDeleting ? (
                     <>
-                      <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
+                      <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 animate-spin" />
                       <span>Deleting...</span>
                     </>
                   ) : (
                     <>
-                      <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
+                      <Trash2 className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5" />
                       <span>Delete Member</span>
                     </>
                   )}
@@ -1225,48 +1320,48 @@ const InternalTeam = () => {
 
         {/* Bulk Delete Confirmation Modal */}
         {showBulkDeleteModal && selectedMembers.length > 0 && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-[9999] p-3 sm:p-4 md:p-6">
-            <div className="bg-white rounded-xl sm:rounded-2xl shadow-2xl border border-gray-200 max-w-md w-full">
-              <div className="p-4 sm:p-5 md:p-6">
-                <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full">
-                  <AlertCircle className="h-8 w-8 text-red-600" />
+          <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-[9999] p-2 sm:p-3 md:p-4">
+            <div className="bg-white rounded-lg shadow-xl border border-gray-200 max-w-md w-full">
+              <div className="p-3 sm:p-4 lg:p-5">
+                <div className="flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 mx-auto mb-3 sm:mb-4 bg-red-100 rounded-full">
+                  <AlertCircle className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-red-600" />
                 </div>
-                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 text-center mb-2">
+                <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900 text-center mb-1.5 sm:mb-2">
                   Delete Team Members?
                 </h3>
-                <p className="text-sm sm:text-base text-gray-600 text-center mb-6">
+                <p className="text-[10px] sm:text-xs lg:text-sm text-gray-600 text-center mb-3 sm:mb-4 lg:mb-6">
                   Are you sure you want to delete <span className="font-semibold text-gray-900">{selectedMembers.length}</span> team member(s)? This action cannot be undone.
                 </p>
-                <div className="bg-gray-50 rounded-lg p-3 sm:p-4 mb-6">
-                  <p className="text-xs sm:text-sm text-gray-600 text-center">
+                <div className="bg-gray-50 rounded-md p-2 sm:p-3 lg:p-4 mb-3 sm:mb-4 lg:mb-6">
+                  <p className="text-[9px] sm:text-[10px] lg:text-xs text-gray-600 text-center">
                     <span className="font-medium">Selected Members:</span> {selectedMembers.length} member(s)
                   </p>
                 </div>
               </div>
               
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 p-4 sm:p-5 md:p-6 border-t border-gray-200 bg-gray-50">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 p-2 sm:p-3 lg:p-4 border-t border-gray-200 bg-gray-50">
                 <button
                   onClick={() => {
                     setShowBulkDeleteModal(false);
                   }}
-                  className="w-full sm:w-auto px-4 sm:px-5 py-2.5 sm:py-3 bg-white text-gray-700 rounded-lg border border-gray-300 hover:bg-gray-50 transition-all duration-200 shadow-sm font-medium text-sm sm:text-base"
+                  className="w-full sm:w-auto px-3 sm:px-4 lg:px-5 py-1.5 sm:py-2 lg:py-2.5 bg-white text-gray-700 rounded-md border border-gray-300 hover:bg-gray-50 transition-all duration-200 shadow-sm font-medium text-[10px] sm:text-xs lg:text-sm"
                   disabled={isDeleting}
                 >
                   Cancel
                 </button>
                 <button
                   onClick={confirmBulkDelete}
-                  className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 bg-red-600 text-white rounded-lg border border-red-700 hover:bg-red-700 transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed font-medium text-sm sm:text-base"
+                  className="w-full sm:w-auto flex items-center justify-center gap-1 sm:gap-2 px-3 sm:px-4 lg:px-5 py-1.5 sm:py-2 lg:py-2.5 bg-red-600 text-white rounded-md border border-red-700 hover:bg-red-700 transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed font-medium text-[10px] sm:text-xs lg:text-sm"
                   disabled={isDeleting}
                 >
                   {isDeleting ? (
                     <>
-                      <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
+                      <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 animate-spin" />
                       <span>Deleting...</span>
                     </>
                   ) : (
                     <>
-                      <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
+                      <Trash2 className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5" />
                       <span>Delete Members</span>
                     </>
                   )}
