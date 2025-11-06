@@ -31,6 +31,7 @@ import {
   X,
   Menu,
   ChevronLeft,
+  ChevronDown,
 } from "lucide-react";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
@@ -148,6 +149,158 @@ const AnimatedCounter = ({ end, duration = 2000, suffix = "" }) => {
     <span ref={ref} className="font-black text-white text-4xl">
       {count.toLocaleString()}{suffix}
     </span>
+  );
+};
+
+// FAQ Item Component
+const FAQItem = ({ question, answer }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="bg-white rounded-2xl border-2 border-[#e4d9ff] shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full px-6 py-4 md:px-8 md:py-5 flex items-center justify-between text-left group"
+      >
+        <h3 className="text-base md:text-lg font-bold text-[#1e2749] pr-4 group-hover:text-[#273469] transition-colors">
+          {question}
+        </h3>
+        <div className={`flex-shrink-0 transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
+          <ChevronDown className="h-5 w-5 md:h-6 md:w-6 text-[#273469]" />
+        </div>
+      </button>
+      <div
+        className={`overflow-hidden transition-all duration-300 ${
+          isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+        }`}
+      >
+        <div className="px-6 pb-4 md:px-8 md:pb-5">
+          <p className="text-[#30343f] text-sm md:text-base leading-relaxed">
+            {answer}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Testimonials Slider Component - Auto-play with dots only, no arrows
+const TestimonialsSlider = ({ children, className = "" }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+  const sliderRef = useRef(null);
+  const autoPlayRef = useRef(null);
+  
+  const items = React.Children.toArray(children);
+  const totalItems = items.length;
+
+  // Auto-play functionality
+  useEffect(() => {
+    const startAutoPlay = () => {
+      autoPlayRef.current = setInterval(() => {
+        setCurrentIndex((prev) => (prev + 1) % totalItems);
+      }, 4000); // Change slide every 4 seconds
+    };
+
+    const stopAutoPlay = () => {
+      if (autoPlayRef.current) {
+        clearInterval(autoPlayRef.current);
+        autoPlayRef.current = null;
+      }
+    };
+
+    startAutoPlay();
+
+    // Pause auto-play on hover/touch
+    const sliderElement = sliderRef.current;
+    if (sliderElement) {
+      sliderElement.addEventListener('mouseenter', stopAutoPlay);
+      sliderElement.addEventListener('mouseleave', startAutoPlay);
+      sliderElement.addEventListener('touchstart', stopAutoPlay);
+      sliderElement.addEventListener('touchend', () => {
+        setTimeout(startAutoPlay, 2000); // Resume after 2 seconds
+      });
+    }
+
+    return () => {
+      stopAutoPlay();
+      if (sliderElement) {
+        sliderElement.removeEventListener('mouseenter', stopAutoPlay);
+        sliderElement.removeEventListener('mouseleave', startAutoPlay);
+        sliderElement.removeEventListener('touchstart', stopAutoPlay);
+        sliderElement.removeEventListener('touchend', startAutoPlay);
+      }
+    };
+  }, [totalItems]);
+
+  // Touch handlers for mobile swipe
+  const handleTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isLeftSwipe && currentIndex < totalItems - 1) {
+      setCurrentIndex(currentIndex + 1);
+    }
+    if (isRightSwipe && currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+    }
+  };
+
+  const goToSlide = (index) => {
+    setCurrentIndex(index);
+  };
+
+  return (
+    <div className={`relative ${className}`}>
+      {/* Slider Container */}
+      <div 
+        ref={sliderRef}
+        className="relative overflow-hidden"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        <div 
+          className="flex transition-transform duration-500 ease-in-out"
+          style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+        >
+          {items.map((item, index) => (
+            <div key={index} className="w-full flex-shrink-0 px-4">
+              {item}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Navigation Dots - Bottom */}
+      <div className="flex justify-center mt-8 md:mt-10 space-x-2">
+        {items.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => goToSlide(index)}
+            className={`w-3 h-3 rounded-full transition-all duration-300 ${
+              index === currentIndex 
+                ? 'bg-[#273469] scale-125' 
+                : 'bg-[#e4d9ff] hover:bg-[#273469] hover:scale-110'
+            }`}
+            aria-label={`Go to slide ${index + 1}`}
+          />
+        ))}
+      </div>
+    </div>
   );
 };
 
@@ -489,7 +642,7 @@ const Landing = () => {
 
       {/* Features Section - Hexagonal Grid with Mobile Slider */}
       <section className="py-12 md:py-18 bg-[#fafaff]">
-        <div className="max-w-5xl mx-auto px-4">
+        <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-10 md:mb-15">
             <h2 className="text-2xl md:text-3xl lg:text-5xl font-black mb-3 md:mb-4 text-[#1e2749]">
               Why Choose
@@ -502,7 +655,7 @@ const Landing = () => {
 
           <MobileSlider>
             <FloatingCard delay={100}>
-              <div className="bg-white p-6 md:p-8 rounded-2xl shadow-lg border-2 border-[#e4d9ff] hover:shadow-xl transition-all duration-500 transform hover:-translate-y-1 group h-full">
+              <div className="bg-white p-6 md:p-8 rounded-2xl shadow-md border-2 border-[#e4d9ff] hover:shadow-lg transition-all duration-500 transform hover:-translate-y-1 group h-full">
                 <div className="w-12 h-12 md:w-16 md:h-16 bg-[#e4d9ff] rounded-2xl flex items-center justify-center mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300">
                   <Lock className="h-6 w-6 md:h-7 md:w-7 text-[#273469]" />
                 </div>
@@ -540,8 +693,109 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* How It Works - Timeline Design */}
+      {/* Benefits Section */}
       <section className="py-12 md:py-18 bg-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-10 md:mb-15">
+            <h2 className="text-2xl md:text-3xl lg:text-5xl font-black mb-3 md:mb-4 text-[#1e2749]">
+              Benefits for
+              <span className=" text-[#273469]"> Everyone</span>
+            </h2>
+            <p className="text-sm md:text-base text-[#30343f] max-w-3xl mx-auto">
+              Discover what makes VettedPool the preferred choice for candidates and recruiters alike
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 md:gap-12">
+            {/* Candidates Benefits */}
+            <FloatingCard delay={200}>
+              <div className="bg-[#fafaff] p-6 md:p-8 rounded-2xl border-2 border-[#e4d9ff] shadow-lg h-full">
+                <div className="flex items-center gap-3 md:gap-4 mb-6">
+                  <div className="w-12 h-12 md:w-16 md:h-16 bg-[#273469] rounded-2xl flex items-center justify-center">
+                    <Users className="h-6 w-6 md:h-8 md:w-8 text-white" />
+                  </div>
+                  <h3 className="text-2xl md:text-3xl font-bold text-[#1e2749]">For Candidates</h3>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-[#273469] flex-shrink-0 mt-1" />
+                    <div>
+                      <h4 className="font-semibold text-[#1e2749] mb-1 text-sm md:text-base">Complete Privacy</h4>
+                      <p className="text-[#30343f] text-xs md:text-sm">Your identity stays protected until you're ready to connect</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-[#273469] flex-shrink-0 mt-1" />
+                    <div>
+                      <h4 className="font-semibold text-[#1e2749] mb-1 text-sm md:text-base">Quality Opportunities</h4>
+                      <p className="text-[#30343f] text-xs md:text-sm">Access to pre-screened, verified job opportunities</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-[#273469] flex-shrink-0 mt-1" />
+                    <div>
+                      <h4 className="font-semibold text-[#1e2749] mb-1 text-sm md:text-base">No Spam</h4>
+                      <p className="text-[#30343f] text-xs md:text-sm">Only relevant matches from verified recruiters</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-[#273469] flex-shrink-0 mt-1" />
+                    <div>
+                      <h4 className="font-semibold text-[#1e2749] mb-1 text-sm md:text-base">Professional Support</h4>
+                      <p className="text-[#30343f] text-xs md:text-sm">Dedicated team to help you throughout the process</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </FloatingCard>
+
+            {/* Recruiters Benefits */}
+            <FloatingCard delay={400}>
+              <div className="bg-[#fafaff] p-6 md:p-8 rounded-2xl border-2 border-[#e4d9ff] shadow-lg h-full">
+                <div className="flex items-center gap-3 md:gap-4 mb-6">
+                  <div className="w-12 h-12 md:w-16 md:h-16 bg-[#30343f] rounded-2xl flex items-center justify-center">
+                    <Briefcase className="h-6 w-6 md:h-8 md:w-8 text-white" />
+                  </div>
+                  <h3 className="text-2xl md:text-3xl font-bold text-[#1e2749]">For Recruiters</h3>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-[#273469] flex-shrink-0 mt-1" />
+                    <div>
+                      <h4 className="font-semibold text-[#1e2749] mb-1 text-sm md:text-base">Pre-Screened Talent</h4>
+                      <p className="text-[#30343f] text-xs md:text-sm">Save time with candidates already verified and qualified</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-[#273469] flex-shrink-0 mt-1" />
+                    <div>
+                      <h4 className="font-semibold text-[#1e2749] mb-1 text-sm md:text-base">Reduced Costs</h4>
+                      <p className="text-[#30343f] text-xs md:text-sm">Lower recruitment expenses with our streamlined process</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-[#273469] flex-shrink-0 mt-1" />
+                    <div>
+                      <h4 className="font-semibold text-[#1e2749] mb-1 text-sm md:text-base">Faster Placements</h4>
+                      <p className="text-[#30343f] text-xs md:text-sm">Average placement time of just 24 hours</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-[#273469] flex-shrink-0 mt-1" />
+                    <div>
+                      <h4 className="font-semibold text-[#1e2749] mb-1 text-sm md:text-base">Advanced Matching</h4>
+                      <p className="text-[#30343f] text-xs md:text-sm">Powerful filters to find the perfect candidate match</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </FloatingCard>
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works - Matching Benefits Style */}
+      <section className="py-12 md:py-18 bg-[#fafaff]">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-10 md:mb-15">
             <h2 className="text-2xl md:text-3xl lg:text-5xl font-black mb-3 md:mb-4 text-[#1e2749]">
@@ -553,125 +807,85 @@ const Landing = () => {
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-8 md:gap-16">
+          <div className="grid md:grid-cols-2 gap-8 md:gap-12">
             {/* For Candidates */}
             <FloatingCard delay={200}>
-              <div className="relative">
-                <div className="bg-[#fafaff] p-6 md:p-8 rounded-2xl border-2 border-[#e4d9ff] shadow-lg">
-                   <div className="flex items-center gap-3 md:gap-4 mb-6 md:mb-8">
-                     <div className="w-10 h-10 md:w-12 md:h-12 bg-[#273469] rounded-2xl flex items-center justify-center">
-                       <Users className="h-5 w-5 md:h-6 md:w-6 text-white" />
-                     </div>
-                     <h3 className="text-2xl md:text-3xl font-bold text-[#1e2749]">For Candidates</h3>
-                   </div>
-                  
-                   <div className="space-y-3 md:space-y-4">
-                     {/* Step 1 */}
-                     <div className="bg-[#f2edff] p-3 md:p-4 rounded-xl">
-                       <div className="flex gap-2 md:gap-3">
-                         <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-white border border-gray-300 text-[#273469] flex items-center justify-center font-bold text-xs md:text-sm flex-shrink-0">
-                           1
-                         </div>
-                         <div className="flex-1 border-l border-gray-300 pl-2 md:pl-3">
-                           <h4 className="text-base md:text-lg font-bold mb-1 text-[#1e2749]">Create Your Profile</h4>
-                           <p className="text-[#30343f] text-xs md:text-sm leading-relaxed">
-                             Complete registration with your skills, experience, and preferences.
-                           </p>
-                         </div>
-                       </div>
-                     </div>
-                     
-                     {/* Step 2 */}
-                     <div className="bg-[#f2edff] p-3 md:p-4 rounded-xl">
-                       <div className="flex gap-2 md:gap-3">
-                         <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-white border border-gray-300 text-[#273469] flex items-center justify-center font-bold text-xs md:text-sm flex-shrink-0">
-                           2
-                         </div>
-                         <div className="flex-1 border-l border-gray-300 pl-2 md:pl-3">
-                           <h4 className="text-base md:text-lg font-bold mb-1 text-[#1e2749]">Get Pre-Interviewed</h4>
-                           <p className="text-[#30343f] text-xs md:text-sm leading-relaxed">
-                             Our team validates your credentials and conducts initial screening.
-                           </p>
-                         </div>
-                       </div>
-                     </div>
-                     
-                     {/* Step 3 */}
-                     <div className="bg-[#f2edff] p-3 md:p-4 rounded-xl">
-                       <div className="flex gap-2 md:gap-3">
-                         <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-white border border-gray-300 text-[#273469] flex items-center justify-center font-bold text-xs md:text-sm flex-shrink-0">
-                           3
-                         </div>
-                         <div className="flex-1 border-l border-gray-300 pl-2 md:pl-3">
-                           <h4 className="text-base md:text-lg font-bold mb-1 text-[#1e2749]">Receive Opportunities</h4>
-                           <p className="text-[#30343f] text-xs md:text-sm leading-relaxed">
-                             We connect you with recruiters while keeping your identity protected.
-                           </p>
-                         </div>
-                       </div>
-                     </div>
-                   </div>
+              <div className="bg-white p-6 md:p-8 rounded-2xl border-2 border-[#e4d9ff] shadow-lg h-full">
+                <div className="flex items-center gap-3 md:gap-4 mb-6">
+                  <div className="w-12 h-12 md:w-16 md:h-16 bg-[#273469] rounded-2xl flex items-center justify-center">
+                    <Users className="h-6 w-6 md:h-8 md:w-8 text-white" />
+                  </div>
+                  <h3 className="text-2xl md:text-3xl font-bold text-[#1e2749]">For Candidates</h3>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-[#273469] text-white flex items-center justify-center font-bold text-sm md:text-base flex-shrink-0">
+                      1
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-[#1e2749] mb-1 text-sm md:text-base">Create Your Profile</h4>
+                      <p className="text-[#30343f] text-xs md:text-sm">Complete registration with your skills, experience, and preferences.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-[#273469] text-white flex items-center justify-center font-bold text-sm md:text-base flex-shrink-0">
+                      2
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-[#1e2749] mb-1 text-sm md:text-base">Get Pre-Interviewed</h4>
+                      <p className="text-[#30343f] text-xs md:text-sm">Our team validates your credentials and conducts initial screening.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-[#273469] text-white flex items-center justify-center font-bold text-sm md:text-base flex-shrink-0">
+                      3
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-[#1e2749] mb-1 text-sm md:text-base">Receive Opportunities</h4>
+                      <p className="text-[#30343f] text-xs md:text-sm">We connect you with recruiters while keeping your identity protected.</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </FloatingCard>
 
             {/* For Recruiters */}
             <FloatingCard delay={400}>
-              <div className="relative">
-                <div className="bg-[#fafaff] p-6 md:p-8 rounded-2xl border-2 border-[#e4d9ff] shadow-lg">
-                   <div className="flex items-center gap-3 md:gap-4 mb-6 md:mb-8">
-                     <div className="w-10 h-10 md:w-12 md:h-12 bg-[#30343f] rounded-2xl flex items-center justify-center">
-                       <Briefcase className="h-5 w-5 md:h-6 md:w-6 text-white" />
-                     </div>
-                     <h3 className="text-2xl md:text-3xl font-bold text-[#1e2749]">For Recruiters</h3>
-                   </div>
-                  
-                   <div className="space-y-3 md:space-y-4">
-                     {/* Step 1 */}
-                     <div className="bg-[#f2edff] p-3 md:p-4 rounded-xl">
-                       <div className="flex gap-2 md:gap-3">
-                         <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-white border border-gray-300 text-[#273469] flex items-center justify-center font-bold text-xs md:text-sm flex-shrink-0">
-                           1
-                         </div>
-                         <div className="flex-1 border-l border-gray-300 pl-2 md:pl-3">
-                           <h4 className="text-base md:text-lg font-bold mb-1 text-[#1e2749]">Sign Agreement</h4>
-                           <p className="text-[#30343f] text-xs md:text-sm leading-relaxed">
-                             Complete registration and sign our recruitment agreement.
-                           </p>
-                         </div>
-                       </div>
-                     </div>
-                     
-                     {/* Step 2 */}
-                     <div className="bg-[#f2edff] p-3 md:p-4 rounded-xl">
-                       <div className="flex gap-2 md:gap-3">
-                         <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-white border border-gray-300 text-[#273469] flex items-center justify-center font-bold text-xs md:text-sm flex-shrink-0">
-                           2
-                         </div>
-                         <div className="flex-1 border-l border-gray-300 pl-2 md:pl-3">
-                           <h4 className="text-base md:text-lg font-bold mb-1 text-[#1e2749]">Search & Filter</h4>
-                           <p className="text-[#30343f] text-xs md:text-sm leading-relaxed">
-                            Use advanced filters to find pre-vetted candidates that match your needs.
-                           </p>
-                         </div>
-                       </div>
-                     </div>
-                     
-                     {/* Step 3 */}
-                     <div className="bg-[#f2edff] p-3 md:p-4 rounded-xl">
-                       <div className="flex gap-2 md:gap-3">
-                         <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-white border border-gray-300 text-[#273469] flex items-center justify-center font-bold text-xs md:text-sm flex-shrink-0">
-                           3
-                         </div>
-                         <div className="flex-1 border-l border-gray-300 pl-2 md:pl-3">
-                           <h4 className="text-base md:text-lg font-bold mb-1 text-[#1e2749]">Select Candidates</h4>
-                           <p className="text-[#30343f] text-xs md:text-sm leading-relaxed">
-                             Choose candidates and we'll coordinate interviews on your behalf.
-                           </p>
-                         </div>
-                       </div>
-                     </div>
-                   </div>
+              <div className="bg-white p-6 md:p-8 rounded-2xl border-2 border-[#e4d9ff] shadow-lg h-full">
+                <div className="flex items-center gap-3 md:gap-4 mb-6">
+                  <div className="w-12 h-12 md:w-16 md:h-16 bg-[#30343f] rounded-2xl flex items-center justify-center">
+                    <Briefcase className="h-6 w-6 md:h-8 md:w-8 text-white" />
+                  </div>
+                  <h3 className="text-2xl md:text-3xl font-bold text-[#1e2749]">For Recruiters</h3>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-[#30343f] text-white flex items-center justify-center font-bold text-sm md:text-base flex-shrink-0">
+                      1
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-[#1e2749] mb-1 text-sm md:text-base">Sign Agreement</h4>
+                      <p className="text-[#30343f] text-xs md:text-sm">Complete registration and sign our recruitment agreement.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-[#30343f] text-white flex items-center justify-center font-bold text-sm md:text-base flex-shrink-0">
+                      2
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-[#1e2749] mb-1 text-sm md:text-base">Search & Filter</h4>
+                      <p className="text-[#30343f] text-xs md:text-sm">Use advanced filters to find pre-vetted candidates that match your needs.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-[#30343f] text-white flex items-center justify-center font-bold text-sm md:text-base flex-shrink-0">
+                      3
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-[#1e2749] mb-1 text-sm md:text-base">Select Candidates</h4>
+                      <p className="text-[#30343f] text-xs md:text-sm">Choose candidates and we'll coordinate interviews on your behalf.</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </FloatingCard>
@@ -680,7 +894,7 @@ const Landing = () => {
       </section>
 
       {/* Testimonials - Card Stack Design with Mobile Slider */}
-      <section className="py-12 md:py-18 bg-[#fafaff]">
+      <section className="py-12 md:py-18 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-10 md:mb-15">
             <h2 className="text-2xl md:text-3xl lg:text-5xl font-black mb-3 md:mb-4 text-[#1e2749]">
@@ -692,73 +906,195 @@ const Landing = () => {
             </p>
           </div>
 
-          <MobileSlider>
-            <FloatingCard delay={100}>
-              <div className="bg-white p-6 md:p-8 rounded-2xl border-2 border-[#e4d9ff] shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-1 h-full">
-                <div className="flex items-center mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-4 w-4 md:h-5 md:w-5 text-[#273469] fill-current" />
-                  ))}
+          <TestimonialsSlider>
+            <div className="bg-white p-6 md:p-8 rounded-2xl border-2 border-[#e4d9ff] shadow-md hover:shadow-lg transition-all duration-500 transform hover:-translate-y-1 h-full">
+              <div className="flex items-center mb-4">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="h-4 w-4 md:h-5 md:w-5 text-[#273469] fill-current" />
+                ))}
+              </div>
+              <p className="text-[#30343f] mb-6 leading-relaxed italic text-sm md:text-base">
+                "VettedPool has revolutionized our hiring process. The quality of candidates is exceptional, and the time saved is incredible."
+              </p>
+              <div className="flex items-center">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-[#273469] rounded-full flex items-center justify-center mr-3 md:mr-4 text-white font-bold text-sm md:text-base">
+                  JS
                 </div>
-                <p className="text-[#30343f] mb-6 leading-relaxed italic text-sm md:text-base">
-                  "VettedPool has revolutionized our hiring process. The quality of candidates is exceptional, and the time saved is incredible."
-                </p>
-                <div className="flex items-center">
-                  <div className="w-10 h-10 md:w-12 md:h-12 bg-[#273469] rounded-full flex items-center justify-center mr-3 md:mr-4 text-white font-bold text-sm md:text-base">
-                    JS
-                  </div>
-                  <div>
-                    <p className="font-semibold text-[#1e2749] text-sm md:text-base">John Smith</p>
-                    <p className="text-[#30343f] text-xs md:text-sm">HR Director, TechCorp</p>
-                  </div>
+                <div>
+                  <p className="font-semibold text-[#1e2749] text-sm md:text-base">John Smith</p>
+                  <p className="text-[#30343f] text-xs md:text-sm">HR Director, TechCorp</p>
                 </div>
               </div>
-            </FloatingCard>
+            </div>
 
-            <FloatingCard delay={200}>
-              <div className="bg-white p-6 md:p-8 rounded-2xl border-2 border-[#e4d9ff] shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 h-full">
-                <div className="flex items-center mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-4 w-4 md:h-5 md:w-5 text-[#273469] fill-current" />
-                  ))}
+            <div className="bg-white p-6 md:p-8 rounded-2xl border-2 border-[#e4d9ff] shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 h-full">
+              <div className="flex items-center mb-4">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="h-4 w-4 md:h-5 md:w-5 text-[#273469] fill-current" />
+                ))}
+              </div>
+              <p className="text-[#30343f] mb-6 leading-relaxed italic text-sm md:text-base">
+                "As a candidate, I love the privacy and quality of opportunities. The pre-screening process is thorough and professional."
+              </p>
+              <div className="flex items-center">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-[#273469] rounded-full flex items-center justify-center mr-3 md:mr-4 text-white font-bold text-sm md:text-base">
+                  MJ
                 </div>
-                <p className="text-[#30343f] mb-6 leading-relaxed italic text-sm md:text-base">
-                  "As a candidate, I love the privacy and quality of opportunities. The pre-screening process is thorough and professional."
-                </p>
-                <div className="flex items-center">
-                  <div className="w-10 h-10 md:w-12 md:h-12 bg-[#273469] rounded-full flex items-center justify-center mr-3 md:mr-4 text-white font-bold text-sm md:text-base">
-                    MJ
-                  </div>
-                  <div>
-                    <p className="font-semibold text-[#1e2749] text-sm md:text-base">Maria Johnson</p>
-                    <p className="text-[#30343f] text-xs md:text-sm">Software Engineer</p>
-                  </div>
+                <div>
+                  <p className="font-semibold text-[#1e2749] text-sm md:text-base">Maria Johnson</p>
+                  <p className="text-[#30343f] text-xs md:text-sm">Software Engineer</p>
                 </div>
               </div>
-            </FloatingCard>
+            </div>
 
-            <FloatingCard delay={300}>
-              <div className="bg-white p-6 md:p-8 rounded-2xl border-2 border-[#e4d9ff] shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 h-full">
-                <div className="flex items-center mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-4 w-4 md:h-5 md:w-5 text-[#273469] fill-current" />
-                  ))}
+            <div className="bg-white p-6 md:p-8 rounded-2xl border-2 border-[#e4d9ff] shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 h-full">
+              <div className="flex items-center mb-4">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="h-4 w-4 md:h-5 md:w-5 text-[#273469] fill-current" />
+                ))}
+              </div>
+              <p className="text-[#30343f] mb-6 leading-relaxed italic text-sm md:text-base">
+                "The platform's filtering capabilities are outstanding. We found the perfect candidate in just 24 hours!"
+              </p>
+              <div className="flex items-center">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-[#273469] rounded-full flex items-center justify-center mr-3 md:mr-4 text-white font-bold text-sm md:text-base">
+                  DW
                 </div>
-                <p className="text-[#30343f] mb-6 leading-relaxed italic text-sm md:text-base">
-                  "The platform's filtering capabilities are outstanding. We found the perfect candidate in just 24 hours!"
-                </p>
-                <div className="flex items-center">
-                  <div className="w-10 h-10 md:w-12 md:h-12 bg-[#273469] rounded-full flex items-center justify-center mr-3 md:mr-4 text-white font-bold text-sm md:text-base">
-                    DW
-                  </div>
-                  <div>
-                    <p className="font-semibold text-[#1e2749] text-sm md:text-base">David Wilson</p>
-                    <p className="text-[#30343f] text-xs md:text-sm">CTO, StartupXYZ</p>
-                  </div>
+                <div>
+                  <p className="font-semibold text-[#1e2749] text-sm md:text-base">David Wilson</p>
+                  <p className="text-[#30343f] text-xs md:text-sm">CTO, StartupXYZ</p>
                 </div>
               </div>
-            </FloatingCard>
-          </MobileSlider>
+            </div>
+
+            <div className="bg-white p-6 md:p-8 rounded-2xl border-2 border-[#e4d9ff] shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-1 h-full">
+              <div className="flex items-center mb-4">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="h-4 w-4 md:h-5 md:w-5 text-[#273469] fill-current" />
+                ))}
+              </div>
+              <p className="text-[#30343f] mb-6 leading-relaxed italic text-sm md:text-base">
+                "The anonymous system protected my privacy perfectly while I was still actively working. Found my dream job without any awkwardness with my current employer."
+              </p>
+              <div className="flex items-center">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-[#273469] rounded-full flex items-center justify-center mr-3 md:mr-4 text-white font-bold text-sm md:text-base">
+                  SK
+                </div>
+                <div>
+                  <p className="font-semibold text-[#1e2749] text-sm md:text-base">Sarah Kim</p>
+                  <p className="text-[#30343f] text-xs md:text-sm">Senior Developer</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white p-6 md:p-8 rounded-2xl border-2 border-[#e4d9ff] shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-1 h-full">
+              <div className="flex items-center mb-4">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="h-4 w-4 md:h-5 md:w-5 text-[#273469] fill-current" />
+                ))}
+              </div>
+              <p className="text-[#30343f] mb-6 leading-relaxed italic text-sm md:text-base">
+                "As a startup founder, I needed quality talent fast. VettedPool delivered exactly that - skilled professionals who were ready to contribute from day one."
+              </p>
+              <div className="flex items-center">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-[#273469] rounded-full flex items-center justify-center mr-3 md:mr-4 text-white font-bold text-sm md:text-base">
+                  RC
+                </div>
+                <div>
+                  <p className="font-semibold text-[#1e2749] text-sm md:text-base">Robert Chen</p>
+                  <p className="text-[#30343f] text-xs md:text-sm">Founder, InnovateLab</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white p-6 md:p-8 rounded-2xl border-2 border-[#e4d9ff] shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-1 h-full">
+              <div className="flex items-center mb-4">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="h-4 w-4 md:h-5 md:w-5 text-[#273469] fill-current" />
+                ))}
+              </div>
+              <p className="text-[#30343f] mb-6 leading-relaxed italic text-sm md:text-base">
+                "The pre-screening process is incredibly thorough. Every candidate we've hired through VettedPool has exceeded our expectations."
+              </p>
+              <div className="flex items-center">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-[#273469] rounded-full flex items-center justify-center mr-3 md:mr-4 text-white font-bold text-sm md:text-base">
+                  EL
+                </div>
+                <div>
+                  <p className="font-semibold text-[#1e2749] text-sm md:text-base">Emily Lopez</p>
+                  <p className="text-[#30343f] text-xs md:text-sm">VP of Talent, GrowthCorp</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white p-6 md:p-8 rounded-2xl border-2 border-[#e4d9ff] shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-1 h-full">
+              <div className="flex items-center mb-4">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="h-4 w-4 md:h-5 md:w-5 text-[#273469] fill-current" />
+                ))}
+              </div>
+              <p className="text-[#30343f] mb-6 leading-relaxed italic text-sm md:text-base">
+                "I've tried multiple platforms, but VettedPool's quality assurance and privacy features are unmatched. Highly recommend!"
+              </p>
+              <div className="flex items-center">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-[#273469] rounded-full flex items-center justify-center mr-3 md:mr-4 text-white font-bold text-sm md:text-base">
+                  AM
+                </div>
+                <div>
+                  <p className="font-semibold text-[#1e2749] text-sm md:text-base">Alex Martinez</p>
+                  <p className="text-[#30343f] text-xs md:text-sm">Product Manager</p>
+                </div>
+              </div>
+            </div>
+          </TestimonialsSlider>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-12 md:py-18 bg-[#fafaff]">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="text-center mb-10 md:mb-15">
+            <h2 className="text-2xl md:text-3xl lg:text-5xl font-black mb-3 md:mb-4 text-[#1e2749]">
+              Frequently Asked
+              <span className=" text-[#273469]"> Questions</span>
+            </h2>
+            <p className="text-sm md:text-base text-[#30343f] max-w-3xl mx-auto">
+              Everything you need to know about VettedPool
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            {[
+              {
+                question: "How does the anonymous system work?",
+                answer: "Candidates are assigned unique code numbers instead of sharing their personal information. Recruiters can see skills, experience, and qualifications, but contact details are only shared after both parties express mutual interest."
+              },
+              {
+                question: "What makes candidates 'pre-vetted'?",
+                answer: "Every candidate goes through our comprehensive screening process including technical assessments, background verification, reference checks, and initial interviews before being added to the pool."
+              },
+              {
+                question: "How long does the placement process take?",
+                answer: "On average, successful placements happen within 24 hours after a recruiter selects a candidate. The pre-screening process saves significant time compared to traditional recruitment methods."
+              },
+              {
+                question: "Is there a fee for candidates?",
+                answer: "No, candidates can join and use VettedPool completely free. We only charge recruiters for access to the platform and successful placements."
+              },
+              {
+                question: "What industries do you serve?",
+                answer: "VettedPool serves a wide range of industries including technology, finance, healthcare, engineering, marketing, and more. Our platform is designed to accommodate professionals from various sectors."
+              },
+              {
+                question: "How do you ensure candidate quality?",
+                answer: "We have a rigorous multi-stage verification process that includes skill assessments, portfolio reviews, technical interviews, and background checks. Only candidates who pass all stages are added to our pool."
+              }
+            ].map((faq, index) => (
+              <FloatingCard key={index} delay={100 * (index + 1)}>
+                <FAQItem question={faq.question} answer={faq.answer} />
+              </FloatingCard>
+            ))}
+          </div>
         </div>
       </section>
 
