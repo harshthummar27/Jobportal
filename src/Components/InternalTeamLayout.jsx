@@ -556,7 +556,7 @@ const InternalTeamLayout = ({ children }) => {
                       {passwordErrors.new_password}
                     </p>
                   )}
-                  <p className="mt-1.5 text-xs text-gray-500">Must be at least 6 characters long</p>
+                  <p className="mt-1.5 text-xs text-gray-500">Must be at least 8 characters long</p>
                 </div>
 
                 {/* Confirm Password Field */}

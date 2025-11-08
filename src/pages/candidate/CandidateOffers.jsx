@@ -349,7 +349,7 @@ const CandidateOffers = () => {
                         <th className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-left text-[10px] sm:text-xs font-bold text-gray-700 uppercase tracking-wider">Dates</th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-100">
+                    <tbody className="bg-white divide-y divide-gray-300">
                       {offers.map((offer) => (
                         <tr key={offer.offer_id || offer.id} className="hover:bg-gray-50 transition-colors duration-150">
                           {/* Job Details */}
@@ -460,7 +460,7 @@ const CandidateOffers = () => {
                 </div>
 
                 {/* Mobile/Tablet Card View */}
-                <div className="lg:hidden divide-y divide-gray-200">
+                <div className="lg:hidden divide-y divide-gray-300">
                   {offers.map((offer) => (
                     <div key={offer.offer_id || offer.id} className="p-3 sm:p-4 lg:p-5 hover:bg-gray-50 transition-colors duration-150">
                       {/* Status Badge */}

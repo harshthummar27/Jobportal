@@ -173,7 +173,7 @@ const ShortlistedCandidates = () => {
                       <th className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-left text-[10px] sm:text-xs font-bold text-gray-700 uppercase tracking-wider">Status</th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-100">
+                  <tbody className="bg-white divide-y divide-gray-300">
                     {selectedCandidates.map((candidate) => {
                       const formattedCandidate = formatCandidateData(candidate);
                       return (

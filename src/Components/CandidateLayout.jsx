@@ -9,11 +9,50 @@ const CandidateLayout = ({ children }) => {
     const saved = localStorage.getItem('candidateSidebarCollapsed');
     return saved ? JSON.parse(saved) : false;
   });
+  
+  // Helper function to get user data synchronously from localStorage
+  const getUserDataSync = () => {
+    try {
+      // First, try to get candidate profile data (most complete)
+      const candidateProfileData = localStorage.getItem('candidateProfileData');
+      if (candidateProfileData) {
+        const profile = JSON.parse(candidateProfileData);
+        if (profile.full_name || profile.name) {
+          return {
+            name: profile.full_name || profile.name,
+            email: profile.contact_email || profile.email || "candidate@vettedpool.com"
+          };
+        }
+      }
+      
+      // Fallback to user data from localStorage
+      const userStr = localStorage.getItem('user');
+      if (userStr) {
+        const parsed = JSON.parse(userStr);
+        const inner = parsed.user || parsed;
+        const name = inner.full_name || inner.name || parsed.full_name || parsed.name;
+        const email = inner.email || inner.contact_email || parsed.email || parsed.contact_email;
+        return {
+          name: name || "Candidate",
+          email: email || "candidate@vettedpool.com"
+        };
+      }
+    } catch (e) {
+      console.error('Error loading user data:', e);
+    }
+    return {
+      name: "Candidate",
+      email: "candidate@vettedpool.com"
+    };
+  };
+
+  const initialUserData = getUserDataSync();
+  
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [displayName, setDisplayName] = useState("Candidate");
-  const [displayEmail, setDisplayEmail] = useState("candidate@vettedpool.com");
+  const [displayName, setDisplayName] = useState(initialUserData.name);
+  const [displayEmail, setDisplayEmail] = useState(initialUserData.email);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
@@ -272,20 +311,30 @@ const CandidateLayout = ({ children }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [userDropdownOpen]);
 
+  // Update user data when localStorage changes (for profile updates)
   useEffect(() => {
-    try {
-      const userStr = localStorage.getItem('user');
-      if (userStr) {
-        const parsed = JSON.parse(userStr);
-        const inner = parsed.user || parsed;
-        const name = inner.full_name || inner.name || parsed.full_name || parsed.name;
-        const email = inner.email || inner.contact_email || parsed.email || parsed.contact_email;
-        if (name) setDisplayName(name);
-        if (email) setDisplayEmail(email);
-      }
-    } catch (e) {
-      // ignore
-    }
+    const updateUserData = () => {
+      const userData = getUserDataSync();
+      setDisplayName(userData.name);
+      setDisplayEmail(userData.email);
+    };
+    
+    // Initial update (in case profile was updated before this component mounted)
+    updateUserData();
+    
+    // Listen for storage changes (for profile updates from other tabs)
+    window.addEventListener('storage', updateUserData);
+    
+    // Listen for custom event when profile is updated in same tab
+    const handleProfileUpdate = () => {
+      updateUserData();
+    };
+    window.addEventListener('candidateProfileUpdated', handleProfileUpdate);
+    
+    return () => {
+      window.removeEventListener('storage', updateUserData);
+      window.removeEventListener('candidateProfileUpdated', handleProfileUpdate);
+    };
   }, []);
 
   const getUserInitial = () => {
@@ -451,7 +500,7 @@ const CandidateLayout = ({ children }) => {
                     {passwordErrors.new_password}
                   </p>
                 )}
-                <p className="mt-1.5 text-xs text-gray-500">Must be at least 6 characters long</p>
+                <p className="mt-1.5 text-xs text-gray-500">Must be at least 8 characters long</p>
               </div>
 
               <div className="mb-6">

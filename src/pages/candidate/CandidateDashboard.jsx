@@ -85,17 +85,26 @@ const CandidateDashboard = () => {
   }, []);
 
   // Handle refresh button click
-  const handleRefresh = () => {
+  const handleRefresh = (e) => {
+    // Prevent any default behavior (like form submission or page reload)
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
     // Check if user has profile first
     const hasProfileStatus = localStorage.getItem('has_profile');
     const hasProfileValue = hasProfileStatus === 'true';
     
     if (hasProfileValue) {
-      // User has profile, fetch fresh data
+      // User has profile, fetch fresh data (only refresh the dashboard stats)
       fetchDashboardStats();
     } else {
-      // User doesn't have profile, just reload the page to show the same state
-      window.location.reload();
+      // User doesn't have profile - just re-check the profile status
+      // Don't reload the page, just update the state
+      setHasProfile(false);
+      setIsLoading(false);
+      setError("No profile available");
     }
   };
 
@@ -111,6 +120,7 @@ const CandidateDashboard = () => {
                 <p className="text-xs sm:text-sm text-gray-600 mt-0.5 hidden sm:block">Your job search overview and statistics</p>
               </div>
               <button 
+                type="button"
                 onClick={handleRefresh}
                 disabled={isLoading}
                 className="p-1.5 sm:p-2 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 disabled:opacity-50 flex-shrink-0"

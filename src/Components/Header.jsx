@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Shield, User, Edit, LogOut, AlertTriangle, UserCircle, Building, Globe, Phone, Mail, MapPin, CheckCircle, X, Loader2, Lock, Eye, EyeOff } from "lucide-react";
+import { User, Edit, LogOut, AlertTriangle, X, Loader2, Lock, Eye, EyeOff } from "lucide-react";
 import { toast } from 'react-toastify';
 import logo from '../../public/vettedpool-logo.webp';
 
@@ -44,10 +44,6 @@ const Header = ({ onEditProfile, userData }) => {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const [showProfileModal, setShowProfileModal] = useState(false);
-  const [profileData, setProfileData] = useState(null);
-  const [loadingProfile, setLoadingProfile] = useState(false);
-  const [profileError, setProfileError] = useState(null);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   const [passwordFormData, setPasswordFormData] = useState({
     current_password: '',
@@ -219,54 +215,6 @@ const Header = ({ onEditProfile, userData }) => {
     setShowLogoutModal(false);
   };
 
-  // Fetch recruiter profile
-  const fetchRecruiterProfile = async () => {
-    try {
-      setLoadingProfile(true);
-      setProfileError(null);
-      
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
-
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/recruiter/profile`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      setProfileData(data);
-    } catch (error) {
-      console.error('Error fetching recruiter profile:', error);
-      setProfileError(error.message);
-      toast.error(`Failed to load profile: ${error.message}`);
-    } finally {
-      setLoadingProfile(false);
-    }
-  };
-
-  // Handle My Profile click
-  const handleMyProfile = () => {
-    setUserDropdownOpen(false);
-    setShowProfileModal(true);
-    fetchRecruiterProfile();
-  };
-
-  // Close profile modal
-  const closeProfileModal = () => {
-    setShowProfileModal(false);
-    setProfileData(null);
-    setProfileError(null);
-  };
-
   // Handle Change Password click
   const handleChangePassword = () => {
     setUserDropdownOpen(false);
@@ -430,7 +378,7 @@ const Header = ({ onEditProfile, userData }) => {
 
   // Prevent background scrolling when modal is open
   useEffect(() => {
-    if (showLogoutModal || showProfileModal || showChangePasswordModal) {
+    if (showLogoutModal || showChangePasswordModal) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
@@ -440,7 +388,7 @@ const Header = ({ onEditProfile, userData }) => {
     return () => {
       document.body.style.overflow = 'unset';
     };
-  }, [showLogoutModal, showProfileModal, showChangePasswordModal]);
+  }, [showLogoutModal, showChangePasswordModal]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -525,308 +473,6 @@ const Header = ({ onEditProfile, userData }) => {
                   )}
                 </button>
               </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Recruiter Profile Modal */}
-      {showProfileModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            {/* Modal Header */}
-            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between z-10">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
-                  <UserCircle className="h-5 w-5 text-indigo-600" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">Recruiter Profile</h3>
-                  <p className="text-xs text-gray-500">View your complete profile information</p>
-                </div>
-              </div>
-              <button
-                onClick={closeProfileModal}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            {/* Modal Content */}
-            <div className="p-6">
-              {loadingProfile ? (
-                <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
-                  <span className="ml-3 text-gray-600">Loading profile...</span>
-                </div>
-              ) : profileError ? (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                  <div className="flex items-center gap-2 text-red-600">
-                    <AlertTriangle className="h-5 w-5" />
-                    <span className="font-medium">Error loading profile: {profileError}</span>
-                  </div>
-                </div>
-              ) : profileData?.recruiter_profile ? (
-                <div className="space-y-6">
-                  {/* Verification Status Section */}
-                  {profileData.verification_status && (
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                      <h4 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 text-green-600" />
-                        Verification Status
-                      </h4>
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                        <div className="flex items-center gap-2">
-                          {profileData.verification_status.email_verified ? (
-                            <CheckCircle className="h-4 w-4 text-green-600" />
-                          ) : (
-                            <X className="h-4 w-4 text-red-600" />
-                          )}
-                          <span className="text-xs text-gray-700">Email Verified</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {profileData.verification_status.agreement_accepted ? (
-                            <CheckCircle className="h-4 w-4 text-green-600" />
-                          ) : (
-                            <X className="h-4 w-4 text-red-600" />
-                          )}
-                          <span className="text-xs text-gray-700">Agreement Accepted</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {profileData.verification_status.fully_verified ? (
-                            <CheckCircle className="h-4 w-4 text-green-600" />
-                          ) : (
-                            <X className="h-4 w-4 text-red-600" />
-                          )}
-                          <span className="text-xs text-gray-700">Fully Verified</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {profileData.verification_status.can_access_candidates ? (
-                            <CheckCircle className="h-4 w-4 text-green-600" />
-                          ) : (
-                            <X className="h-4 w-4 text-red-600" />
-                          )}
-                          <span className="text-xs text-gray-700">Can Access Candidates</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Company Information Section */}
-                  <div className="border border-gray-200 rounded-lg p-5">
-                    <h4 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                      <Building className="h-4 w-4 text-indigo-600" />
-                      Company Information
-                    </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-xs font-medium text-gray-500">Company Name</label>
-                        <p className="text-sm text-gray-900 mt-1">{profileData.recruiter_profile.company_name || 'N/A'}</p>
-                      </div>
-                      <div>
-                        <label className="text-xs font-medium text-gray-500 flex items-center gap-1">
-                          <Globe className="h-3 w-3" />
-                          Company Website
-                        </label>
-                        <p className="text-sm text-gray-900 mt-1">
-                          {profileData.recruiter_profile.company_website ? (
-                            <a href={profileData.recruiter_profile.company_website} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">
-                              {profileData.recruiter_profile.company_website}
-                            </a>
-                          ) : 'N/A'}
-                        </p>
-                      </div>
-                      <div>
-                        <label className="text-xs font-medium text-gray-500">Company Size</label>
-                        <p className="text-sm text-gray-900 mt-1">{profileData.recruiter_profile.company_size || 'N/A'}</p>
-                      </div>
-                      <div>
-                        <label className="text-xs font-medium text-gray-500">Industry</label>
-                        <p className="text-sm text-gray-900 mt-1">{profileData.recruiter_profile.industry || 'N/A'}</p>
-                      </div>
-                      <div className="md:col-span-2">
-                        <label className="text-xs font-medium text-gray-500">Company Description</label>
-                        <p className="text-sm text-gray-900 mt-1">{profileData.recruiter_profile.company_description || 'N/A'}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Contact Information Section */}
-                  <div className="border border-gray-200 rounded-lg p-5">
-                    <h4 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                      <UserCircle className="h-4 w-4 text-indigo-600" />
-                      Contact Information
-                    </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-xs font-medium text-gray-500">Contact Person Name</label>
-                        <p className="text-sm text-gray-900 mt-1">{profileData.recruiter_profile.contact_person_name || 'N/A'}</p>
-                      </div>
-                      <div>
-                        <label className="text-xs font-medium text-gray-500">Contact Person Title</label>
-                        <p className="text-sm text-gray-900 mt-1">{profileData.recruiter_profile.contact_person_title || 'N/A'}</p>
-                      </div>
-                      <div>
-                        <label className="text-xs font-medium text-gray-500 flex items-center gap-1">
-                          <Mail className="h-3 w-3" />
-                          Contact Email
-                        </label>
-                        <p className="text-sm text-gray-900 mt-1">{profileData.recruiter_profile.contact_email || 'N/A'}</p>
-                      </div>
-                      <div>
-                        <label className="text-xs font-medium text-gray-500 flex items-center gap-1">
-                          <Phone className="h-3 w-3" />
-                          Contact Phone
-                        </label>
-                        <p className="text-sm text-gray-900 mt-1">{profileData.recruiter_profile.contact_phone || 'N/A'}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Address Information Section */}
-                  <div className="border border-gray-200 rounded-lg p-5">
-                    <h4 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-indigo-600" />
-                      Address Information
-                    </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="md:col-span-2">
-                        <label className="text-xs font-medium text-gray-500">Office Address</label>
-                        <p className="text-sm text-gray-900 mt-1">{profileData.recruiter_profile.office_address || 'N/A'}</p>
-                      </div>
-                      <div>
-                        <label className="text-xs font-medium text-gray-500">City</label>
-                        <p className="text-sm text-gray-900 mt-1">{profileData.recruiter_profile.city || 'N/A'}</p>
-                      </div>
-                      <div>
-                        <label className="text-xs font-medium text-gray-500">State</label>
-                        <p className="text-sm text-gray-900 mt-1">{profileData.recruiter_profile.state || 'N/A'}</p>
-                      </div>
-                      <div>
-                        <label className="text-xs font-medium text-gray-500">Country</label>
-                        <p className="text-sm text-gray-900 mt-1">{profileData.recruiter_profile.country || 'N/A'}</p>
-                      </div>
-                      <div>
-                        <label className="text-xs font-medium text-gray-500">Postal Code</label>
-                        <p className="text-sm text-gray-900 mt-1">{profileData.recruiter_profile.postal_code || 'N/A'}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Agreement & Preferences Section */}
-                  <div className="border border-gray-200 rounded-lg p-5">
-                    <h4 className="text-sm font-semibold text-gray-900 mb-4">Agreement & Preferences</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-xs font-medium text-gray-500">Agreement Accepted</label>
-                        <p className="text-sm text-gray-900 mt-1 flex items-center gap-2">
-                          {profileData.recruiter_profile.agreement_accepted ? (
-                            <><CheckCircle className="h-4 w-4 text-green-600" /> Yes</>
-                          ) : (
-                            <><X className="h-4 w-4 text-red-600" /> No</>
-                          )}
-                        </p>
-                      </div>
-                      <div>
-                        <label className="text-xs font-medium text-gray-500">Agreement Accepted At</label>
-                        <p className="text-sm text-gray-900 mt-1">
-                          {profileData.recruiter_profile.agreement_accepted_at 
-                            ? new Date(profileData.recruiter_profile.agreement_accepted_at).toLocaleString()
-                            : 'N/A'}
-                        </p>
-                      </div>
-                      <div>
-                        <label className="text-xs font-medium text-gray-500">Agreement Terms</label>
-                        <p className="text-sm text-gray-900 mt-1">{profileData.recruiter_profile.agreement_terms || 'N/A'}</p>
-                      </div>
-                      <div>
-                        <label className="text-xs font-medium text-gray-500">Agreement Version</label>
-                        <p className="text-sm text-gray-900 mt-1">{profileData.recruiter_profile.agreement_version || 'N/A'}</p>
-                      </div>
-                      <div>
-                        <label className="text-xs font-medium text-gray-500">Preferences</label>
-                        <p className="text-sm text-gray-900 mt-1">
-                          {profileData.recruiter_profile.preferences 
-                            ? (typeof profileData.recruiter_profile.preferences === 'string' 
-                              ? profileData.recruiter_profile.preferences 
-                              : JSON.stringify(profileData.recruiter_profile.preferences))
-                            : 'N/A'}
-                        </p>
-                      </div>
-                      <div>
-                        <label className="text-xs font-medium text-gray-500">Active Status</label>
-                        <p className="text-sm text-gray-900 mt-1 flex items-center gap-2">
-                          {profileData.recruiter_profile.is_active ? (
-                            <><CheckCircle className="h-4 w-4 text-green-600" /> Active</>
-                          ) : (
-                            <><X className="h-4 w-4 text-red-600" /> Inactive</>
-                          )}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Email Verification Section */}
-                  <div className="border border-gray-200 rounded-lg p-5">
-                    <h4 className="text-sm font-semibold text-gray-900 mb-4">Email Verification</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-xs font-medium text-gray-500">Email Verified</label>
-                        <p className="text-sm text-gray-900 mt-1 flex items-center gap-2">
-                          {profileData.recruiter_profile.email_verified ? (
-                            <><CheckCircle className="h-4 w-4 text-green-600" /> Verified</>
-                          ) : (
-                            <><X className="h-4 w-4 text-red-600" /> Not Verified</>
-                          )}
-                        </p>
-                      </div>
-                      <div>
-                        <label className="text-xs font-medium text-gray-500">Email Verified At</label>
-                        <p className="text-sm text-gray-900 mt-1">
-                          {profileData.recruiter_profile.email_verified_at 
-                            ? new Date(profileData.recruiter_profile.email_verified_at).toLocaleString()
-                            : 'N/A'}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Timestamps */}
-                  <div className="border border-gray-200 rounded-lg p-5 bg-gray-50">
-                    <h4 className="text-xs font-medium text-gray-500 mb-3">Account Information</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-gray-600">
-                      <div>
-                        <span className="font-medium">Created:</span>{' '}
-                        {profileData.recruiter_profile.created_at 
-                          ? new Date(profileData.recruiter_profile.created_at).toLocaleString()
-                          : 'N/A'}
-                      </div>
-                      <div>
-                        <span className="font-medium">Last Updated:</span>{' '}
-                        {profileData.recruiter_profile.updated_at 
-                          ? new Date(profileData.recruiter_profile.updated_at).toLocaleString()
-                          : 'N/A'}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center py-12">
-                  <AlertTriangle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600">No profile data available</p>
-                </div>
-              )}
-            </div>
-
-            {/* Modal Footer */}
-            <div className="sticky bottom-0 bg-white border-t border-gray-200 px-6 py-4 flex justify-end">
-              <button
-                onClick={closeProfileModal}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium text-sm"
-              >
-                Close
-              </button>
             </div>
           </div>
         </div>
@@ -938,7 +584,7 @@ const Header = ({ onEditProfile, userData }) => {
                     {passwordErrors.new_password}
                   </p>
                 )}
-                <p className="mt-1.5 text-xs text-gray-500">Must be at least 6 characters long</p>
+                <p className="mt-1.5 text-xs text-gray-500">Must be at least 8 characters long</p>
               </div>
 
               {/* Confirm Password Field */}

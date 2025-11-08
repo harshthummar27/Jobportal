@@ -535,7 +535,7 @@ const RecruiterDashboard = () => {
                       <th className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-left text-[10px] sm:text-xs font-bold text-gray-700 uppercase tracking-wider">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-100">
+                  <tbody className="bg-white divide-y divide-gray-300">
                     {candidates.map((candidate) => {
                       const formattedCandidate = formatCandidateData(candidate);
                       return (
@@ -664,7 +664,7 @@ const RecruiterDashboard = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                 <div>
-                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Min Salary ($) *</label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Min Salary Per Annum ($) </label>
                   <input
                     type="number"
                     value={selectFormData.offered_salary_min}
@@ -674,7 +674,7 @@ const RecruiterDashboard = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Max Salary ($) *</label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Max Salary Per Annum ($) *</label>
                   <input
                     type="number"
                     value={selectFormData.offered_salary_max}

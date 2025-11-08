@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { 
-  User, Briefcase, CheckCircle, Eye, TrendingUp, Calendar, Bell, MapPin, 
-  GraduationCap, Award, Languages, Users, DollarSign, Shield, Phone, Mail, 
-  Building, Star, AlertCircle, RefreshCw, Clock, FileText 
+  User, Briefcase, CheckCircle, TrendingUp, Calendar, MapPin, 
+  Award, Languages, Users, DollarSign, Shield, Phone, Mail, 
+  Building, Star, AlertCircle, RefreshCw, Clock, FileText, Edit, X, Save
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from 'react-toastify';
@@ -14,6 +14,9 @@ const CandidateMyProfile = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [hasProfile, setHasProfile] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editFormData, setEditFormData] = useState({});
 
   // Fetch profile data from API
   const fetchProfileData = async () => {
@@ -45,6 +48,9 @@ const CandidateMyProfile = () => {
       
       // Also save to localStorage for offline access
       localStorage.setItem('candidateProfileData', JSON.stringify(profileData));
+      
+      // Dispatch custom event to update header immediately
+      window.dispatchEvent(new CustomEvent('candidateProfileUpdated'));
 
     } catch (error) {
       console.error("Profile fetch error:", error);
@@ -169,6 +175,217 @@ const CandidateMyProfile = () => {
     }
   };
 
+  // Initialize edit form data
+  const initializeEditForm = () => {
+    if (profileData) {
+      setEditFormData({
+        city: profileData.city || "",
+        state: profileData.state || "",
+        current_employer: profileData.current_employer || "",
+        total_years_experience: profileData.total_years_experience || "",
+        desired_annual_package: profileData.desired_annual_package || "",
+        availability_date: profileData.availability_date ? profileData.availability_date.split('T')[0] : "",
+        desired_job_roles: profileData.desired_job_roles || [],
+        preferred_industries: profileData.preferred_industries || [],
+        employment_types: profileData.employment_types || [],
+        skills: profileData.skills || [],
+        languages_spoken: profileData.languages_spoken || [],
+        preferred_locations: profileData.preferred_locations || [],
+        relocation_willingness: profileData.relocation_willingness || "",
+        visa_status: profileData.visa_status || "",
+        job_seeking_status: profileData.job_seeking_status || "",
+        education: profileData.education || [],
+        certifications: profileData.certifications || [],
+        job_history: profileData.job_history || [],
+        ethnicity: profileData.ethnicity || "",
+        veteran_status: profileData.veteran_status || false,
+        disability_status: profileData.disability_status || false,
+        willing_to_relocate: profileData.willing_to_relocate || false,
+        additional_notes: profileData.additional_notes || "",
+        references: profileData.references || [],
+        blocked_companies: profileData.blocked_companies || []
+      });
+    }
+  };
+
+  // Handle edit mode toggle
+  const handleEditToggle = () => {
+    if (!isEditMode) {
+      initializeEditForm();
+    }
+    setIsEditMode(!isEditMode);
+  };
+
+  // Handle cancel edit
+  const handleCancelEdit = () => {
+    setIsEditMode(false);
+    setEditFormData({});
+  };
+
+  // Handle form input change
+  const handleEditInputChange = (field, value) => {
+    setEditFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  // Handle array field changes (add/remove items)
+  const handleArrayFieldChange = (field, action, value, index = null) => {
+    setEditFormData(prev => {
+      const currentArray = prev[field] || [];
+      if (action === 'add' && value && !currentArray.includes(value)) {
+        return { ...prev, [field]: [...currentArray, value] };
+      } else if (action === 'remove' && index !== null) {
+        return { ...prev, [field]: currentArray.filter((_, i) => i !== index) };
+      }
+      return prev;
+    });
+  };
+
+  // Handle save profile
+  const handleSaveProfile = async () => {
+    try {
+      // Prepare data for API
+      const updateData = {
+        city: editFormData.city || "",
+        state: editFormData.state || "",
+        current_employer: editFormData.current_employer || "",
+        total_years_experience: editFormData.total_years_experience ? parseInt(editFormData.total_years_experience) : null,
+        desired_annual_package: editFormData.desired_annual_package ? parseFloat(editFormData.desired_annual_package) : null,
+        availability_date: editFormData.availability_date || null,
+        desired_job_roles: editFormData.desired_job_roles || [],
+        preferred_industries: editFormData.preferred_industries || [],
+        employment_types: editFormData.employment_types || [],
+        skills: editFormData.skills || [],
+        languages_spoken: editFormData.languages_spoken || [],
+        preferred_locations: editFormData.preferred_locations || [],
+        relocation_willingness: editFormData.relocation_willingness || "",
+        visa_status: editFormData.visa_status || "",
+        job_seeking_status: editFormData.job_seeking_status || "",
+        education: editFormData.education || [],
+        certifications: editFormData.certifications || [],
+        job_history: editFormData.job_history || [],
+        ethnicity: editFormData.ethnicity || "",
+        veteran_status: editFormData.veteran_status || false,
+        disability_status: editFormData.disability_status || false,
+        willing_to_relocate: editFormData.willing_to_relocate || false,
+        additional_notes: editFormData.additional_notes || "",
+        references: editFormData.references || [],
+        blocked_companies: editFormData.blocked_companies || []
+      };
+
+      const result = await updateProfileData(updateData);
+      if (result.success) {
+        setIsEditMode(false);
+        setEditFormData({});
+      }
+    } catch (error) {
+      console.error("Error saving profile:", error);
+      toast.error("Failed to save profile. Please try again.");
+    }
+  };
+
+  // Update profile data via API
+  const updateProfileData = async (updatedData) => {
+    try {
+      setIsUpdating(true);
+      setError(null);
+
+      const baseURL = import.meta.env.VITE_API_BASE_URL;
+      const apiEndpoint = `${baseURL}/api/profile/update`;
+
+      const response = await fetch(apiEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify(updatedData),
+      });
+
+      // Parse response JSON
+      let data;
+      try {
+        const text = await response.text();
+        data = text ? JSON.parse(text) : {};
+      } catch (parseError) {
+        console.error("JSON Parse Error:", parseError);
+        throw new Error("Invalid response from server. Please try again.");
+      }
+
+      if (!response.ok) {
+        // Handle validation errors from backend
+        const newErrors = {};
+        let hasFieldErrors = false;
+        
+        // Check if backend returns errors object with field-specific errors
+        if (data.errors && typeof data.errors === 'object') {
+          Object.keys(data.errors).forEach(field => {
+            const fieldErrors = data.errors[field];
+            if (Array.isArray(fieldErrors) && fieldErrors.length > 0) {
+              newErrors[field] = fieldErrors[0];
+            } else if (typeof fieldErrors === 'string') {
+              newErrors[field] = fieldErrors;
+            } else if (fieldErrors) {
+              newErrors[field] = String(fieldErrors);
+            }
+            hasFieldErrors = true;
+          });
+        }
+        
+        // Handle general error messages
+        const errorMessage = data.message || data.error || 'Profile update failed';
+        
+        // Check for authentication errors
+        if (errorMessage.toLowerCase().includes("token") || 
+            errorMessage.toLowerCase().includes("unauthorized") || 
+            response.status === 401) {
+          toast.error("Session expired. Please log in again.");
+          setIsUpdating(false);
+          return { success: false, errors: newErrors };
+        }
+        
+        toast.error(errorMessage);
+        setIsUpdating(false);
+        return { success: false, errors: newErrors };
+      }
+
+      // Success - update local state and cache
+      const updatedProfile = data.profile || data.data || data;
+      setProfileData(updatedProfile);
+      setCandidateCode(updatedProfile.candidate_code || updatedProfile.candidateCode || candidateCode);
+      
+      // Update localStorage
+      localStorage.setItem('candidateProfileData', JSON.stringify(updatedProfile));
+      
+      // Dispatch custom event to update header immediately
+      window.dispatchEvent(new CustomEvent('candidateProfileUpdated'));
+
+      toast.success("Profile updated successfully!");
+      setIsUpdating(false);
+      return { success: true, data: updatedProfile };
+
+    } catch (error) {
+      console.error("Profile update error:", error);
+      
+      // Handle network errors or other exceptions
+      if (error.message) {
+        if (error.message.includes('JSON') || error.message.includes('Failed to fetch')) {
+          toast.error("Network error. Please check your connection and try again.");
+        } else {
+          toast.error(error.message || "Failed to update profile. Please try again.");
+        }
+      } else {
+        toast.error("Failed to update profile. Please try again.");
+      }
+      
+      setIsUpdating(false);
+      return { success: false, errors: {} };
+    }
+  };
+
   // Show loading state
   if (isLoading) {
     return (
@@ -252,12 +469,43 @@ const CandidateMyProfile = () => {
                     <span className="text-[10px] sm:text-xs font-medium text-gray-700">{candidateCode}</span>
                   </div>
                 )}
+                {!isEditMode ? (
+                  <button
+                    onClick={handleEditToggle}
+                    className="p-1.5 sm:p-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all duration-200 flex-shrink-0"
+                    title="Edit Profile"
+                  >
+                    <Edit className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  </button>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={handleSaveProfile}
+                      disabled={isUpdating}
+                      className="inline-flex items-center gap-1.5 px-2 sm:px-3 py-1.5 sm:py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-200 text-[10px] sm:text-xs font-medium shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                      title="Save Changes"
+                    >
+                      <Save className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                      <span className="hidden sm:inline">Save</span>
+                    </button>
+                    <button
+                      onClick={handleCancelEdit}
+                      disabled={isUpdating}
+                      className="inline-flex items-center gap-1.5 px-2 sm:px-3 py-1.5 sm:py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-all duration-200 text-[10px] sm:text-xs font-medium shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                      title="Cancel"
+                    >
+                      <X className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                      <span className="hidden sm:inline">Cancel</span>
+                    </button>
+                  </div>
+                )}
                 <button 
                   onClick={handleRefresh}
                   className="p-1.5 sm:p-2 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 flex-shrink-0"
                   title="Refresh Profile Data"
+                  disabled={isUpdating}
                 >
-                  <RefreshCw className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-600" />
+                  <RefreshCw className={`h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-600 ${isUpdating ? 'animate-spin' : ''}`} />
                 </button>
               </div>
             </div>
@@ -329,51 +577,112 @@ const CandidateMyProfile = () => {
                       <MapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-blue-600 flex-shrink-0" />
                       <div className="min-w-0 flex-1">
                         <p className="text-[10px] sm:text-xs font-medium text-gray-500">Location</p>
-                        <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">
-                          {profileData.city && profileData.state 
-                            ? `${profileData.city}, ${profileData.state}` 
-                            : "Not Defined"}
-                        </p>
+                        {isEditMode ? (
+                          <div className="flex gap-1 mt-0.5">
+                            <input
+                              type="text"
+                              placeholder="City"
+                              value={editFormData.city || ""}
+                              onChange={(e) => handleEditInputChange('city', e.target.value)}
+                              className="flex-1 px-2 py-1 text-[10px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                            />
+                            <input
+                              type="text"
+                              placeholder="State"
+                              value={editFormData.state || ""}
+                              onChange={(e) => handleEditInputChange('state', e.target.value)}
+                              className="flex-1 px-2 py-1 text-[10px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                            />
+                          </div>
+                        ) : (
+                          <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">
+                            {profileData.city && profileData.state 
+                              ? `${profileData.city}, ${profileData.state}` 
+                              : "Not Defined"}
+                          </p>
+                        )}
                       </div>
                     </div>
                     <div className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 bg-gray-50 rounded-lg">
                       <Building className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-blue-600 flex-shrink-0" />
                       <div className="min-w-0 flex-1">
                         <p className="text-[10px] sm:text-xs font-medium text-gray-500">Current Employer</p>
-                        <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">{profileData.current_employer || "Not Defined"}</p>
+                        {isEditMode ? (
+                          <input
+                            type="text"
+                            value={editFormData.current_employer || ""}
+                            onChange={(e) => handleEditInputChange('current_employer', e.target.value)}
+                            className="w-full mt-0.5 px-2 py-1 text-[10px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                            placeholder="Current Employer"
+                          />
+                        ) : (
+                          <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">{profileData.current_employer || "Not Defined"}</p>
+                        )}
                       </div>
                     </div>
                     <div className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 bg-gray-50 rounded-lg">
                       <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-blue-600 flex-shrink-0" />
                       <div className="min-w-0 flex-1">
                         <p className="text-[10px] sm:text-xs font-medium text-gray-500">Experience</p>
-                        <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">
-                          {profileData.total_years_experience 
-                            ? `${profileData.total_years_experience} years` 
-                            : "Not Defined"}
-                        </p>
+                        {isEditMode ? (
+                          <input
+                            type="number"
+                            value={editFormData.total_years_experience || ""}
+                            onChange={(e) => handleEditInputChange('total_years_experience', e.target.value)}
+                            className="w-full mt-0.5 px-2 py-1 text-[10px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                            placeholder="Years of experience"
+                            min="0"
+                          />
+                        ) : (
+                          <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">
+                            {profileData.total_years_experience 
+                              ? `${profileData.total_years_experience} years` 
+                              : "Not Defined"}
+                          </p>
+                        )}
                       </div>
                     </div>
                     <div className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 bg-gray-50 rounded-lg">
                       <DollarSign className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-blue-600 flex-shrink-0" />
                       <div className="min-w-0 flex-1">
                         <p className="text-[10px] sm:text-xs font-medium text-gray-500">Desired Package</p>
-                        <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">
-                          {profileData.desired_annual_package 
-                            ? `$${parseFloat(profileData.desired_annual_package).toLocaleString()}` 
-                            : "Not Defined"}
-                        </p>
+                        {isEditMode ? (
+                          <input
+                            type="number"
+                            value={editFormData.desired_annual_package || ""}
+                            onChange={(e) => handleEditInputChange('desired_annual_package', e.target.value)}
+                            className="w-full mt-0.5 px-2 py-1 text-[10px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                            placeholder="Desired annual package (USD)"
+                            min="0"
+                            step="1000"
+                          />
+                        ) : (
+                          <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">
+                            {profileData.desired_annual_package 
+                              ? `$${parseFloat(profileData.desired_annual_package).toLocaleString()}` 
+                              : "Not Defined"}
+                          </p>
+                        )}
                       </div>
                     </div>
                     <div className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 bg-gray-50 rounded-lg">
                       <Calendar className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-blue-600 flex-shrink-0" />
                       <div className="min-w-0 flex-1">
                         <p className="text-[10px] sm:text-xs font-medium text-gray-500">Available From</p>
-                        <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">
-                          {profileData.availability_date 
-                            ? new Date(profileData.availability_date).toLocaleDateString() 
-                            : "Not Defined"}
-                        </p>
+                        {isEditMode ? (
+                          <input
+                            type="date"
+                            value={editFormData.availability_date || ""}
+                            onChange={(e) => handleEditInputChange('availability_date', e.target.value)}
+                            className="w-full mt-0.5 px-2 py-1 text-[10px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          />
+                        ) : (
+                          <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">
+                            {profileData.availability_date 
+                              ? new Date(profileData.availability_date).toLocaleDateString() 
+                              : "Not Defined"}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -390,51 +699,166 @@ const CandidateMyProfile = () => {
                   <div className="space-y-1.5 sm:space-y-2">
                     <div>
                       <p className="text-[10px] sm:text-xs font-medium text-gray-500 mb-1">Desired Roles</p>
-                      <div className="flex flex-wrap gap-1">
-                        {profileData.desired_job_roles && profileData.desired_job_roles.length > 0 ? (
-                          profileData.desired_job_roles.map((role, index) => (
-                            <span key={index} className="px-1.5 py-0.5 bg-green-100 text-green-800 rounded-md text-[10px] sm:text-xs font-medium">
-                              {role}
-                            </span>
-                          ))
-                        ) : (
-                          <span className="text-[10px] sm:text-xs text-gray-500 italic">Not Defined</span>
-                        )}
-                      </div>
+                      {isEditMode ? (
+                        <div className="space-y-1">
+                          <div className="flex gap-1">
+                            <input
+                              type="text"
+                              placeholder="Add role"
+                              onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  const value = e.target.value.trim();
+                                  if (value) handleArrayFieldChange('desired_job_roles', 'add', value);
+                                  e.target.value = '';
+                                }
+                              }}
+                              className="flex-1 px-2 py-1 text-[10px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                            />
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {(editFormData.desired_job_roles || profileData.desired_job_roles || []).map((role, index) => (
+                              <span key={index} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-green-100 text-green-800 rounded-md text-[10px] sm:text-xs font-medium">
+                                {role}
+                                <button
+                                  type="button"
+                                  onClick={() => handleArrayFieldChange('desired_job_roles', 'remove', null, index)}
+                                  className="hover:text-red-600"
+                                >
+                                  <X className="h-2.5 w-2.5" />
+                                </button>
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex flex-wrap gap-1">
+                          {profileData.desired_job_roles && profileData.desired_job_roles.length > 0 ? (
+                            profileData.desired_job_roles.map((role, index) => (
+                              <span key={index} className="px-1.5 py-0.5 bg-green-100 text-green-800 rounded-md text-[10px] sm:text-xs font-medium">
+                                {role}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="text-[10px] sm:text-xs text-gray-500 italic">Not Defined</span>
+                          )}
+                        </div>
+                      )}
                     </div>
                     <div>
                       <p className="text-[10px] sm:text-xs font-medium text-gray-500 mb-1">Preferred Industries</p>
-                      <div className="flex flex-wrap gap-1">
-                        {profileData.preferred_industries && profileData.preferred_industries.length > 0 ? (
-                          profileData.preferred_industries.map((industry, index) => (
-                            <span key={index} className="px-1.5 py-0.5 bg-blue-100 text-blue-800 rounded-md text-[10px] sm:text-xs font-medium">
-                              {industry}
-                            </span>
-                          ))
-                        ) : (
-                          <span className="text-[10px] sm:text-xs text-gray-500 italic">Not Defined</span>
-                        )}
-                      </div>
+                      {isEditMode ? (
+                        <div className="space-y-1">
+                          <div className="flex gap-1">
+                            <input
+                              type="text"
+                              placeholder="Add industry"
+                              onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  const value = e.target.value.trim();
+                                  if (value) handleArrayFieldChange('preferred_industries', 'add', value);
+                                  e.target.value = '';
+                                }
+                              }}
+                              className="flex-1 px-2 py-1 text-[10px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                            />
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {(editFormData.preferred_industries || profileData.preferred_industries || []).map((industry, index) => (
+                              <span key={index} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-blue-100 text-blue-800 rounded-md text-[10px] sm:text-xs font-medium">
+                                {industry}
+                                <button
+                                  type="button"
+                                  onClick={() => handleArrayFieldChange('preferred_industries', 'remove', null, index)}
+                                  className="hover:text-red-600"
+                                >
+                                  <X className="h-2.5 w-2.5" />
+                                </button>
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex flex-wrap gap-1">
+                          {profileData.preferred_industries && profileData.preferred_industries.length > 0 ? (
+                            profileData.preferred_industries.map((industry, index) => (
+                              <span key={index} className="px-1.5 py-0.5 bg-blue-100 text-blue-800 rounded-md text-[10px] sm:text-xs font-medium">
+                                {industry}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="text-[10px] sm:text-xs text-gray-500 italic">Not Defined</span>
+                          )}
+                        </div>
+                      )}
                     </div>
                     <div>
                       <p className="text-[10px] sm:text-xs font-medium text-gray-500 mb-1">Employment Types</p>
-                      <div className="flex flex-wrap gap-1">
-                        {profileData.employment_types && profileData.employment_types.length > 0 ? (
-                          profileData.employment_types.map((type, index) => (
-                            <span key={index} className="px-1.5 py-0.5 bg-purple-100 text-purple-800 rounded-md text-[10px] sm:text-xs font-medium">
-                              {type}
-                            </span>
-                          ))
-                        ) : (
-                          <span className="text-[10px] sm:text-xs text-gray-500 italic">Not Defined</span>
-                        )}
-                      </div>
+                      {isEditMode ? (
+                        <div className="space-y-1">
+                          <div className="flex gap-1">
+                            <input
+                              type="text"
+                              placeholder="Add employment type"
+                              onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  const value = e.target.value.trim();
+                                  if (value) handleArrayFieldChange('employment_types', 'add', value);
+                                  e.target.value = '';
+                                }
+                              }}
+                              className="flex-1 px-2 py-1 text-[10px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                            />
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {(editFormData.employment_types || profileData.employment_types || []).map((type, index) => (
+                              <span key={index} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-purple-100 text-purple-800 rounded-md text-[10px] sm:text-xs font-medium">
+                                {type}
+                                <button
+                                  type="button"
+                                  onClick={() => handleArrayFieldChange('employment_types', 'remove', null, index)}
+                                  className="hover:text-red-600"
+                                >
+                                  <X className="h-2.5 w-2.5" />
+                                </button>
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex flex-wrap gap-1">
+                          {profileData.employment_types && profileData.employment_types.length > 0 ? (
+                            profileData.employment_types.map((type, index) => (
+                              <span key={index} className="px-1.5 py-0.5 bg-purple-100 text-purple-800 rounded-md text-[10px] sm:text-xs font-medium">
+                                {type}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="text-[10px] sm:text-xs text-gray-500 italic">Not Defined</span>
+                          )}
+                        </div>
+                      )}
                     </div>
                     <div className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 bg-gray-50 rounded-lg">
                       <MapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-green-600 flex-shrink-0" />
                       <div className="min-w-0 flex-1">
                         <p className="text-[10px] sm:text-xs font-medium text-gray-500">Relocation</p>
-                        <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">{profileData.relocation_willingness || "Not Defined"}</p>
+                        {isEditMode ? (
+                          <select
+                            value={editFormData.relocation_willingness || ""}
+                            onChange={(e) => handleEditInputChange('relocation_willingness', e.target.value)}
+                            className="w-full mt-0.5 px-2 py-1 text-[10px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          >
+                            <option value="">Select relocation preference</option>
+                            <option value="by_self">Yes, I can relocate by myself</option>
+                            <option value="if_employer_covers">Yes, if employer covers relocation costs</option>
+                            <option value="not_willing">Not willing to relocate</option>
+                          </select>
+                        ) : (
+                          <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">{profileData.relocation_willingness || "Not Defined"}</p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -451,17 +875,51 @@ const CandidateMyProfile = () => {
                   <div className="space-y-1.5 sm:space-y-2">
                     <div>
                       <p className="text-[10px] sm:text-xs font-medium text-gray-500 mb-1">Skills</p>
-                      <div className="flex flex-wrap gap-1">
-                        {profileData.skills && profileData.skills.length > 0 ? (
-                          profileData.skills.map((skill, index) => (
-                            <span key={index} className="px-1.5 py-0.5 bg-purple-100 text-purple-800 rounded-md text-[10px] sm:text-xs font-medium">
-                              {skill}
-                            </span>
-                          ))
-                        ) : (
-                          <span className="text-[10px] sm:text-xs text-gray-500 italic">Not Defined</span>
-                        )}
-                      </div>
+                      {isEditMode ? (
+                        <div className="space-y-1">
+                          <div className="flex gap-1">
+                            <input
+                              type="text"
+                              placeholder="Add skill"
+                              onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  const value = e.target.value.trim();
+                                  if (value) handleArrayFieldChange('skills', 'add', value);
+                                  e.target.value = '';
+                                }
+                              }}
+                              className="flex-1 px-2 py-1 text-[10px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                            />
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {(editFormData.skills || profileData.skills || []).map((skill, index) => (
+                              <span key={index} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-purple-100 text-purple-800 rounded-md text-[10px] sm:text-xs font-medium">
+                                {skill}
+                                <button
+                                  type="button"
+                                  onClick={() => handleArrayFieldChange('skills', 'remove', null, index)}
+                                  className="hover:text-red-600"
+                                >
+                                  <X className="h-2.5 w-2.5" />
+                                </button>
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex flex-wrap gap-1">
+                          {profileData.skills && profileData.skills.length > 0 ? (
+                            profileData.skills.map((skill, index) => (
+                              <span key={index} className="px-1.5 py-0.5 bg-purple-100 text-purple-800 rounded-md text-[10px] sm:text-xs font-medium">
+                                {skill}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="text-[10px] sm:text-xs text-gray-500 italic">Not Defined</span>
+                          )}
+                        </div>
+                      )}
                     </div>
                     <div>
                       <p className="text-[10px] sm:text-xs font-medium text-gray-500 mb-1">Education</p>
@@ -521,17 +979,51 @@ const CandidateMyProfile = () => {
                     </div>
                     <div>
                       <p className="text-[10px] sm:text-xs font-medium text-gray-500 mb-1">Languages</p>
-                      <div className="flex flex-wrap gap-1">
-                        {profileData.languages_spoken && profileData.languages_spoken.length > 0 ? (
-                          profileData.languages_spoken.map((language, index) => (
-                            <span key={index} className="px-1.5 py-0.5 bg-teal-100 text-teal-800 rounded-md text-[10px] sm:text-xs font-medium">
-                              {language}
-                            </span>
-                          ))
-                        ) : (
-                          <span className="text-[10px] sm:text-xs text-gray-500 italic">Not Defined</span>
-                        )}
-                      </div>
+                      {isEditMode ? (
+                        <div className="space-y-1">
+                          <div className="flex gap-1">
+                            <input
+                              type="text"
+                              placeholder="Add language"
+                              onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  const value = e.target.value.trim();
+                                  if (value) handleArrayFieldChange('languages_spoken', 'add', value);
+                                  e.target.value = '';
+                                }
+                              }}
+                              className="flex-1 px-2 py-1 text-[10px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                            />
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {(editFormData.languages_spoken || profileData.languages_spoken || []).map((language, index) => (
+                              <span key={index} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-teal-100 text-teal-800 rounded-md text-[10px] sm:text-xs font-medium">
+                                {language}
+                                <button
+                                  type="button"
+                                  onClick={() => handleArrayFieldChange('languages_spoken', 'remove', null, index)}
+                                  className="hover:text-red-600"
+                                >
+                                  <X className="h-2.5 w-2.5" />
+                                </button>
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex flex-wrap gap-1">
+                          {profileData.languages_spoken && profileData.languages_spoken.length > 0 ? (
+                            profileData.languages_spoken.map((language, index) => (
+                              <span key={index} className="px-1.5 py-0.5 bg-teal-100 text-teal-800 rounded-md text-[10px] sm:text-xs font-medium">
+                                {language}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="text-[10px] sm:text-xs text-gray-500 italic">Not Defined</span>
+                          )}
+                        </div>
+                      )}
                     </div>
                     <div>
                       <p className="text-[10px] sm:text-xs font-medium text-gray-500 mb-1">Preferred Locations</p>
@@ -611,29 +1103,67 @@ const CandidateMyProfile = () => {
                         <Shield className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gray-600 flex-shrink-0" />
                         <div className="min-w-0 flex-1">
                           <p className="text-[10px] sm:text-xs font-medium text-gray-500">Visa Status</p>
-                          <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">
-                            {profileData.visa_status 
-                              ? profileData.visa_status.replace('_', ' ').toUpperCase() 
-                              : "Not Defined"}
-                          </p>
+                          {isEditMode ? (
+                            <select
+                              value={editFormData.visa_status || ""}
+                              onChange={(e) => handleEditInputChange('visa_status', e.target.value)}
+                              className="w-full mt-0.5 px-2 py-1 text-[10px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                            >
+                              <option value="">Select visa status</option>
+                              <option value="us_citizen">US Citizen</option>
+                              <option value="permanent_resident">Permanent Resident</option>
+                              <option value="h1b">H1B</option>
+                              <option value="opt_cpt">OPT/CPT</option>
+                              <option value="other">Other</option>
+                            </select>
+                          ) : (
+                            <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">
+                              {profileData.visa_status 
+                                ? profileData.visa_status.replace('_', ' ').toUpperCase() 
+                                : "Not Defined"}
+                            </p>
+                          )}
                         </div>
                       </div>
                       <div className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 bg-gray-50 rounded-lg">
                         <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gray-600 flex-shrink-0" />
                         <div className="min-w-0 flex-1">
                           <p className="text-[10px] sm:text-xs font-medium text-gray-500">Job Seeking Status</p>
-                          <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">
-                            {profileData.job_seeking_status 
-                              ? profileData.job_seeking_status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) 
-                              : "Not Defined"}
-                          </p>
+                          {isEditMode ? (
+                            <select
+                              value={editFormData.job_seeking_status || ""}
+                              onChange={(e) => handleEditInputChange('job_seeking_status', e.target.value)}
+                              className="w-full mt-0.5 px-2 py-1 text-[10px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                            >
+                              <option value="">Select status</option>
+                              <option value="actively_looking">Actively Looking</option>
+                              <option value="open_to_offers">Open to Offers</option>
+                              <option value="not_looking">Not Looking</option>
+                            </select>
+                          ) : (
+                            <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">
+                              {profileData.job_seeking_status 
+                                ? profileData.job_seeking_status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) 
+                                : "Not Defined"}
+                            </p>
+                          )}
                         </div>
                       </div>
                       <div className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 bg-gray-50 rounded-lg">
                         <Users className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gray-600 flex-shrink-0" />
                         <div className="min-w-0 flex-1">
                           <p className="text-[10px] sm:text-xs font-medium text-gray-500">Ethnicity</p>
-                          <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">{profileData.ethnicity || "Not Defined"}</p>
+                          {isEditMode ? (
+                            <input
+                              type="text"
+                              value={editFormData.ethnicity || ""}
+                              onChange={(e) => handleEditInputChange('ethnicity', e.target.value)}
+                              className="w-full mt-0.5 px-2 py-1 text-[10px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                              placeholder="Ethnicity"
+                            />
+                          ) : (
+                            <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">{profileData.ethnicity || "Not Defined"}</p>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -721,14 +1251,22 @@ const CandidateMyProfile = () => {
                     </div>
                   )}
                   
-                  {profileData.additional_notes && (
-                    <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-gray-200">
-                      <p className="text-[10px] sm:text-xs font-medium text-gray-500 mb-1">Additional Notes</p>
+                  <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-gray-200">
+                    <p className="text-[10px] sm:text-xs font-medium text-gray-500 mb-1">Additional Notes</p>
+                    {isEditMode ? (
+                      <textarea
+                        value={editFormData.additional_notes || ""}
+                        onChange={(e) => handleEditInputChange('additional_notes', e.target.value)}
+                        className="w-full mt-0.5 px-2 py-1 text-[10px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                        rows="3"
+                        placeholder="Additional notes"
+                      />
+                    ) : (
                       <div className="p-1.5 sm:p-2 bg-gray-50 rounded-lg">
-                        <p className="text-[10px] sm:text-xs text-gray-700">{profileData.additional_notes}</p>
+                        <p className="text-[10px] sm:text-xs text-gray-700">{profileData.additional_notes || "Not Defined"}</p>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
 
                   {profileData.references && profileData.references.length > 0 ? (
                     <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-gray-200">

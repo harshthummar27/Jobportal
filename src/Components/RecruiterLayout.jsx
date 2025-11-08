@@ -6,7 +6,9 @@ import RecruiterSidebar from "./RecruiterSidebar";
 
 const SearchContext = createContext();
 
-export const useRecruiterSearch = () => {
+// Internal hook (not exported to avoid Fast Refresh warnings)
+// If needed in the future, move to a separate file
+const useRecruiterSearch = () => {
   const context = useContext(SearchContext);
   if (!context) {
     console.warn('useRecruiterSearch called outside of provider, returning defaults');
@@ -22,11 +24,50 @@ const RecruiterLayout = ({ children }) => {
     const saved = localStorage.getItem('recruiterSidebarCollapsed');
     return saved ? JSON.parse(saved) : false;
   });
+  
+  // Helper function to get user data synchronously from localStorage
+  const getUserDataSync = () => {
+    try {
+      // First, try to get recruiter profile data if available
+      const recruiterProfileData = localStorage.getItem('recruiterProfileData');
+      if (recruiterProfileData) {
+        const profile = JSON.parse(recruiterProfileData);
+        if (profile.contact_person_name || profile.company_name) {
+          return {
+            name: profile.contact_person_name || profile.company_name || "Recruiter",
+            email: profile.contact_email || profile.email || "recruiter@vettedpool.com"
+          };
+        }
+      }
+      
+      // Fallback to user data from localStorage
+      const userStr = localStorage.getItem('user');
+      if (userStr) {
+        const parsed = JSON.parse(userStr);
+        const inner = parsed.user || parsed;
+        const name = inner.full_name || inner.name || inner.contact_person_name || parsed.full_name || parsed.name || parsed.contact_person_name;
+        const email = inner.email || inner.contact_email || parsed.email || parsed.contact_email;
+        return {
+          name: name || "Recruiter",
+          email: email || "recruiter@vettedpool.com"
+        };
+      }
+    } catch (e) {
+      console.error('Error loading user data:', e);
+    }
+    return {
+      name: "Recruiter",
+      email: "recruiter@vettedpool.com"
+    };
+  };
+
+  const initialUserData = getUserDataSync();
+  
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [displayName, setDisplayName] = useState("Recruiter");
-  const [displayEmail, setDisplayEmail] = useState("recruiter@vettedpool.com");
+  const [displayName, setDisplayName] = useState(initialUserData.name);
+  const [displayEmail, setDisplayEmail] = useState(initialUserData.email);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
@@ -305,21 +346,30 @@ const RecruiterLayout = ({ children }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [userDropdownOpen]);
 
-  // Load user display info
+  // Update user data when localStorage changes (for profile updates)
   useEffect(() => {
-    try {
-      const userStr = localStorage.getItem('user');
-      if (userStr) {
-        const parsed = JSON.parse(userStr);
-        const inner = parsed.user || parsed;
-        const name = inner.full_name || inner.name || parsed.full_name || parsed.name;
-        const email = inner.email || inner.contact_email || parsed.email || parsed.contact_email;
-        if (name) setDisplayName(name);
-        if (email) setDisplayEmail(email);
-      }
-    } catch (e) {
-      // ignore
-    }
+    const updateUserData = () => {
+      const userData = getUserDataSync();
+      setDisplayName(userData.name);
+      setDisplayEmail(userData.email);
+    };
+    
+    // Initial update (in case profile was updated before this component mounted)
+    updateUserData();
+    
+    // Listen for storage changes (for profile updates from other tabs)
+    window.addEventListener('storage', updateUserData);
+    
+    // Listen for custom event when profile is updated in same tab
+    const handleProfileUpdate = () => {
+      updateUserData();
+    };
+    window.addEventListener('recruiterProfileUpdated', handleProfileUpdate);
+    
+    return () => {
+      window.removeEventListener('storage', updateUserData);
+      window.removeEventListener('recruiterProfileUpdated', handleProfileUpdate);
+    };
   }, []);
 
   // Get user initial (first letter of name)
@@ -496,7 +546,7 @@ const RecruiterLayout = ({ children }) => {
                       {passwordErrors.new_password}
                     </p>
                   )}
-                  <p className="mt-1.5 text-xs text-gray-500">Must be at least 6 characters long</p>
+                  <p className="mt-1.5 text-xs text-gray-500">Must be at least 8 characters long</p>
                 </div>
 
                 {/* Confirm Password Field */}

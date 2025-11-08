@@ -32,8 +32,34 @@ const SuperAdminLayout = ({ children }) => {
     new: false,
     confirm: false
   });
-  const [displayName, setDisplayName] = useState("Super Admin");
-  const [displayEmail, setDisplayEmail] = useState("admin@vettedpool.com");
+  
+  // Helper function to get user data synchronously from localStorage
+  const getUserDataSync = () => {
+    try {
+      // Get user data from localStorage
+      const userStr = localStorage.getItem('user');
+      if (userStr) {
+        const parsed = JSON.parse(userStr);
+        const inner = parsed.user || parsed;
+        const name = inner.full_name || inner.name || parsed.full_name || parsed.name;
+        const email = inner.email || inner.contact_email || parsed.email || parsed.contact_email;
+        return {
+          name: name || "Super Admin",
+          email: email || "admin@vettedpool.com"
+        };
+      }
+    } catch (e) {
+      console.error('Error loading user data:', e);
+    }
+    return {
+      name: "Super Admin",
+      email: "admin@vettedpool.com"
+    };
+  };
+
+  const initialUserData = getUserDataSync();
+  const [displayName, setDisplayName] = useState(initialUserData.name);
+  const [displayEmail, setDisplayEmail] = useState(initialUserData.email);
 
   // Get page name based on current route
   const getPageName = () => {
@@ -334,21 +360,30 @@ const SuperAdminLayout = ({ children }) => {
     };
   }, [userDropdownOpen]);
 
-  // Fetch user data from localStorage
+  // Update user data when localStorage changes (for profile updates)
   useEffect(() => {
-    try {
-      const userStr = localStorage.getItem('user');
-      if (userStr) {
-        const parsed = JSON.parse(userStr);
-        const inner = parsed.user || parsed;
-        const name = inner.full_name || inner.name || parsed.full_name || parsed.name;
-        const email = inner.email || inner.contact_email || parsed.email || parsed.contact_email;
-        if (name) setDisplayName(name);
-        if (email) setDisplayEmail(email);
-      }
-    } catch (e) {
-      // ignore
-    }
+    const updateUserData = () => {
+      const userData = getUserDataSync();
+      setDisplayName(userData.name);
+      setDisplayEmail(userData.email);
+    };
+    
+    // Initial update (in case profile was updated before this component mounted)
+    updateUserData();
+    
+    // Listen for storage changes (for profile updates from other tabs)
+    window.addEventListener('storage', updateUserData);
+    
+    // Listen for custom event when profile is updated in same tab
+    const handleProfileUpdate = () => {
+      updateUserData();
+    };
+    window.addEventListener('superAdminProfileUpdated', handleProfileUpdate);
+    
+    return () => {
+      window.removeEventListener('storage', updateUserData);
+      window.removeEventListener('superAdminProfileUpdated', handleProfileUpdate);
+    };
   }, []);
 
   const getUserInitial = () => {
@@ -522,7 +557,7 @@ const SuperAdminLayout = ({ children }) => {
                       {passwordErrors.new_password}
                     </p>
                   )}
-                  <p className="mt-1.5 text-xs text-gray-500">Must be at least 6 characters long</p>
+                  <p className="mt-1.5 text-xs text-gray-500">Must be at least 8 characters long</p>
                 </div>
 
                 {/* Confirm Password Field */}
@@ -625,7 +660,7 @@ const SuperAdminLayout = ({ children }) => {
               </button>
               
               {/* Logo */}
-              <Link to="/superadmin/dashboard" className="flex items-center gap-1 sm:gap-2 cursor-pointer hover:opacity-90 transition-opacity">
+              <Link to="/" className="flex items-center gap-1 sm:gap-2 cursor-pointer hover:opacity-90 transition-opacity">
                 <img 
                   src="/vettedpool-fav.png" 
                   alt="VettedPool Logo" 
