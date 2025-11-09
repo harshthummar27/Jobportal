@@ -466,31 +466,19 @@ const RecruiterProfile = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3">
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6 space-y-2 sm:space-y-2.5">
-                  <h2 className="text-xs sm:text-sm font-semibold text-gray-800">Account Status</h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] sm:text-xs text-gray-500">Email Verified (Profile)</span>
-                      <BoolBadge value={Boolean(profile.email_verified)} />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] sm:text-xs text-gray-500">Active</span>
-                      <BoolBadge value={Boolean(profile.is_active)} />
-                    </div>
-                    <Field label="Created At" value={profile.created_at} />
-                    <Field label="Updated At" value={profile.updated_at} />
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6 space-y-2 sm:space-y-2.5">
+                <h2 className="text-xs sm:text-sm font-semibold text-gray-800">Account Status</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] sm:text-xs text-gray-500">Email Verified (Profile)</span>
+                    <BoolBadge value={Boolean(profile.email_verified)} />
                   </div>
-                </div>
-
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6 space-y-2 sm:space-y-2.5">
-                  <h2 className="text-xs sm:text-sm font-semibold text-gray-800">System & Meta</h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5">
-                    <Field label="Profile ID" value={profile.id} />
-                    <Field label="User ID" value={profile.user_id} />
-                    <Field label="Verification Token" value={profile.verification_token ?? '—'} />
-                    <Field label="Preferences" value={typeof profile.preferences === 'object' ? JSON.stringify(profile.preferences) : (profile.preferences ?? '—')} />
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] sm:text-xs text-gray-500">Active</span>
+                    <BoolBadge value={Boolean(profile.is_active)} />
                   </div>
+                  <Field label="Created At" value={profile.created_at} />
+                  <Field label="Updated At" value={profile.updated_at} />
                 </div>
               </div>
             </div>

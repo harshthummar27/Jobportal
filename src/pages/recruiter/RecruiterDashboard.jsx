@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Users, UserCheck, AlertCircle, Loader2, Search, CheckCircle, X } from "lucide-react";
+import { Users, UserCheck, AlertCircle, Loader2, Search, CheckCircle, X, MapPin, Briefcase, DollarSign, Award, Calendar } from "lucide-react";
 import { toast } from 'react-toastify';
 import RecruiterLayout from "../../Components/RecruiterLayout";
 
@@ -524,67 +524,126 @@ const RecruiterDashboard = () => {
                 <p className="text-xs sm:text-sm text-gray-500 font-medium">No candidates found</p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-gray-50 border-b border-gray-200">
-                    <tr>
-                      <th className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-left text-[10px] sm:text-xs font-bold text-gray-700 uppercase tracking-wider">Candidate</th>
-                      <th className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-left text-[10px] sm:text-xs font-bold text-gray-700 uppercase tracking-wider">Role & Experience</th>
-                      <th className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-left text-[10px] sm:text-xs font-bold text-gray-700 uppercase tracking-wider">Location</th>
-                      <th className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-left text-[10px] sm:text-xs font-bold text-gray-700 uppercase tracking-wider">Salary</th>
-                      <th className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-left text-[10px] sm:text-xs font-bold text-gray-700 uppercase tracking-wider">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-300">
-                    {candidates.map((candidate) => {
-                      const formattedCandidate = formatCandidateData(candidate);
-                      return (
-                        <tr key={candidate.id} className="hover:bg-gray-50 transition-colors">
-                          <td className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 lg:py-5 whitespace-nowrap">
-                            <div>
-                              <div className="text-[10px] sm:text-xs font-semibold text-indigo-600 truncate">{formattedCandidate.code}</div>
-                              <div className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">{formattedCandidate.name}</div>
-                              <div className="text-[10px] sm:text-xs text-gray-500 truncate">{formattedCandidate.shortlistedDate}</div>
-                            </div>
-                          </td>
-                          <td className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 lg:py-5">
-                            <div>
-                              <div className="text-[10px] sm:text-xs font-medium text-gray-900 truncate">{formattedCandidate.role}</div>
-                              <div className="text-[10px] sm:text-xs text-gray-500 truncate">{formattedCandidate.experience}</div>
-                              <div className="text-[10px] sm:text-xs text-gray-400 mt-0.5 sm:mt-1 truncate">
-                                {formattedCandidate.skills.slice(0, 3).join(', ')}
-                                {formattedCandidate.skills.length > 3 && '...'}
+              <div className="p-3 sm:p-4 lg:p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
+                  {candidates.map((candidate) => {
+                    const formattedCandidate = formatCandidateData(candidate);
+                    return (
+                      <div
+                        key={candidate.id}
+                        className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col"
+                      >
+                        {/* Card Header */}
+                        <div className="px-3 sm:px-4 py-2 sm:py-3 bg-gradient-to-r from-indigo-50 to-purple-50 border-b border-gray-200">
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1 min-w-0">
+                              <div className="text-xs sm:text-sm font-bold text-indigo-600 truncate">
+                                {formattedCandidate.code}
+                              </div>
+                              <div className="flex items-center gap-1 mt-0.5">
+                                <Calendar className="h-3 w-3 text-gray-400 flex-shrink-0" />
+                                <span className="text-[10px] sm:text-xs text-gray-500">
+                                  {formattedCandidate.shortlistedDate}
+                                </span>
                               </div>
                             </div>
-                          </td>
-                          <td className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 lg:py-5 whitespace-nowrap">
-                            <div className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">{formattedCandidate.location}</div>
-                            <div className="text-[10px] sm:text-xs text-gray-500 truncate">{formattedCandidate.visaStatus}</div>
-                          </td>
-                          <td className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 lg:py-5 whitespace-nowrap">
-                            <div className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">{formattedCandidate.salary}</div>
-                          </td>
-                          <td className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 lg:py-5 whitespace-nowrap">
-                            <div className="flex items-center gap-1 sm:gap-1.5">
-                              <Link
-                                to={`/recruiter/candidate/${formattedCandidate.code}`}
-                                className="text-indigo-600 hover:text-indigo-900 px-1.5 py-0.5 sm:px-2 sm:py-1 border border-indigo-200 rounded-md hover:bg-indigo-50 transition-colors text-[10px] sm:text-xs font-medium flex-shrink-0"
-                              >
-                                View
-                              </Link>
-                              <button 
-                                onClick={() => handleSelectCandidate(candidate)}
-                                className="text-green-600 hover:text-green-900 px-1.5 py-0.5 sm:px-2 sm:py-1 border border-green-200 rounded-md hover:bg-green-50 transition-colors text-[10px] sm:text-xs font-medium flex-shrink-0"
-                              >
-                                Select
-                              </button>
+                            {formattedCandidate.score > 0 && (
+                              <div className="flex items-center gap-1 bg-white px-1.5 py-0.5 rounded-md border border-gray-200 flex-shrink-0">
+                                <Award className="h-3 w-3 text-yellow-500" />
+                                <span className="text-[10px] sm:text-xs font-semibold text-gray-700">
+                                  {formattedCandidate.score}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Card Body */}
+                        <div className="px-3 sm:px-4 py-3 sm:py-4 flex-1 flex flex-col gap-2 sm:gap-3">
+                          {/* Role & Experience */}
+                          <div>
+                            <div className="flex items-start gap-2">
+                              <Briefcase className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                              <div className="flex-1 min-w-0">
+                                <div className="text-xs sm:text-sm font-semibold text-gray-900 truncate">
+                                  {formattedCandidate.role}
+                                </div>
+                                <div className="text-[10px] sm:text-xs text-gray-600 mt-0.5">
+                                  {formattedCandidate.experience}
+                                </div>
+                              </div>
                             </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                          </div>
+
+                          {/* Skills */}
+                          {formattedCandidate.skills && formattedCandidate.skills.length > 0 && (
+                            <div>
+                              <div className="text-[10px] sm:text-xs text-gray-500 mb-1">Skills</div>
+                              <div className="flex flex-wrap gap-1">
+                                {formattedCandidate.skills.slice(0, 4).map((skill, idx) => (
+                                  <span
+                                    key={idx}
+                                    className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] sm:text-xs bg-blue-50 text-blue-700 border border-blue-100"
+                                  >
+                                    {skill}
+                                  </span>
+                                ))}
+                                {formattedCandidate.skills.length > 4 && (
+                                  <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] sm:text-xs bg-gray-50 text-gray-600 border border-gray-200">
+                                    +{formattedCandidate.skills.length - 4}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Location */}
+                          <div>
+                            <div className="flex items-start gap-2">
+                              <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                              <div className="flex-1 min-w-0">
+                                <div className="text-[10px] sm:text-xs font-medium text-gray-900 truncate">
+                                  {formattedCandidate.location}
+                                </div>
+                                <div className="text-[10px] sm:text-xs text-gray-500 mt-0.5">
+                                  {formattedCandidate.visaStatus}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Salary */}
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <DollarSign className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400 flex-shrink-0" />
+                              <div className="text-xs sm:text-sm font-semibold text-gray-900">
+                                {formattedCandidate.salary}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Card Footer - Actions */}
+                        <div className="px-3 sm:px-4 py-2 sm:py-3 border-t border-gray-200 bg-gray-50">
+                          <div className="flex items-center gap-2">
+                            <Link
+                              to={`/recruiter/candidate/${formattedCandidate.code}`}
+                              className="flex-1 text-center px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-indigo-600 bg-white border border-indigo-200 rounded-md hover:bg-indigo-50 hover:border-indigo-300 transition-colors"
+                            >
+                              View Profile
+                            </Link>
+                            <button
+                              onClick={() => handleSelectCandidate(candidate)}
+                              className="flex-1 text-center px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-white bg-green-600 border border-green-600 rounded-md hover:bg-green-700 transition-colors"
+                            >
+                              Select
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
             

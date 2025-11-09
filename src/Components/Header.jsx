@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { User, Edit, LogOut, AlertTriangle, X, Loader2, Lock, Eye, EyeOff } from "lucide-react";
+import { User, Edit, LogOut, AlertTriangle, X, Loader2, Lock, Eye, EyeOff, Menu } from "lucide-react";
 import { toast } from 'react-toastify';
 import logo from '../../public/vettedpool-logo.webp';
 
@@ -57,6 +57,7 @@ const Header = ({ onEditProfile, userData }) => {
     new: false,
     confirm: false
   });
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Update auth status when storage changes (for logout from other tabs)
   useEffect(() => {
@@ -376,9 +377,9 @@ const Header = ({ onEditProfile, userData }) => {
     }));
   };
 
-  // Prevent background scrolling when modal is open
+  // Prevent background scrolling when modal or mobile menu is open
   useEffect(() => {
-    if (showLogoutModal || showChangePasswordModal) {
+    if (showLogoutModal || showChangePasswordModal || mobileMenuOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
@@ -388,7 +389,7 @@ const Header = ({ onEditProfile, userData }) => {
     return () => {
       document.body.style.overflow = 'unset';
     };
-  }, [showLogoutModal, showChangePasswordModal]);
+  }, [showLogoutModal, showChangePasswordModal, mobileMenuOpen]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -396,13 +397,21 @@ const Header = ({ onEditProfile, userData }) => {
       if (userDropdownOpen && !event.target.closest('.user-dropdown')) {
         setUserDropdownOpen(false);
       }
+      if (mobileMenuOpen && !event.target.closest('nav') && !event.target.closest('button[aria-label="Toggle menu"]')) {
+        setMobileMenuOpen(false);
+      }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [userDropdownOpen]);
+  }, [userDropdownOpen, mobileMenuOpen]);
+
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
 
   // Get dashboard link based on role
   const getDashboardLink = () => {
@@ -420,6 +429,11 @@ const Header = ({ onEditProfile, userData }) => {
 
   const pageName = getPageName();
   const isDashboardPage = pageName !== null;
+
+  // Check if a nav link is active
+  const isActiveLink = (path) => {
+    return location.pathname === path;
+  };
 
   return (
     <>
@@ -674,7 +688,56 @@ const Header = ({ onEditProfile, userData }) => {
             />
           </Link>
 
-            {/* Right Section - Login Button or User Dropdown */}
+            {/* Navigation Links - Center (Desktop) */}
+            <nav className="hidden md:flex items-center gap-6 lg:gap-8">
+              <Link
+                to="/"
+                className={`relative text-sm lg:text-base font-medium text-[#273469] hover:text-[#1e2749] transition-colors duration-200 py-2 group ${
+                  isActiveLink('/') ? 'text-[#1e2749]' : ''
+                }`}
+              >
+                Home
+                <span className={`absolute bottom-1 left-0 h-0.5 bg-[#273469] transition-all duration-300 ease-in-out ${
+                  isActiveLink('/') ? 'w-full' : 'w-0 group-hover:w-full'
+                }`}></span>
+              </Link>
+              <Link
+                to="/about-us"
+                className={`relative text-sm lg:text-base font-medium text-[#273469] hover:text-[#1e2749] transition-colors duration-200 py-2 group ${
+                  isActiveLink('/about-us') ? 'text-[#1e2749]' : ''
+                }`}
+              >
+                About Us
+                <span className={`absolute bottom-1 left-0 h-0.5 bg-[#273469] transition-all duration-300 ease-in-out ${
+                  isActiveLink('/about-us') ? 'w-full' : 'w-0 group-hover:w-full'
+                }`}></span>
+              </Link>
+              <Link
+                to="/pricing"
+                className={`relative text-sm lg:text-base font-medium text-[#273469] hover:text-[#1e2749] transition-colors duration-200 py-2 group ${
+                  isActiveLink('/pricing') ? 'text-[#1e2749]' : ''
+                }`}
+              >
+                Pricing
+                <span className={`absolute bottom-1 left-0 h-0.5 bg-[#273469] transition-all duration-300 ease-in-out ${
+                  isActiveLink('/pricing') ? 'w-full' : 'w-0 group-hover:w-full'
+                }`}></span>
+              </Link>
+              <Link
+                to="/contact-us"
+                className={`relative text-sm lg:text-base font-medium text-[#273469] hover:text-[#1e2749] transition-colors duration-200 py-2 group ${
+                  isActiveLink('/contact-us') ? 'text-[#1e2749]' : ''
+                }`}
+              >
+                Contact Us
+                <span className={`absolute bottom-1 left-0 h-0.5 bg-[#273469] transition-all duration-300 ease-in-out ${
+                  isActiveLink('/contact-us') ? 'w-full' : 'w-0 group-hover:w-full'
+                }`}></span>
+              </Link>
+            </nav>
+
+            {/* Right Section - Login Button or User Dropdown + Mobile Menu */}
+            <div className="flex items-center gap-2 sm:gap-3">
             {isLoggedIn ? (
               // User Dropdown (when logged in)
               <div className="relative user-dropdown flex-shrink-0">
@@ -776,17 +839,98 @@ const Header = ({ onEditProfile, userData }) => {
               </div>
             ) : (
               // Login Button (when logged out)
-          <div className="flex items-center gap-4">
             <Link
               to="/login"
               className="px-4 py-2 rounded-md bg-primary text-white font-medium hover:bg-dark transition"
             >
               Login
             </Link>
-              </div>
             )}
+
+            {/* Mobile Menu Button - Show last on mobile */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-2.5 rounded-lg text-[#273469] hover:text-[#1e2749] hover:bg-gray-100 active:bg-gray-200 transition-all duration-200 flex-shrink-0 relative"
+              aria-label="Toggle menu"
+            >
+              <div className="relative w-6 h-6 flex items-center justify-center">
+                {mobileMenuOpen ? (
+                  <X className="h-6 w-6 transition-transform duration-300 rotate-0" />
+                ) : (
+                  <Menu className="h-6 w-6 transition-transform duration-300" />
+                )}
+              </div>
+            </button>
+            </div>
         </div>
       </div>
+
+      {/* Mobile Navigation Menu */}
+      {mobileMenuOpen && (
+        <>
+          {/* Backdrop Overlay */}
+          <div 
+            className="fixed top-[73px] left-0 right-0 bottom-0 bg-black/20 backdrop-blur-sm z-40 md:hidden"
+            onClick={() => setMobileMenuOpen(false)}
+          ></div>
+          
+          {/* Menu Dropdown */}
+          <div className="md:hidden border-t border-gray-200 bg-white shadow-xl relative z-50 transition-all duration-300 ease-out">
+            <div className="max-w-7xl mx-auto px-4 py-5">
+              <nav className="space-y-2">
+                <Link
+                  to="/"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`flex items-center gap-3 px-4 py-3.5 text-base font-medium rounded-lg transition-all duration-200 ${
+                    isActiveLink('/')
+                      ? 'text-[#1e2749] bg-gradient-to-r from-[#273469]/10 to-[#273469]/5 border-l-4 border-[#273469] shadow-sm'
+                      : 'text-[#273469] hover:text-[#1e2749] hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-50 active:bg-gray-100'
+                  }`}
+                >
+                  <div className={`w-2 h-2 rounded-full transition-colors ${isActiveLink('/') ? 'bg-[#273469]' : 'bg-gray-300'}`}></div>
+                  <span className="font-semibold">Home</span>
+                </Link>
+                <Link
+                  to="/about-us"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`flex items-center gap-3 px-4 py-3.5 text-base font-medium rounded-lg transition-all duration-200 ${
+                    isActiveLink('/about-us')
+                      ? 'text-[#1e2749] bg-gradient-to-r from-[#273469]/10 to-[#273469]/5 border-l-4 border-[#273469] shadow-sm'
+                      : 'text-[#273469] hover:text-[#1e2749] hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-50 active:bg-gray-100'
+                  }`}
+                >
+                  <div className={`w-2 h-2 rounded-full transition-colors ${isActiveLink('/about-us') ? 'bg-[#273469]' : 'bg-gray-300'}`}></div>
+                  <span className="font-semibold">About Us</span>
+                </Link>
+                <Link
+                  to="/pricing"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`flex items-center gap-3 px-4 py-3.5 text-base font-medium rounded-lg transition-all duration-200 ${
+                    isActiveLink('/pricing')
+                      ? 'text-[#1e2749] bg-gradient-to-r from-[#273469]/10 to-[#273469]/5 border-l-4 border-[#273469] shadow-sm'
+                      : 'text-[#273469] hover:text-[#1e2749] hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-50 active:bg-gray-100'
+                  }`}
+                >
+                  <div className={`w-2 h-2 rounded-full transition-colors ${isActiveLink('/pricing') ? 'bg-[#273469]' : 'bg-gray-300'}`}></div>
+                  <span className="font-semibold">Pricing</span>
+                </Link>
+                <Link
+                  to="/contact-us"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`flex items-center gap-3 px-4 py-3.5 text-base font-medium rounded-lg transition-all duration-200 ${
+                    isActiveLink('/contact-us')
+                      ? 'text-[#1e2749] bg-gradient-to-r from-[#273469]/10 to-[#273469]/5 border-l-4 border-[#273469] shadow-sm'
+                      : 'text-[#273469] hover:text-[#1e2749] hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-50 active:bg-gray-100'
+                  }`}
+                >
+                  <div className={`w-2 h-2 rounded-full transition-colors ${isActiveLink('/contact-us') ? 'bg-[#273469]' : 'bg-gray-300'}`}></div>
+                  <span className="font-semibold">Contact Us</span>
+                </Link>
+              </nav>
+            </div>
+          </div>
+        </>
+      )}
     </header>
     </>
   );

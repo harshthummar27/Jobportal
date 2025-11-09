@@ -214,314 +214,203 @@ const OfferedCandidates = () => {
                 <p className="text-xs text-gray-400 mt-1.5 sm:mt-2 hidden sm:block">Try adjusting your filters</p>
               </div>
             ) : (
-              <>
-                {/* Desktop Table View */}
-                <div className="hidden lg:block overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="bg-gray-50 border-b border-gray-200">
-                      <tr>
-                        <th className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-left text-[10px] sm:text-xs font-bold text-gray-700 uppercase tracking-wider">Candidate</th>
-                        <th className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-left text-[10px] sm:text-xs font-bold text-gray-700 uppercase tracking-wider">Job Details</th>
-                        <th className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-left text-[10px] sm:text-xs font-bold text-gray-700 uppercase tracking-wider">Offer Details</th>
-                        <th className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-left text-[10px] sm:text-xs font-bold text-gray-700 uppercase tracking-wider">Status</th>
-                        <th className="px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 text-left text-[10px] sm:text-xs font-bold text-gray-700 uppercase tracking-wider">Dates</th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y-4 divide-gray-300">
-                      {offers.map((offer) => (
-                        <tr key={offer.offer_id} className="hover:bg-gray-50 transition-colors duration-150">
-                          {/* Candidate Info */}
-                          <td className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 lg:py-5 align-top">
-                            <div className="flex items-start gap-2 sm:gap-3">
-                              <div className="h-8 w-8 sm:h-10 sm:w-10 bg-indigo-50 rounded-lg flex items-center justify-center flex-shrink-0 border border-indigo-100">
-                                <User className="h-4 w-4 sm:h-5 sm:w-5 text-indigo-600" />
-                              </div>
-                              <div className="min-w-0 flex-1">
-                                <div className="text-[10px] sm:text-xs font-semibold text-gray-900 mb-0.5 sm:mb-1 truncate">{offer.candidate?.name || 'N/A'}</div>
-                                <div className="text-[10px] sm:text-xs text-gray-500 font-medium mb-0.5 sm:mb-1 truncate">{offer.candidate?.candidate_code || 'N/A'}</div>
-                                <div className="text-[10px] sm:text-xs text-gray-600 truncate mb-0.5 sm:mb-1">{offer.candidate?.email || 'N/A'}</div>
-                                <div className="text-[10px] sm:text-xs text-gray-600 mb-0.5 sm:mb-1 truncate">{offer.candidate?.mobile_number || 'N/A'}</div>
-                                {offer.candidate?.city && offer.candidate?.state && (
-                                  <div className="text-[10px] sm:text-xs text-gray-500 mb-0.5 sm:mb-1 truncate">{offer.candidate.city}, {offer.candidate.state}</div>
-                                )}
+              <div className="p-2 sm:p-3">
+                <div className="space-y-3">
+                  {offers.map((offer) => (
+                    <div
+                      key={offer.offer_id}
+                      className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden"
+                    >
+                      {/* Compact Header */}
+                      <div className="px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-r from-indigo-50 to-purple-50 border-b border-gray-200">
+                        <div className="flex items-center justify-between gap-2 sm:gap-3">
+                          <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+                            <div className="h-8 w-8 sm:h-9 sm:w-9 bg-white rounded-lg flex items-center justify-center flex-shrink-0 border border-indigo-100 shadow-sm">
+                              <User className="h-4 w-4 sm:h-5 sm:w-5 text-indigo-600" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <div className="text-xs sm:text-sm font-bold text-gray-900 truncate">
+                                  {offer.candidate?.name || 'N/A'}
+                                </div>
+                                <span className="text-[10px] sm:text-xs text-gray-500">•</span>
+                                <div className="text-[10px] sm:text-xs text-gray-600 font-medium truncate">
+                                  {offer.candidate?.candidate_code || 'N/A'}
+                                </div>
                                 {offer.candidate?.total_years_experience !== null && (
-                                  <div className="text-[10px] sm:text-xs text-gray-500 mb-0.5 sm:mb-1">{offer.candidate.total_years_experience} years exp.</div>
+                                  <>
+                                    <span className="text-[10px] sm:text-xs text-gray-400">•</span>
+                                    <span className="text-[10px] sm:text-xs text-gray-600">{offer.candidate.total_years_experience} yrs</span>
+                                  </>
                                 )}
                                 {offer.candidate?.visa_status && (
-                                  <div className="text-[10px] sm:text-xs text-gray-500 mb-0.5 sm:mb-1 truncate">Visa: {offer.candidate.visa_status}</div>
+                                  <>
+                                    <span className="text-[10px] sm:text-xs text-gray-400">•</span>
+                                    <span className="text-[10px] sm:text-xs text-gray-600">{offer.candidate.visa_status}</span>
+                                  </>
                                 )}
                                 {offer.candidate?.candidate_score !== null && (
-                                  <div className="text-[10px] sm:text-xs text-gray-500 truncate">Score: {offer.candidate.candidate_score}</div>
+                                  <>
+                                    <span className="text-[10px] sm:text-xs text-gray-400">•</span>
+                                    <span className="text-[10px] sm:text-xs font-semibold text-yellow-700">Score: {offer.candidate.candidate_score}</span>
+                                  </>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-2 sm:gap-3 mt-1 flex-wrap text-[10px] sm:text-xs text-gray-600">
+                                {offer.candidate?.email && (
+                                  <span className="truncate">{offer.candidate.email}</span>
+                                )}
+                                {offer.candidate?.mobile_number && (
+                                  <span className="truncate">{offer.candidate.mobile_number}</span>
+                                )}
+                                {offer.candidate?.city && offer.candidate?.state && (
+                                  <div className="flex items-center gap-1">
+                                    <MapPin className="h-3 w-3 text-gray-400" />
+                                    <span>{offer.candidate.city}, {offer.candidate.state}</span>
+                                  </div>
                                 )}
                               </div>
                             </div>
-                          </td>
+                          </div>
+                          <div className="flex-shrink-0">
+                            {getStatusBadge(offer.offer_status)}
+                          </div>
+                        </div>
+                      </div>
 
-                          {/* Job Details */}
-                          <td className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 lg:py-5 align-top">
-                            <div>
-                              <div className="flex items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
-                                <Briefcase className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400 flex-shrink-0" />
-                                <div className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">{offer.job_title || 'N/A'}</div>
-                              </div>
-                              <div className="text-[10px] sm:text-xs text-gray-600 mb-2 sm:mb-3 leading-relaxed line-clamp-3">{offer.job_description || 'N/A'}</div>
-                              {offer.location && (
-                                <div className="flex items-center gap-1 text-xs text-gray-500 mb-1.5 sm:mb-2">
-                                  <MapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5 flex-shrink-0" />
-                                  <span className="text-[10px] sm:text-xs truncate">{offer.location}</span>
+                      {/* Compact Body - Grid Layout */}
+                      <div className="px-3 sm:px-4 py-2.5 sm:py-3">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
+                          {/* Job & Offer Info */}
+                          <div className="md:col-span-2 space-y-2 sm:space-y-2.5">
+                            <div className="flex items-start gap-2">
+                              <Briefcase className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-indigo-500 flex-shrink-0 mt-0.5" />
+                              <div className="flex-1 min-w-0">
+                                <div className="text-xs sm:text-sm font-semibold text-gray-900 mb-1">
+                                  {offer.job_title || 'N/A'}
                                 </div>
-                              )}
-                              {offer.benefits && offer.benefits.length > 0 && (
-                                <div className="mt-2 sm:mt-3">
-                                  <div className="text-[10px] sm:text-xs font-semibold text-gray-700 mb-1.5 sm:mb-2">Benefits:</div>
-                                  <div className="flex flex-wrap gap-1 sm:gap-1.5">
-                                    {offer.benefits.map((benefit, idx) => (
-                                      <span key={idx} className="text-[10px] sm:text-xs bg-blue-50 text-blue-700 px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-md font-medium border border-blue-100 truncate">
+                                <div className="text-[10px] sm:text-xs text-gray-600 leading-relaxed line-clamp-2 mb-1.5">
+                                  {offer.job_description || 'N/A'}
+                                </div>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  {offer.location && (
+                                    <div className="flex items-center gap-1 text-[10px] sm:text-xs text-gray-600">
+                                      <MapPin className="h-3 w-3 text-gray-400" />
+                                      <span>{offer.location}</span>
+                                    </div>
+                                  )}
+                                  {offer.offered_salary && (
+                                    <div className="flex items-center gap-1">
+                                      <DollarSign className="h-3.5 w-3.5 text-green-600" />
+                                      <span className="text-xs sm:text-sm font-bold text-gray-900">{formatCurrency(offer.offered_salary)}</span>
+                                    </div>
+                                  )}
+                                  {offer.is_expired !== undefined && (
+                                    <span className={`text-[10px] sm:text-xs font-medium px-1.5 py-0.5 rounded ${offer.is_expired ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`}>
+                                      {offer.is_expired ? 'Expired' : 'Active'}
+                                    </span>
+                                  )}
+                                </div>
+                                {offer.benefits && offer.benefits.length > 0 && (
+                                  <div className="flex flex-wrap gap-1 mt-1.5">
+                                    {offer.benefits.slice(0, 3).map((benefit, idx) => (
+                                      <span key={idx} className="text-[10px] sm:text-xs bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded border border-blue-100">
                                         {benefit}
                                       </span>
                                     ))}
+                                    {offer.benefits.length > 3 && (
+                                      <span className="text-[10px] sm:text-xs text-gray-500">+{offer.benefits.length - 3}</span>
+                                    )}
                                   </div>
-                                </div>
-                              )}
+                                )}
+                              </div>
                             </div>
-                          </td>
+                            {(offer.offer_notes || offer.decline_reason) && (
+                              <div className="space-y-1.5 pt-1.5 border-t border-gray-100">
+                                {offer.offer_notes && (
+                                  <div className="text-[10px] sm:text-xs text-gray-600">
+                                    <span className="font-semibold text-gray-700">Notes: </span>
+                                    <span className="line-clamp-1">{offer.offer_notes}</span>
+                                  </div>
+                                )}
+                                {offer.decline_reason && (
+                                  <div className="text-[10px] sm:text-xs text-red-700">
+                                    <span className="font-semibold">Declined: </span>
+                                    <span className="line-clamp-1">{offer.decline_reason}</span>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
 
-                          {/* Offer Details */}
-                          <td className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 lg:py-5 align-top">
-                            <div className="space-y-2 sm:space-y-3">
-                              {offer.offered_salary && (
-                                <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
-                                  <DollarSign className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-600 flex-shrink-0" />
-                                  <span className="text-[10px] sm:text-xs font-bold text-gray-900 truncate">{formatCurrency(offer.offered_salary)}</span>
+                          {/* Status & Dates */}
+                          <div className="space-y-2 sm:space-y-2.5">
+                            {offer.candidate_status && (
+                              <div className="pb-2 border-b border-gray-100">
+                                <div className="text-[10px] sm:text-xs font-semibold text-gray-700 mb-0.5">Status:</div>
+                                <div className="text-[10px] sm:text-xs font-semibold text-gray-900 mb-0.5">
+                                  {offer.candidate_status.status_display || offer.candidate_status.status || 'N/A'}
                                 </div>
-                              )}
-                              {offer.offer_notes && (
-                                <div className="text-[10px] sm:text-xs text-gray-600 mb-2 sm:mb-3">
-                                  <div className="font-semibold text-gray-700 mb-0.5 sm:mb-1">Notes:</div>
-                                  <div className="leading-relaxed line-clamp-3">{offer.offer_notes}</div>
-                                </div>
-                              )}
-                              {offer.decline_reason && (
-                                <div className="text-[10px] sm:text-xs text-red-700 mb-2 sm:mb-3">
-                                  <div className="font-semibold mb-0.5 sm:mb-1">Decline Reason:</div>
-                                  <div className="leading-relaxed line-clamp-2">{offer.decline_reason}</div>
-                                </div>
-                              )}
-                              {offer.is_expired !== undefined && (
-                                <div className={`text-[10px] sm:text-xs font-medium px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md inline-block ${offer.is_expired ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-green-50 text-green-700 border border-green-200'}`}>
-                                  {offer.is_expired ? 'Expired' : 'Active'}
-                                </div>
-                              )}
-                              {offer.offered_by && (
-                                <div className="text-[10px] sm:text-xs text-gray-500 mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-gray-100">
-                                  <div className="font-semibold text-gray-700 mb-0.5 sm:mb-1">Offered by:</div>
-                                  <div className="truncate">{offer.offered_by.name}</div>
-                                  <div className="text-gray-500 truncate">{offer.offered_by.email}</div>
-                                </div>
-                              )}
-                            </div>
-                          </td>
-
-                          {/* Status */}
-                          <td className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 lg:py-5 align-top">
-                            <div>
-                              <div className="mb-2 sm:mb-3">{getStatusBadge(offer.offer_status)}</div>
-                              {offer.candidate_status && (
-                                <div className="pt-2 sm:pt-3 border-t border-gray-100">
-                                  <div className="text-[10px] sm:text-xs font-semibold text-gray-700 mb-0.5 sm:mb-1">Candidate Status:</div>
-                                  <div className="text-[10px] sm:text-xs font-semibold text-gray-900 mb-0.5 sm:mb-1 truncate">{offer.candidate_status.status_display || offer.candidate_status.status || 'N/A'}</div>
-                                  {offer.candidate_status.notes && (
-                                    <div className="text-[10px] sm:text-xs text-gray-500 mt-1.5 sm:mt-2 leading-relaxed line-clamp-2">{offer.candidate_status.notes}</div>
-                                  )}
-                                  {offer.candidate_status.status_date && (
-                                    <div className="text-[10px] sm:text-xs text-gray-500 mt-1.5 sm:mt-2">{formatDateTime(offer.candidate_status.status_date)}</div>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-                          </td>
-
-                          {/* Dates */}
-                          <td className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 lg:py-5 align-top">
-                            <div className="text-[10px] sm:text-xs space-y-1.5 sm:space-y-2">
+                                {offer.candidate_status.notes && (
+                                  <div className="text-[10px] sm:text-xs text-gray-500 line-clamp-1">
+                                    {offer.candidate_status.notes}
+                                  </div>
+                                )}
+                                {offer.candidate_status.status_date && (
+                                  <div className="text-[10px] sm:text-xs text-gray-500 mt-0.5">
+                                    {formatDateTime(offer.candidate_status.status_date)}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                            <div className="space-y-1.5">
                               {offer.offered_at && (
-                                <div className="pb-1.5 sm:pb-2 border-b border-gray-100">
-                                  <div className="font-semibold text-gray-700 mb-0.5 sm:mb-1">Offered:</div>
-                                  <div className="text-gray-600 truncate">{formatDateTime(offer.offered_at)}</div>
+                                <div className="text-[10px] sm:text-xs">
+                                  <div className="font-semibold text-gray-700">Offered:</div>
+                                  <div className="text-gray-600">{formatDateTime(offer.offered_at)}</div>
                                 </div>
                               )}
                               {offer.start_date && (
-                                <div>
-                                  <div className="font-semibold text-gray-700 mb-0.5 sm:mb-1">Start Date:</div>
-                                  <div className="text-gray-600 truncate">{formatDate(offer.start_date)}</div>
+                                <div className="text-[10px] sm:text-xs">
+                                  <div className="font-semibold text-gray-700">Start:</div>
+                                  <div className="text-gray-600">{formatDate(offer.start_date)}</div>
                                 </div>
                               )}
                               {offer.offer_deadline && (
-                                <div className="pt-1.5 sm:pt-2 border-t border-gray-100">
-                                  <div className="font-semibold text-gray-700 mb-0.5 sm:mb-1">Deadline:</div>
-                                  <div className="text-gray-600 truncate">{formatDate(offer.offer_deadline)}</div>
+                                <div className="text-[10px] sm:text-xs">
+                                  <div className="font-semibold text-gray-700">Deadline:</div>
+                                  <div className="text-gray-600">{formatDate(offer.offer_deadline)}</div>
                                 </div>
                               )}
                               {offer.responded_at && (
-                                <div className="pt-1.5 sm:pt-2">
-                                  <div className="font-semibold text-gray-700 mb-0.5 sm:mb-1">Responded:</div>
-                                  <div className="text-gray-600 truncate">{formatDateTime(offer.responded_at)}</div>
+                                <div className="text-[10px] sm:text-xs">
+                                  <div className="font-semibold text-gray-700">Responded:</div>
+                                  <div className="text-gray-600">{formatDateTime(offer.responded_at)}</div>
                                 </div>
                               )}
-                              {offer.selection_id && (
-                                <div className="text-gray-400 mt-2 sm:mt-3 pt-1.5 sm:pt-2 border-t border-gray-100 truncate">ID: {offer.selection_id}</div>
-                              )}
                             </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-
-                {/* Mobile/Tablet Card View */}
-                <div className="lg:hidden divide-y-4 divide-gray-300">
-                  {offers.map((offer) => (
-                    <div key={offer.offer_id} className="p-3 sm:p-4 lg:p-5 hover:bg-gray-50 transition-colors duration-150">
-                      {/* Candidate Info Card */}
-                      <div className="mb-3 sm:mb-4 pb-3 sm:pb-4 border-b border-gray-200">
-                        <div className="flex items-start gap-2 sm:gap-3 mb-2 sm:mb-3">
-                          <div className="h-8 w-8 sm:h-10 sm:w-10 bg-indigo-50 rounded-lg flex items-center justify-center flex-shrink-0 border border-indigo-100">
-                            <User className="h-4 w-4 sm:h-5 sm:w-5 text-indigo-600" />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <div className="text-[10px] sm:text-xs font-semibold text-gray-900 mb-0.5 sm:mb-1 truncate">{offer.candidate?.name || 'N/A'}</div>
-                            <div className="text-[10px] sm:text-xs text-gray-500 font-medium mb-0.5 sm:mb-1 truncate">{offer.candidate?.candidate_code || 'N/A'}</div>
-                            <div className="text-[10px] sm:text-xs text-gray-600 truncate">{offer.candidate?.email || 'N/A'}</div>
-                            <div className="text-[10px] sm:text-xs text-gray-600 truncate">{offer.candidate?.mobile_number || 'N/A'}</div>
-                          </div>
-                          <div>{getStatusBadge(offer.offer_status)}</div>
-                        </div>
-                        {offer.candidate?.city && offer.candidate?.state && (
-                          <div className="text-[10px] sm:text-xs text-gray-500 mb-0.5 sm:mb-1 truncate">{offer.candidate.city}, {offer.candidate.state}</div>
-                        )}
-                        {offer.candidate?.total_years_experience !== null && (
-                          <div className="text-[10px] sm:text-xs text-gray-500 mb-0.5 sm:mb-1">{offer.candidate.total_years_experience} years exp.</div>
-                        )}
-                        {offer.candidate?.visa_status && (
-                          <div className="text-[10px] sm:text-xs text-gray-500 mb-0.5 sm:mb-1 truncate">Visa: {offer.candidate.visa_status}</div>
-                        )}
-                        {offer.candidate?.candidate_score !== null && (
-                          <div className="text-[10px] sm:text-xs text-gray-500 truncate">Score: {offer.candidate.candidate_score}</div>
-                        )}
-                      </div>
-
-                      {/* Job Details Card */}
-                      <div className="mb-3 sm:mb-4 pb-3 sm:pb-4 border-b border-gray-200">
-                        <div className="flex items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
-                          <Briefcase className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400 flex-shrink-0" />
-                          <div className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">{offer.job_title || 'N/A'}</div>
-                        </div>
-                        <div className="text-[10px] sm:text-xs text-gray-600 mb-1.5 sm:mb-2 leading-relaxed line-clamp-2">{offer.job_description || 'N/A'}</div>
-                        {offer.location && (
-                          <div className="flex items-center gap-1 text-xs text-gray-500 mb-2 sm:mb-3">
-                            <MapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5 flex-shrink-0" />
-                            <span className="text-[10px] sm:text-xs truncate">{offer.location}</span>
-                          </div>
-                        )}
-                        {offer.benefits && offer.benefits.length > 0 && (
-                          <div>
-                            <div className="text-[10px] sm:text-xs font-semibold text-gray-700 mb-1.5 sm:mb-2">Benefits:</div>
-                            <div className="flex flex-wrap gap-1 sm:gap-1.5">
-                              {offer.benefits.map((benefit, idx) => (
-                                <span key={idx} className="text-[10px] sm:text-xs bg-blue-50 text-blue-700 px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-md font-medium border border-blue-100 truncate">
-                                  {benefit}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Offer Details Card */}
-                      <div className="mb-3 sm:mb-4 pb-3 sm:pb-4 border-b border-gray-200">
-                        <div className="space-y-2 sm:space-y-3">
-                          {offer.offered_salary && (
-                            <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
-                              <DollarSign className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-600 flex-shrink-0" />
-                              <span className="text-[10px] sm:text-xs font-bold text-gray-900 truncate">{formatCurrency(offer.offered_salary)}</span>
-                            </div>
-                          )}
-                          {offer.offer_notes && (
-                            <div className="text-[10px] sm:text-xs text-gray-600 mb-1.5 sm:mb-2">
-                              <div className="font-semibold text-gray-700 mb-0.5 sm:mb-1">Notes:</div>
-                              <div className="leading-relaxed line-clamp-2">{offer.offer_notes}</div>
-                            </div>
-                          )}
-                          {offer.decline_reason && (
-                            <div className="text-[10px] sm:text-xs text-red-700 mb-1.5 sm:mb-2">
-                              <div className="font-semibold mb-0.5 sm:mb-1">Decline Reason:</div>
-                              <div className="leading-relaxed line-clamp-2">{offer.decline_reason}</div>
-                            </div>
-                          )}
-                          {offer.is_expired !== undefined && (
-                            <div className={`text-[10px] sm:text-xs font-medium px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md inline-block ${offer.is_expired ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-green-50 text-green-700 border border-green-200'}`}>
-                              {offer.is_expired ? 'Expired' : 'Active'}
-                            </div>
-                          )}
-                          {offer.offered_by && (
-                            <div className="text-[10px] sm:text-xs text-gray-500 mt-2 sm:mt-3">
-                              <div className="font-semibold text-gray-700 mb-0.5 sm:mb-1">Offered by:</div>
-                              <div className="truncate">{offer.offered_by.name}</div>
-                              <div className="text-gray-500 truncate">{offer.offered_by.email}</div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Status & Dates Card */}
-                      <div>
-                        {offer.candidate_status && (
-                          <div className="mb-2 sm:mb-3 pb-2 sm:pb-3 border-b border-gray-200">
-                            <div className="text-[10px] sm:text-xs font-semibold text-gray-700 mb-0.5 sm:mb-1">Candidate Status:</div>
-                            <div className="text-[10px] sm:text-xs font-semibold text-gray-900 mb-0.5 sm:mb-1 truncate">{offer.candidate_status.status_display || offer.candidate_status.status || 'N/A'}</div>
-                            {offer.candidate_status.notes && (
-                              <div className="text-[10px] sm:text-xs text-gray-500 mt-1 leading-relaxed line-clamp-2">{offer.candidate_status.notes}</div>
-                            )}
-                            {offer.candidate_status.status_date && (
-                              <div className="text-[10px] sm:text-xs text-gray-500 mt-1">{formatDateTime(offer.candidate_status.status_date)}</div>
+                            {(offer.offered_by || offer.selection_id) && (
+                              <div className="pt-2 border-t border-gray-100 space-y-1">
+                                {offer.offered_by && (
+                                  <div className="text-[10px] sm:text-xs text-gray-600">
+                                    <div className="font-semibold text-gray-700">By: {offer.offered_by.name}</div>
+                                    <div className="text-gray-500 truncate">{offer.offered_by.email}</div>
+                                  </div>
+                                )}
+                                {offer.selection_id && (
+                                  <div className="text-[10px] sm:text-xs text-gray-400">
+                                    ID: {offer.selection_id}
+                                  </div>
+                                )}
+                              </div>
                             )}
                           </div>
-                        )}
-                        <div className="grid grid-cols-2 gap-2 sm:gap-3 text-[10px] sm:text-xs">
-                          {offer.offered_at && (
-                            <div>
-                              <div className="font-semibold text-gray-700 mb-0.5 sm:mb-1">Offered:</div>
-                              <div className="text-gray-600 truncate">{formatDateTime(offer.offered_at)}</div>
-                            </div>
-                          )}
-                          {offer.start_date && (
-                            <div>
-                              <div className="font-semibold text-gray-700 mb-0.5 sm:mb-1">Start Date:</div>
-                              <div className="text-gray-600 truncate">{formatDate(offer.start_date)}</div>
-                            </div>
-                          )}
-                          {offer.offer_deadline && (
-                            <div>
-                              <div className="font-semibold text-gray-700 mb-0.5 sm:mb-1">Deadline:</div>
-                              <div className="text-gray-600 truncate">{formatDate(offer.offer_deadline)}</div>
-                            </div>
-                          )}
-                          {offer.responded_at && (
-                            <div>
-                              <div className="font-semibold text-gray-700 mb-0.5 sm:mb-1">Responded:</div>
-                              <div className="text-gray-600 truncate">{formatDateTime(offer.responded_at)}</div>
-                            </div>
-                          )}
                         </div>
-                        {offer.selection_id && (
-                          <div className="text-[10px] sm:text-xs text-gray-400 mt-2 sm:mt-3 pt-1.5 sm:pt-2 border-t border-gray-100 truncate">Selection ID: {offer.selection_id}</div>
-                        )}
                       </div>
                     </div>
                   ))}
                 </div>
-              </>
+              </div>
             )}
           </div>
         </div>

@@ -6,6 +6,9 @@ import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import CandidateInfo from "./pages/CandidateInfo";
 import RecruiterInfo from "./pages/RecruiterInfo";
+import AboutUs from "./pages/AboutUs";
+import Pricing from "./pages/Pricing";
+import ContactUs from "./pages/ContactUs";
 import ProfileSetup from "./pages/candidate/ProfileSetup";
 import CandidateRegistration from "./pages/candidate/CandidateRegistration";
 import CandidateDashboard from "./pages/candidate/CandidateDashboard";
@@ -50,6 +53,9 @@ export default function App() {
       <Routes>
         {/* Public routes - accessible to everyone */}
         <Route path="/" element={<Landing />} />
+        <Route path="/about-us" element={<AboutUs />} />
+        <Route path="/pricing" element={<Pricing />} />
+        <Route path="/contact-us" element={<ContactUs />} />
         <Route path="/candidate-info" element={<CandidateInfo />} />
         <Route path="/recruiter-info" element={<RecruiterInfo />} />
         
