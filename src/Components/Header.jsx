@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { User, Edit, LogOut, AlertTriangle, X, Loader2, Lock, Eye, EyeOff, Menu } from "lucide-react";
 import { toast } from 'react-toastify';
 import logo from '../../public/vettedpool-logo.webp';
+import NotificationDropdown from './NotificationDropdown';
 
 const Header = ({ onEditProfile, userData }) => {
   const location = useLocation();
@@ -739,8 +740,12 @@ const Header = ({ onEditProfile, userData }) => {
             {/* Right Section - Login Button or User Dropdown + Mobile Menu */}
             <div className="flex items-center gap-2 sm:gap-3">
             {isLoggedIn ? (
-              // User Dropdown (when logged in)
-              <div className="relative user-dropdown flex-shrink-0">
+              <>
+                {/* Notification Dropdown */}
+                <NotificationDropdown userRole={userRole} />
+                
+                {/* User Dropdown (when logged in) */}
+                <div className="relative user-dropdown flex-shrink-0">
                 <div className="flex items-center gap-2">
                   {/* User Info - Hidden on small screens, visible on sm+ */}
                   <div className="hidden sm:block text-right">
@@ -837,6 +842,7 @@ const Header = ({ onEditProfile, userData }) => {
                   </div>
                 )}
               </div>
+              </>
             ) : (
               // Login Button (when logged out)
             <Link

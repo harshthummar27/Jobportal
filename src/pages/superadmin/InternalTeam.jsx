@@ -570,54 +570,61 @@ const InternalTeam = () => {
   };
 
   return (
-    <div className="w-full max-w-none space-y-2 sm:space-y-3">
-        {/* Add Team Member Button */}
-        <div className="mb-2 sm:mb-3">
-          <div className="flex justify-end">
-            <button
-              onClick={handleAddMember}
-              className="flex items-center justify-center gap-1 sm:gap-1.5 px-2 py-1 sm:px-3 sm:py-1.5 lg:px-4 lg:py-2 bg-green-500 text-white rounded-md border border-green-600 hover:bg-green-600 transition-all duration-200 shadow-sm text-[10px] sm:text-xs lg:text-sm"
-            >
-              <Plus className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4" />
-              <span className="hidden sm:inline">Add Team Member</span>
-              <span className="sm:hidden">Add Member</span>
-            </button>
+    <div className="w-full max-w-none space-y-4 sm:space-y-6">
+        {/* Header Section */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+          <div>
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">Team Management</h2>
+            <p className="text-xs sm:text-sm text-gray-600 mt-1">Manage your internal team members</p>
           </div>
+          <button
+            onClick={handleAddMember}
+            className="flex items-center justify-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 text-sm sm:text-base font-medium"
+          >
+            <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
+            <span>Add Team Member</span>
+          </button>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 mb-2 sm:mb-3">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-2 sm:p-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl shadow-md border border-indigo-200 p-4 sm:p-5 lg:p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[10px] sm:text-xs font-medium text-gray-600">Total Members</p>
-                <p className="text-base sm:text-lg lg:text-xl font-bold text-indigo-600">{total}</p>
+                <p className="text-xs sm:text-sm font-medium text-indigo-700 mb-1">Total Members</p>
+                <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-indigo-600">{total}</p>
               </div>
-              <User className="h-5 w-5 sm:h-6 sm:w-6 lg:h-8 lg:w-8 text-indigo-600" />
+              <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-indigo-500 rounded-xl flex items-center justify-center shadow-lg">
+                <User className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
+              </div>
             </div>
           </div>
           
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-2 sm:p-3">
+          <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl shadow-md border border-green-200 p-4 sm:p-5 lg:p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[10px] sm:text-xs font-medium text-gray-600">Approved Members</p>
-                <p className="text-base sm:text-lg lg:text-xl font-bold text-green-600">
+                <p className="text-xs sm:text-sm font-medium text-green-700 mb-1">Approved Members</p>
+                <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-green-600">
                   {teamMembers.filter(m => m.status?.toLowerCase() === 'approve').length}
                 </p>
               </div>
-              <UserCheck className="h-5 w-5 sm:h-6 sm:w-6 lg:h-8 lg:w-8 text-green-600" />
+              <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-green-500 rounded-xl flex items-center justify-center shadow-lg">
+                <UserCheck className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
+              </div>
             </div>
           </div>
           
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-2 sm:p-3">
+          <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-md border border-blue-200 p-4 sm:p-5 lg:p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[10px] sm:text-xs font-medium text-gray-600">Showing</p>
-                <p className="text-base sm:text-lg lg:text-xl font-bold text-blue-600">
+                <p className="text-xs sm:text-sm font-medium text-blue-700 mb-1">Showing</p>
+                <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-blue-600">
                   {from}-{to} of {total}
                 </p>
               </div>
-              <Shield className="h-5 w-5 sm:h-6 sm:w-6 lg:h-8 lg:w-8 text-blue-600" />
+              <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-blue-500 rounded-xl flex items-center justify-center shadow-lg">
+                <Shield className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
+              </div>
             </div>
           </div>
         </div>
@@ -625,34 +632,46 @@ const InternalTeam = () => {
 
         {/* Bulk Actions */}
         {selectedMembers.length > 0 && (
-          <div className="bg-indigo-50 border border-indigo-200 rounded-md p-1.5 sm:p-2 mb-2 sm:mb-3">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-2">
-              <span className="text-indigo-800 font-medium text-[10px] sm:text-xs">
-                {selectedMembers.length} member(s) selected
-              </span>
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={handleBulkDelete}
-                  disabled={isDeleting}
-                  className="flex items-center gap-0.5 sm:gap-1 px-1.5 py-0.5 sm:px-2 sm:py-1 bg-red-500 text-white text-[9px] sm:text-[10px] lg:text-xs rounded-md border border-red-600 hover:bg-red-600 transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <Trash2 className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                  Delete
-                </button>
+          <div className="bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-xl shadow-lg border border-indigo-600 p-4 sm:p-5">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                  <UserCheck className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <p className="text-white font-semibold text-sm sm:text-base">
+                    {selectedMembers.length} member{selectedMembers.length > 1 ? 's' : ''} selected
+                  </p>
+                  <p className="text-indigo-100 text-xs sm:text-sm">Choose an action to perform</p>
+                </div>
               </div>
+              <button
+                onClick={handleBulkDelete}
+                disabled={isDeleting}
+                className="flex items-center justify-center gap-2 px-4 py-2.5 bg-white text-red-600 rounded-lg hover:bg-red-50 transition-all duration-200 shadow-md hover:shadow-lg font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Trash2 className="h-4 w-4" />
+                <span>Delete Selected</span>
+              </button>
             </div>
           </div>
         )}
 
         {/* Error Message */}
         {fetchError && (
-          <div className="bg-red-50 border border-red-200 rounded-md p-2 sm:p-3 mb-2 sm:mb-3">
-            <p className="text-red-800 text-[10px] sm:text-xs lg:text-sm">Error: {fetchError}</p>
+          <div className="bg-red-50 border-l-4 border-red-500 rounded-lg shadow-md p-4 sm:p-5">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <h3 className="text-red-800 font-semibold text-sm sm:text-base mb-1">Error Loading Data</h3>
+                <p className="text-red-700 text-xs sm:text-sm">{fetchError}</p>
+              </div>
+            </div>
           </div>
         )}
 
         {/* Team Members Table */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
           {/* Mobile Card View */}
           <div className="sm:hidden">
             {loading ? (
@@ -671,73 +690,63 @@ const InternalTeam = () => {
                 </p>
               </div>
             ) : (
-              <div className="divide-y divide-gray-200">
+              <div className="divide-y divide-gray-100">
                 {teamMembers.map((member) => (
-                  <div key={member.id} className="p-2 bg-white">
-                    {/* Checkbox and Header */}
-                    <div className="flex items-start gap-1.5 mb-2">
-                      <input
-                        type="checkbox"
-                        checked={selectedMembers.includes(member.id)}
-                        onChange={() => handleSelectMember(member.id)}
-                        className="mt-0.5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 h-3 w-3"
-                      />
-                      <div className="flex-1">
-                        <div className="flex items-center gap-1.5 mb-0.5">
-                          <div className="w-6 h-6 bg-indigo-100 rounded-full flex items-center justify-center">
-                            <User className="h-3 w-3 text-indigo-600" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="text-xs font-medium text-gray-900 truncate">{member.name}</div>
-                            <div className="text-[9px] text-gray-500">ID: {member.id}</div>
-                          </div>
-                        </div>
+                  <div key={member.id} className="p-4 bg-white hover:bg-gray-50 transition-colors duration-200">
+                    {/* Header */}
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg flex items-center justify-center shadow-md">
+                        <User className="h-5 w-5 text-white" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-semibold text-gray-900 truncate">{member.name}</div>
+                        <div className="text-xs text-gray-500">ID: {member.id}</div>
                       </div>
                     </div>
 
                     {/* All Data Fields */}
-                    <div className="space-y-1 mb-2 ml-4">
-                      <div>
-                        <span className="text-[9px] font-medium text-gray-600">Email:</span>
-                        <div className="text-[10px] text-gray-900 break-words">{member.email || "N/A"}</div>
+                    <div className="grid grid-cols-2 gap-3 mb-4">
+                      <div className="bg-gray-50 rounded-lg p-2 border border-gray-200">
+                        <span className="text-xs font-medium text-gray-600 block mb-1">Email</span>
+                        <div className="text-xs text-gray-900 break-words">{member.email || "N/A"}</div>
                       </div>
                       {member.mobile_number && (
-                        <div>
-                          <span className="text-[9px] font-medium text-gray-600">Mobile:</span>
-                          <div className="text-[10px] text-gray-900">{member.mobile_number}</div>
+                        <div className="bg-gray-50 rounded-lg p-2 border border-gray-200">
+                          <span className="text-xs font-medium text-gray-600 block mb-1">Mobile</span>
+                          <div className="text-xs text-gray-900">{member.mobile_number}</div>
                         </div>
                       )}
-                      <div>
-                        <span className="text-[9px] font-medium text-gray-600">Role:</span>
-                        <div className="text-[10px] text-gray-900 capitalize">{member.role || "N/A"}</div>
+                      <div className="bg-gray-50 rounded-lg p-2 border border-gray-200">
+                        <span className="text-xs font-medium text-gray-600 block mb-1">Role</span>
+                        <div className="text-xs text-gray-900 capitalize">{member.role || "N/A"}</div>
                       </div>
-                      <div>
-                        <span className="text-[9px] font-medium text-gray-600">Created:</span>
-                        <div className="text-[10px] text-gray-900">{formatDate(member.created_at)}</div>
+                      <div className="bg-gray-50 rounded-lg p-2 border border-gray-200">
+                        <span className="text-xs font-medium text-gray-600 block mb-1">Created</span>
+                        <div className="text-xs text-gray-900">{formatDate(member.created_at)}</div>
                       </div>
                     </div>
 
                     {/* Action Buttons at Bottom */}
-                    <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-gray-200">
+                    <div className="flex items-center gap-2 mt-4 pt-4 border-t border-gray-200">
                       <button
                         onClick={() => handleEdit(member)}
-                        className="flex-1 flex items-center justify-center gap-0.5 px-1.5 py-1.5 bg-green-500 text-white text-[10px] rounded border border-green-600 hover:bg-green-600 transition-all duration-200 shadow-sm"
+                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white text-xs rounded-lg hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-md hover:shadow-lg font-medium"
                       >
-                        <Edit className="h-3 w-3" />
+                        <Edit className="h-4 w-4" />
                         Edit
                       </button>
                       <button
                         onClick={() => handleView(member)}
-                        className="flex-1 flex items-center justify-center gap-0.5 px-1.5 py-1.5 bg-gray-100 text-gray-700 text-[10px] rounded border border-gray-300 hover:bg-gray-200 transition-all duration-200 shadow-sm"
+                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-gray-100 text-gray-700 text-xs rounded-lg border border-gray-300 hover:bg-gray-200 transition-all duration-200 shadow-sm font-medium"
                       >
-                        <Eye className="h-3 w-3" />
+                        <Eye className="h-4 w-4" />
                         View
                       </button>
                       <button
                         onClick={() => handleDelete(member)}
-                        className="flex-1 flex items-center justify-center gap-0.5 px-1.5 py-1.5 bg-red-500 text-white text-[10px] rounded border border-red-600 hover:bg-red-600 transition-all duration-200 shadow-sm"
+                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white text-xs rounded-lg hover:from-red-600 hover:to-red-700 transition-all duration-200 shadow-md hover:shadow-lg font-medium"
                       >
-                        <Trash2 className="h-3 w-3" />
+                        <Trash2 className="h-4 w-4" />
                         Delete
                       </button>
                     </div>
@@ -750,50 +759,42 @@ const InternalTeam = () => {
           {/* Desktop Table View */}
           <div className="hidden sm:block overflow-x-auto">
             <table className="w-full min-w-[800px]">
-              <thead className="bg-gray-50 border-b">
+              <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">
                 <tr>
-                  <th className="px-1.5 sm:px-2 py-1 text-left">
-                    <input
-                      type="checkbox"
-                      checked={selectedMembers.length === teamMembers.length && teamMembers.length > 0}
-                      onChange={handleSelectAll}
-                      className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 h-3 w-3 sm:h-3.5 sm:w-3.5"
-                    />
-                  </th>
-                  <th className="px-1.5 sm:px-2 py-1 text-left text-[9px] sm:text-[10px] lg:text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors"
                       onClick={() => handleSort("name")}>
-                    <div className="flex items-center gap-0.5 sm:gap-1">
+                    <div className="flex items-center gap-2">
                       Team Member
                       {sortBy === "name" && (
-                        <span className="text-indigo-600 text-[9px] sm:text-[10px]">{sortDirection === "asc" ? "↑" : "↓"}</span>
+                        <span className="text-indigo-600 text-sm font-bold">{sortDirection === "asc" ? "↑" : "↓"}</span>
                       )}
                     </div>
                   </th>
-                  <th className="px-1.5 sm:px-2 py-1 text-left text-[9px] sm:text-[10px] lg:text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors"
                       onClick={() => handleSort("email")}>
-                    <div className="flex items-center gap-0.5 sm:gap-1">
+                    <div className="flex items-center gap-2">
                       Email
                       {sortBy === "email" && (
-                        <span className="text-indigo-600 text-[9px] sm:text-[10px]">{sortDirection === "asc" ? "↑" : "↓"}</span>
+                        <span className="text-indigo-600 text-sm font-bold">{sortDirection === "asc" ? "↑" : "↓"}</span>
                       )}
                     </div>
                   </th>
-                  <th className="px-1.5 sm:px-2 py-1 text-left text-[9px] sm:text-[10px] lg:text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                     Mobile Number
                   </th>
-                  <th className="px-1.5 sm:px-2 py-1 text-left text-[9px] sm:text-[10px] lg:text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors"
                       onClick={() => handleSort("role")}>
-                    <div className="flex items-center gap-0.5 sm:gap-1">
+                    <div className="flex items-center gap-2">
                       Role
                       {sortBy === "role" && (
-                        <span className="text-indigo-600 text-[9px] sm:text-[10px]">{sortDirection === "asc" ? "↑" : "↓"}</span>
+                        <span className="text-indigo-600 text-sm font-bold">{sortDirection === "asc" ? "↑" : "↓"}</span>
                       )}
                     </div>
                   </th>
-                  <th className="px-1.5 sm:px-2 py-1 text-left text-[9px] sm:text-[10px] lg:text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                     Created At
                   </th>
-                  <th className="px-1.5 sm:px-2 py-1 text-left text-[9px] sm:text-[10px] lg:text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -801,7 +802,7 @@ const InternalTeam = () => {
               <tbody className="bg-white divide-y divide-gray-200">
                 {loading ? (
                   <tr>
-                    <td colSpan="7" className="px-2 py-6 sm:py-8 text-center">
+                    <td colSpan="6" className="px-2 py-6 sm:py-8 text-center">
                       <div className="flex items-center justify-center gap-1.5 sm:gap-2">
                         <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin text-indigo-600" />
                         <span className="text-[10px] sm:text-xs lg:text-sm text-gray-600">Loading staff members...</span>
@@ -810,7 +811,7 @@ const InternalTeam = () => {
                   </tr>
                 ) : teamMembers.length === 0 ? (
                   <tr>
-                    <td colSpan="7" className="px-2 py-6 sm:py-8 text-center">
+                    <td colSpan="6" className="px-2 py-6 sm:py-8 text-center">
                       <Shield className="mx-auto h-6 w-6 sm:h-8 sm:w-8 text-gray-400" />
                       <h3 className="mt-1.5 sm:mt-2 text-[10px] sm:text-xs font-medium text-gray-900">No staff members found</h3>
                       <p className="mt-0.5 sm:mt-1 text-[9px] sm:text-[10px] text-gray-500">
@@ -820,67 +821,61 @@ const InternalTeam = () => {
                   </tr>
                 ) : (
                   teamMembers.map((member) => (
-                    <tr key={member.id} className="hover:bg-gray-50">
-                      <td className="px-1.5 sm:px-2 py-1">
-                        <input
-                          type="checkbox"
-                          checked={selectedMembers.includes(member.id)}
-                          onChange={() => handleSelectMember(member.id)}
-                          className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 h-3 w-3 sm:h-3.5 sm:w-3.5"
-                        />
-                      </td>
-                      <td className="px-1.5 sm:px-2 py-1">
-                        <div className="flex items-center">
-                          <div className="w-5 h-5 sm:w-6 sm:h-6 bg-indigo-100 rounded-full flex items-center justify-center">
-                            <User className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-indigo-600" />
+                    <tr key={member.id} className="hover:bg-indigo-50/50 transition-colors duration-200 border-b border-gray-100">
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg flex items-center justify-center shadow-md">
+                            <User className="h-5 w-5 text-white" />
                           </div>
-                          <div className="ml-1.5 sm:ml-2 min-w-0">
-                            <div className="text-[10px] sm:text-xs font-medium text-gray-900 truncate">{member.name}</div>
-                            <div className="text-[9px] sm:text-[10px] text-gray-500">ID: {member.id}</div>
+                          <div className="min-w-0">
+                            <div className="text-sm font-semibold text-gray-900 truncate">{member.name}</div>
+                            <div className="text-xs text-gray-500">ID: {member.id}</div>
                           </div>
                         </div>
                       </td>
-                      <td className="px-1.5 sm:px-2 py-1">
-                        <div className="text-[10px] sm:text-xs text-gray-900 truncate">
+                      <td className="px-4 py-3">
+                        <div className="text-sm text-gray-900 truncate">
                           {member.email}
                         </div>
                       </td>
-                      <td className="px-1.5 sm:px-2 py-1">
-                        <div className="text-[10px] sm:text-xs text-gray-500 truncate">
+                      <td className="px-4 py-3">
+                        <div className="text-sm text-gray-600 truncate">
                           {member.mobile_number || "N/A"}
                         </div>
                       </td>
-                      <td className="px-1.5 sm:px-2 py-1">
-                        <div className="text-[10px] sm:text-xs text-gray-900 font-medium">{member.role}</div>
+                      <td className="px-4 py-3">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                          {member.role}
+                        </span>
                       </td>
-                      <td className="px-1.5 sm:px-2 py-1">
-                        <div className="text-[10px] sm:text-xs text-gray-900">
+                      <td className="px-4 py-3">
+                        <div className="text-sm text-gray-600">
                           {formatDate(member.created_at)}
                         </div>
                       </td>
-                      <td className="px-1.5 sm:px-2 py-1">
-                        <div className="flex items-center gap-0.5 sm:gap-1">
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
                           <button
                             onClick={() => handleEdit(member)}
-                            className="flex items-center gap-0.5 px-1 py-0.5 sm:px-1.5 sm:py-0.5 bg-green-500 text-white text-[8px] sm:text-[9px] rounded border border-green-600 hover:bg-green-600 transition-all duration-200 shadow-sm"
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-green-500 to-green-600 text-white text-xs rounded-lg hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-md hover:shadow-lg font-medium"
                           >
-                            <Edit className="h-2 w-2 sm:h-2.5 sm:w-2.5" />
+                            <Edit className="h-3.5 w-3.5" />
                             Edit
                           </button>
                           <button
                             onClick={() => handleView(member)}
-                            className="flex items-center gap-0.5 px-1 py-0.5 sm:px-1.5 sm:py-0.5 bg-gray-100 text-gray-700 text-[8px] sm:text-[9px] rounded border border-gray-300 hover:bg-gray-200 transition-all duration-200 shadow-sm"
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 text-gray-700 text-xs rounded-lg border border-gray-300 hover:bg-gray-200 transition-all duration-200 shadow-sm font-medium"
                           >
-                            <Eye className="h-2 w-2 sm:h-2.5 sm:w-2.5" />
+                            <Eye className="h-3.5 w-3.5" />
                             View
                           </button>
-                        <button
-                          onClick={() => handleDelete(member)}
-                          className="flex items-center gap-0.5 px-1 py-0.5 sm:px-1.5 sm:py-0.5 bg-red-500 text-white text-[8px] sm:text-[9px] rounded border border-red-600 hover:bg-red-600 transition-all duration-200 shadow-sm"
-                        >
-                          <Trash2 className="h-2 w-2 sm:h-2.5 sm:w-2.5" />
-                          Delete
-                        </button>
+                          <button
+                            onClick={() => handleDelete(member)}
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-red-500 to-red-600 text-white text-xs rounded-lg hover:from-red-600 hover:to-red-700 transition-all duration-200 shadow-md hover:shadow-lg font-medium"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                            Delete
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -892,21 +887,21 @@ const InternalTeam = () => {
           
           {/* Pagination */}
           {!loading && total > 0 && (
-            <div className="bg-gray-50 px-2 sm:px-3 lg:px-4 py-2 sm:py-3 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-2 border-t border-gray-200">
-              <div className="flex items-center gap-1.5 sm:gap-2 text-[9px] sm:text-[10px] lg:text-xs text-gray-700 text-center sm:text-left order-2 sm:order-1">
-                <span>Showing {from} to {to} of {total} results</span>
+            <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 border-t-2 border-gray-200">
+              <div className="flex items-center gap-2 text-sm text-gray-700 text-center sm:text-left order-2 sm:order-1">
+                <span className="font-medium">Showing <span className="text-indigo-600 font-semibold">{from}</span> to <span className="text-indigo-600 font-semibold">{to}</span> of <span className="text-indigo-600 font-semibold">{total}</span> results</span>
               </div>
-              <div className="flex items-center gap-1 sm:gap-1.5 w-full sm:w-auto justify-between sm:justify-end order-1 sm:order-2">
+              <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end order-1 sm:order-2">
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="flex items-center justify-center gap-0.5 sm:gap-1 px-2 py-1 sm:px-2.5 sm:py-1.5 text-[9px] sm:text-[10px] lg:text-xs border border-gray-300 rounded-md hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm flex-1 sm:flex-initial min-w-[70px] sm:min-w-0"
+                  className="flex items-center justify-center gap-2 px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-white hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium flex-1 sm:flex-initial min-w-[100px] sm:min-w-0"
                 >
-                  <ChevronLeft className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                  <ChevronLeft className="h-4 w-4" />
                   <span className="hidden sm:inline">Previous</span>
                   <span className="sm:hidden">Prev</span>
                 </button>
-                <div className="flex items-center gap-0.5 sm:gap-1">
+                <div className="flex items-center gap-1">
                   {Array.from({ length: Math.min(lastPage, 5) }, (_, i) => {
                     let pageNum;
                     if (lastPage <= 5) {
@@ -922,10 +917,10 @@ const InternalTeam = () => {
                       <button
                         key={pageNum}
                         onClick={() => handlePageChange(pageNum)}
-                        className={`px-1.5 sm:px-2 py-1 text-[9px] sm:text-[10px] lg:text-xs border rounded-md ${
+                        className={`px-3 py-1.5 text-sm border rounded-lg font-medium transition-all duration-200 ${
                           currentPage === pageNum
-                            ? "bg-indigo-600 text-white border-indigo-600"
-                            : "border-gray-300 hover:bg-gray-100"
+                            ? "bg-gradient-to-r from-indigo-600 to-indigo-700 text-white border-indigo-600 shadow-md"
+                            : "border-gray-300 hover:bg-white hover:shadow-sm text-gray-700"
                         }`}
                       >
                         {pageNum}
@@ -936,10 +931,10 @@ const InternalTeam = () => {
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === lastPage}
-                  className="flex items-center justify-center gap-0.5 sm:gap-1 px-2 py-1 sm:px-2.5 sm:py-1.5 text-[9px] sm:text-[10px] lg:text-xs border border-gray-300 rounded-md hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm flex-1 sm:flex-initial min-w-[70px] sm:min-w-0"
+                  className="flex items-center justify-center gap-2 px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-white hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium flex-1 sm:flex-initial min-w-[100px] sm:min-w-0"
                 >
                   <span>Next</span>
-                  <ChevronRight className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                  <ChevronRight className="h-4 w-4" />
                 </button>
               </div>
             </div>

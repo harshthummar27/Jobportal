@@ -9,6 +9,8 @@ import RecruiterInfo from "./pages/RecruiterInfo";
 import AboutUs from "./pages/AboutUs";
 import Pricing from "./pages/Pricing";
 import ContactUs from "./pages/ContactUs";
+import TermsAndConditions from "./pages/TermsAndConditions";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 import ProfileSetup from "./pages/candidate/ProfileSetup";
 import CandidateRegistration from "./pages/candidate/CandidateRegistration";
 import CandidateDashboard from "./pages/candidate/CandidateDashboard";
@@ -56,6 +58,8 @@ export default function App() {
         <Route path="/about-us" element={<AboutUs />} />
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/contact-us" element={<ContactUs />} />
+        <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/candidate-info" element={<CandidateInfo />} />
         <Route path="/recruiter-info" element={<RecruiterInfo />} />
         

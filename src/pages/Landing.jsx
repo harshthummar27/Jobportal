@@ -907,7 +907,7 @@ const Landing = () => {
           </div>
 
           <TestimonialsSlider>
-            <div className="bg-white p-6 md:p-8 rounded-2xl border-2 border-[#e4d9ff] shadow-md hover:shadow-lg transition-all duration-500 transform hover:-translate-y-1 h-full">
+            <div className="bg-white p-6 md:p-8 rounded-2xl border-2 border-[#e4d9ff]  transition-all duration-500 transform hover:-translate-y-1 h-full">
               <div className="flex items-center mb-4">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className="h-4 w-4 md:h-5 md:w-5 text-[#273469] fill-current" />
@@ -927,7 +927,7 @@ const Landing = () => {
               </div>
             </div>
 
-            <div className="bg-white p-6 md:p-8 rounded-2xl border-2 border-[#e4d9ff] shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 h-full">
+            <div className="bg-white p-6 md:p-8 rounded-2xl border-2 border-[#e4d9ff] transition-all duration-500 transform hover:-translate-y-2 h-full">
               <div className="flex items-center mb-4">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className="h-4 w-4 md:h-5 md:w-5 text-[#273469] fill-current" />
@@ -947,7 +947,7 @@ const Landing = () => {
               </div>
             </div>
 
-            <div className="bg-white p-6 md:p-8 rounded-2xl border-2 border-[#e4d9ff] shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 h-full">
+            <div className="bg-white p-6 md:p-8 rounded-2xl border-2 border-[#e4d9ff] transition-all duration-500 transform hover:-translate-y-2 h-full">
               <div className="flex items-center mb-4">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className="h-4 w-4 md:h-5 md:w-5 text-[#273469] fill-current" />
@@ -967,7 +967,7 @@ const Landing = () => {
               </div>
             </div>
 
-            <div className="bg-white p-6 md:p-8 rounded-2xl border-2 border-[#e4d9ff] shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-1 h-full">
+            <div className="bg-white p-6 md:p-8 rounded-2xl border-2 border-[#e4d9ff]  transition-all duration-500 transform hover:-translate-y-1 h-full">
               <div className="flex items-center mb-4">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className="h-4 w-4 md:h-5 md:w-5 text-[#273469] fill-current" />
@@ -987,7 +987,7 @@ const Landing = () => {
               </div>
             </div>
 
-            <div className="bg-white p-6 md:p-8 rounded-2xl border-2 border-[#e4d9ff] shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-1 h-full">
+            <div className="bg-white p-6 md:p-8 rounded-2xl border-2 border-[#e4d9ff]  transition-all duration-500 transform hover:-translate-y-1 h-full">
               <div className="flex items-center mb-4">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className="h-4 w-4 md:h-5 md:w-5 text-[#273469] fill-current" />
@@ -1007,7 +1007,7 @@ const Landing = () => {
               </div>
             </div>
 
-            <div className="bg-white p-6 md:p-8 rounded-2xl border-2 border-[#e4d9ff] shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-1 h-full">
+            <div className="bg-white p-6 md:p-8 rounded-2xl border-2 border-[#e4d9ff] transition-all duration-500 transform hover:-translate-y-1 h-full">
               <div className="flex items-center mb-4">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className="h-4 w-4 md:h-5 md:w-5 text-[#273469] fill-current" />
@@ -1027,7 +1027,7 @@ const Landing = () => {
               </div>
             </div>
 
-            <div className="bg-white p-6 md:p-8 rounded-2xl border-2 border-[#e4d9ff] shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-1 h-full">
+            <div className="bg-white p-6 md:p-8 rounded-2xl border-2 border-[#e4d9ff] transition-all duration-500 transform hover:-translate-y-1 h-full">
               <div className="flex items-center mb-4">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className="h-4 w-4 md:h-5 md:w-5 text-[#273469] fill-current" />
@@ -1126,7 +1126,7 @@ const Landing = () => {
                       <ArrowRight className="ml-2 md:ml-3 h-4 w-4 md:h-5 md:w-5 group-hover:translate-x-1 transition-transform duration-300" />
                     </Button>
                   </Link>
-                  <Link to="/candidate-info" className="w-full sm:w-auto">
+                  <Link to="/about-us" className="w-full sm:w-auto">
                     <Button size="lg" variant="outline" className="group w-full sm:w-auto">
                       <Users className="mr-2 md:mr-3 h-5 w-5 md:h-6 md:w-6 group-hover:rotate-12 transition-transform duration-300" />
                       Learn More

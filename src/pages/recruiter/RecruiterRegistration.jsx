@@ -1041,7 +1041,7 @@ const RecruiterRegistration = () => {
       <Header />
       
       {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <div className="hidden md:block absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-32 h-32 bg-[#e4d9ff] rounded-full opacity-20 animate-pulse"></div>
         <div className="absolute top-40 right-20 w-24 h-24 bg-[#30343f] rounded-full opacity-15 animate-pulse" style={{ animationDelay: '1s' }}></div>
         <div className="absolute bottom-20 left-1/4 w-20 h-20 bg-[#e4d9ff] rounded-full opacity-25 animate-pulse" style={{ animationDelay: '2s' }}></div>
@@ -1065,6 +1065,17 @@ const RecruiterRegistration = () => {
             <p className="text-sm md:text-base lg:text-lg text-[#30343f] max-w-2xl mx-auto leading-relaxed px-4">
               Access pre-vetted candidates and streamline your hiring process with our professional network
             </p>
+          </div>
+
+          {/* Back Button */}
+          <div className="mb-6 md:mb-8">
+            <Link
+              to="/recruiter-info"
+              className="inline-flex items-center gap-2 text-[#30343f] hover:text-[#1e2749] transition-colors duration-300 font-medium text-sm md:text-base"
+            >
+              <ArrowLeft className="h-3 w-3 md:h-4 md:w-4" />
+              Back to Recruiter Info
+            </Link>
           </div>
 
           {/* Progress Bar */}
@@ -1144,17 +1155,6 @@ const RecruiterRegistration = () => {
                 </div>
               </form>
             </div>
-          </div>
-
-          {/* Back Button */}
-          <div className="mt-6 md:mt-8 text-center">
-            <Link
-              to="/recruiter-info"
-              className="inline-flex items-center gap-2 text-[#30343f] hover:text-[#1e2749] transition-colors duration-300 font-medium text-sm md:text-base"
-            >
-              <ArrowLeft className="h-3 w-3 md:h-4 md:w-4" />
-              Back to Recruiter Info
-            </Link>
           </div>
 
           {/* Benefits */}

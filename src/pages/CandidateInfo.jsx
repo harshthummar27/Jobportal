@@ -42,17 +42,17 @@ const Button = ({ children, variant = "primary", size = "md", className = "", ..
 
 const CandidateInfo = () => {
   return (
-    <div className="min-h-screen bg-[#fafaff] text-[#1e2749] overflow-x-hidden">
+    <div className="min-h-screen bg-[#fafaff] text-[#1e2749] overflow-x-hidden relative">
       <Header />
       
       {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-32 h-32 bg-[#e4d9ff] rounded-full opacity-20 animate-pulse"></div>
-        <div className="absolute top-40 right-20 w-24 h-24 bg-[#30343f] rounded-full opacity-15 animate-pulse" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute bottom-20 left-1/4 w-20 h-20 bg-[#e4d9ff] rounded-full opacity-25 animate-pulse" style={{ animationDelay: '2s' }}></div>
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-20 left-5 sm:left-10 w-16 h-16 sm:w-24 sm:h-24 md:w-32 md:h-32 bg-[#e4d9ff] rounded-full opacity-10 sm:opacity-15 md:opacity-20 animate-pulse"></div>
+        <div className="absolute top-40 right-5 sm:right-10 md:right-20 w-12 h-12 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-[#30343f] rounded-full opacity-8 sm:opacity-12 md:opacity-15 animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-20 left-5 sm:left-10 md:left-1/4 w-10 h-10 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-[#e4d9ff] rounded-full opacity-12 sm:opacity-18 md:opacity-25 animate-pulse" style={{ animationDelay: '2s' }}></div>
       </div>
       
-      <div className="relative pt-24 pb-20 lg:pt-32 lg:pb-32">
+      <div className="relative z-10 pt-24 pb-20 lg:pt-32 lg:pb-32">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="text-center mb-8 md:mb-12">
