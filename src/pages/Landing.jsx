@@ -566,15 +566,15 @@ const Landing = () => {
                   <div className="space-y-3 md:space-y-4">
                     <div className="flex items-center gap-2 md:gap-3">
                       <div className="w-2 h-2 bg-[#273469] rounded-full"></div>
-                      <span className="text-sm md:text-base text-[#30343f]">Technical screening</span>
+                      <span className="text-sm md:text-base text-[#30343f]">Humanly screened candidates only</span>
                     </div>
                     <div className="flex items-center gap-2 md:gap-3">
                       <div className="w-2 h-2 bg-[#273469] rounded-full"></div>
-                      <span className="text-sm md:text-base text-[#30343f]">Background verification</span>
+                      <span className="text-sm md:text-base text-[#30343f]">Transparent and simple platform</span>
                     </div>
                     <div className="flex items-center gap-2 md:gap-3">
                       <div className="w-2 h-2 bg-[#273469] rounded-full"></div>
-                      <span className="text-sm md:text-base text-[#30343f]">Reference checks</span>
+                      <span className="text-sm md:text-base text-[#30343f]">No demos no time wasting</span>
                     </div>
                   </div>
                 </div>
@@ -883,7 +883,7 @@ const Landing = () => {
                     </div>
                     <div>
                       <h4 className="font-semibold text-[#1e2749] mb-1 text-sm md:text-base">Select Candidates</h4>
-                      <p className="text-[#30343f] text-xs md:text-sm">Choose candidates and we'll coordinate interviews on your behalf.</p>
+                      <p className="text-[#30343f] text-xs md:text-sm">Choose candidates and we will arrange interviews with you.</p>
                     </div>
                   </div>
                 </div>
@@ -1087,7 +1087,7 @@ const Landing = () => {
               },
               {
                 question: "How do you ensure candidate quality?",
-                answer: "We have a rigorous multi-stage verification process that includes skill assessments, portfolio reviews, technical interviews, and background checks. Only candidates who pass all stages are added to our pool."
+                answer: "We have a rigorous multi-stage verification process that includes skill assessments, portfolio reviews, technical interviews. Only candidates who pass all stages are added to our pool."
               }
             ].map((faq, index) => (
               <FloatingCard key={index} delay={100 * (index + 1)}>

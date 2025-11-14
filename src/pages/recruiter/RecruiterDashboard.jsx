@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Users, UserCheck, AlertCircle, Loader2, Search, CheckCircle, X, MapPin, Briefcase, DollarSign, Award, Calendar } from "lucide-react";
+import { Users, UserCheck, AlertCircle, Loader2, Search, CheckCircle, X, MapPin, Briefcase, DollarSign, Award, Calendar, Star, FileText } from "lucide-react";
 import { toast } from 'react-toastify';
 import RecruiterLayout from "../../Components/RecruiterLayout";
 
@@ -31,6 +31,12 @@ const RecruiterDashboard = () => {
   });
   const [isSearching, setIsSearching] = useState(false);
   
+  // Profile modal state
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [profileCandidate, setProfileCandidate] = useState(null);
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [profileError, setProfileError] = useState(null);
+  
   // Select candidate state
   const [showSelectModal, setShowSelectModal] = useState(false);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
@@ -49,6 +55,16 @@ const RecruiterDashboard = () => {
 
   const normalizeText = (value) => value?.toString().trim().replace(/\s+/g, ' ') || '';
   const titleCase = (value) => normalizeText(value).toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+
+  // Visa status options
+  const visaStatuses = [
+    { value: '', label: 'All Visa Statuses' },
+    { value: 'us_citizen', label: 'US Citizen' },
+    { value: 'permanent_resident', label: 'Permanent Resident' },
+    { value: 'h1b', label: 'H1B' },
+    { value: 'opt_cpt', label: 'OPT/CPT' },
+    { value: 'other', label: 'Other' }
+  ];
 
   // Search candidates using the new search API
   const searchCandidates = async (filters) => {
@@ -100,11 +116,27 @@ const RecruiterDashboard = () => {
         },
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      // Parse response JSON first
+      let data;
+      try {
+        const text = await response.text();
+        data = text ? JSON.parse(text) : {};
+      } catch (parseError) {
+        console.error('Error parsing response:', parseError);
+        throw new Error('Invalid response from server. Please try again.');
       }
 
-      const data = await response.json();
+      if (!response.ok) {
+        // Handle Laravel validation errors (422)
+        if (response.status === 422 && data.errors) {
+          const errorMessages = Object.values(data.errors).flat().join(', ');
+          throw new Error(errorMessages || data.message || 'Validation error');
+        }
+        
+        // Handle other error responses
+        throw new Error(data.message || data.error || `HTTP error! status: ${response.status}`);
+      }
+
       console.log('Search API Response:', data); // Debug log
       
       // Handle the API response structure: { candidates: { data: [...], ... }, filters_applied: {...} }
@@ -124,6 +156,7 @@ const RecruiterDashboard = () => {
     } catch (error) {
       console.error('Error searching candidates:', error);
       setError(error.message);
+      toast.error(error.message || 'Failed to search candidates. Please try again.');
     } finally {
       setIsSearching(false);
     }
@@ -261,21 +294,80 @@ const RecruiterDashboard = () => {
     }
   };
 
-  // Handle select candidate click
+  // Fetch full candidate details for profile modal
+  const fetchCandidateDetails = async (code) => {
+    try {
+      setProfileLoading(true);
+      setProfileError(null);
+      
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/candidates/${code}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (data && data.candidate) {
+        setProfileCandidate(data.candidate);
+      } else if (data && data.success && data.data) {
+        setProfileCandidate(data.data);
+      } else {
+        throw new Error(data.message || 'Failed to fetch candidate details');
+      }
+    } catch (error) {
+      console.error('Error fetching candidate details:', error);
+      setProfileError(error.message);
+      toast.error(error.message || 'Failed to load candidate profile');
+    } finally {
+      setProfileLoading(false);
+    }
+  };
+
+  // Handle view profile click
+  const handleViewProfile = (candidate) => {
+    const code = candidate.candidate_profile?.candidate_code || candidate.candidate_code || `CAND${candidate.id}`;
+    setProfileCandidate(null);
+    setProfileError(null);
+    setShowProfileModal(true);
+    fetchCandidateDetails(code);
+  };
+
+  // Handle select candidate click (from profile modal)
   const handleSelectCandidate = (candidate) => {
-    setSelectedCandidate(candidate);
+    // Use profileCandidate if available, otherwise use the passed candidate
+    const candidateToUse = candidate || profileCandidate;
+    if (!candidateToUse) return;
+    
+    // Handle both data structures (nested candidate_profile or flat)
+    const profile = candidateToUse.candidate_profile || candidateToUse;
+    const code = profile?.candidate_code || candidateToUse.candidate_code || `CAND${candidateToUse.id}`;
+    
+    setSelectedCandidate(candidateToUse);
     setSelectFormData(prev => ({
       ...prev,
-      job_title: (candidate.candidate_profile?.desired_job_roles?.[0]) || (candidate.desired_job_roles?.[0]) || '',
-      location: `${candidate.candidate_profile?.city || candidate.city || ''}, ${candidate.candidate_profile?.state || candidate.state || ''}`
+      job_title: (profile?.desired_job_roles?.[0]) || (candidateToUse.desired_job_roles?.[0]) || '',
+      location: `${profile?.city || candidateToUse.city || ''}, ${profile?.state || candidateToUse.state || ''}`
         .replace(', ,', '')
         .replace(/^,\s*/, '')
         .replace(/,\s*$/, ''),
-      offered_salary_min: candidate.candidate_profile?.desired_annual_package || candidate.desired_annual_package || '',
-      offered_salary_max: candidate.candidate_profile?.desired_annual_package || candidate.desired_annual_package || '',
-      selection_status: 'shortlisted' // Always set to shortlisted
+      offered_salary_min: profile?.desired_annual_package || candidateToUse.desired_annual_package || '',
+      offered_salary_max: profile?.desired_annual_package || candidateToUse.desired_annual_package || '',
+      selection_status: 'shortlisted'
     }));
     setShowSelectModal(true);
+    setShowProfileModal(false); // Close profile modal when opening select modal
   };
 
   // Fetch candidates on component mount
@@ -454,13 +546,17 @@ const RecruiterDashboard = () => {
                   </div>
                   <div>
                     <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Visa Status</label>
-                    <input
-                      type="text"
-                      placeholder="e.g., opt_cpt, h1b, citizen"
+                    <select
                       value={searchParams.visa_status}
                       onChange={(e) => handleSearchParamChange('visa_status', e.target.value)}
-                      className="w-full px-1.5 py-1 sm:px-2 sm:py-1.5 text-[10px] sm:text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500/30 focus:border-blue-500"
-                    />
+                      className="w-full px-1.5 py-1 sm:px-2 sm:py-1.5 text-[10px] sm:text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500/30 focus:border-blue-500 bg-white"
+                    >
+                      {visaStatuses.map((status) => (
+                        <option key={status.value} value={status.value}>
+                          {status.label}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                   <div>
                     <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Min Score</label>
@@ -625,20 +721,12 @@ const RecruiterDashboard = () => {
 
                         {/* Card Footer - Actions */}
                         <div className="px-3 sm:px-4 py-2 sm:py-3 border-t border-gray-200 bg-gray-50">
-                          <div className="flex items-center gap-2">
-                            <Link
-                              to={`/recruiter/candidate/${formattedCandidate.code}`}
-                              className="flex-1 text-center px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-indigo-600 bg-white border border-indigo-200 rounded-md hover:bg-indigo-50 hover:border-indigo-300 transition-colors"
-                            >
-                              View Profile
-                            </Link>
-                            <button
-                              onClick={() => handleSelectCandidate(candidate)}
-                              className="flex-1 text-center px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-white bg-green-600 border border-green-600 rounded-md hover:bg-green-700 transition-colors"
-                            >
-                              Select
-                            </button>
-                          </div>
+                          <button
+                            onClick={() => handleViewProfile(candidate)}
+                            className="w-full text-center px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-indigo-600 bg-white border border-indigo-200 rounded-md hover:bg-indigo-50 hover:border-indigo-300 transition-colors"
+                          >
+                            View Profile
+                          </button>
                         </div>
                       </div>
                     );
@@ -681,6 +769,232 @@ const RecruiterDashboard = () => {
           </div>
         </div>
       </div>
+      
+      {/* Profile Modal */}
+      {showProfileModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full mx-4 animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between z-10 rounded-t-xl">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900">Candidate Profile</h3>
+              <button
+                onClick={() => {
+                  setShowProfileModal(false);
+                  setProfileCandidate(null);
+                  setProfileError(null);
+                }}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            
+            <div className="px-4 sm:px-6 py-4 sm:py-6">
+              {profileLoading ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+                  <span className="ml-3 text-sm text-gray-600">Loading profile...</span>
+                </div>
+              ) : profileError ? (
+                <div className="flex flex-col items-center justify-center py-12">
+                  <AlertCircle className="h-8 w-8 text-red-400 mb-2" />
+                  <p className="text-sm text-red-600 font-medium">{profileError}</p>
+                </div>
+              ) : profileCandidate ? (
+                <div className="space-y-4 sm:space-y-6">
+                  {/* Header */}
+                  <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-4 sm:p-6 border border-gray-200">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                      <div>
+                        <div className="text-lg sm:text-xl font-bold text-indigo-600 mb-1">
+                          {profileCandidate.candidate_code || profileCandidate.candidate_profile?.candidate_code || 'N/A'}
+                        </div>
+                        <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-600">
+                          {profileCandidate.candidate_score !== null && profileCandidate.candidate_score !== undefined && (
+                            <div className="flex items-center gap-1">
+                              <Award className="h-4 w-4 text-yellow-500" />
+                              <span className="font-medium">Score: {profileCandidate.candidate_score}</span>
+                            </div>
+                          )}
+                          {profileCandidate.created_at && (
+                            <div className="flex items-center gap-1">
+                              <Calendar className="h-4 w-4 text-gray-400" />
+                              <span>Added: {new Date(profileCandidate.created_at).toLocaleDateString()}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      {profileCandidate.visa_status && (
+                        <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-medium">
+                          {profileCandidate.visa_status.replace('_', ' ')}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Basic Information */}
+                  <div className="bg-gray-50 rounded-lg p-4 sm:p-6 border border-gray-200">
+                    <h4 className="text-sm sm:text-base font-semibold text-gray-900 mb-3 sm:mb-4">Basic Information</h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                      {profileCandidate.city && (
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">City</label>
+                          <p className="text-xs sm:text-sm text-gray-900">{profileCandidate.city}</p>
+                        </div>
+                      )}
+                      {profileCandidate.state && (
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">State</label>
+                          <p className="text-xs sm:text-sm text-gray-900">{profileCandidate.state}</p>
+                        </div>
+                      )}
+                      {profileCandidate.total_years_experience !== undefined && (
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">Experience</label>
+                          <p className="text-xs sm:text-sm text-gray-900">{profileCandidate.total_years_experience} years</p>
+                        </div>
+                      )}
+                      {profileCandidate.desired_annual_package && (
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">Desired Salary</label>
+                          <p className="text-xs sm:text-sm text-gray-900">${parseInt(profileCandidate.desired_annual_package).toLocaleString()}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Professional Information */}
+                  <div className="bg-gray-50 rounded-lg p-4 sm:p-6 border border-gray-200">
+                    <h4 className="text-sm sm:text-base font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center gap-2">
+                      <Briefcase className="h-4 w-4 text-blue-600" />
+                      Professional Information
+                    </h4>
+                    <div className="space-y-3 sm:space-y-4">
+                      {profileCandidate.desired_job_roles && profileCandidate.desired_job_roles.length > 0 && (
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">Desired Job Roles</label>
+                          <div className="flex flex-wrap gap-1.5">
+                            {profileCandidate.desired_job_roles.map((role, idx) => (
+                              <span key={idx} className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-medium">
+                                {role}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {profileCandidate.preferred_locations && profileCandidate.preferred_locations.length > 0 && (
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">Preferred Locations</label>
+                          <div className="flex flex-wrap gap-1.5">
+                            {profileCandidate.preferred_locations.map((loc, idx) => (
+                              <span key={idx} className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs font-medium">
+                                {loc}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Skills */}
+                  {profileCandidate.skills && profileCandidate.skills.length > 0 && (
+                    <div className="bg-gray-50 rounded-lg p-4 sm:p-6 border border-gray-200">
+                      <h4 className="text-sm sm:text-base font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center gap-2">
+                        <Star className="h-4 w-4 text-blue-600" />
+                        Skills
+                      </h4>
+                      <div className="flex flex-wrap gap-1.5">
+                        {profileCandidate.skills.map((skill, idx) => (
+                          <span key={idx} className="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-medium">
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Job History */}
+                  {profileCandidate.job_history && profileCandidate.job_history.length > 0 && (
+                    <div className="bg-gray-50 rounded-lg p-4 sm:p-6 border border-gray-200">
+                      <h4 className="text-sm sm:text-base font-semibold text-gray-900 mb-3 sm:mb-4">Job History</h4>
+                      <div className="space-y-2">
+                        {profileCandidate.job_history.map((job, idx) => (
+                          <div key={idx} className="border border-gray-200 rounded-lg p-3 bg-white">
+                            <div className="font-medium text-xs sm:text-sm text-gray-900">{job.position} @ {job.company}</div>
+                            <div className="text-xs text-gray-500 mt-1">
+                              {job.start_date ? new Date(job.start_date).toLocaleDateString() : '—'} - {job.end_date ? new Date(job.end_date).toLocaleDateString() : 'Present'}
+                            </div>
+                            {job.description && (
+                              <p className="text-xs text-gray-700 mt-1">{job.description}</p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Education */}
+                  {profileCandidate.education && profileCandidate.education.length > 0 && (
+                    <div className="bg-gray-50 rounded-lg p-4 sm:p-6 border border-gray-200">
+                      <h4 className="text-sm sm:text-base font-semibold text-gray-900 mb-3 sm:mb-4">Education</h4>
+                      <div className="space-y-2">
+                        {profileCandidate.education.map((edu, idx) => (
+                          <div key={idx} className="border border-gray-200 rounded-lg p-3 bg-white">
+                            <div className="font-medium text-xs sm:text-sm text-gray-900">{edu.degree} - {edu.major}</div>
+                            <div className="text-xs text-gray-500 mt-1">{edu.institution}{edu.graduation_year ? `, ${edu.graduation_year}` : ''}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Resume */}
+                  {profileCandidate.resume_file_path && (
+                    <div className="bg-gray-50 rounded-lg p-4 sm:p-6 border border-gray-200">
+                      <h4 className="text-sm sm:text-base font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center gap-2">
+                        <FileText className="h-4 w-4 text-blue-600" />
+                        Resume
+                      </h4>
+                      <a
+                        href={profileCandidate.resume_file_path}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-xs sm:text-sm font-medium"
+                      >
+                        Download {profileCandidate.resume_file_name || 'Resume'}
+                      </a>
+                    </div>
+                  )}
+                </div>
+              ) : null}
+            </div>
+
+            {/* Footer with Select Button */}
+            {profileCandidate && !profileLoading && !profileError && (
+              <div className="sticky bottom-0 bg-white border-t border-gray-200 px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 rounded-b-xl">
+                <button
+                  onClick={() => {
+                    setShowProfileModal(false);
+                    setProfileCandidate(null);
+                    setProfileError(null);
+                  }}
+                  className="px-3 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors order-2 sm:order-1"
+                >
+                  Close
+                </button>
+                <button
+                  onClick={() => handleSelectCandidate(null)}
+                  className="px-3 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors flex items-center justify-center gap-2 order-1 sm:order-2"
+                >
+                  <CheckCircle className="h-4 w-4" />
+                  Select Candidate
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Select Candidate Modal */}
     {showSelectModal && (
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center p-4">

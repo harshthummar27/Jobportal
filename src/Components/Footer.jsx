@@ -24,44 +24,7 @@ const Footer = () => {
               </p>
               
               {/* Social Media Links */}
-              <div className="flex items-center gap-3">
-                <a 
-                  href="https://linkedin.com/company/vettedpool" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="w-9 h-9 bg-gray-100 hover:bg-[#273469] rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-110 group"
-                  aria-label="LinkedIn"
-                >
-                  <Linkedin className="h-4 w-4 text-gray-600 group-hover:text-white transition-colors" />
-                </a>
-                <a 
-                  href="https://twitter.com/vettedpool" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="w-9 h-9 bg-gray-100 hover:bg-[#273469] rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-110 group"
-                  aria-label="Twitter"
-                >
-                  <Twitter className="h-4 w-4 text-gray-600 group-hover:text-white transition-colors" />
-                </a>
-                <a 
-                  href="https://facebook.com/vettedpool" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="w-9 h-9 bg-gray-100 hover:bg-[#273469] rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-110 group"
-                  aria-label="Facebook"
-                >
-                  <Facebook className="h-4 w-4 text-gray-600 group-hover:text-white transition-colors" />
-                </a>
-                <a 
-                  href="https://instagram.com/vettedpool" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="w-9 h-9 bg-gray-100 hover:bg-[#273469] rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-110 group"
-                  aria-label="Instagram"
-                >
-                  <Instagram className="h-4 w-4 text-gray-600 group-hover:text-white transition-colors" />
-                </a>
-              </div>
+              
             </div>
 
             {/* Quick Links */}

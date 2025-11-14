@@ -132,7 +132,7 @@ const RecruiterInfo = () => {
                 <div className="w-8 h-8 md:w-10 md:h-10 bg-[#e4d9ff] rounded-xl flex items-center justify-center">
                   <CheckCircle className="h-4 w-4 md:h-5 md:w-5 text-[#273469]" />
                 </div>
-                Start Recruiting in Just 5 Steps
+                Start Recruiting in Just 6 Steps
               </h2>
               <div className="space-y-4 md:space-y-6">
                 {[
@@ -141,6 +141,7 @@ const RecruiterInfo = () => {
                   { step: 3, title: "Accept Agreement", desc: "Review and accept our recruiter service agreement." },
                   { step: 4, title: "Search & Select Candidates", desc: "Use our advanced filters to find the perfect match for your role." },
                   { step: 5, title: "Arrange Interview & Hire", desc: "Schedule interviews with selected candidates and make your hire." },
+                  { step: 6, title: "Minimum Salary Requirement", desc: "The minimum salary will be written on each profile, offers below it will be auto-declined." },
                 ].map((item) => (
                   <div key={item.step} className="bg-[#f2edff] p-3 md:p-4 rounded-xl border-l-4 border-[#e4d9ff]">
                     <div className="flex items-start gap-3 md:gap-4">

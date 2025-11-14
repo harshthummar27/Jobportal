@@ -127,7 +127,6 @@ const Pricing = () => {
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   {[
-                    "Unlimited job postings",
                     "Access to candidate database",
                     "Candidate profile matching",
                     "Interview scheduling tools",
@@ -216,7 +215,7 @@ const Pricing = () => {
                   <ul className="list-disc list-inside space-y-2 ml-4">
                     <li>Bank transfer (ACH/Wire)</li>
                     <li>Credit card (Visa, MasterCard, American Express)</li>
-                    <li>Check (for Enterprise accounts)</li>
+                   
                   </ul>
                 </div>
               </div>
@@ -238,7 +237,7 @@ const Pricing = () => {
                   </ul>
                   <p>
                     If the candidate leaves within the 90-day guarantee period, a replacement candidate will be provided 
-                    at no additional charge, or a partial refund may be issued at VettedPool's discretion.
+                    at no additional charge, may be issued at VettedPool's discretion.
                   </p>
                 </div>
               </div>
@@ -254,10 +253,7 @@ const Pricing = () => {
                     VettedPool operates on a success-based model. There are no upfront costs, registration fees, 
                     or monthly subscription charges. You only pay when you successfully place a candidate.
                   </p>
-                  <p>
-                    All platform features, including job posting, candidate search, and communication tools, 
-                    are available at no cost until a successful placement is made.
-                  </p>
+                  
                 </div>
               </div>
 
@@ -280,31 +276,13 @@ const Pricing = () => {
               </div>
 
               {/* Section 6 */}
-              <div>
-                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center gap-2">
-                  <AlertCircle className="h-5 w-5 text-[#273469]" />
-                  6. Refund Policy
-                </h3>
-                <div className="space-y-3 text-sm sm:text-base text-gray-600 leading-relaxed">
-                  <p>
-                    If a placed candidate leaves within 90 days of their start date, VettedPool will:
-                  </p>
-                  <ul className="list-disc list-inside space-y-2 ml-4">
-                    <li>Provide a replacement candidate at no additional charge, or</li>
-                    <li>Issue a partial refund based on the remaining guarantee period</li>
-                  </ul>
-                  <p>
-                    Refund requests must be submitted within 7 days of the candidate's departure and are subject 
-                    to verification and approval by VettedPool.
-                  </p>
-                </div>
-              </div>
+              
 
               {/* Section 7 */}
               <div>
                 <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center gap-2">
                   <AlertCircle className="h-5 w-5 text-[#273469]" />
-                  7. Account Requirements
+                  6. Account Requirements
                 </h3>
                 <div className="space-y-3 text-sm sm:text-base text-gray-600 leading-relaxed">
                   <p>
@@ -323,7 +301,7 @@ const Pricing = () => {
               <div>
                 <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center gap-2">
                   <AlertCircle className="h-5 w-5 text-[#273469]" />
-                  8. Changes to Pricing
+                  7. Changes to Pricing
                 </h3>
                 <div className="space-y-3 text-sm sm:text-base text-gray-600 leading-relaxed">
                   <p>
@@ -340,7 +318,7 @@ const Pricing = () => {
               <div>
                 <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center gap-2">
                   <AlertCircle className="h-5 w-5 text-[#273469]" />
-                  9. Disputes and Resolution
+                  8. Disputes and Resolution
                 </h3>
                 <div className="space-y-3 text-sm sm:text-base text-gray-600 leading-relaxed">
                   <p>
@@ -358,7 +336,7 @@ const Pricing = () => {
               <div>
                 <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center gap-2">
                   <AlertCircle className="h-5 w-5 text-[#273469]" />
-                  10. Contact Information
+                  9. Contact Information
                 </h3>
                 <div className="space-y-3 text-sm sm:text-base text-gray-600 leading-relaxed">
                   <p>

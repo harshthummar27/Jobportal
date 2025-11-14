@@ -110,7 +110,7 @@ const CandidateInfo = () => {
                   {
                     icon: <UserCheck className="h-5 w-5 text-[#273469]" />,
                     title: "Interview Process",
-                    text: "Our technical team will reach out for your interview after registration.",
+                    text: "Our technical team will reach out for 2-3 rounds of interview after registration.",
                   },
                   {
                     icon: <FileText className="h-5 w-5 text-[#273469]" />,
@@ -137,11 +137,7 @@ const CandidateInfo = () => {
                     title: "Commitment Required",
                     text: "Accepting and then backing out of a job within 4 months leads to removal.",
                   },
-                  {
-                    icon: <Shield className="h-5 w-5 text-[#273469]" />,
-                    title: "Background Verification",
-                    text: "Registration implies consent for third-party background checks.",
-                  },
+                 
                   {
                     icon: <AlertTriangle className="h-5 w-5 text-red-600" />,
                     title: "Legal Warning",
