@@ -46,6 +46,7 @@ const RecruiterDashboard = () => {
     offered_salary_min: '',
     offered_salary_max: '',
     location: '',
+    work_mode: '',
     notes: '',
     selection_status: 'shortlisted',
     is_priority: false
@@ -219,7 +220,8 @@ const RecruiterDashboard = () => {
           salaryMax === null || 
           isNaN(salaryMin) || 
           isNaN(salaryMax) ||
-          !selectFormData.location?.trim()) {
+          !selectFormData.location?.trim() ||
+          !selectFormData.work_mode?.trim()) {
         throw new Error('Please fill all required fields with valid values');
       }
 
@@ -238,6 +240,7 @@ const RecruiterDashboard = () => {
         offered_salary_min: salaryMin,
         offered_salary_max: salaryMax,
         location: selectFormData.location.trim(),
+        work_mode: selectFormData.work_mode || '',
         is_priority: Boolean(selectFormData.is_priority)
       };
 
@@ -277,6 +280,7 @@ const RecruiterDashboard = () => {
           offered_salary_min: '',
           offered_salary_max: '',
           location: '',
+          work_mode: '',
           notes: '',
           selection_status: 'shortlisted',
           is_priority: false
@@ -385,7 +389,14 @@ const RecruiterDashboard = () => {
     const profile = candidate.candidate_profile;
     const code = profile?.candidate_code || candidate.candidate_code || `CAND${candidate.id}`;
     const desiredRoles = profile?.desired_job_roles || candidate.desired_job_roles || [];
-    const skills = profile?.skills || candidate.skills || [];
+    const skillsRaw = profile?.skills || candidate.skills || [];
+    // Normalize skills: convert objects to strings
+    const skills = skillsRaw.map(skill => {
+      if (typeof skill === 'object' && skill !== null) {
+        return skill.name || skill.skill || JSON.stringify(skill);
+      }
+      return skill;
+    });
     const yearsExp = profile?.total_years_experience ?? candidate.total_years_experience ?? 0;
     const city = profile?.city || candidate.city || 'N/A';
     const state = profile?.state || candidate.state || 'N/A';
@@ -904,11 +915,14 @@ const RecruiterDashboard = () => {
                         Skills
                       </h4>
                       <div className="flex flex-wrap gap-1.5">
-                        {profileCandidate.skills.map((skill, idx) => (
-                          <span key={idx} className="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-medium">
-                            {skill}
-                          </span>
-                        ))}
+                        {profileCandidate.skills.map((skill, idx) => {
+                          const skillName = typeof skill === 'object' && skill !== null ? (skill.name || skill.skill || JSON.stringify(skill)) : skill;
+                          return (
+                            <span key={idx} className="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-medium">
+                              {skillName}
+                            </span>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
@@ -918,17 +932,56 @@ const RecruiterDashboard = () => {
                     <div className="bg-gray-50 rounded-lg p-4 sm:p-6 border border-gray-200">
                       <h4 className="text-sm sm:text-base font-semibold text-gray-900 mb-3 sm:mb-4">Job History</h4>
                       <div className="space-y-2">
-                        {profileCandidate.job_history.map((job, idx) => (
-                          <div key={idx} className="border border-gray-200 rounded-lg p-3 bg-white">
-                            <div className="font-medium text-xs sm:text-sm text-gray-900">{job.position} @ {job.company}</div>
-                            <div className="text-xs text-gray-500 mt-1">
-                              {job.start_date ? new Date(job.start_date).toLocaleDateString() : '—'} - {job.end_date ? new Date(job.end_date).toLocaleDateString() : 'Present'}
+                        {profileCandidate.job_history.map((job, idx) => {
+                          // Format dates properly
+                          const formatDate = (dateString) => {
+                            if (!dateString) return null;
+                            try {
+                              const date = new Date(dateString);
+                              return isNaN(date.getTime()) ? null : date.toLocaleDateString('en-US', { 
+                                year: 'numeric', 
+                                month: 'short', 
+                                day: 'numeric' 
+                              });
+                            } catch (e) {
+                              return null;
+                            }
+                          };
+
+                          const startDate = formatDate(job.start_date);
+                          const endDate = formatDate(job.end_date);
+                          const hasStartDate = startDate !== null;
+                          const hasEndDate = endDate !== null;
+
+                          return (
+                            <div key={idx} className="border border-gray-200 rounded-lg p-3 bg-white">
+                              <div className="font-medium text-xs sm:text-sm text-gray-900">{job.position} @ {job.company}</div>
+                              <div className="text-xs text-gray-500 mt-1">
+                                {hasStartDate ? (
+                                  <>
+                                    <span className="font-medium">Start Date:</span> {startDate}
+                                    {hasEndDate ? (
+                                      <>
+                                        {' • '}
+                                        <span className="font-medium">End Date:</span> {endDate}
+                                      </>
+                                    ) : (
+                                      <>
+                                        {' • '}
+                                        <span className="font-medium">End Date:</span> <span className="text-green-600 font-semibold">Present</span>
+                                      </>
+                                    )}
+                                  </>
+                                ) : (
+                                  <span className="text-gray-400">Date information not available</span>
+                                )}
+                              </div>
+                              {job.description && (
+                                <p className="text-xs text-gray-700 mt-1">{job.description}</p>
+                              )}
                             </div>
-                            {job.description && (
-                              <p className="text-xs text-gray-700 mt-1">{job.description}</p>
-                            )}
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </div>
                   )}
@@ -937,13 +990,146 @@ const RecruiterDashboard = () => {
                   {profileCandidate.education && profileCandidate.education.length > 0 && (
                     <div className="bg-gray-50 rounded-lg p-4 sm:p-6 border border-gray-200">
                       <h4 className="text-sm sm:text-base font-semibold text-gray-900 mb-3 sm:mb-4">Education</h4>
-                      <div className="space-y-2">
-                        {profileCandidate.education.map((edu, idx) => (
-                          <div key={idx} className="border border-gray-200 rounded-lg p-3 bg-white">
-                            <div className="font-medium text-xs sm:text-sm text-gray-900">{edu.degree} - {edu.major}</div>
-                            <div className="text-xs text-gray-500 mt-1">{edu.institution}{edu.graduation_year ? `, ${edu.graduation_year}` : ''}</div>
-                          </div>
-                        ))}
+                      <div className="space-y-3 sm:space-y-4">
+                        {profileCandidate.education.map((edu, idx) => {
+                          // Format date if available
+                          const formatDate = (dateString) => {
+                            if (!dateString) return null;
+                            try {
+                              const date = new Date(dateString);
+                              return isNaN(date.getTime()) ? null : date.toLocaleDateString('en-US', { 
+                                year: 'numeric', 
+                                month: 'short', 
+                                day: 'numeric' 
+                              });
+                            } catch (e) {
+                              return null;
+                            }
+                          };
+
+                          const startDate = formatDate(edu.start_date);
+                          const endDate = formatDate(edu.end_date);
+                          const graduationDate = formatDate(edu.graduation_date);
+
+                          return (
+                            <div key={idx} className="border border-gray-200 rounded-lg p-3 sm:p-4 bg-white">
+                              {/* Degree and Major */}
+                              <div className="mb-2">
+                                {edu.degree && (
+                                  <div className="font-semibold text-xs sm:text-sm text-gray-900">
+                                    {edu.degree}
+                                    {edu.major && ` - ${edu.major}`}
+                                  </div>
+                                )}
+                                {!edu.degree && edu.major && (
+                                  <div className="font-semibold text-xs sm:text-sm text-gray-900">
+                                    {edu.major}
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Institution */}
+                              {edu.institution && (
+                                <div className="mb-2">
+                                  <div className="flex items-start gap-2">
+                                    <span className="text-[10px] sm:text-xs font-medium text-gray-600 min-w-[80px]">Institution:</span>
+                                    <span className="text-xs sm:text-sm text-gray-900 flex-1">{edu.institution}</span>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Location */}
+                              {edu.location && (
+                                <div className="mb-2">
+                                  <div className="flex items-start gap-2">
+                                    <span className="text-[10px] sm:text-xs font-medium text-gray-600 min-w-[80px]">Location:</span>
+                                    <span className="text-xs sm:text-sm text-gray-900 flex-1">{edu.location}</span>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Dates */}
+                              <div className="mb-2 space-y-1">
+                                {startDate && (
+                                  <div className="flex items-start gap-2">
+                                    <span className="text-[10px] sm:text-xs font-medium text-gray-600 min-w-[80px]">Start Date:</span>
+                                    <span className="text-xs sm:text-sm text-gray-900 flex-1">{startDate}</span>
+                                  </div>
+                                )}
+                                {endDate && (
+                                  <div className="flex items-start gap-2">
+                                    <span className="text-[10px] sm:text-xs font-medium text-gray-600 min-w-[80px]">End Date:</span>
+                                    <span className="text-xs sm:text-sm text-gray-900 flex-1">{endDate}</span>
+                                  </div>
+                                )}
+                                {graduationDate && (
+                                  <div className="flex items-start gap-2">
+                                    <span className="text-[10px] sm:text-xs font-medium text-gray-600 min-w-[80px]">Graduation:</span>
+                                    <span className="text-xs sm:text-sm text-gray-900 flex-1">{graduationDate}</span>
+                                  </div>
+                                )}
+                                {edu.graduation_year && !graduationDate && (
+                                  <div className="flex items-start gap-2">
+                                    <span className="text-[10px] sm:text-xs font-medium text-gray-600 min-w-[80px]">Graduation Year:</span>
+                                    <span className="text-xs sm:text-sm text-gray-900 flex-1">{edu.graduation_year}</span>
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* GPA */}
+                              {edu.gpa !== null && edu.gpa !== undefined && (
+                                <div className="mb-2">
+                                  <div className="flex items-start gap-2">
+                                    <span className="text-[10px] sm:text-xs font-medium text-gray-600 min-w-[80px]">GPA:</span>
+                                    <span className="text-xs sm:text-sm text-gray-900 flex-1">
+                                      {edu.gpa}
+                                      {edu.gpa_scale && ` / ${edu.gpa_scale}`}
+                                    </span>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Honors/Awards */}
+                              {edu.honors && (
+                                <div className="mb-2">
+                                  <div className="flex items-start gap-2">
+                                    <span className="text-[10px] sm:text-xs font-medium text-gray-600 min-w-[80px]">Honors:</span>
+                                    <span className="text-xs sm:text-sm text-gray-900 flex-1">{edu.honors}</span>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Description */}
+                              {edu.description && (
+                                <div className="mb-2">
+                                  <div className="flex items-start gap-2">
+                                    <span className="text-[10px] sm:text-xs font-medium text-gray-600 min-w-[80px]">Description:</span>
+                                    <span className="text-xs sm:text-sm text-gray-700 flex-1">{edu.description}</span>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Additional fields that might exist */}
+                              {edu.field_of_study && (
+                                <div className="mb-2">
+                                  <div className="flex items-start gap-2">
+                                    <span className="text-[10px] sm:text-xs font-medium text-gray-600 min-w-[80px]">Field:</span>
+                                    <span className="text-xs sm:text-sm text-gray-900 flex-1">{edu.field_of_study}</span>
+                                  </div>
+                                </div>
+                              )}
+
+                              {edu.certification && (
+                                <div className="mb-2">
+                                  <div className="flex items-start gap-2">
+                                    <span className="text-[10px] sm:text-xs font-medium text-gray-600 min-w-[80px]">Certification:</span>
+                                    <span className="text-xs sm:text-sm text-gray-900 flex-1">{edu.certification}</span>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
@@ -1069,6 +1255,21 @@ const RecruiterDashboard = () => {
                 />
               </div>
 
+              <div>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Work Mode *</label>
+                <select
+                  value={selectFormData.work_mode}
+                  onChange={(e) => setSelectFormData(prev => ({ ...prev, work_mode: e.target.value }))}
+                  className="w-full px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                  required
+                >
+                  <option value="">Select Work Mode</option>
+                  <option value="remote">Remote</option>
+                  <option value="hybrid">Hybrid</option>
+                  <option value="onsite">Onsite</option>
+                </select>
+              </div>
+
               <div className="flex items-center">
                 <input
                   type="checkbox"
@@ -1105,7 +1306,7 @@ const RecruiterDashboard = () => {
             </button>
             <button
               onClick={selectCandidate}
-              disabled={isSelecting || !selectFormData.job_title || !selectFormData.job_description || !selectFormData.offered_salary_min || !selectFormData.offered_salary_max || !selectFormData.location}
+              disabled={isSelecting || !selectFormData.job_title || !selectFormData.job_description || !selectFormData.offered_salary_min || !selectFormData.offered_salary_max || !selectFormData.location || !selectFormData.work_mode}
               className="px-3 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 order-1 sm:order-2"
             >
               {isSelecting ? (

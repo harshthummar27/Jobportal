@@ -121,6 +121,16 @@ const CandidateMyProfile = () => {
     }
   }, []);
 
+  // Helper function to safely extract string value from array items
+  // Handles both string and object formats (e.g., {name: "JavaScript", experience: "5 years"})
+  const getArrayItemDisplay = (item) => {
+    if (typeof item === 'string') return item;
+    if (typeof item === 'object' && item !== null) {
+      return item.name || item.title || item.value || JSON.stringify(item);
+    }
+    return String(item);
+  };
+
   // Calculate profile completeness dynamically
   const calculateProfileCompleteness = () => {
     if (!profileData) return 0;
@@ -181,6 +191,7 @@ const CandidateMyProfile = () => {
       setEditFormData({
         city: profileData.city || "",
         state: profileData.state || "",
+        gender: profileData.gender || "",
         current_employer: profileData.current_employer || "",
         total_years_experience: profileData.total_years_experience || "",
         desired_annual_package: profileData.desired_annual_package || "",
@@ -250,6 +261,7 @@ const CandidateMyProfile = () => {
       const updateData = {
         city: editFormData.city || "",
         state: editFormData.state || "",
+        gender: editFormData.gender || "",
         current_employer: editFormData.current_employer || "",
         total_years_experience: editFormData.total_years_experience ? parseInt(editFormData.total_years_experience) : null,
         desired_annual_package: editFormData.desired_annual_package ? parseFloat(editFormData.desired_annual_package) : null,
@@ -560,6 +572,31 @@ const CandidateMyProfile = () => {
                       </div>
                     </div>
                     <div className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 bg-gray-50 rounded-lg">
+                      <Users className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-blue-600 flex-shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[10px] sm:text-xs font-medium text-gray-500">Gender</p>
+                        {isEditMode ? (
+                          <select
+                            value={editFormData.gender || ""}
+                            onChange={(e) => handleEditInputChange('gender', e.target.value)}
+                            className="w-full mt-0.5 px-2 py-1 text-[10px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          >
+                            <option value="">Select gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                            <option value="prefer_not_to_say">Prefer not to say</option>
+                          </select>
+                        ) : (
+                          <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">
+                            {profileData.gender 
+                              ? profileData.gender.charAt(0).toUpperCase() + profileData.gender.slice(1).replace(/_/g, ' ')
+                              : "Not Defined"}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 bg-gray-50 rounded-lg">
                       <Mail className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-blue-600 flex-shrink-0" />
                       <div className="min-w-0 flex-1">
                         <p className="text-[10px] sm:text-xs font-medium text-gray-500">Contact Email</p>
@@ -719,7 +756,7 @@ const CandidateMyProfile = () => {
                           <div className="flex flex-wrap gap-1">
                             {(editFormData.desired_job_roles || profileData.desired_job_roles || []).map((role, index) => (
                               <span key={index} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-green-100 text-green-800 rounded-md text-[10px] sm:text-xs font-medium">
-                                {role}
+                                {getArrayItemDisplay(role)}
                                 <button
                                   type="button"
                                   onClick={() => handleArrayFieldChange('desired_job_roles', 'remove', null, index)}
@@ -736,7 +773,7 @@ const CandidateMyProfile = () => {
                           {profileData.desired_job_roles && profileData.desired_job_roles.length > 0 ? (
                             profileData.desired_job_roles.map((role, index) => (
                               <span key={index} className="px-1.5 py-0.5 bg-green-100 text-green-800 rounded-md text-[10px] sm:text-xs font-medium">
-                                {role}
+                                {getArrayItemDisplay(role)}
                               </span>
                             ))
                           ) : (
@@ -767,7 +804,7 @@ const CandidateMyProfile = () => {
                           <div className="flex flex-wrap gap-1">
                             {(editFormData.preferred_industries || profileData.preferred_industries || []).map((industry, index) => (
                               <span key={index} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-blue-100 text-blue-800 rounded-md text-[10px] sm:text-xs font-medium">
-                                {industry}
+                                {getArrayItemDisplay(industry)}
                                 <button
                                   type="button"
                                   onClick={() => handleArrayFieldChange('preferred_industries', 'remove', null, index)}
@@ -784,7 +821,7 @@ const CandidateMyProfile = () => {
                           {profileData.preferred_industries && profileData.preferred_industries.length > 0 ? (
                             profileData.preferred_industries.map((industry, index) => (
                               <span key={index} className="px-1.5 py-0.5 bg-blue-100 text-blue-800 rounded-md text-[10px] sm:text-xs font-medium">
-                                {industry}
+                                {getArrayItemDisplay(industry)}
                               </span>
                             ))
                           ) : (
@@ -815,7 +852,7 @@ const CandidateMyProfile = () => {
                           <div className="flex flex-wrap gap-1">
                             {(editFormData.employment_types || profileData.employment_types || []).map((type, index) => (
                               <span key={index} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-purple-100 text-purple-800 rounded-md text-[10px] sm:text-xs font-medium">
-                                {type}
+                                {getArrayItemDisplay(type)}
                                 <button
                                   type="button"
                                   onClick={() => handleArrayFieldChange('employment_types', 'remove', null, index)}
@@ -832,7 +869,7 @@ const CandidateMyProfile = () => {
                           {profileData.employment_types && profileData.employment_types.length > 0 ? (
                             profileData.employment_types.map((type, index) => (
                               <span key={index} className="px-1.5 py-0.5 bg-purple-100 text-purple-800 rounded-md text-[10px] sm:text-xs font-medium">
-                                {type}
+                                {getArrayItemDisplay(type)}
                               </span>
                             ))
                           ) : (
@@ -895,7 +932,7 @@ const CandidateMyProfile = () => {
                           <div className="flex flex-wrap gap-1">
                             {(editFormData.skills || profileData.skills || []).map((skill, index) => (
                               <span key={index} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-purple-100 text-purple-800 rounded-md text-[10px] sm:text-xs font-medium">
-                                {skill}
+                                {getArrayItemDisplay(skill)}
                                 <button
                                   type="button"
                                   onClick={() => handleArrayFieldChange('skills', 'remove', null, index)}
@@ -912,7 +949,7 @@ const CandidateMyProfile = () => {
                           {profileData.skills && profileData.skills.length > 0 ? (
                             profileData.skills.map((skill, index) => (
                               <span key={index} className="px-1.5 py-0.5 bg-purple-100 text-purple-800 rounded-md text-[10px] sm:text-xs font-medium">
-                                {skill}
+                                {getArrayItemDisplay(skill)}
                               </span>
                             ))
                           ) : (
@@ -999,7 +1036,7 @@ const CandidateMyProfile = () => {
                           <div className="flex flex-wrap gap-1">
                             {(editFormData.languages_spoken || profileData.languages_spoken || []).map((language, index) => (
                               <span key={index} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-teal-100 text-teal-800 rounded-md text-[10px] sm:text-xs font-medium">
-                                {language}
+                                {getArrayItemDisplay(language)}
                                 <button
                                   type="button"
                                   onClick={() => handleArrayFieldChange('languages_spoken', 'remove', null, index)}
@@ -1016,7 +1053,7 @@ const CandidateMyProfile = () => {
                           {profileData.languages_spoken && profileData.languages_spoken.length > 0 ? (
                             profileData.languages_spoken.map((language, index) => (
                               <span key={index} className="px-1.5 py-0.5 bg-teal-100 text-teal-800 rounded-md text-[10px] sm:text-xs font-medium">
-                                {language}
+                                {getArrayItemDisplay(language)}
                               </span>
                             ))
                           ) : (
@@ -1031,7 +1068,7 @@ const CandidateMyProfile = () => {
                         {profileData.preferred_locations && profileData.preferred_locations.length > 0 ? (
                           profileData.preferred_locations.map((location, index) => (
                             <span key={index} className="px-1.5 py-0.5 bg-orange-100 text-orange-800 rounded-md text-[10px] sm:text-xs font-medium">
-                              {location}
+                              {getArrayItemDisplay(location)}
                             </span>
                           ))
                         ) : (
@@ -1293,7 +1330,7 @@ const CandidateMyProfile = () => {
                       <div className="flex flex-wrap gap-1">
                         {profileData.blocked_companies.map((company, index) => (
                           <span key={index} className="px-1.5 py-0.5 bg-red-100 text-red-800 rounded-md text-[10px] sm:text-xs font-medium">
-                            {company}
+                            {getArrayItemDisplay(company)}
                           </span>
                         ))}
                       </div>

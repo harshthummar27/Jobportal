@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { Bell, CheckCircle, AlertCircle, Clock, X, Eye, RefreshCw } from "lucide-react";
-import { toast } from 'react-toastify';
+import { Bell, AlertCircle, Clock, X, Eye, RefreshCw } from "lucide-react";
 
-const NotificationDropdown = ({ userRole }) => {
+const NotificationDropdown = () => {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
@@ -11,49 +10,19 @@ const NotificationDropdown = ({ userRole }) => {
   const dropdownRef = useRef(null);
   const baseURL = import.meta.env.VITE_API_BASE_URL;
 
-  // Get notification API endpoint based on user role
-  const getNotificationEndpoint = () => {
-    switch (userRole) {
-      case 'staff':
-      case 'superadmin':
-        return '/api/internal/notifications';
-      case 'candidate':
-        return '/api/candidate/notifications';
-      case 'recruiter':
-        return '/api/recruiter/notifications';
-      default:
-        return null;
-    }
-  };
-
-  // Get notifications page link based on user role
-  const getNotificationsPageLink = () => {
-    switch (userRole) {
-      case 'staff':
-        return '/internal-team/notifications';
-      case 'superadmin':
-        return '/superadmin/notifications';
-      case 'candidate':
-        return '/candidate/notifications';
-      case 'recruiter':
-        return '/recruiter/notifications';
-      default:
-        return null;
-    }
-  };
+  // Internal team notification endpoint
+  const notificationEndpoint = '/api/internal/notifications';
+  const notificationsPageLink = '/internal-team/notifications';
 
   // Fetch notifications
   const fetchNotifications = async () => {
-    const endpoint = getNotificationEndpoint();
-    if (!endpoint) return;
-
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
       if (!token) return;
 
       // Fetch recent unread notifications (limit to 5 for dropdown)
-      const response = await fetch(`${baseURL}${endpoint}?page=1&per_page=5&unread_only=true`, {
+      const response = await fetch(`${baseURL}${notificationEndpoint}?page=1&per_page=5&unread_only=true`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -63,7 +32,6 @@ const NotificationDropdown = ({ userRole }) => {
 
       if (!response.ok) {
         if (response.status === 404) {
-          // Endpoint doesn't exist for this role, hide notifications
           setNotifications([]);
           setUnreadCount(0);
           return;
@@ -82,10 +50,6 @@ const NotificationDropdown = ({ userRole }) => {
       }
     } catch (err) {
       console.error('Error fetching notifications:', err);
-      // Don't show error toast for missing endpoints
-      if (err.message && !err.message.includes('404')) {
-        // Silently fail for now
-      }
       setNotifications([]);
       setUnreadCount(0);
     } finally {
@@ -95,12 +59,9 @@ const NotificationDropdown = ({ userRole }) => {
 
   // Mark notification as read
   const markAsRead = async (notificationId) => {
-    const endpoint = getNotificationEndpoint();
-    if (!endpoint) return;
-
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${baseURL}${endpoint}/${notificationId}/read`, {
+      const response = await fetch(`${baseURL}${notificationEndpoint}/${notificationId}/read`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -171,34 +132,26 @@ const NotificationDropdown = ({ userRole }) => {
     };
   }, [isOpen]);
 
-  // Fetch notifications on mount and when dropdown opens
+  // Fetch notifications on mount
   useEffect(() => {
-    if (userRole) {
+    fetchNotifications();
+    
+    // Poll for new notifications every 30 seconds
+    const interval = setInterval(() => {
       fetchNotifications();
-      
-      // Poll for new notifications every 30 seconds
-      const interval = setInterval(() => {
-        fetchNotifications();
-      }, 30000);
+    }, 30000);
 
-      return () => clearInterval(interval);
-    }
+    return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userRole]);
+  }, []);
 
   // Refresh when dropdown opens
   useEffect(() => {
-    if (isOpen && userRole) {
+    if (isOpen) {
       fetchNotifications();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, userRole]);
-
-  // Don't show notification bell if no endpoint available
-  const endpoint = getNotificationEndpoint();
-  if (!endpoint) return null;
-
-  const notificationsPageLink = getNotificationsPageLink();
+  }, [isOpen]);
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -319,17 +272,15 @@ const NotificationDropdown = ({ userRole }) => {
           </div>
 
           {/* Footer - View All Link */}
-          {notificationsPageLink && (
-            <div className="px-4 py-3 border-t border-gray-200">
-              <Link
-                to={notificationsPageLink}
-                onClick={() => setIsOpen(false)}
-                className="block text-center text-sm font-medium text-[#273469] hover:text-[#1e2749] transition-colors"
-              >
-                View all notifications
-              </Link>
-            </div>
-          )}
+          <div className="px-4 py-3 border-t border-gray-200">
+            <Link
+              to={notificationsPageLink}
+              onClick={() => setIsOpen(false)}
+              className="block text-center text-sm font-medium text-[#273469] hover:text-[#1e2749] transition-colors"
+            >
+              View all notifications
+            </Link>
+          </div>
         </div>
       )}
     </div>

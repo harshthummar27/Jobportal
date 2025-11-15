@@ -21,7 +21,8 @@ import {
   Calendar,
   Languages,
   Users,
-  Sparkles
+  Sparkles,
+  ChevronDown
 } from "lucide-react";
 import { toast } from 'react-toastify';
 import Header from "../../Components/Header";
@@ -71,6 +72,9 @@ const ProfileSetup = () => {
     state: "",
     willing_to_relocate: false,
     preferred_locations: [],
+    
+    // Personal Information
+    gender: "",
     
     // Job Preferences
     desired_job_roles: [],
@@ -413,6 +417,7 @@ const ProfileSetup = () => {
     if (step === 1) {
       if (!formData.city.trim()) newErrors.city = "City is required";
       if (!formData.state.trim()) newErrors.state = "State is required";
+      if (!formData.gender.trim()) newErrors.gender = "Gender is required";
       if ((formData.preferred_locations || []).length === 0) newErrors.preferred_locations = "At least one preferred location is required";
     }
 
@@ -492,6 +497,7 @@ const ProfileSetup = () => {
       const profileData = {
         city: formData.city,
         state: formData.state,
+        gender: formData.gender,
         willing_to_relocate: formData.willing_to_relocate,
         preferred_locations: formData.preferred_locations || [],
         desired_job_roles: formData.desired_job_roles || [],
@@ -573,6 +579,7 @@ const ProfileSetup = () => {
             const fieldToStepMap = {
               city: 1,
               state: 1,
+              gender: 1,
               willing_to_relocate: 1,
               preferred_locations: 1,
               relocation_willingness: 1,
@@ -740,6 +747,36 @@ const ProfileSetup = () => {
             </p>
           )}
         </div>
+      </div>
+
+      <div>
+        <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
+          Gender <span className="text-red-500">*</span>
+        </label>
+        <div className="relative">
+          <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-gray-400 pointer-events-none z-10" />
+          <select
+            name="gender"
+            value={formData.gender}
+            onChange={handleInputChange}
+            className={`w-full pl-9 md:pl-10 pr-9 md:pr-10 py-2 md:py-3 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] text-sm md:text-base appearance-none bg-white cursor-pointer ${
+              errors.gender ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
+            }`}
+          >
+            <option value="">Select your gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+            <option value="prefer_not_to_say">Prefer not to say</option>
+          </select>
+          <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-gray-400 pointer-events-none" />
+        </div>
+        {errors.gender && (
+          <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
+            <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
+            Please select your gender
+          </p>
+        )}
       </div>
 
       <div className="flex items-center gap-2">

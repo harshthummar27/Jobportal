@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { User, Edit, LogOut, AlertTriangle, X, Loader2, Lock, Eye, EyeOff, Menu } from "lucide-react";
 import { toast } from 'react-toastify';
-import logo from '../../public/vettedpool-logo.webp';
+import logo from '../../public/vettedpool-logo.png';
 import NotificationDropdown from './NotificationDropdown';
 
 const Header = ({ onEditProfile, userData }) => {
@@ -741,8 +741,8 @@ const Header = ({ onEditProfile, userData }) => {
             <div className="flex items-center gap-2 sm:gap-3">
             {isLoggedIn ? (
               <>
-                {/* Notification Dropdown */}
-                <NotificationDropdown userRole={userRole} />
+                {/* Notification Dropdown - Only show for internal team (staff) */}
+                {userRole === 'staff' && <NotificationDropdown />}
                 
                 {/* User Dropdown (when logged in) */}
                 <div className="relative user-dropdown flex-shrink-0">
