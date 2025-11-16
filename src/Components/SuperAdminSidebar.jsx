@@ -2,7 +2,8 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { 
   LayoutDashboard,
-  Shield
+  Shield,
+  Mail
 } from "lucide-react";
 
 const SuperAdminSidebar = ({ isCollapsed, setIsCollapsed, onMobileClose, isMobile, mobileSidebarOpen }) => {
@@ -20,6 +21,12 @@ const SuperAdminSidebar = ({ isCollapsed, setIsCollapsed, onMobileClose, isMobil
       path: "/superadmin/internal-team",
       icon: Shield,
       description: "Manage team members"
+    },
+    {
+      name: "Inquiries",
+      path: "/superadmin/inquiries",
+      icon: Mail,
+      description: "View contact inquiries"
     }
   ];
 
@@ -37,7 +44,7 @@ const SuperAdminSidebar = ({ isCollapsed, setIsCollapsed, onMobileClose, isMobil
       ${!isMobile ? 'lg:translate-x-0' : ''}
     `}>
         {/* Navigation */}
-        <nav className={`flex-1 py-2 sm:py-3 md:py-6 space-y-1 sm:space-y-2 ${(isCollapsed && !isMobile) ? 'px-1 sm:px-2' : 'px-2 sm:px-3 md:px-4'}`}>
+        <nav className={`flex-1 py-2 sm:py-3 md:py-1 space-y-1 sm:space-y-2 ${(isCollapsed && !isMobile) ? 'px-1 sm:px-2' : 'px-2 sm:px-3 md:px-4'}`}>
           {menuItems.map((item) => {
             const IconComponent = item.icon;
             const active = isActive(item.path);
@@ -49,7 +56,7 @@ const SuperAdminSidebar = ({ isCollapsed, setIsCollapsed, onMobileClose, isMobil
                 to={item.path}
                 onClick={onMobileClose}
                 className={`
-                  flex items-center gap-2 sm:gap-3 px-2 sm:px-3 py-2 sm:py-3 rounded-lg transition-all duration-200 group relative touch-manipulation
+                  flex items-center gap-2 sm:gap-3 px-2 sm:px-3 py-2 sm:py-2 rounded-lg transition-all duration-200 group relative touch-manipulation
                   ${active 
                     ? 'bg-indigo-50 text-indigo-700 shadow-sm' 
                     : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'

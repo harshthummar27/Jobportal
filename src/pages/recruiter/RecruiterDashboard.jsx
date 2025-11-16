@@ -139,9 +139,7 @@ const RecruiterDashboard = () => {
         // Handle other error responses
         throw new Error(data.message || data.error || `HTTP error! status: ${response.status}`);
       }
-
       console.log('Search API Response:', data); // Debug log
-      
       // Handle the API response structure: { candidates: { data: [...], ... }, filters_applied: {...} }
       if (data.candidates) {
         // Ensure candidates array is properly formatted
@@ -388,9 +386,21 @@ const RecruiterDashboard = () => {
     const code = profile?.candidate_code || candidateToUse.candidate_code || `CAND${candidateToUse.id}`;
     
     setSelectedCandidate(candidateToUse);
+    
+    // Normalize job title to ensure it's always a string
+    const firstRole = profile?.desired_job_roles?.[0] || candidateToUse.desired_job_roles?.[0];
+    let jobTitle = '';
+    if (firstRole) {
+      if (typeof firstRole === 'object' && firstRole !== null) {
+        jobTitle = firstRole.name || firstRole.role || firstRole.title || '';
+      } else {
+        jobTitle = String(firstRole || '');
+      }
+    }
+    
     setSelectFormData(prev => ({
       ...prev,
-      job_title: (profile?.desired_job_roles?.[0]) || (candidateToUse.desired_job_roles?.[0]) || '',
+      job_title: jobTitle,
       location: `${profile?.city || candidateToUse.city || ''}, ${profile?.state || candidateToUse.state || ''}`
         .replace(', ,', '')
         .replace(/^,\s*/, '')
@@ -994,13 +1004,18 @@ const RecruiterDashboard = () => {
                           
                           if (typeof skill === 'object' && skill !== null) {
                             skillName = skill.name || skill.skill || '';
-                            experience = skill.experience || skill.years_experience || '';
+                            // Ensure experience is converted to string/number, not an object
+                            const expValue = skill.experience || skill.years_experience || '';
+                            experience = typeof expValue === 'object' ? '' : String(expValue || '');
                           } else {
                             skillName = String(skill || '');
                           }
                           
-                          const displayText = experience 
-                            ? `${skillName} (${experience} ${experience === '1' ? 'year' : 'year'})`
+                          // Ensure skillName is always a string
+                          skillName = String(skillName || '');
+                          
+                          const displayText = experience && experience.trim()
+                            ? `${skillName} (${experience} ${experience === '1' ? 'year' : 'years'})`
                             : skillName;
                           
                           return (

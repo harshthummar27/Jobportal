@@ -33,7 +33,6 @@ const ContactUs = () => {
       ...prev,
       [name]: value,
     }));
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors((prev) => {
         const newErrors = { ...prev };
@@ -81,10 +80,34 @@ const ContactUs = () => {
     setIsSubmitting(true);
 
     try {
-      // Simulate API call - replace with actual API endpoint
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const baseURL = import.meta.env.VITE_API_BASE_URL;
+      const payload = {
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        subject: formData.subject.trim(),
+        message: formData.message.trim(),
+      };
 
-      toast.success("Thank you! Your message has been sent successfully.");
+      if (formData.company.trim()) {
+        payload.company = formData.company.trim();
+      }
+
+      const response = await fetch(`${baseURL}/api/contact`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        toast.error(data.message || data.error || "Something went wrong. Please try again later.");
+        return;
+      }
+
+      toast.success(data.message || "Thank you! Your message has been sent successfully. We will get back to you soon.");
       setFormData({
         name: "",
         email: "",
@@ -94,7 +117,11 @@ const ContactUs = () => {
       });
       setErrors({});
     } catch (error) {
-      toast.error("Something went wrong. Please try again later.");
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        toast.error("Network error. Please check your internet connection and try again.");
+      } else {
+        toast.error("Something went wrong. Please try again later.");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -131,7 +158,6 @@ const ContactUs = () => {
     <div className="min-h-screen bg-white">
       <Header />
       
-      {/* Hero Section */}
       <section className="pt-20 pb-12 md:pt-24 md:pb-16 lg:pt-28 lg:pb-20 bg-gradient-to-br from-[#273469] via-[#1e2749] to-[#273469] text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-4xl mx-auto">
@@ -145,11 +171,9 @@ const ContactUs = () => {
         </div>
       </section>
 
-      {/* Contact Section */}
       <section className="py-10 sm:py-12 md:py-16 lg:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-            {/* Contact Form */}
             <div>
               <div className="mb-6 sm:mb-8">
                 <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">
@@ -161,7 +185,6 @@ const ContactUs = () => {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
-                {/* Name Field */}
                 <div>
                   <label htmlFor="name" className="block text-sm sm:text-base font-medium text-gray-700 mb-2">
                     Full Name <span className="text-red-500">*</span>
@@ -190,7 +213,6 @@ const ContactUs = () => {
                   )}
                 </div>
 
-                {/* Email Field */}
                 <div>
                   <label htmlFor="email" className="block text-sm sm:text-base font-medium text-gray-700 mb-2">
                     Email Address <span className="text-red-500">*</span>
@@ -219,7 +241,6 @@ const ContactUs = () => {
                   )}
                 </div>
 
-                {/* Company Field */}
                 <div>
                   <label htmlFor="company" className="block text-sm sm:text-base font-medium text-gray-700 mb-2">
                     Company (Optional)
@@ -238,7 +259,6 @@ const ContactUs = () => {
                   </div>
                 </div>
 
-                {/* Subject Field */}
                 <div>
                   <label htmlFor="subject" className="block text-sm sm:text-base font-medium text-gray-700 mb-2">
                     Subject <span className="text-red-500">*</span>
@@ -264,7 +284,6 @@ const ContactUs = () => {
                   )}
                 </div>
 
-                {/* Message Field */}
                 <div>
                   <label htmlFor="message" className="block text-sm sm:text-base font-medium text-gray-700 mb-2">
                     Message <span className="text-red-500">*</span>
@@ -293,7 +312,6 @@ const ContactUs = () => {
                   )}
                 </div>
 
-                {/* Submit Button */}
                 <button
                   type="submit"
                   disabled={isSubmitting}
@@ -314,7 +332,6 @@ const ContactUs = () => {
               </form>
             </div>
 
-            {/* Contact Information */}
             <div>
               <div className="mb-6 sm:mb-8">
                 <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">
@@ -369,7 +386,6 @@ const ContactUs = () => {
                 })}
               </div>
 
-              {/* Additional Info */}
               <div className="mt-6 sm:mt-8 bg-blue-50 border border-blue-200 rounded-xl p-4 sm:p-6">
                 <div className="flex items-start gap-3">
                   <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600 flex-shrink-0 mt-0.5" />
@@ -389,7 +405,6 @@ const ContactUs = () => {
         </div>
       </section>
 
-      {/* FAQ Section */}
       <section className="py-10 sm:py-12 md:py-16 lg:py-20 bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8 sm:mb-10 md:mb-12">
@@ -440,7 +455,6 @@ const ContactUs = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
       <section className="py-10 sm:py-12 md:py-16 lg:py-20 bg-gradient-to-r from-[#273469] to-[#1e2749] text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">

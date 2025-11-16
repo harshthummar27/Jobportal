@@ -26,6 +26,23 @@ const BoolBadge = ({ value, trueText = 'Yes', falseText = 'No' }) => (
   </span>
 );
 
+const formatDateTime = (dateString) => {
+  if (!dateString) return '—';
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
+  } catch (error) {
+    return dateString;
+  }
+};
+
 const RecruiterProfile = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -425,8 +442,8 @@ const RecruiterProfile = () => {
                     <div className="mt-0.5 sm:mt-1"><BoolBadge value={Boolean(profile.agreement_accepted)} /></div>
                   </div>
                   <Field label="Agreement Version" value={profile.agreement_version} />
-                  <Field label="Agreement Accepted At" value={profile.agreement_accepted_at} />
-                  <Field label="Email Verified At" value={profile.email_verified_at} />
+                  <Field label="Agreement Accepted At" value={formatDateTime(profile.agreement_accepted_at)} />
+                  <Field label="Email Verified At" value={formatDateTime(profile.email_verified_at)} />
                 </div>
                 <div>
                   <span className="text-[10px] sm:text-xs text-gray-500">Agreement Terms</span>
@@ -477,8 +494,8 @@ const RecruiterProfile = () => {
                     <span className="text-[10px] sm:text-xs text-gray-500">Active</span>
                     <BoolBadge value={Boolean(profile.is_active)} />
                   </div>
-                  <Field label="Created At" value={profile.created_at} />
-                  <Field label="Updated At" value={profile.updated_at} />
+                  <Field label="Created At" value={formatDateTime(profile.created_at)} />
+                  <Field label="Updated At" value={formatDateTime(profile.updated_at)} />
                 </div>
               </div>
             </div>

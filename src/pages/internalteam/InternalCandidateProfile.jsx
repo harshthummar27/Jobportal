@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeft, Star, MapPin, Briefcase, DollarSign, Clock, Shield, UserCheck, AlertCircle, Loader2, Calendar } from "lucide-react";
+import { ArrowLeft, Star, Briefcase, UserCheck, AlertCircle, Loader2, Calendar, Edit, Save, X } from "lucide-react";
+import { toast } from 'react-toastify';
 
 const InternalCandidateProfile = () => {
   const { code } = useParams();
@@ -9,8 +10,11 @@ const InternalCandidateProfile = () => {
   const [candidate, setCandidate] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [editFormData, setEditFormData] = useState({});
+  const [updateErrors, setUpdateErrors] = useState({});
 
-  // Fetch candidate details from API
   const fetchCandidateDetails = async () => {
     try {
       setLoading(true);
@@ -50,14 +54,12 @@ const InternalCandidateProfile = () => {
     }
   };
 
-  // Fetch candidate details on component mount
   useEffect(() => {
     if (code) {
       fetchCandidateDetails();
     }
   }, [code]);
 
-  // Format candidate data for display
   const formatCandidateData = (candidate) => {
     if (!candidate) return null;
     return {
@@ -74,6 +76,8 @@ const InternalCandidateProfile = () => {
       employment_types: candidate.employment_types || [],
       total_years_experience: candidate.total_years_experience,
       job_history: candidate.job_history || [],
+      current_employer: candidate.current_employer,
+      willing_to_join_startup: candidate.willing_to_join_startup,
       skills: candidate.skills || [],
       education: candidate.education || [],
       certifications: candidate.certifications || [],
@@ -103,19 +107,6 @@ const InternalCandidateProfile = () => {
     };
   };
 
-  const getStatusBadge = (status) => {
-    switch (status) {
-      case 'approved':
-        return <span className="bg-green-100 text-green-800 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded text-[10px] sm:text-xs font-medium">Approved</span>;
-      case 'pending':
-        return <span className="bg-yellow-100 text-yellow-800 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded text-[10px] sm:text-xs font-medium">Pending</span>;
-      case 'rejected':
-        return <span className="bg-red-100 text-red-800 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded text-[10px] sm:text-xs font-medium">Rejected</span>;
-      default:
-        return <span className="bg-gray-100 text-gray-800 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded text-[10px] sm:text-xs font-medium">Unknown</span>;
-    }
-  };
-
   const getVisaStatusBadge = (visaStatus) => {
     switch (visaStatus) {
       case 'us_citizen':
@@ -131,13 +122,160 @@ const InternalCandidateProfile = () => {
     }
   };
 
-  // Handle back navigation - go to previous page if available, otherwise default to all candidates
+  const initializeEditForm = () => {
+    if (candidate) {
+      setEditFormData({
+        full_name: candidate.full_name || candidate.name || "",
+        city: candidate.city || "",
+        state: candidate.state || "",
+        gender: candidate.gender || "",
+        willing_to_relocate: candidate.willing_to_relocate !== null ? candidate.willing_to_relocate : false,
+        willing_to_join_startup: candidate.willing_to_join_startup !== null ? candidate.willing_to_join_startup : false,
+        preferred_locations: candidate.preferred_locations || [],
+        desired_job_roles: candidate.desired_job_roles || [],
+        preferred_industries: candidate.preferred_industries || [],
+        employment_types: candidate.employment_types || [],
+        total_years_experience: candidate.total_years_experience || "",
+        job_history: candidate.job_history || [],
+        current_employer: candidate.current_employer || "",
+        skills: candidate.skills || [],
+        education: candidate.education || [],
+        certifications: candidate.certifications || [],
+        visa_status: candidate.visa_status || "",
+        relocation_willingness: candidate.relocation_willingness || "",
+        job_seeking_status: candidate.job_seeking_status || "",
+        desired_annual_package: candidate.desired_annual_package || "",
+        availability_date: candidate.availability_date ? candidate.availability_date.split('T')[0] : "",
+        languages_spoken: candidate.languages_spoken || [],
+        ethnicity: candidate.ethnicity || "",
+        veteran_status: candidate.veteran_status || false,
+        disability_status: candidate.disability_status || false,
+        references: candidate.references || [],
+        blocked_companies: candidate.blocked_companies || [],
+        additional_notes: candidate.additional_notes || "",
+        contact_email: candidate.contact_email || candidate.email || "",
+        contact_phone: candidate.contact_phone || candidate.mobile_number || "",
+        candidate_score: candidate.candidate_score || "",
+        score_notes: candidate.score_notes || ""
+      });
+      setUpdateErrors({});
+    }
+  };
+
+  const handleEditToggle = () => {
+    if (!isEditMode) {
+      initializeEditForm();
+    } else {
+      setEditFormData({});
+      setUpdateErrors({});
+    }
+    setIsEditMode(!isEditMode);
+  };
+
+  const updateCandidateProfile = async () => {
+    try {
+      setIsUpdating(true);
+      setUpdateErrors({});
+      
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const updateData = {
+        candidate_code: code || candidate?.candidate_code,
+        full_name: editFormData.full_name || null,
+        city: editFormData.city || null,
+        state: editFormData.state || null,
+        gender: editFormData.gender || null,
+        willing_to_relocate: editFormData.willing_to_relocate !== undefined ? editFormData.willing_to_relocate : null,
+        willing_to_join_startup: editFormData.willing_to_join_startup !== undefined ? editFormData.willing_to_join_startup : null,
+        preferred_locations: editFormData.preferred_locations || [],
+        desired_job_roles: editFormData.desired_job_roles || [],
+        preferred_industries: editFormData.preferred_industries || [],
+        employment_types: editFormData.employment_types || [],
+        total_years_experience: editFormData.total_years_experience ? parseInt(editFormData.total_years_experience) : null,
+        job_history: editFormData.job_history || [],
+        current_employer: editFormData.current_employer || null,
+        skills: editFormData.skills || [],
+        education: editFormData.education || [],
+        certifications: editFormData.certifications || [],
+        visa_status: editFormData.visa_status || null,
+        relocation_willingness: editFormData.relocation_willingness || null,
+        job_seeking_status: editFormData.job_seeking_status || null,
+        desired_annual_package: editFormData.desired_annual_package ? parseFloat(editFormData.desired_annual_package) : null,
+        availability_date: editFormData.availability_date || null,
+        languages_spoken: editFormData.languages_spoken || [],
+        ethnicity: editFormData.ethnicity || null,
+        veteran_status: editFormData.veteran_status || false,
+        disability_status: editFormData.disability_status || false,
+        references: editFormData.references || [],
+        blocked_companies: editFormData.blocked_companies || [],
+        additional_notes: editFormData.additional_notes || null,
+        contact_email: editFormData.contact_email || null,
+        contact_phone: editFormData.contact_phone || null,
+        candidate_score: editFormData.candidate_score ? parseFloat(editFormData.candidate_score) : null,
+        score_notes: editFormData.score_notes || null
+      };
+
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/internal/candidates/profile`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify(updateData),
+      });
+
+      let data;
+      try {
+        const text = await response.text();
+        data = text ? JSON.parse(text) : {};
+      } catch (parseError) {
+        console.error("JSON Parse Error:", parseError);
+        throw new Error("Invalid response from server. Please try again.");
+      }
+
+      if (!response.ok) {
+        if (response.status === 422 && data.errors) {
+          const fieldErrors = {};
+          Object.keys(data.errors).forEach(key => {
+            fieldErrors[key] = Array.isArray(data.errors[key]) 
+              ? data.errors[key][0] 
+              : data.errors[key];
+          });
+          setUpdateErrors(fieldErrors);
+          toast.error("Please correct the errors in the form");
+          return;
+        }
+        
+        const errorMessage = data.message || data.error || `Failed to update candidate profile (${response.status})`;
+        throw new Error(errorMessage);
+      }
+
+      toast.success(data.message || 'Candidate profile updated successfully!');
+      setIsEditMode(false);
+      setEditFormData({});
+      setUpdateErrors({});
+      await fetchCandidateDetails();
+    } catch (error) {
+      console.error('Error updating candidate profile:', error);
+      
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        toast.error("Network error. Please check your internet connection and try again.");
+      } else {
+        toast.error(error.message || "Failed to update candidate profile. Please try again.");
+      }
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   const handleBackNavigation = () => {
-    // Check if there's a return path in location state
     if (location.state?.from) {
       navigate(location.state.from);
     } else {
-      // Use browser history to go back, with fallback to all candidates
       if (window.history.length > 1) {
         navigate(-1);
       } else {
@@ -229,6 +367,43 @@ const InternalCandidateProfile = () => {
           </div>
           <div className="flex items-center gap-2">
             {formattedCandidate.visa_status && getVisaStatusBadge(formattedCandidate.visa_status)}
+            {!isEditMode ? (
+              <button
+                onClick={handleEditToggle}
+                className="inline-flex items-center gap-1.5 sm:gap-2 px-2 py-1.5 sm:px-3 sm:py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-[10px] sm:text-xs font-medium"
+              >
+                <Edit className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                Edit Profile
+              </button>
+            ) : (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleEditToggle}
+                  disabled={isUpdating}
+                  className="inline-flex items-center gap-1.5 sm:gap-2 px-2 py-1.5 sm:px-3 sm:py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors text-[10px] sm:text-xs font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <X className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                  Cancel
+                </button>
+                <button
+                  onClick={updateCandidateProfile}
+                  disabled={isUpdating}
+                  className="inline-flex items-center gap-1.5 sm:gap-2 px-2 py-1.5 sm:px-3 sm:py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors text-[10px] sm:text-xs font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isUpdating ? (
+                    <>
+                      <Loader2 className="h-3 w-3 sm:h-3.5 sm:w-3.5 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                      Save Changes
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -241,41 +416,159 @@ const InternalCandidateProfile = () => {
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6">
                 <h2 className="text-sm sm:text-base font-semibold text-gray-900 mb-2 sm:mb-3">Basic Information</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3">
-                  {formattedCandidate.city && (
-                    <div>
-                      <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">City</label>
-                      <p className="text-[10px] sm:text-xs text-gray-900">{formattedCandidate.city}</p>
-                    </div>
-                  )}
-                  {formattedCandidate.state && (
-                    <div>
-                      <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">State</label>
-                      <p className="text-[10px] sm:text-xs text-gray-900">{formattedCandidate.state}</p>
-                    </div>
-                  )}
-                  {formattedCandidate.contact_email && (
-                    <div>
-                      <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Email</label>
-                      <p className="text-[10px] sm:text-xs text-gray-900">{formattedCandidate.contact_email}</p>
-                    </div>
-                  )}
-                  {formattedCandidate.contact_phone && (
-                    <div>
-                      <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Phone</label>
-                      <p className="text-[10px] sm:text-xs text-gray-900">{formattedCandidate.contact_phone}</p>
-                    </div>
-                  )}
-                  {formattedCandidate.availability_date && (
-                    <div>
-                      <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Availability Date</label>
-                      <p className="text-[10px] sm:text-xs text-gray-900">{new Date(formattedCandidate.availability_date).toLocaleDateString()}</p>
-                    </div>
-                  )}
-                  {formattedCandidate.job_seeking_status && (
-                    <div>
-                      <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Job Seeking Status</label>
-                      <p className="text-[10px] sm:text-xs text-gray-900">{formattedCandidate.job_seeking_status.replaceAll('_', ' ')}</p>
-                    </div>
+                  {isEditMode ? (
+                    <>
+                      <div>
+                        <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Full Name</label>
+                        <input
+                          type="text"
+                          value={editFormData.full_name || ""}
+                          onChange={(e) => setEditFormData(prev => ({ ...prev, full_name: e.target.value }))}
+                          className={`w-full px-2 py-1.5 sm:px-2.5 sm:py-2 text-[10px] sm:text-xs border rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 ${updateErrors.full_name ? 'border-red-300 bg-red-50' : 'border-gray-300'}`}
+                        />
+                        {updateErrors.full_name && (
+                          <p className="mt-0.5 text-[9px] sm:text-[10px] text-red-600">{updateErrors.full_name}</p>
+                        )}
+                      </div>
+                      <div>
+                        <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Gender</label>
+                        <select
+                          value={editFormData.gender || ""}
+                          onChange={(e) => setEditFormData(prev => ({ ...prev, gender: e.target.value }))}
+                          className={`w-full px-2 py-1.5 sm:px-2.5 sm:py-2 text-[10px] sm:text-xs border rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white ${updateErrors.gender ? 'border-red-300 bg-red-50' : 'border-gray-300'}`}
+                        >
+                          <option value="">Select Gender</option>
+                          <option value="male">Male</option>
+                          <option value="female">Female</option>
+                          <option value="other">Other</option>
+                          <option value="prefer_not_to_say">Prefer Not to Say</option>
+                        </select>
+                        {updateErrors.gender && (
+                          <p className="mt-0.5 text-[9px] sm:text-[10px] text-red-600">{updateErrors.gender}</p>
+                        )}
+                      </div>
+                      <div>
+                        <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">City</label>
+                        <input
+                          type="text"
+                          value={editFormData.city || ""}
+                          onChange={(e) => setEditFormData(prev => ({ ...prev, city: e.target.value }))}
+                          className={`w-full px-2 py-1.5 sm:px-2.5 sm:py-2 text-[10px] sm:text-xs border rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 ${updateErrors.city ? 'border-red-300 bg-red-50' : 'border-gray-300'}`}
+                        />
+                        {updateErrors.city && (
+                          <p className="mt-0.5 text-[9px] sm:text-[10px] text-red-600">{updateErrors.city}</p>
+                        )}
+                      </div>
+                      <div>
+                        <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">State</label>
+                        <input
+                          type="text"
+                          value={editFormData.state || ""}
+                          onChange={(e) => setEditFormData(prev => ({ ...prev, state: e.target.value }))}
+                          className={`w-full px-2 py-1.5 sm:px-2.5 sm:py-2 text-[10px] sm:text-xs border rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 ${updateErrors.state ? 'border-red-300 bg-red-50' : 'border-gray-300'}`}
+                        />
+                        {updateErrors.state && (
+                          <p className="mt-0.5 text-[9px] sm:text-[10px] text-red-600">{updateErrors.state}</p>
+                        )}
+                      </div>
+                      <div>
+                        <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Email</label>
+                        <input
+                          type="email"
+                          value={editFormData.contact_email || ""}
+                          onChange={(e) => setEditFormData(prev => ({ ...prev, contact_email: e.target.value }))}
+                          className={`w-full px-2 py-1.5 sm:px-2.5 sm:py-2 text-[10px] sm:text-xs border rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 ${updateErrors.contact_email ? 'border-red-300 bg-red-50' : 'border-gray-300'}`}
+                        />
+                        {updateErrors.contact_email && (
+                          <p className="mt-0.5 text-[9px] sm:text-[10px] text-red-600">{updateErrors.contact_email}</p>
+                        )}
+                      </div>
+                      <div>
+                        <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Phone</label>
+                        <input
+                          type="tel"
+                          value={editFormData.contact_phone || ""}
+                          onChange={(e) => setEditFormData(prev => ({ ...prev, contact_phone: e.target.value }))}
+                          className={`w-full px-2 py-1.5 sm:px-2.5 sm:py-2 text-[10px] sm:text-xs border rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 ${updateErrors.contact_phone ? 'border-red-300 bg-red-50' : 'border-gray-300'}`}
+                        />
+                        {updateErrors.contact_phone && (
+                          <p className="mt-0.5 text-[9px] sm:text-[10px] text-red-600">{updateErrors.contact_phone}</p>
+                        )}
+                      </div>
+                      <div>
+                        <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Availability Date</label>
+                        <input
+                          type="date"
+                          value={editFormData.availability_date || ""}
+                          onChange={(e) => setEditFormData(prev => ({ ...prev, availability_date: e.target.value }))}
+                          className={`w-full px-2 py-1.5 sm:px-2.5 sm:py-2 text-[10px] sm:text-xs border rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 ${updateErrors.availability_date ? 'border-red-300 bg-red-50' : 'border-gray-300'}`}
+                        />
+                        {updateErrors.availability_date && (
+                          <p className="mt-0.5 text-[9px] sm:text-[10px] text-red-600">{updateErrors.availability_date}</p>
+                        )}
+                      </div>
+                      <div>
+                        <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Job Seeking Status</label>
+                        <select
+                          value={editFormData.job_seeking_status || ""}
+                          onChange={(e) => setEditFormData(prev => ({ ...prev, job_seeking_status: e.target.value }))}
+                          className={`w-full px-2 py-1.5 sm:px-2.5 sm:py-2 text-[10px] sm:text-xs border rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white ${updateErrors.job_seeking_status ? 'border-red-300 bg-red-50' : 'border-gray-300'}`}
+                        >
+                          <option value="">Select Status</option>
+                          <option value="actively_looking">Actively Looking</option>
+                          <option value="open_to_offers">Open to Offers</option>
+                          <option value="not_looking">Not Looking</option>
+                        </select>
+                        {updateErrors.job_seeking_status && (
+                          <p className="mt-0.5 text-[9px] sm:text-[10px] text-red-600">{updateErrors.job_seeking_status}</p>
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      {formattedCandidate.full_name && (
+                        <div>
+                          <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Full Name</label>
+                          <p className="text-[10px] sm:text-xs text-gray-900">{formattedCandidate.full_name}</p>
+                        </div>
+                      )}
+                      {formattedCandidate.city && (
+                        <div>
+                          <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">City</label>
+                          <p className="text-[10px] sm:text-xs text-gray-900">{formattedCandidate.city}</p>
+                        </div>
+                      )}
+                      {formattedCandidate.state && (
+                        <div>
+                          <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">State</label>
+                          <p className="text-[10px] sm:text-xs text-gray-900">{formattedCandidate.state}</p>
+                        </div>
+                      )}
+                      {formattedCandidate.contact_email && (
+                        <div>
+                          <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Email</label>
+                          <p className="text-[10px] sm:text-xs text-gray-900">{formattedCandidate.contact_email}</p>
+                        </div>
+                      )}
+                      {formattedCandidate.contact_phone && (
+                        <div>
+                          <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Phone</label>
+                          <p className="text-[10px] sm:text-xs text-gray-900">{formattedCandidate.contact_phone}</p>
+                        </div>
+                      )}
+                      {formattedCandidate.availability_date && (
+                        <div>
+                          <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Availability Date</label>
+                          <p className="text-[10px] sm:text-xs text-gray-900">{new Date(formattedCandidate.availability_date).toLocaleDateString()}</p>
+                        </div>
+                      )}
+                      {formattedCandidate.job_seeking_status && (
+                        <div>
+                          <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Job Seeking Status</label>
+                          <p className="text-[10px] sm:text-xs text-gray-900">{formattedCandidate.job_seeking_status.replaceAll('_', ' ')}</p>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               </div>
@@ -301,15 +594,64 @@ const InternalCandidateProfile = () => {
                   </div>
                       <div>
                     <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Experience</label>
-                    <p className="text-[10px] sm:text-xs text-gray-900">{formattedCandidate.total_years_experience || 0} years</p>
+                    {isEditMode ? (
+                      <>
+                        <input
+                          type="number"
+                          value={editFormData.total_years_experience || ""}
+                          onChange={(e) => setEditFormData(prev => ({ ...prev, total_years_experience: e.target.value }))}
+                          className={`w-full px-2 py-1.5 sm:px-2.5 sm:py-2 text-[10px] sm:text-xs border rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 ${updateErrors.total_years_experience ? 'border-red-300 bg-red-50' : 'border-gray-300'}`}
+                          min="0"
+                        />
+                        {updateErrors.total_years_experience && (
+                          <p className="mt-0.5 text-[9px] sm:text-[10px] text-red-600">{updateErrors.total_years_experience}</p>
+                        )}
+                      </>
+                    ) : (
+                      <p className="text-[10px] sm:text-xs text-gray-900">{formattedCandidate.total_years_experience || 0} years</p>
+                    )}
                       </div>
-                  {formattedCandidate.desired_annual_package && (
+                  {isEditMode ? (
+                    <div>
+                      <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Desired Salary</label>
+                      <input
+                        type="number"
+                        value={editFormData.desired_annual_package || ""}
+                        onChange={(e) => setEditFormData(prev => ({ ...prev, desired_annual_package: e.target.value }))}
+                        className={`w-full px-2 py-1.5 sm:px-2.5 sm:py-2 text-[10px] sm:text-xs border rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 ${updateErrors.desired_annual_package ? 'border-red-300 bg-red-50' : 'border-gray-300'}`}
+                        min="0"
+                        step="1000"
+                      />
+                      {updateErrors.desired_annual_package && (
+                        <p className="mt-0.5 text-[9px] sm:text-[10px] text-red-600">{updateErrors.desired_annual_package}</p>
+                      )}
+                    </div>
+                  ) : formattedCandidate.desired_annual_package && (
                     <div>
                       <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Desired Salary</label>
                       <p className="text-[10px] sm:text-xs text-gray-900">${parseInt(formattedCandidate.desired_annual_package).toLocaleString()}</p>
                     </div>
                   )}
-                  {formattedCandidate.visa_status && (
+                  {isEditMode ? (
+                    <div>
+                      <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Visa Status</label>
+                      <select
+                        value={editFormData.visa_status || ""}
+                        onChange={(e) => setEditFormData(prev => ({ ...prev, visa_status: e.target.value }))}
+                        className={`w-full px-2 py-1.5 sm:px-2.5 sm:py-2 text-[10px] sm:text-xs border rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white ${updateErrors.visa_status ? 'border-red-300 bg-red-50' : 'border-gray-300'}`}
+                      >
+                        <option value="">Select Visa Status</option>
+                        <option value="us_citizen">US Citizen</option>
+                        <option value="permanent_resident">Permanent Resident</option>
+                        <option value="h1b">H1B</option>
+                        <option value="opt_cpt">OPT/CPT</option>
+                        <option value="other">Other</option>
+                      </select>
+                      {updateErrors.visa_status && (
+                        <p className="mt-0.5 text-[9px] sm:text-[10px] text-red-600">{updateErrors.visa_status}</p>
+                      )}
+                    </div>
+                  ) : formattedCandidate.visa_status && (
                     <div>
                       <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Visa Status</label>
                       <p className="text-[10px] sm:text-xs text-gray-900">{formattedCandidate.visa_status.replace('_', ' ')}</p>
@@ -335,17 +677,94 @@ const InternalCandidateProfile = () => {
                       ) : null}
                     </div>
                   </div>
-                  {formattedCandidate.willing_to_relocate !== null && (
-                    <div>
-                      <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Willing To Relocate</label>
-                      <p className="text-[10px] sm:text-xs text-gray-900">{formattedCandidate.willing_to_relocate ? 'Yes' : 'No'}</p>
-                    </div>
-                  )}
-                  {formattedCandidate.relocation_willingness && (
-                    <div>
-                      <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Relocation Willingness</label>
-                      <p className="text-[10px] sm:text-xs text-gray-900">{formattedCandidate.relocation_willingness.replaceAll('_', ' ')}</p>
-                    </div>
+                  {isEditMode ? (
+                    <>
+                      <div>
+                        <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Willing To Relocate</label>
+                        <select
+                          value={editFormData.willing_to_relocate !== null && editFormData.willing_to_relocate !== undefined ? (editFormData.willing_to_relocate ? 'yes' : 'no') : ''}
+                          onChange={(e) => setEditFormData(prev => ({ ...prev, willing_to_relocate: e.target.value === 'yes' }))}
+                          className={`w-full px-2 py-1.5 sm:px-2.5 sm:py-2 text-[10px] sm:text-xs border rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white ${updateErrors.willing_to_relocate ? 'border-red-300 bg-red-50' : 'border-gray-300'}`}
+                        >
+                          <option value="">Select</option>
+                          <option value="yes">Yes</option>
+                          <option value="no">No</option>
+                        </select>
+                        {updateErrors.willing_to_relocate && (
+                          <p className="mt-0.5 text-[9px] sm:text-[10px] text-red-600">{updateErrors.willing_to_relocate}</p>
+                        )}
+                      </div>
+                      <div>
+                        <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Relocation Willingness</label>
+                        <select
+                          value={editFormData.relocation_willingness || ""}
+                          onChange={(e) => setEditFormData(prev => ({ ...prev, relocation_willingness: e.target.value }))}
+                          className={`w-full px-2 py-1.5 sm:px-2.5 sm:py-2 text-[10px] sm:text-xs border rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white ${updateErrors.relocation_willingness ? 'border-red-300 bg-red-50' : 'border-gray-300'}`}
+                        >
+                          <option value="">Select</option>
+                          <option value="by_self">By Self</option>
+                          <option value="if_employer_covers">If Employer Covers</option>
+                          <option value="not_willing">Not Willing</option>
+                        </select>
+                        {updateErrors.relocation_willingness && (
+                          <p className="mt-0.5 text-[9px] sm:text-[10px] text-red-600">{updateErrors.relocation_willingness}</p>
+                        )}
+                      </div>
+                      <div>
+                        <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Willing to Join Startup</label>
+                        <select
+                          value={editFormData.willing_to_join_startup !== null && editFormData.willing_to_join_startup !== undefined ? (editFormData.willing_to_join_startup ? 'yes' : 'no') : ''}
+                          onChange={(e) => setEditFormData(prev => ({ ...prev, willing_to_join_startup: e.target.value === 'yes' }))}
+                          className={`w-full px-2 py-1.5 sm:px-2.5 sm:py-2 text-[10px] sm:text-xs border rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white ${updateErrors.willing_to_join_startup ? 'border-red-300 bg-red-50' : 'border-gray-300'}`}
+                        >
+                          <option value="">Select</option>
+                          <option value="yes">Yes</option>
+                          <option value="no">No</option>
+                        </select>
+                        {updateErrors.willing_to_join_startup && (
+                          <p className="mt-0.5 text-[9px] sm:text-[10px] text-red-600">{updateErrors.willing_to_join_startup}</p>
+                        )}
+                      </div>
+                      <div>
+                        <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Current Employer</label>
+                        <input
+                          type="text"
+                          value={editFormData.current_employer || ""}
+                          onChange={(e) => setEditFormData(prev => ({ ...prev, current_employer: e.target.value }))}
+                          className={`w-full px-2 py-1.5 sm:px-2.5 sm:py-2 text-[10px] sm:text-xs border rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 ${updateErrors.current_employer ? 'border-red-300 bg-red-50' : 'border-gray-300'}`}
+                        />
+                        {updateErrors.current_employer && (
+                          <p className="mt-0.5 text-[9px] sm:text-[10px] text-red-600">{updateErrors.current_employer}</p>
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      {formattedCandidate.willing_to_relocate !== null && (
+                        <div>
+                          <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Willing To Relocate</label>
+                          <p className="text-[10px] sm:text-xs text-gray-900">{formattedCandidate.willing_to_relocate ? 'Yes' : 'No'}</p>
+                        </div>
+                      )}
+                      {formattedCandidate.relocation_willingness && (
+                        <div>
+                          <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Relocation Willingness</label>
+                          <p className="text-[10px] sm:text-xs text-gray-900">{formattedCandidate.relocation_willingness.replaceAll('_', ' ')}</p>
+                        </div>
+                      )}
+                      {formattedCandidate.willing_to_join_startup !== null && (
+                        <div>
+                          <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Willing to Join Startup</label>
+                          <p className="text-[10px] sm:text-xs text-gray-900">{formattedCandidate.willing_to_join_startup ? 'Yes' : 'No'}</p>
+                        </div>
+                      )}
+                      {formattedCandidate.current_employer && (
+                        <div>
+                          <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Current Employer</label>
+                          <p className="text-[10px] sm:text-xs text-gray-900">{formattedCandidate.current_employer}</p>
+                        </div>
+                      )}
+                    </>
                   )}
                   <div className="md:col-span-2">
                     <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Preferred Locations</label>
@@ -366,37 +785,118 @@ const InternalCandidateProfile = () => {
                   <Star className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
                   Skills
                 </h2>
-                <div className="flex flex-wrap gap-1 sm:gap-2">
-                  {formattedCandidate.skills && formattedCandidate.skills.length > 0 ? (
-                    formattedCandidate.skills.map((skill, index) => (
-                      <span key={index} className="bg-gray-100 text-gray-800 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium">
-                        {skill}
-                      </span>
-                    ))
-                  ) : null}
-                </div>
-                </div>
+                {formattedCandidate.skills && formattedCandidate.skills.length > 0 ? (
+                  <div className="flex flex-wrap gap-1 sm:gap-2">
+                    {formattedCandidate.skills.map((skill, idx) => {
+                      let skillName = '';
+                      let experience = '';
+                      
+                      if (typeof skill === 'object' && skill !== null) {
+                        skillName = skill.name || skill.skill || '';
+                        const expValue = skill.experience || skill.years_experience || '';
+                        experience = typeof expValue === 'object' ? '' : String(expValue || '');
+                      } else {
+                        skillName = String(skill || '');
+                      }
+                      
+                      skillName = String(skillName || '');
+                      
+                      const displayText = experience && experience.trim()
+                        ? `${skillName} (${experience} ${experience === '1' ? 'year' : 'years'})`
+                        : skillName;
+                      
+                      return (
+                        <span key={idx} className="bg-gray-100 text-gray-800 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium">
+                          {displayText}
+                        </span>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-[10px] sm:text-xs text-gray-500 italic">No skills information available</p>
+                )}
+              </div>
 
               {/* Job History */}
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6">
                 <h2 className="text-sm sm:text-base font-semibold text-gray-900 mb-2 sm:mb-3">Job History</h2>
                 {formattedCandidate.job_history && formattedCandidate.job_history.length > 0 ? (
                   <div className="space-y-2 sm:space-y-3">
-                    {formattedCandidate.job_history.map((job, idx) => (
-                      <div key={idx} className="border border-gray-200 rounded-lg p-2 sm:p-3">
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2">
-                          <div className="font-medium text-[10px] sm:text-xs text-gray-900">{job.position} @ {job.company}</div>
-                          <div className="text-[10px] sm:text-xs text-gray-500">
-                            {job.start_date ? new Date(job.start_date).toLocaleDateString() : '—'} - {job.end_date ? new Date(job.end_date).toLocaleDateString() : 'Present'}
+                    {formattedCandidate.job_history.map((job, idx) => {
+                      const formatDate = (dateString) => {
+                        if (!dateString) return null;
+                        try {
+                          const date = new Date(dateString);
+                          return isNaN(date.getTime()) ? null : date.toLocaleDateString('en-US', { 
+                            year: 'numeric', 
+                            month: 'short', 
+                            day: 'numeric' 
+                          });
+                        } catch (e) {
+                          return null;
+                        }
+                      };
+
+                      const position = job.position || job.title || '';
+                      const company = job.company || job.company_name || '';
+                      const startDate = formatDate(job.start_date);
+                      const endDate = formatDate(job.end_date);
+                      const hasStartDate = startDate !== null;
+                      const hasEndDate = endDate !== null;
+                      const hasEndDateValue = job.end_date !== null && job.end_date !== undefined && job.end_date !== '';
+                      const description = job.description || job.job_description || '';
+                      const hasAnyData = position || company || hasStartDate || hasEndDate || description;
+
+                      if (!hasAnyData) {
+                        return (
+                          <div key={idx} className="border border-gray-200 rounded-lg p-2 sm:p-3 bg-gray-50">
+                            <p className="text-[10px] sm:text-xs text-gray-500 italic">Job history information not available for this entry</p>
                           </div>
+                        );
+                      }
+
+                      return (
+                        <div key={idx} className="border border-gray-200 rounded-lg p-2 sm:p-3 bg-white">
+                          {(position || company) ? (
+                            <div className="font-medium text-[10px] sm:text-xs text-gray-900 mb-1 sm:mb-2">
+                              {position ? position : 'Position not specified'} {company ? `at ${company}` : ''}
+                            </div>
+                          ) : null}
+                          <div className="text-[10px] sm:text-xs text-gray-500 space-y-1">
+                            {hasStartDate || hasEndDateValue ? (
+                              <div className="flex flex-wrap items-center gap-2">
+                                {hasStartDate && (
+                                  <>
+                                    <span>
+                                      <span className="font-medium">Start:</span> {startDate}
+                                    </span>
+                                    <span>•</span>
+                                  </>
+                                )}
+                                {hasEndDate ? (
+                                  <span>
+                                    <span className="font-medium">End:</span> {endDate}
+                                  </span>
+                                ) : hasStartDate && !hasEndDateValue ? (
+                                  <span>
+                                    <span className="font-medium">End:</span> <span className="text-green-600 font-semibold">Present</span>
+                                  </span>
+                                ) : null}
+                              </div>
+                            ) : (
+                              <span className="text-gray-400 italic">Date information not available</span>
+                            )}
+                          </div>
+                          {description && (
+                            <p className="text-[10px] sm:text-xs text-gray-700 mt-1 sm:mt-2">{description}</p>
+                          )}
                         </div>
-                        {job.description && (
-                          <p className="text-[10px] sm:text-xs text-gray-700 mt-1 sm:mt-1.5">{job.description}</p>
-                        )}
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
-                ) : null}
+                ) : (
+                  <p className="text-[10px] sm:text-xs text-gray-500 italic">No job history information available</p>
+                )}
               </div>
 
               {/* Education */}
@@ -404,14 +904,140 @@ const InternalCandidateProfile = () => {
                 <h2 className="text-sm sm:text-base font-semibold text-gray-900 mb-2 sm:mb-3">Education</h2>
                 {formattedCandidate.education && formattedCandidate.education.length > 0 ? (
                   <div className="space-y-2 sm:space-y-3">
-                    {formattedCandidate.education.map((edu, idx) => (
-                      <div key={idx} className="border border-gray-200 rounded-lg p-2 sm:p-3">
-                        <div className="font-medium text-[10px] sm:text-xs text-gray-900">{edu.degree} - {edu.major}</div>
-                        <div className="text-[10px] sm:text-xs text-gray-500">{edu.institution}{edu.graduation_year ? `, ${edu.graduation_year}` : ''}</div>
-                      </div>
-                    ))}
+                    {formattedCandidate.education.map((edu, idx) => {
+                      const formatDate = (dateString) => {
+                        if (!dateString) return null;
+                        try {
+                          const date = new Date(dateString);
+                          return isNaN(date.getTime()) ? null : date.toLocaleDateString('en-US', { 
+                            year: 'numeric', 
+                            month: 'short', 
+                            day: 'numeric' 
+                          });
+                        } catch (e) {
+                          return null;
+                        }
+                      };
+
+                      const startDate = formatDate(edu.start_date);
+                      const endDate = formatDate(edu.end_date);
+                      const graduationDate = formatDate(edu.graduation_date);
+
+                      return (
+                        <div key={idx} className="border border-gray-200 rounded-lg p-2 sm:p-3 bg-gray-50">
+                          <div className="mb-2">
+                            {edu.degree && (
+                              <div className="font-semibold text-[10px] sm:text-xs text-gray-900">
+                                {edu.degree}
+                                {edu.major && ` - ${edu.major}`}
+                              </div>
+                            )}
+                            {!edu.degree && edu.major && (
+                              <div className="font-semibold text-[10px] sm:text-xs text-gray-900">
+                                {edu.major}
+                              </div>
+                            )}
+                          </div>
+
+                          {edu.institution && (
+                            <div className="mb-1 sm:mb-2">
+                              <div className="flex items-start gap-2">
+                                <span className="text-[9px] sm:text-[10px] font-medium text-gray-600 min-w-[60px] sm:min-w-[80px]">Institution:</span>
+                                <span className="text-[10px] sm:text-xs text-gray-900 flex-1">{edu.institution}</span>
+                              </div>
+                            </div>
+                          )}
+
+                          {edu.location && (
+                            <div className="mb-1 sm:mb-2">
+                              <div className="flex items-start gap-2">
+                                <span className="text-[9px] sm:text-[10px] font-medium text-gray-600 min-w-[60px] sm:min-w-[80px]">Location:</span>
+                                <span className="text-[10px] sm:text-xs text-gray-900 flex-1">{edu.location}</span>
+                              </div>
+                            </div>
+                          )}
+
+                          <div className="mb-1 sm:mb-2 space-y-0.5 sm:space-y-1">
+                            {startDate && (
+                              <div className="flex items-start gap-2">
+                                <span className="text-[9px] sm:text-[10px] font-medium text-gray-600 min-w-[60px] sm:min-w-[80px]">Start Date:</span>
+                                <span className="text-[10px] sm:text-xs text-gray-900 flex-1">{startDate}</span>
+                              </div>
+                            )}
+                            {endDate && (
+                              <div className="flex items-start gap-2">
+                                <span className="text-[9px] sm:text-[10px] font-medium text-gray-600 min-w-[60px] sm:min-w-[80px]">End Date:</span>
+                                <span className="text-[10px] sm:text-xs text-gray-900 flex-1">{endDate}</span>
+                              </div>
+                            )}
+                            {graduationDate && (
+                              <div className="flex items-start gap-2">
+                                <span className="text-[9px] sm:text-[10px] font-medium text-gray-600 min-w-[60px] sm:min-w-[80px]">Graduation:</span>
+                                <span className="text-[10px] sm:text-xs text-gray-900 flex-1">{graduationDate}</span>
+                              </div>
+                            )}
+                            {edu.graduation_year && !graduationDate && (
+                              <div className="flex items-start gap-2">
+                                <span className="text-[9px] sm:text-[10px] font-medium text-gray-600 min-w-[60px] sm:min-w-[80px]">Graduation Year:</span>
+                                <span className="text-[10px] sm:text-xs text-gray-900 flex-1">{edu.graduation_year}</span>
+                              </div>
+                            )}
+                          </div>
+
+                          {edu.gpa !== null && edu.gpa !== undefined && (
+                            <div className="mb-1 sm:mb-2">
+                              <div className="flex items-start gap-2">
+                                <span className="text-[9px] sm:text-[10px] font-medium text-gray-600 min-w-[60px] sm:min-w-[80px]">GPA:</span>
+                                <span className="text-[10px] sm:text-xs text-gray-900 flex-1">
+                                  {edu.gpa}
+                                  {edu.gpa_scale && ` / ${edu.gpa_scale}`}
+                                </span>
+                              </div>
+                            </div>
+                          )}
+
+                          {edu.honors && (
+                            <div className="mb-1 sm:mb-2">
+                              <div className="flex items-start gap-2">
+                                <span className="text-[9px] sm:text-[10px] font-medium text-gray-600 min-w-[60px] sm:min-w-[80px]">Honors:</span>
+                                <span className="text-[10px] sm:text-xs text-gray-900 flex-1">{edu.honors}</span>
+                              </div>
+                            </div>
+                          )}
+
+                          {edu.description && (
+                            <div className="mb-1 sm:mb-2">
+                              <div className="flex items-start gap-2">
+                                <span className="text-[9px] sm:text-[10px] font-medium text-gray-600 min-w-[60px] sm:min-w-[80px]">Description:</span>
+                                <span className="text-[10px] sm:text-xs text-gray-700 flex-1">{edu.description}</span>
+                              </div>
+                            </div>
+                          )}
+
+                          {edu.field_of_study && (
+                            <div className="mb-1 sm:mb-2">
+                              <div className="flex items-start gap-2">
+                                <span className="text-[9px] sm:text-[10px] font-medium text-gray-600 min-w-[60px] sm:min-w-[80px]">Field:</span>
+                                <span className="text-[10px] sm:text-xs text-gray-900 flex-1">{edu.field_of_study}</span>
+                              </div>
+                            </div>
+                          )}
+
+                          {edu.certification && (
+                            <div className="mb-1 sm:mb-2">
+                              <div className="flex items-start gap-2">
+                                <span className="text-[9px] sm:text-[10px] font-medium text-gray-600 min-w-[60px] sm:min-w-[80px]">Certification:</span>
+                                <span className="text-[10px] sm:text-xs text-gray-900 flex-1">{edu.certification}</span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
-                ) : null}
+                ) : (
+                  <p className="text-[10px] sm:text-xs text-gray-500 italic">No education information available</p>
+                )}
               </div>
 
               {/* Certifications */}
@@ -451,11 +1077,52 @@ const InternalCandidateProfile = () => {
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6">
                 <h2 className="text-sm sm:text-base font-semibold text-gray-900 mb-2 sm:mb-3">Candidate Summary</h2>
                 <div className="space-y-2 sm:space-y-2.5">
-                  {formattedCandidate.candidate_score !== null && formattedCandidate.candidate_score !== undefined && (
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] sm:text-xs text-gray-600">Score</span>
-                      <span className="text-[10px] sm:text-xs font-semibold text-gray-900">{formattedCandidate.candidate_score}</span>
-                    </div>
+                  {isEditMode ? (
+                    <>
+                      <div>
+                        <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Candidate Score (0-10)</label>
+                        <input
+                          type="number"
+                          value={editFormData.candidate_score || ""}
+                          onChange={(e) => setEditFormData(prev => ({ ...prev, candidate_score: e.target.value }))}
+                          className={`w-full px-2 py-1.5 sm:px-2.5 sm:py-2 text-[10px] sm:text-xs border rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 ${updateErrors.candidate_score ? 'border-red-300 bg-red-50' : 'border-gray-300'}`}
+                          min="0"
+                          max="10"
+                          step="0.1"
+                        />
+                        {updateErrors.candidate_score && (
+                          <p className="mt-0.5 text-[9px] sm:text-[10px] text-red-600">{updateErrors.candidate_score}</p>
+                        )}
+                      </div>
+                      <div>
+                        <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Score Notes</label>
+                        <textarea
+                          value={editFormData.score_notes || ""}
+                          onChange={(e) => setEditFormData(prev => ({ ...prev, score_notes: e.target.value }))}
+                          rows={3}
+                          className={`w-full px-2 py-1.5 sm:px-2.5 sm:py-2 text-[10px] sm:text-xs border rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 resize-none ${updateErrors.score_notes ? 'border-red-300 bg-red-50' : 'border-gray-300'}`}
+                          placeholder="Enter notes about the candidate score..."
+                        />
+                        {updateErrors.score_notes && (
+                          <p className="mt-0.5 text-[9px] sm:text-[10px] text-red-600">{updateErrors.score_notes}</p>
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      {formattedCandidate.candidate_score !== null && formattedCandidate.candidate_score !== undefined && (
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] sm:text-xs text-gray-600">Score</span>
+                          <span className="text-[10px] sm:text-xs font-semibold text-gray-900">{formattedCandidate.candidate_score}</span>
+                        </div>
+                      )}
+                      {formattedCandidate.score_notes && (
+                        <div>
+                          <span className="text-[10px] sm:text-xs text-gray-600 block mb-1">Score Notes</span>
+                          <p className="text-[10px] sm:text-xs text-gray-900">{formattedCandidate.score_notes}</p>
+                        </div>
+                      )}
+                    </>
                   )}
                   {formattedCandidate.total_years_experience !== undefined && (
                     <div className="flex items-center justify-between">
@@ -532,7 +1199,20 @@ const InternalCandidateProfile = () => {
               {/* Additional Notes */}
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6">
                 <h2 className="text-sm sm:text-base font-semibold text-gray-900 mb-2 sm:mb-3">Additional Notes</h2>
-                {formattedCandidate.additional_notes ? (
+                {isEditMode ? (
+                  <>
+                    <textarea
+                      value={editFormData.additional_notes || ""}
+                      onChange={(e) => setEditFormData(prev => ({ ...prev, additional_notes: e.target.value }))}
+                      rows={4}
+                      className={`w-full px-2 py-1.5 sm:px-2.5 sm:py-2 text-[10px] sm:text-xs border rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 resize-none ${updateErrors.additional_notes ? 'border-red-300 bg-red-50' : 'border-gray-300'}`}
+                      placeholder="Enter additional notes about the candidate..."
+                    />
+                    {updateErrors.additional_notes && (
+                      <p className="mt-0.5 text-[9px] sm:text-[10px] text-red-600">{updateErrors.additional_notes}</p>
+                    )}
+                  </>
+                ) : formattedCandidate.additional_notes ? (
                   <p className="text-[10px] sm:text-xs text-gray-700">{formattedCandidate.additional_notes}</p>
                 ) : null}
               </div>
