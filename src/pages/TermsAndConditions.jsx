@@ -231,7 +231,7 @@ const TermsAndConditions = () => {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             <Link
-              to="/contact-us"
+              to="/privacy-policy"
               className="bg-white rounded-xl p-5 sm:p-6 border border-gray-200 hover:border-[#273469] hover:shadow-lg transition-all duration-300 group"
             >
               <div className="flex items-center justify-between mb-3">

@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { 
   User, 
   MapPin, 
   Briefcase, 
-  GraduationCap, 
   FileText, 
   CheckCircle, 
   AlertCircle,
@@ -12,15 +11,9 @@ import {
   Upload,
   X,
   Plus,
-  Globe,
-  Phone,
-  Mail,
   Award,
-  Shield,
   DollarSign,
   Calendar,
-  Languages,
-  Users,
   Sparkles,
   ChevronDown
 } from "lucide-react";
@@ -29,12 +22,10 @@ import Header from "../../Components/Header";
 
 const ProfileSetup = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [resumeFile, setResumeFile] = useState(null);
-  const [resumePreview, setResumePreview] = useState(null);
   const hasCheckedProfile = useRef(false);
 
   // Scroll to top when component mounts and check authentication
@@ -80,6 +71,7 @@ const ProfileSetup = () => {
     desired_job_roles: [],
     preferred_industries: [],
     employment_types: [],
+    willing_to_join_startup: false,
     
     // Work Experience
     total_years_experience: "",
@@ -136,7 +128,14 @@ const ProfileSetup = () => {
   const [currentJob, setCurrentJob] = useState({
     company: "",
     position: "",
-    duration: ""
+    start_date: "",
+    end_date: ""
+  });
+  const [jobHistoryErrors, setJobHistoryErrors] = useState({
+    company: "",
+    position: "",
+    start_date: "",
+    end_date: ""
   });
 
   const [currentEducation, setCurrentEducation] = useState({
@@ -158,7 +157,7 @@ const ProfileSetup = () => {
     contact: ""
   });
 
-  const [currentSkill, setCurrentSkill] = useState("");
+  const [currentSkill, setCurrentSkill] = useState({ name: "", experience: "" });
   const [currentLanguage, setCurrentLanguage] = useState("");
   const [currentPreferredLocation, setCurrentPreferredLocation] = useState("");
 
@@ -266,7 +265,6 @@ const ProfileSetup = () => {
 
   const removeResume = () => {
     setResumeFile(null);
-    setResumePreview(null);
     setFormData(prev => ({ 
       ...prev, 
       resume_file_path: "",
@@ -276,17 +274,60 @@ const ProfileSetup = () => {
   };
 
   const addJobHistory = () => {
-    if (currentJob.company && currentJob.position && currentJob.duration) {
-      setFormData(prev => ({
-        ...prev,
-        job_history: [...prev.job_history, { ...currentJob }]
-      }));
-      setCurrentJob({
-        company: "",
-        position: "",
-        duration: ""
-      });
+    // Validate required fields
+    const newErrors = {
+      company: "",
+      position: "",
+      start_date: "",
+      end_date: ""
+    };
+    
+    let hasErrors = false;
+    
+    if (!currentJob.company || !currentJob.company.trim()) {
+      newErrors.company = "Company name is required";
+      hasErrors = true;
     }
+    
+    if (!currentJob.position || !currentJob.position.trim()) {
+      newErrors.position = "Position is required";
+      hasErrors = true;
+    }
+    
+    if (!currentJob.start_date) {
+      newErrors.start_date = "Start date is required";
+      hasErrors = true;
+    }
+    
+    // Validate that end date is not before start date (if end date is provided)
+    if (currentJob.end_date && currentJob.start_date && new Date(currentJob.end_date) < new Date(currentJob.start_date)) {
+      newErrors.end_date = "End date cannot be before start date";
+      hasErrors = true;
+    }
+    
+    setJobHistoryErrors(newErrors);
+    
+    if (hasErrors) {
+      return;
+    }
+    
+    // If validation passes, add the job
+    setFormData(prev => ({
+      ...prev,
+      job_history: [...prev.job_history, { ...currentJob }]
+    }));
+    setCurrentJob({
+      company: "",
+      position: "",
+      start_date: "",
+      end_date: ""
+    });
+    setJobHistoryErrors({
+      company: "",
+      position: "",
+      start_date: "",
+      end_date: ""
+    });
   };
 
   const removeJobHistory = (index) => {
@@ -361,19 +402,30 @@ const ProfileSetup = () => {
   };
 
   const addSkill = () => {
-    if (currentSkill && !formData.skills.includes(currentSkill)) {
-      setFormData(prev => ({
-        ...prev,
-        skills: [...prev.skills, currentSkill]
-      }));
-      setCurrentSkill("");
+    if (currentSkill.name && currentSkill.name.trim()) {
+      // Check if skill already exists
+      const skillExists = (formData.skills || []).some(
+        s => (typeof s === 'string' ? s : s.name) === currentSkill.name.trim()
+      );
+      
+      if (!skillExists) {
+        const skillObj = {
+          name: currentSkill.name.trim(),
+          experience: currentSkill.experience.trim() || "0 years"
+        };
+        setFormData(prev => ({
+          ...prev,
+          skills: [...(prev.skills || []), skillObj]
+        }));
+        setCurrentSkill({ name: "", experience: "" });
+      }
     }
   };
 
-  const removeSkill = (skill) => {
+  const removeSkill = (skillIndex) => {
     setFormData(prev => ({
       ...prev,
-      skills: prev.skills.filter(s => s !== skill)
+      skills: (prev.skills || []).filter((_, index) => index !== skillIndex)
     }));
   };
 
@@ -493,6 +545,22 @@ const ProfileSetup = () => {
     setIsLoading(true);
     
     try {
+      // Transform skills to ensure correct format (array of objects with name and experience)
+      const formattedSkills = (formData.skills || []).map(skill => {
+        if (typeof skill === 'string') {
+          // Backward compatibility: convert old string format to object format
+          return {
+            name: skill,
+            experience: "0 years"
+          };
+        }
+        // Ensure experience is provided, default to "0 years" if empty
+        return {
+          name: skill.name || skill,
+          experience: skill.experience || "0 years"
+        };
+      });
+
       // Prepare the data in the format expected by the API
       const profileData = {
         city: formData.city,
@@ -503,10 +571,11 @@ const ProfileSetup = () => {
         desired_job_roles: formData.desired_job_roles || [],
         preferred_industries: formData.preferred_industries || [],
         employment_types: formData.employment_types || [],
+        willing_to_join_startup: formData.willing_to_join_startup,
         total_years_experience: parseInt(formData.total_years_experience),
         job_history: formData.job_history || [],
         current_employer: formData.current_employer,
-        skills: formData.skills || [],
+        skills: formattedSkills,
         education: formData.education || [],
         certifications: formData.certifications || [],
         resume_file_path: formData.resume_file_path,
@@ -644,8 +713,6 @@ const ProfileSetup = () => {
         return;
       }
 
-      console.log("Profile creation response:", data);
-      
       const result = data;
       
       // Generate unique candidate code (if not provided by API)
@@ -779,15 +846,27 @@ const ProfileSetup = () => {
         )}
       </div>
 
-      <div className="flex items-center gap-2">
-        <input
-          type="checkbox"
-          name="willing_to_relocate"
-          checked={formData.willing_to_relocate}
-          onChange={handleInputChange}
-          className="h-3 w-3 md:h-4 md:w-4 text-[#273469] focus:ring-[#273469] border-[#e4d9ff] rounded"
-        />
-        <label className="text-xs md:text-sm text-gray-700">I'm willing to relocate</label>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            name="willing_to_relocate"
+            checked={formData.willing_to_relocate}
+            onChange={handleInputChange}
+            className="h-3 w-3 md:h-4 md:w-4 text-[#273469] focus:ring-[#273469] border-[#e4d9ff] rounded"
+          />
+          <label className="text-xs md:text-sm text-gray-700">I'm willing to relocate</label>
+        </div>
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            name="willing_to_join_startup"
+            checked={formData.willing_to_join_startup}
+            onChange={handleInputChange}
+            className="h-3 w-3 md:h-4 md:w-4 text-[#273469] focus:ring-[#273469] border-[#e4d9ff] rounded"
+          />
+          <label className="text-xs md:text-sm text-gray-700">I'm willing to join a startup</label>
+        </div>
       </div>
 
       <div>
@@ -1161,29 +1240,115 @@ const ProfileSetup = () => {
           Job History <span className="text-red-500">*</span>
         </label>
         <div className="space-y-3">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            <input
-              type="text"
-              placeholder="Company"
-              value={currentJob.company}
-              onChange={(e) => setCurrentJob(prev => ({ ...prev, company: e.target.value }))}
-              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
-            />
-            <input
-              type="text"
-              placeholder="Position"
-              value={currentJob.position}
-              onChange={(e) => setCurrentJob(prev => ({ ...prev, position: e.target.value }))}
-              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
-            />
-            <input
-              type="text"
-              placeholder="Duration (e.g., 2 years)"
-              value={currentJob.duration}
-              onChange={(e) => setCurrentJob(prev => ({ ...prev, duration: e.target.value }))}
-              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
-            />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div>
+              <input
+                type="text"
+                placeholder="Company Name"
+                value={currentJob.company}
+                onChange={(e) => {
+                  setCurrentJob(prev => ({ ...prev, company: e.target.value }));
+                  // Clear error when user starts typing
+                  if (jobHistoryErrors.company) {
+                    setJobHistoryErrors(prev => ({ ...prev, company: "" }));
+                  }
+                }}
+                className={`w-full px-3 py-2 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+                  jobHistoryErrors.company ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
+                }`}
+              />
+              {jobHistoryErrors.company && (
+                <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
+                  {jobHistoryErrors.company}
+                </p>
+              )}
+            </div>
+            <div>
+              <input
+                type="text"
+                placeholder="Position"
+                value={currentJob.position}
+                onChange={(e) => {
+                  setCurrentJob(prev => ({ ...prev, position: e.target.value }));
+                  // Clear error when user starts typing
+                  if (jobHistoryErrors.position) {
+                    setJobHistoryErrors(prev => ({ ...prev, position: "" }));
+                  }
+                }}
+                className={`w-full px-3 py-2 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+                  jobHistoryErrors.position ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
+                }`}
+              />
+              {jobHistoryErrors.position && (
+                <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
+                  {jobHistoryErrors.position}
+                </p>
+              )}
+            </div>
           </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div>
+              <div className="relative">
+                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-gray-400" />
+                <input
+                  type="date"
+                  placeholder="Start Date *"
+                  value={currentJob.start_date}
+                  onChange={(e) => {
+                    setCurrentJob(prev => ({ ...prev, start_date: e.target.value }));
+                    // Clear error when user starts typing
+                    if (jobHistoryErrors.start_date) {
+                      setJobHistoryErrors(prev => ({ ...prev, start_date: "" }));
+                    }
+                  }}
+                  className={`w-full pl-9 md:pl-10 pr-3 md:pr-4 py-2 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+                    jobHistoryErrors.start_date ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
+                  }`}
+                  style={{ colorScheme: 'light' }}
+                />
+              </div>
+              {jobHistoryErrors.start_date && (
+                <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
+                  {jobHistoryErrors.start_date}
+                </p>
+              )}
+            </div>
+            <div>
+              <div className="relative">
+                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-gray-400" />
+                <input
+                  type="date"
+                  placeholder="End Date (Leave empty if current)"
+                  value={currentJob.end_date}
+                  onChange={(e) => {
+                    setCurrentJob(prev => ({ ...prev, end_date: e.target.value }));
+                    // Clear error when user starts typing
+                    if (jobHistoryErrors.end_date) {
+                      setJobHistoryErrors(prev => ({ ...prev, end_date: "" }));
+                    }
+                  }}
+                  min={currentJob.start_date || undefined}
+                  className={`w-full pl-9 md:pl-10 pr-3 md:pr-4 py-2 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
+                    jobHistoryErrors.end_date ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
+                  }`}
+                  style={{ colorScheme: 'light' }}
+                />
+              </div>
+              {jobHistoryErrors.end_date && (
+                <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
+                  {jobHistoryErrors.end_date}
+                </p>
+              )}
+            </div>
+          </div>
+          <p className="text-xs text-gray-500 flex items-center gap-1">
+            <AlertCircle className="h-3 w-3" />
+            Leave end date empty if this is your current job
+          </p>
           <button
             type="button"
             onClick={addJobHistory}
@@ -1197,7 +1362,12 @@ const ProfileSetup = () => {
           {formData.job_history.map((job, index) => (
             <div key={index} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
               <div>
-                <span className="font-medium">{job.position}</span> at <span className="font-medium">{job.company}</span> - {job.duration}
+                <span className="font-medium">{job.position}</span> at <span className="font-medium">{job.company}</span>
+                {job.start_date && (
+                  <span className="text-gray-600">
+                    {" "}({new Date(job.start_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} - {job.end_date ? new Date(job.end_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Present'})
+                  </span>
+                )}
               </div>
               <button
                 type="button"
@@ -1222,39 +1392,56 @@ const ProfileSetup = () => {
         <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
           Skills <span className="text-red-500">*</span>
         </label>
-        <div className="flex gap-2 mb-2">
-          <input
-            type="text"
-            value={currentSkill}
-            onChange={(e) => setCurrentSkill(e.target.value)}
-            onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addSkill())}
-            className="flex-1 px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
-            placeholder="Add skill"
-          />
+        <div className="space-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <input
+              type="text"
+              value={currentSkill.name}
+              onChange={(e) => setCurrentSkill(prev => ({ ...prev, name: e.target.value }))}
+              onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addSkill())}
+              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+              placeholder="Skill name (e.g., Machine Learning)"
+            />
+            <input
+              type="text"
+              value={currentSkill.experience}
+              onChange={(e) => setCurrentSkill(prev => ({ ...prev, experience: e.target.value }))}
+              onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addSkill())}
+              className="px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
+              placeholder="Experience (e.g., 3 years)"
+            />
+          </div>
           <button
             type="button"
             onClick={addSkill}
             className="px-3 md:px-4 py-2 bg-[#273469] text-white rounded-xl hover:bg-[#1e2749] transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
           >
-            <Plus className="h-3 w-3 md:h-4 md:w-4" />
+            <Plus className="h-3 w-3 md:h-4 md:w-4 inline mr-1" />
+            Add Skill
           </button>
         </div>
-        <div className="flex flex-wrap gap-2">
-          {(formData.skills || []).map((skill) => (
-            <span
-              key={skill}
-              className="inline-flex items-center gap-1 bg-indigo-100 text-indigo-800 px-2 md:px-3 py-1 rounded-full text-xs md:text-sm"
-            >
-              {skill}
-              <button
-                type="button"
-                onClick={() => removeSkill(skill)}
-                className="hover:text-indigo-600"
-              >
-                <X className="h-2 w-2 md:h-3 md:w-3" />
-              </button>
-            </span>
-          ))}
+        <div className="mt-3 space-y-2">
+          {(formData.skills || []).map((skill, index) => {
+            const skillName = typeof skill === 'string' ? skill : skill.name;
+            const skillExperience = typeof skill === 'string' ? '' : skill.experience;
+            return (
+              <div key={index} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+                <div>
+                  <span className="font-medium">{skillName}</span>
+                  {skillExperience && (
+                    <span className="text-gray-600 ml-2">({skillExperience})</span>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => removeSkill(index)}
+                  className="text-red-600 hover:text-red-800"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            );
+          })}
         </div>
         {errors.skills && (
           <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
@@ -1709,17 +1896,6 @@ const ProfileSetup = () => {
               </form>
             </div>
           </div>
-
-          {/* Back Button - COMMENTED OUT: Email verification not used for now */}
-          {/* <div className="mt-6 md:mt-8 text-center">
-            <Link
-              to="/candidate/verification"
-              className="inline-flex items-center gap-2 text-[#30343f] hover:text-[#1e2749] transition-colors duration-300 font-medium text-sm md:text-base"
-            >
-              <ArrowLeft className="h-3 w-3 md:h-4 md:w-4" />
-              Back to Email Verification
-            </Link>
-          </div> */}
         </div>
       </div>
     </div>

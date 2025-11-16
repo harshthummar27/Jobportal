@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { 
   User, Briefcase, CheckCircle, TrendingUp, Calendar, MapPin, 
-  Award, Languages, Users, DollarSign, Shield, Phone, Mail, 
+  Award, Users, DollarSign, Shield, Phone, Mail, 
   Building, Star, AlertCircle, RefreshCw, Clock, FileText, Edit, X, Save
 } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -17,6 +17,10 @@ const CandidateMyProfile = () => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editFormData, setEditFormData] = useState({});
+  const [currentSkill, setCurrentSkill] = useState({ name: "", experience: "" });
+  const [editingSkillIndex, setEditingSkillIndex] = useState(null);
+  const [editingSkill, setEditingSkill] = useState({ name: "", experience: "" });
+  const hasShownErrorToastRef = useRef(false);
 
   // Fetch profile data from API
   const fetchProfileData = async () => {
@@ -46,11 +50,11 @@ const CandidateMyProfile = () => {
       setProfileData(profileData);
       setCandidateCode(profileData.candidate_code || profileData.candidateCode || "");
       
-      // Also save to localStorage for offline access
-      localStorage.setItem('candidateProfileData', JSON.stringify(profileData));
-      
       // Dispatch custom event to update header immediately
       window.dispatchEvent(new CustomEvent('candidateProfileUpdated'));
+
+      // Reset error toast flag on success
+      hasShownErrorToastRef.current = false;
 
     } catch (error) {
       console.error("Profile fetch error:", error);
@@ -66,30 +70,26 @@ const CandidateMyProfile = () => {
       } else {
         // Handle other specific error messages - show toast only once
         if (error.message.includes("token") || error.message.includes("unauthorized")) {
-          toast.error("Session expired. Please log in again.");
+          // Only show toast once to prevent duplicates from React StrictMode
+          if (!hasShownErrorToastRef.current) {
+            toast.error("Session expired. Please log in again.");
+            hasShownErrorToastRef.current = true;
+          }
           setError("Session expired");
         } else if (error.message.includes("network") || error.message.includes("fetch")) {
-          toast.error("Network error. Please check your connection.");
+          // Only show toast once to prevent duplicates from React StrictMode
+          if (!hasShownErrorToastRef.current) {
+            toast.error("Network error. Please check your connection.");
+            hasShownErrorToastRef.current = true;
+          }
           setError("Network error");
         } else {
-          toast.error(error.message || "Failed to load profile data");
-          setError(error.message || "Failed to load profile");
-        }
-      }
-
-      // Only use cached data if it's not a "profile not found" error
-      if (!isProfileNotFound) {
-        const savedProfileData = localStorage.getItem('candidateProfileData');
-        if (savedProfileData) {
-          try {
-            const parsedData = JSON.parse(savedProfileData);
-            setProfileData(parsedData);
-            setCandidateCode(parsedData.candidate_code || parsedData.candidateCode || "");
-            // Show cache toast only once after successfully loading cached data
-            toast.info("Using cached profile data");
-          } catch (parseError) {
-            console.error("Error parsing cached profile data:", parseError);
+          // Only show toast once to prevent duplicates from React StrictMode
+          if (!hasShownErrorToastRef.current) {
+            toast.error(error.message || "Failed to load profile data");
+            hasShownErrorToastRef.current = true;
           }
+          setError(error.message || "Failed to load profile");
         }
       }
     } finally {
@@ -129,6 +129,19 @@ const CandidateMyProfile = () => {
       return item.name || item.title || item.value || JSON.stringify(item);
     }
     return String(item);
+  };
+
+  // Helper function to format experience string properly
+  // Always uses "year" (singular) regardless of the number
+  const formatExperience = (experience) => {
+    if (!experience || experience.trim() === '') return '';
+    
+    // Extract number from the string
+    const numberMatch = experience.trim().match(/\d+/);
+    if (!numberMatch) return experience;
+    
+    const number = parseInt(numberMatch[0], 10);
+    return `${number} year`;
   };
 
   // Calculate profile completeness dynamically
@@ -172,6 +185,9 @@ const CandidateMyProfile = () => {
 
   // Handle refresh button click
   const handleRefresh = () => {
+    // Reset error toast flag when manually refreshing
+    hasShownErrorToastRef.current = false;
+    
     // Check if user has profile first
     const hasProfileStatus = localStorage.getItem('has_profile');
     const hasProfileValue = hasProfileStatus === 'true';
@@ -231,6 +247,9 @@ const CandidateMyProfile = () => {
   const handleCancelEdit = () => {
     setIsEditMode(false);
     setEditFormData({});
+    setCurrentSkill({ name: "", experience: "" });
+    setEditingSkillIndex(null);
+    setEditingSkill({ name: "", experience: "" });
   };
 
   // Handle form input change
@@ -254,9 +273,109 @@ const CandidateMyProfile = () => {
     });
   };
 
+  // Handle skill addition with experience
+  const handleAddSkill = () => {
+    if (currentSkill.name && currentSkill.name.trim()) {
+      const experienceValue = currentSkill.experience.trim() || "0";
+      const normalizedExperience = formatExperience(experienceValue);
+      
+      const skillObj = {
+        name: currentSkill.name.trim(),
+        experience: normalizedExperience
+      };
+      
+      setEditFormData(prev => {
+        const currentSkills = prev.skills || [];
+        // Check if skill already exists
+        const skillExists = currentSkills.some(
+          s => (typeof s === 'string' ? s : s.name) === skillObj.name
+        );
+        
+        if (!skillExists) {
+          return { ...prev, skills: [...currentSkills, skillObj] };
+        }
+        return prev;
+      });
+      
+      setCurrentSkill({ name: "", experience: "" });
+    }
+  };
+
+  // Handle skill removal
+  const handleRemoveSkill = (index) => {
+    setEditFormData(prev => {
+      const currentSkills = prev.skills || [];
+      return { ...prev, skills: currentSkills.filter((_, i) => i !== index) };
+    });
+    // If removing the skill being edited, cancel edit mode
+    if (editingSkillIndex === index) {
+      setEditingSkillIndex(null);
+      setEditingSkill({ name: "", experience: "" });
+    }
+  };
+
+  // Handle start editing a skill
+  const handleStartEditSkill = (index) => {
+    const skills = editFormData.skills || profileData.skills || [];
+    const skill = skills[index];
+    if (skill) {
+      setEditingSkillIndex(index);
+      setEditingSkill({
+        name: typeof skill === 'string' ? skill : skill.name || "",
+        experience: typeof skill === 'string' ? "" : skill.experience || ""
+      });
+    }
+  };
+
+  // Handle save edited skill
+  const handleSaveEditSkill = (index) => {
+    if (editingSkill.name && editingSkill.name.trim()) {
+      const experienceValue = editingSkill.experience.trim() || "0";
+      const normalizedExperience = formatExperience(experienceValue);
+      
+      const skillObj = {
+        name: editingSkill.name.trim(),
+        experience: normalizedExperience
+      };
+      
+      setEditFormData(prev => {
+        const currentSkills = prev.skills || [];
+        const updatedSkills = [...currentSkills];
+        updatedSkills[index] = skillObj;
+        return { ...prev, skills: updatedSkills };
+      });
+      
+      setEditingSkillIndex(null);
+      setEditingSkill({ name: "", experience: "" });
+    }
+  };
+
+  // Handle cancel editing skill
+  const handleCancelEditSkill = () => {
+    setEditingSkillIndex(null);
+    setEditingSkill({ name: "", experience: "" });
+  };
+
   // Handle save profile
   const handleSaveProfile = async () => {
     try {
+      // Transform skills to ensure correct format (array of objects with name and experience)
+      const formattedSkills = (editFormData.skills || []).map(skill => {
+        if (typeof skill === 'string') {
+          // Backward compatibility: convert old string format to object format
+          return {
+            name: skill,
+            experience: "0 years"
+          };
+        }
+        // Ensure experience is provided and normalized, default to "0 years" if empty
+        const experienceValue = skill.experience || "0";
+        return {
+          name: skill.name || skill,
+          experience: formatExperience(experienceValue)
+        };
+      });
+
       // Prepare data for API
       const updateData = {
         city: editFormData.city || "",
@@ -269,7 +388,7 @@ const CandidateMyProfile = () => {
         desired_job_roles: editFormData.desired_job_roles || [],
         preferred_industries: editFormData.preferred_industries || [],
         employment_types: editFormData.employment_types || [],
-        skills: editFormData.skills || [],
+        skills: formattedSkills,
         languages_spoken: editFormData.languages_spoken || [],
         preferred_locations: editFormData.preferred_locations || [],
         relocation_willingness: editFormData.relocation_willingness || "",
@@ -354,27 +473,35 @@ const CandidateMyProfile = () => {
         if (errorMessage.toLowerCase().includes("token") || 
             errorMessage.toLowerCase().includes("unauthorized") || 
             response.status === 401) {
-          toast.error("Session expired. Please log in again.");
+          // Only show toast once to prevent duplicates
+          if (!hasShownErrorToastRef.current) {
+            toast.error("Session expired. Please log in again.");
+            hasShownErrorToastRef.current = true;
+          }
           setIsUpdating(false);
           return { success: false, errors: newErrors };
         }
         
-        toast.error(errorMessage);
+        // Only show toast once to prevent duplicates
+        if (!hasShownErrorToastRef.current) {
+          toast.error(errorMessage);
+          hasShownErrorToastRef.current = true;
+        }
         setIsUpdating(false);
         return { success: false, errors: newErrors };
       }
 
-      // Success - update local state and cache
+      // Success - update local state
       const updatedProfile = data.profile || data.data || data;
       setProfileData(updatedProfile);
       setCandidateCode(updatedProfile.candidate_code || updatedProfile.candidateCode || candidateCode);
       
-      // Update localStorage
-      localStorage.setItem('candidateProfileData', JSON.stringify(updatedProfile));
-      
       // Dispatch custom event to update header immediately
       window.dispatchEvent(new CustomEvent('candidateProfileUpdated'));
 
+      // Reset error toast flag on success
+      hasShownErrorToastRef.current = false;
+      
       toast.success("Profile updated successfully!");
       setIsUpdating(false);
       return { success: true, data: updatedProfile };
@@ -385,12 +512,24 @@ const CandidateMyProfile = () => {
       // Handle network errors or other exceptions
       if (error.message) {
         if (error.message.includes('JSON') || error.message.includes('Failed to fetch')) {
-          toast.error("Network error. Please check your connection and try again.");
+          // Only show toast once to prevent duplicates
+          if (!hasShownErrorToastRef.current) {
+            toast.error("Network error. Please check your connection and try again.");
+            hasShownErrorToastRef.current = true;
+          }
         } else {
-          toast.error(error.message || "Failed to update profile. Please try again.");
+          // Only show toast once to prevent duplicates
+          if (!hasShownErrorToastRef.current) {
+            toast.error(error.message || "Failed to update profile. Please try again.");
+            hasShownErrorToastRef.current = true;
+          }
         }
       } else {
-        toast.error("Failed to update profile. Please try again.");
+        // Only show toast once to prevent duplicates
+        if (!hasShownErrorToastRef.current) {
+          toast.error("Failed to update profile. Please try again.");
+          hasShownErrorToastRef.current = true;
+        }
       }
       
       setIsUpdating(false);
@@ -913,45 +1052,139 @@ const CandidateMyProfile = () => {
                     <div>
                       <p className="text-[10px] sm:text-xs font-medium text-gray-500 mb-1">Skills</p>
                       {isEditMode ? (
-                        <div className="space-y-1">
-                          <div className="flex gap-1">
+                        <div className="space-y-2">
+                          <div className="grid grid-cols-2 gap-1">
                             <input
                               type="text"
-                              placeholder="Add skill"
+                              placeholder="Skill name"
+                              value={currentSkill.name}
+                              onChange={(e) => setCurrentSkill(prev => ({ ...prev, name: e.target.value }))}
                               onKeyPress={(e) => {
                                 if (e.key === 'Enter') {
                                   e.preventDefault();
-                                  const value = e.target.value.trim();
-                                  if (value) handleArrayFieldChange('skills', 'add', value);
-                                  e.target.value = '';
+                                  handleAddSkill();
                                 }
                               }}
-                              className="flex-1 px-2 py-1 text-[10px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                              className="px-2 py-1 text-[10px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                            />
+                            <input
+                              type="text"
+                              placeholder="Experience (e.g., 3 years)"
+                              value={currentSkill.experience}
+                              onChange={(e) => setCurrentSkill(prev => ({ ...prev, experience: e.target.value }))}
+                              onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  handleAddSkill();
+                                }
+                              }}
+                              className="px-2 py-1 text-[10px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
                             />
                           </div>
-                          <div className="flex flex-wrap gap-1">
-                            {(editFormData.skills || profileData.skills || []).map((skill, index) => (
-                              <span key={index} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-purple-100 text-purple-800 rounded-md text-[10px] sm:text-xs font-medium">
-                                {getArrayItemDisplay(skill)}
-                                <button
-                                  type="button"
-                                  onClick={() => handleArrayFieldChange('skills', 'remove', null, index)}
-                                  className="hover:text-red-600"
-                                >
-                                  <X className="h-2.5 w-2.5" />
-                                </button>
-                              </span>
-                            ))}
+                          <button
+                            type="button"
+                            onClick={handleAddSkill}
+                            className="px-2 py-1 bg-indigo-600 text-white rounded text-[10px] sm:text-xs hover:bg-indigo-700 transition-colors"
+                          >
+                            Add Skill
+                          </button>
+                          <div className="space-y-1">
+                            {(editFormData.skills || profileData.skills || []).map((skill, index) => {
+                              const skillName = typeof skill === 'string' ? skill : skill.name;
+                              const skillExperience = typeof skill === 'string' ? '' : skill.experience;
+                              const formattedExperience = skillExperience ? formatExperience(skillExperience) : '';
+                              const isEditing = editingSkillIndex === index;
+                              
+                              if (isEditing) {
+                                // Show edit mode with input fields
+                                return (
+                                  <div key={index} className="p-1.5 bg-blue-50 rounded-md border border-blue-200">
+                                    <div className="grid grid-cols-2 gap-1 mb-1">
+                                      <input
+                                        type="text"
+                                        placeholder="Skill name"
+                                        value={editingSkill.name}
+                                        onChange={(e) => setEditingSkill(prev => ({ ...prev, name: e.target.value }))}
+                                        className="px-2 py-1 text-[10px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                                      />
+                                      <input
+                                        type="text"
+                                        placeholder="Experience (e.g., 3 years)"
+                                        value={editingSkill.experience}
+                                        onChange={(e) => setEditingSkill(prev => ({ ...prev, experience: e.target.value }))}
+                                        className="px-2 py-1 text-[10px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                                      />
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                      <button
+                                        type="button"
+                                        onClick={() => handleSaveEditSkill(index)}
+                                        className="px-2 py-0.5 bg-green-600 text-white rounded text-[10px] sm:text-xs hover:bg-green-700 transition-colors flex items-center gap-1"
+                                      >
+                                        <Save className="h-2.5 w-2.5" />
+                                        Save
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={handleCancelEditSkill}
+                                        className="px-2 py-0.5 bg-gray-600 text-white rounded text-[10px] sm:text-xs hover:bg-gray-700 transition-colors flex items-center gap-1"
+                                      >
+                                        <X className="h-2.5 w-2.5" />
+                                        Cancel
+                                      </button>
+                                    </div>
+                                  </div>
+                                );
+                              }
+                              
+                              // Show normal view with edit and delete buttons
+                              return (
+                                <div key={index} className="flex items-center justify-between p-1.5 bg-gray-50 rounded-md">
+                                  <div className="flex-1 min-w-0">
+                                    <span className="text-[10px] sm:text-xs font-medium text-gray-900">{skillName}</span>
+                                    {formattedExperience && (
+                                      <span className="text-[10px] sm:text-xs text-gray-600 ml-1">({formattedExperience})</span>
+                                    )}
+                                  </div>
+                                  <div className="flex items-center gap-1 ml-2">
+                                    <button
+                                      type="button"
+                                      onClick={() => handleStartEditSkill(index)}
+                                      className="text-blue-600 hover:text-blue-800 flex-shrink-0"
+                                      title="Edit skill"
+                                    >
+                                      <Edit className="h-3 w-3" />
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleRemoveSkill(index)}
+                                      className="text-red-600 hover:text-red-800 flex-shrink-0"
+                                      title="Remove skill"
+                                    >
+                                      <X className="h-3 w-3" />
+                                    </button>
+                                  </div>
+                                </div>
+                              );
+                            })}
                           </div>
                         </div>
                       ) : (
-                        <div className="flex flex-wrap gap-1">
+                        <div className="space-y-1">
                           {profileData.skills && profileData.skills.length > 0 ? (
-                            profileData.skills.map((skill, index) => (
-                              <span key={index} className="px-1.5 py-0.5 bg-purple-100 text-purple-800 rounded-md text-[10px] sm:text-xs font-medium">
-                                {getArrayItemDisplay(skill)}
-                              </span>
-                            ))
+                            profileData.skills.map((skill, index) => {
+                              const skillName = typeof skill === 'string' ? skill : skill.name;
+                              const skillExperience = typeof skill === 'string' ? '' : skill.experience;
+                              const formattedExperience = skillExperience ? formatExperience(skillExperience) : '';
+                              return (
+                                <div key={index} className="p-1.5 bg-purple-50 rounded-md border border-purple-200">
+                                  <span className="text-[10px] sm:text-xs font-medium text-purple-900">{skillName}</span>
+                                  {formattedExperience && (
+                                    <span className="text-[10px] sm:text-xs text-purple-700 ml-1">({formattedExperience})</span>
+                                  )}
+                                </div>
+                              );
+                            })
                           ) : (
                             <span className="text-[10px] sm:text-xs text-gray-500 italic">Not Defined</span>
                           )}
@@ -1003,12 +1236,29 @@ const CandidateMyProfile = () => {
                       <p className="text-[10px] sm:text-xs font-medium text-gray-500 mb-1">Job History</p>
                       <div className="space-y-1">
                         {profileData.job_history && profileData.job_history.length > 0 ? (
-                          profileData.job_history.map((job, index) => (
-                            <div key={index} className="p-1.5 sm:p-2 bg-gray-50 rounded-lg border-l-2 border-orange-400">
-                              <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">{job.position}</p>
-                              <p className="text-[10px] sm:text-xs text-gray-600 truncate">{job.company} - {job.duration}</p>
-                            </div>
-                          ))
+                          profileData.job_history.map((job, index) => {
+                            // Format dates
+                            const startDate = job.start_date 
+                              ? new Date(job.start_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+                              : 'N/A';
+                            const endDate = job.end_date 
+                              ? new Date(job.end_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+                              : 'Present';
+                            
+                            return (
+                              <div key={index} className="p-1.5 sm:p-2 bg-gray-50 rounded-lg border-l-2 border-orange-400">
+                                <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">
+                                  {job.position || 'N/A'}
+                                </p>
+                                <p className="text-[10px] sm:text-xs text-gray-600 truncate">
+                                  {job.company || 'N/A'}
+                                </p>
+                                <p className="text-[10px] sm:text-xs text-gray-500 mt-0.5">
+                                  {startDate} - {endDate}
+                                </p>
+                              </div>
+                            );
+                          })
                         ) : (
                           <span className="text-[10px] sm:text-xs text-gray-500 italic">Not Defined</span>
                         )}

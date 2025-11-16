@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Users, UserCheck, AlertCircle, Loader2, Search, CheckCircle, X, MapPin, Briefcase, DollarSign, Award, Calendar, Star, FileText } from "lucide-react";
+import { Users, AlertCircle, Loader2, Search, CheckCircle, X, MapPin, Briefcase, DollarSign, Award, Calendar, Star } from "lucide-react";
 import { toast } from 'react-toastify';
 import RecruiterLayout from "../../Components/RecruiterLayout";
 
-
 const RecruiterDashboard = () => {
-  const [activeTab, setActiveTab] = useState("shortlisted");
   const [candidates, setCandidates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -27,7 +24,8 @@ const RecruiterDashboard = () => {
     salary_min: '',
     salary_max: '',
     visa_status: '',
-    candidate_score_min: ''
+    candidate_score_min: '',
+    willing_to_join_startup: ''
   });
   const [isSearching, setIsSearching] = useState(false);
   
@@ -108,6 +106,9 @@ const RecruiterDashboard = () => {
       if (f.salary_max) params.append('salary_max', normalizeText(f.salary_max));
       if (f.visa_status) params.append('visa_status', normalizeText(f.visa_status));
       if (f.candidate_score_min) params.append('candidate_score_min', normalizeText(f.candidate_score_min));
+      if (f.willing_to_join_startup !== '') {
+        params.append('willing_to_join_startup', f.willing_to_join_startup === '1' ? '1' : '0');
+      }
 
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/candidates/search?${params}`, {
         method: 'GET',
@@ -189,7 +190,8 @@ const RecruiterDashboard = () => {
       salary_min: '',
       salary_max: '',
       visa_status: '',
-      candidate_score_min: ''
+      candidate_score_min: '',
+      willing_to_join_startup: ''
     };
     setSearchParams(cleared);
     searchCandidates(cleared);
@@ -379,11 +381,6 @@ const RecruiterDashboard = () => {
     fetchCandidates();
   }, []);
 
-  const getStatusClasses = (status) =>
-    status === "interview-scheduled"
-      ? "bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs"
-      : "bg-gray-200 text-gray-800 px-2 py-1 rounded text-xs";
-
   // Format candidate data for display (supports both old and new shapes)
   const formatCandidateData = (candidate) => {
     const profile = candidate.candidate_profile;
@@ -407,19 +404,14 @@ const RecruiterDashboard = () => {
     return {
       id: candidate.id,
       code,
-      name: profile?.full_name || candidate.name || code,
       role: desiredRoles?.[0] || "Software Engineer",
       score: profile?.candidate_score ?? candidate.candidate_score ?? 0,
       shortlistedDate: new Date(candidate.created_at).toLocaleDateString(),
-      status: "pending",
       experience: `${yearsExp} years`,
       location: `${city}, ${state}`,
       skills,
       salary: salaryRaw ? `$${parseInt(salaryRaw).toLocaleString()}` : "Not specified",
-      visaStatus: visa || "Not specified",
-      interviewStatus: "pre-interviewed",
-      email: candidate.email,
-      phone: profile?.contact_phone || candidate.mobile_number
+      visaStatus: visa || "Not specified"
     };
   };
 
@@ -578,6 +570,18 @@ const RecruiterDashboard = () => {
                       onChange={(e) => handleSearchParamChange('candidate_score_min', e.target.value)}
                       className="w-full px-1.5 py-1 sm:px-2 sm:py-1.5 text-[10px] sm:text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500/30 focus:border-blue-500"
                     />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Willing to Join Startup</label>
+                    <select
+                      value={searchParams.willing_to_join_startup}
+                      onChange={(e) => handleSearchParamChange('willing_to_join_startup', e.target.value)}
+                      className="w-full px-1.5 py-1 sm:px-2 sm:py-1.5 text-[10px] sm:text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500/30 focus:border-blue-500 bg-white"
+                    >
+                      <option value="">All</option>
+                      <option value="1">Yes</option>
+                      <option value="0">No</option>
+                    </select>
                   </div>
                 </div>
               </div>
@@ -1131,24 +1135,6 @@ const RecruiterDashboard = () => {
                           );
                         })}
                       </div>
-                    </div>
-                  )}
-
-                  {/* Resume */}
-                  {profileCandidate.resume_file_path && (
-                    <div className="bg-gray-50 rounded-lg p-4 sm:p-6 border border-gray-200">
-                      <h4 className="text-sm sm:text-base font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center gap-2">
-                        <FileText className="h-4 w-4 text-blue-600" />
-                        Resume
-                      </h4>
-                      <a
-                        href={profileCandidate.resume_file_path}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-xs sm:text-sm font-medium"
-                      >
-                        Download {profileCandidate.resume_file_name || 'Resume'}
-                      </a>
                     </div>
                   )}
                 </div>

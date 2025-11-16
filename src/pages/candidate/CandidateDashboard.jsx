@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { User, Briefcase, AlertCircle, RefreshCw, Loader2, Clock, FileCheck, XCircle, X, CheckCircle2, Mail, Send, Ban } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from 'react-toastify';
@@ -9,6 +9,7 @@ const CandidateDashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [hasProfile, setHasProfile] = useState(false);
+  const hasShownErrorToastRef = useRef(false);
 
   // Fetch dashboard stats from API
   const fetchDashboardStats = async () => {
@@ -35,6 +36,8 @@ const CandidateDashboard = () => {
 
       if (data.success && data.stats) {
         setDashboardStats(data.stats);
+        // Reset error toast flag on success
+        hasShownErrorToastRef.current = false;
       } else {
         throw new Error(data.message || 'Invalid response format');
       }
@@ -47,13 +50,25 @@ const CandidateDashboard = () => {
         // Don't show toast, just set error state - UI will handle it
         setError("No profile available");
       } else if (error.message.includes("token") || error.message.includes("unauthorized")) {
-        toast.error("Session expired. Please log in again.");
+        // Only show toast once to prevent duplicates from React StrictMode
+        if (!hasShownErrorToastRef.current) {
+          toast.error("Session expired. Please log in again.");
+          hasShownErrorToastRef.current = true;
+        }
         setError("Session expired");
       } else if (error.message.includes("network") || error.message.includes("fetch")) {
-        toast.error("Network error. Please check your connection.");
+        // Only show toast once to prevent duplicates from React StrictMode
+        if (!hasShownErrorToastRef.current) {
+          toast.error("Network error. Please check your connection.");
+          hasShownErrorToastRef.current = true;
+        }
         setError("Network error");
       } else {
-        toast.error(error.message || "Failed to load dashboard statistics");
+        // Only show toast once to prevent duplicates from React StrictMode
+        if (!hasShownErrorToastRef.current) {
+          toast.error(error.message || "Failed to load dashboard statistics");
+          hasShownErrorToastRef.current = true;
+        }
         setError(error.message || "Failed to load dashboard");
       }
     } finally {
@@ -91,6 +106,9 @@ const CandidateDashboard = () => {
       e.preventDefault();
       e.stopPropagation();
     }
+    
+    // Reset error toast flag when manually refreshing
+    hasShownErrorToastRef.current = false;
     
     // Check if user has profile first
     const hasProfileStatus = localStorage.getItem('has_profile');

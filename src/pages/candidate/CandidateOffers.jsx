@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { 
   Loader2, 
   AlertCircle, 
@@ -20,6 +20,7 @@ const CandidateOffers = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [hasProfile, setHasProfile] = useState(false);
+  const hasShownErrorToastRef = useRef(false);
 
   // Filter and sort states - all null by default
   const [page, setPage] = useState(null);
@@ -113,6 +114,9 @@ const CandidateOffers = () => {
       setOffers(offersData);
       setPagination(paginationData);
 
+      // Reset error toast flag on success
+      hasShownErrorToastRef.current = false;
+
     } catch (error) {
       console.error('Error fetching offers:', error);
       
@@ -122,7 +126,11 @@ const CandidateOffers = () => {
         setError("No profile available");
       } else {
         setError(error.message || 'Failed to fetch offers');
-        toast.error(error.message || 'Failed to fetch offers');
+        // Only show toast once to prevent duplicates from React StrictMode
+        if (!hasShownErrorToastRef.current) {
+          toast.error(error.message || 'Failed to fetch offers');
+          hasShownErrorToastRef.current = true;
+        }
       }
       setOffers([]);
     } finally {

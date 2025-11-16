@@ -33,7 +33,6 @@ const Notifications = () => {
   const [filter, setFilter] = useState('all'); // all, unread, read, high_priority
   const [expandedNotifications, setExpandedNotifications] = useState(new Set());
   const [showOfferModal, setShowOfferModal] = useState(false);
-  const [selectedNotificationForOffer, setSelectedNotificationForOffer] = useState(null);
   const [isCreatingOffer, setIsCreatingOffer] = useState(false);
   const [offerErrors, setOfferErrors] = useState({});
   const { searchTerm } = useSearch();
@@ -66,95 +65,14 @@ const Notifications = () => {
     return today.toISOString().split('T')[0];
   };
 
-  // Fetch notification statistics efficiently
-  const fetchNotificationStats = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      
-      // Fetch total count
-      const totalResponse = await fetch(`${baseURL}/api/internal/notifications?page=1&per_page=1`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!totalResponse.ok) {
-        return;
-      }
-
-      const totalData = await totalResponse.json();
-      
-      if (totalData.notifications) {
-        const total = totalData.notifications.total || 0;
-        setTotalNotifications(total);
-        
-        // Fetch unread count
-        const unreadResponse = await fetch(`${baseURL}/api/internal/notifications?page=1&per_page=1&unread_only=true`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-        
-        if (unreadResponse.ok) {
-          const unreadData = await unreadResponse.json();
-          const unreadTotal = unreadData.notifications?.total || 0;
-          setTotalUnread(unreadTotal);
-          setTotalRead(total - unreadTotal);
-        }
-      }
-    } catch (err) {
-      console.error('Error fetching notification stats:', err);
-    }
-  };
-
-  // Fetch high priority count (called separately to avoid blocking)
-  const fetchHighPriorityCount = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      let highPriorityCount = 0;
-      let currentPage = 1;
-      let hasMore = true;
-
-      // Fetch all pages to count high priority notifications
-      while (hasMore) {
-        const response = await fetch(`${baseURL}/api/internal/notifications?page=${currentPage}&per_page=100`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (!response.ok) break;
-
-        const data = await response.json();
-        
-        if (data.notifications && data.notifications.data) {
-          const pageHighPriority = data.notifications.data.filter(n => n.priority === 'high').length;
-          highPriorityCount += pageHighPriority;
-          
-          hasMore = currentPage < (data.notifications.last_page || 1);
-          currentPage++;
-        } else {
-          hasMore = false;
-        }
-      }
-
-      setTotalHighPriority(highPriorityCount);
-    } catch (err) {
-      console.error('Error fetching high priority count:', err);
-    }
-  };
-
   // Fetch notifications from API
-  const fetchNotifications = async (page = 1, perPage = 20, unreadOnly = false) => {
+  // silent: if true, won't show loading state (useful for background updates)
+  const fetchNotifications = async (page = 1, perPage = 20, unreadOnly = false, silent = false) => {
     try {
-      setLoading(true);
-      setError(null);
+      if (!silent) {
+        setLoading(true);
+        setError(null);
+      }
       
       const token = localStorage.getItem('token');
       const response = await fetch(`${baseURL}/api/internal/notifications?page=${page}&per_page=${perPage}&unread_only=${unreadOnly}`, {
@@ -175,22 +93,59 @@ const Notifications = () => {
         setNotifications(data.notifications.data);
         setCurrentPage(data.notifications.current_page);
         setTotalPages(data.notifications.last_page);
-        setTotalNotifications(data.notifications.total);
       } else {
         setNotifications([]);
       }
+
+      // Update counts from API response for real-time data
+      // Prioritize counts object, fallback to notifications.total if counts not available
+      if (data.counts) {
+        setTotalNotifications(data.counts.total || 0);
+        setTotalUnread(data.counts.unread || 0);
+        setTotalRead(data.counts.read || 0);
+        setTotalHighPriority(data.counts.high_priority || 0);
+      } else if (data.notifications) {
+        // Fallback to notifications.total if counts object is not available
+        setTotalNotifications(data.notifications.total || 0);
+      }
     } catch (err) {
       console.error('Error fetching notifications:', err);
-      setError('Failed to fetch notifications. Please try again.');
-      setNotifications([]);
+      if (!silent) {
+        setError('Failed to fetch notifications. Please try again.');
+        setNotifications([]);
+      }
     } finally {
-      setLoading(false);
+      if (!silent) {
+        setLoading(false);
+      }
     }
   };
 
   // Mark notification as read
   const markAsRead = async (notificationId) => {
+    // Store original notification state before any updates (for potential rollback)
+    const originalNotification = notifications.find(n => n.id === notificationId);
+    if (!originalNotification) return;
+    
+    const wasUnread = !originalNotification.is_read;
+    
     try {
+      // Optimistically update UI immediately (no loading state)
+      setNotifications(prev => 
+        prev.map(n => 
+          n.id === notificationId 
+            ? { ...n, is_read: true, read_at: new Date().toISOString() }
+            : n
+        )
+      );
+      
+      // Update counts optimistically
+      if (wasUnread) {
+        setTotalUnread(prev => Math.max(0, prev - 1));
+        setTotalRead(prev => prev + 1);
+      }
+
+      // Make API call in background
       const token = localStorage.getItem('token');
       const response = await fetch(`${baseURL}/api/internal/notifications/${notificationId}/read`, {
         method: 'POST',
@@ -201,19 +156,38 @@ const Notifications = () => {
       });
 
       if (response.ok) {
+        // Silently refresh to get accurate counts from API (no loading state)
+        await fetchNotifications(currentPage, 20, filter === 'unread', true);
+      } else {
+        // If API call failed, revert optimistic update
         setNotifications(prev => 
-          prev.map(notification => 
-            notification.id === notificationId 
-              ? { ...notification, is_read: true, read_at: new Date().toISOString() }
-              : notification
+          prev.map(n => 
+            n.id === notificationId 
+              ? { ...originalNotification }
+              : n
           )
         );
-        // Update stats after marking as read
-        setTotalUnread(prev => Math.max(0, prev - 1));
-        setTotalRead(prev => prev + 1);
+        if (wasUnread) {
+          setTotalUnread(prev => prev + 1);
+          setTotalRead(prev => Math.max(0, prev - 1));
+        }
+        toast.error('Failed to mark notification as read');
       }
     } catch (err) {
       console.error('Error marking notification as read:', err);
+      // Revert optimistic update on error
+      setNotifications(prev => 
+        prev.map(n => 
+          n.id === notificationId 
+            ? { ...originalNotification }
+            : n
+        )
+      );
+      if (wasUnread) {
+        setTotalUnread(prev => prev + 1);
+        setTotalRead(prev => Math.max(0, prev - 1));
+      }
+      toast.error('Failed to mark notification as read');
     }
   };
 
@@ -242,26 +216,80 @@ const Notifications = () => {
     );
   };
 
-  const handleSelectAll = () => {
-    const unreadIds = filteredNotifications.filter(n => !n.is_read).map(n => n.id);
-    if (selectedNotifications.length === unreadIds.length) {
-      setSelectedNotifications([]);
-    } else {
-      setSelectedNotifications(unreadIds);
-    }
-  };
-
   const handleMarkSelectedAsRead = async () => {
     if (selectedNotifications.length === 0) return;
+    
+    // Store original state for potential rollback
+    const originalNotifications = notifications.filter(n => selectedNotifications.includes(n.id));
+    const unreadCount = originalNotifications.filter(n => !n.is_read).length;
+    
     try {
-      const count = selectedNotifications.length;
-      await Promise.all(selectedNotifications.map(id => markAsRead(id)));
+      // Optimistically update UI immediately (no loading state)
+      setNotifications(prev =>
+        prev.map(notification =>
+          selectedNotifications.includes(notification.id)
+            ? { ...notification, is_read: true, read_at: new Date().toISOString() }
+            : notification
+        )
+      );
+      
+      // Update counts optimistically
+      if (unreadCount > 0) {
+        setTotalUnread(prev => Math.max(0, prev - unreadCount));
+        setTotalRead(prev => prev + unreadCount);
+      }
+      
+      const selectedIds = [...selectedNotifications];
       setSelectedNotifications([]);
-      // Update stats after marking multiple as read
-      setTotalUnread(prev => Math.max(0, prev - count));
-      setTotalRead(prev => prev + count);
+      
+      // Make API calls in background
+      const token = localStorage.getItem('token');
+      const results = await Promise.all(
+        selectedIds.map(id =>
+          fetch(`${baseURL}/api/internal/notifications/${id}/read`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          })
+        )
+      );
+      
+      // Check if all API calls succeeded
+      const allSucceeded = results.every(response => response.ok);
+      
+      if (allSucceeded) {
+        // Silently refresh to get accurate counts from API (no loading state)
+        await fetchNotifications(currentPage, 20, filter === 'unread', true);
+      } else {
+        // If any API call failed, revert optimistic update
+        setNotifications(prev =>
+          prev.map(notification => {
+            const original = originalNotifications.find(n => n.id === notification.id);
+            return original ? { ...original } : notification;
+          })
+        );
+        if (unreadCount > 0) {
+          setTotalUnread(prev => prev + unreadCount);
+          setTotalRead(prev => Math.max(0, prev - unreadCount));
+        }
+        toast.error('Failed to mark some notifications as read');
+      }
     } catch (e) {
-      // individual markAsRead already logs errors
+      console.error('Error marking selected notifications as read:', e);
+      // Revert optimistic update on error
+      setNotifications(prev =>
+        prev.map(notification => {
+          const original = originalNotifications.find(n => n.id === notification.id);
+          return original ? { ...original } : notification;
+        })
+      );
+      if (unreadCount > 0) {
+        setTotalUnread(prev => prev + unreadCount);
+        setTotalRead(prev => Math.max(0, prev - unreadCount));
+      }
+      toast.error('Failed to mark notifications as read');
     }
   };
 
@@ -296,7 +324,6 @@ const Notifications = () => {
       offer_deadline: "",
       offer_notes: candidateSelection?.notes || ""
     });
-    setSelectedNotificationForOffer(notification);
     setOfferErrors({});
     setShowOfferModal(true);
   };
@@ -346,6 +373,16 @@ const Notifications = () => {
       today.setHours(0, 0, 0, 0);
       if (deadline < today) {
         newErrors.offer_deadline = "Offer deadline cannot be in the past";
+      }
+      
+      // Check if deadline is before start date
+      if (newOffer.start_date) {
+        const startDate = new Date(newOffer.start_date);
+        startDate.setHours(0, 0, 0, 0);
+        deadline.setHours(0, 0, 0, 0);
+        if (deadline < startDate) {
+          newErrors.offer_deadline = "Offer deadline cannot be before the start date";
+        }
       }
     }
 
@@ -427,6 +464,9 @@ const Notifications = () => {
       // Show success toast
       toast.success("Offer created successfully!");
       
+      // Refresh notifications to update the UI and get updated counts
+      await fetchNotifications(currentPage, 20, filter === 'unread');
+      
       // Close modal and reset form
       setShowOfferModal(false);
       setNewOffer({
@@ -442,7 +482,6 @@ const Notifications = () => {
         offer_notes: ""
       });
       setOfferErrors({});
-      setSelectedNotificationForOffer(null);
       
     } catch (error) {
       console.error("Error creating offer:", error);
@@ -481,19 +520,6 @@ const Notifications = () => {
     });
   };
 
-  const statusCounts = {
-    total: totalNotifications,
-    unread: totalUnread,
-    read: totalRead,
-    highPriority: totalHighPriority
-  };
-
-  // Initial load - fetch stats once
-  useEffect(() => {
-    fetchNotificationStats();
-    fetchHighPriorityCount();
-  }, []);
-
   // Fetch notifications when page or filter changes
   useEffect(() => {
     fetchNotifications(currentPage, 20, filter === 'unread');
@@ -522,8 +548,6 @@ const Notifications = () => {
           <button
             onClick={() => {
               fetchNotifications(currentPage, 20, filter === 'unread');
-              fetchNotificationStats();
-              fetchHighPriorityCount();
             }}
             className="px-3 py-1.5 sm:px-4 sm:py-2 bg-red-600 text-white text-[10px] sm:text-xs lg:text-sm rounded-md hover:bg-red-700 transition-colors"
           >
@@ -542,7 +566,7 @@ const Notifications = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[10px] sm:text-xs font-medium text-gray-600">Total Notifications</p>
-              <p className="text-base sm:text-lg lg:text-xl font-bold text-blue-600">{statusCounts.total}</p>
+              <p className="text-base sm:text-lg lg:text-xl font-bold text-blue-600">{totalNotifications}</p>
             </div>
             <Bell className="h-5 w-5 sm:h-6 sm:w-6 lg:h-8 lg:w-8 text-blue-600" />
           </div>
@@ -552,7 +576,7 @@ const Notifications = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[10px] sm:text-xs font-medium text-gray-600">Unread</p>
-              <p className="text-base sm:text-lg lg:text-xl font-bold text-yellow-600">{statusCounts.unread}</p>
+              <p className="text-base sm:text-lg lg:text-xl font-bold text-yellow-600">{totalUnread}</p>
             </div>
             <Clock className="h-5 w-5 sm:h-6 sm:w-6 lg:h-8 lg:w-8 text-yellow-600" />
           </div>
@@ -562,7 +586,7 @@ const Notifications = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[10px] sm:text-xs font-medium text-gray-600">Read</p>
-              <p className="text-base sm:text-lg lg:text-xl font-bold text-green-600">{statusCounts.read}</p>
+              <p className="text-base sm:text-lg lg:text-xl font-bold text-green-600">{totalRead}</p>
             </div>
             <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 lg:h-8 lg:w-8 text-green-600" />
           </div>
@@ -572,7 +596,7 @@ const Notifications = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[10px] sm:text-xs font-medium text-gray-600">High Priority</p>
-              <p className="text-base sm:text-lg lg:text-xl font-bold text-red-600">{statusCounts.highPriority}</p>
+              <p className="text-base sm:text-lg lg:text-xl font-bold text-red-600">{totalHighPriority}</p>
             </div>
             <AlertCircle className="h-5 w-5 sm:h-6 sm:w-6 lg:h-8 lg:w-8 text-red-600" />
           </div>
@@ -601,8 +625,6 @@ const Notifications = () => {
             <button
               onClick={() => {
                 fetchNotifications(currentPage, 20, filter === 'unread');
-                fetchNotificationStats();
-                fetchHighPriorityCount();
               }}
               className="flex items-center gap-1 px-2 py-1 sm:px-3 sm:py-1.5 bg-emerald-500 text-white text-[10px] sm:text-xs rounded-md hover:bg-emerald-600 transition-colors"
             >
@@ -685,6 +707,12 @@ const Notifications = () => {
                         </div>
                         <div className="flex items-center gap-1.5 sm:gap-2 whitespace-nowrap overflow-hidden text-ellipsis">
                           {getPriorityBadge(notification.priority)}
+                          {notification.already_offer_created && (
+                            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[9px] sm:text-[10px] bg-green-100 text-green-800 border border-green-300">
+                              <CheckCircle className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                              Offer Created
+                            </span>
+                          )}
                           <span className="flex items-center gap-1 text-[9px] sm:text-[10px] text-gray-500">
                             <Calendar className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                             {formatDate(notification.created_at)}
@@ -710,6 +738,12 @@ const Notifications = () => {
                           {displayTitle}
                         </h3>
                         {getPriorityBadge(notification.priority)}
+                        {notification.already_offer_created && (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] sm:text-xs bg-green-100 text-green-800 border border-green-300">
+                            <CheckCircle className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                            Offer Created
+                          </span>
+                        )}
                         <span className="flex items-center gap-1 text-[10px] sm:text-xs text-gray-500">
                           <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                           {formatDate(notification.created_at)}
@@ -718,7 +752,6 @@ const Notifications = () => {
 
                       {isExpanded && (
                         <div className="mt-2">
-
                           {/* Candidate and Recruiter Info */}
                           {candidateSelection && (
                             <div className={`rounded-lg p-2 sm:p-3 mb-2 ${
@@ -787,13 +820,22 @@ const Notifications = () => {
                               </button>
                             )}
                             {candidateSelection && (
-                              <button
-                                onClick={() => handleCreateOfferClick(notification)}
-                                className="flex items-center gap-1 px-1.5 py-0.5 sm:px-2 sm:py-1 bg-emerald-500 text-white text-[9px] sm:text-xs rounded-md hover:bg-emerald-600 transition-colors"
-                              >
-                                <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
-                                Create Offer
-                              </button>
+                              <>
+                                {notification.already_offer_created ? (
+                                  <div className="flex items-center gap-1 px-1.5 py-0.5 sm:px-2 sm:py-1 bg-green-100 text-green-800 text-[9px] sm:text-xs rounded-md border border-green-300">
+                                    <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
+                                    <span>Offer created by: {notification.offer_created_by || 'N/A'}</span>
+                                  </div>
+                                ) : (
+                                  <button
+                                    onClick={() => handleCreateOfferClick(notification)}
+                                    className="flex items-center gap-1 px-1.5 py-0.5 sm:px-2 sm:py-1 bg-emerald-500 text-white text-[9px] sm:text-xs rounded-md hover:bg-emerald-600 transition-colors"
+                                  >
+                                    <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
+                                    Create Offer
+                                  </button>
+                                )}
+                              </>
                             )}
                           </div>
                         </div>
@@ -863,7 +905,6 @@ const Notifications = () => {
               <button
                 onClick={() => {
                   setShowOfferModal(false);
-                  setSelectedNotificationForOffer(null);
                   setOfferErrors({});
                 }}
                 className="text-gray-400 hover:text-gray-600"
@@ -994,9 +1035,28 @@ const Notifications = () => {
                         type="date"
                         value={newOffer.start_date}
                         onChange={(e) => {
-                          setNewOffer(prev => ({ ...prev, start_date: e.target.value }));
+                          const newStartDate = e.target.value;
+                          setNewOffer(prev => ({ ...prev, start_date: newStartDate }));
+                          
+                          // Clear start_date error
                           if (offerErrors.start_date) {
                             setOfferErrors(prev => ({ ...prev, start_date: "" }));
+                          }
+                          
+                          // Validate offer_deadline if it exists and is before new start_date
+                          if (newOffer.offer_deadline && newStartDate) {
+                            const deadline = new Date(newOffer.offer_deadline);
+                            const startDate = new Date(newStartDate);
+                            deadline.setHours(0, 0, 0, 0);
+                            startDate.setHours(0, 0, 0, 0);
+                            if (deadline < startDate) {
+                              setOfferErrors(prev => ({ 
+                                ...prev, 
+                                offer_deadline: "Offer deadline cannot be before the start date" 
+                              }));
+                            } else if (offerErrors.offer_deadline === "Offer deadline cannot be before the start date") {
+                              setOfferErrors(prev => ({ ...prev, offer_deadline: "" }));
+                            }
                           }
                         }}
                         min={getTodayDate()}
@@ -1020,12 +1080,29 @@ const Notifications = () => {
                         type="date"
                         value={newOffer.offer_deadline}
                         onChange={(e) => {
-                          setNewOffer(prev => ({ ...prev, offer_deadline: e.target.value }));
+                          const newDeadline = e.target.value;
+                          setNewOffer(prev => ({ ...prev, offer_deadline: newDeadline }));
+                          
+                          // Clear offer_deadline error
                           if (offerErrors.offer_deadline) {
                             setOfferErrors(prev => ({ ...prev, offer_deadline: "" }));
                           }
+                          
+                          // Validate if deadline is before start_date
+                          if (newOffer.start_date && newDeadline) {
+                            const deadline = new Date(newDeadline);
+                            const startDate = new Date(newOffer.start_date);
+                            deadline.setHours(0, 0, 0, 0);
+                            startDate.setHours(0, 0, 0, 0);
+                            if (deadline < startDate) {
+                              setOfferErrors(prev => ({ 
+                                ...prev, 
+                                offer_deadline: "Offer deadline cannot be before the start date" 
+                              }));
+                            }
+                          }
                         }}
-                        min={getTodayDate()}
+                        min={newOffer.start_date || getTodayDate()}
                         className={`w-full px-3 py-2 border rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-transparent ${
                           offerErrors.offer_deadline ? 'border-red-300 bg-red-50' : 'border-gray-300'
                         }`}
@@ -1107,7 +1184,6 @@ const Notifications = () => {
                 type="button"
                 onClick={() => {
                   setShowOfferModal(false);
-                  setSelectedNotificationForOffer(null);
                   setOfferErrors({});
                 }}
                 disabled={isCreatingOffer}

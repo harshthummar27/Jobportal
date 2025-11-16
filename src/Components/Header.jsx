@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { User, Edit, LogOut, AlertTriangle, X, Loader2, Lock, Eye, EyeOff, Menu } from "lucide-react";
 import { toast } from 'react-toastify';
-import logo from '../../public/vettedpool-logo.png';
+import logo from '../../public/vettedpool-logo.webp';
 import NotificationDropdown from './NotificationDropdown';
 
 const Header = ({ onEditProfile, userData }) => {
