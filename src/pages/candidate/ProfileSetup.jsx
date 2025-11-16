@@ -1093,35 +1093,22 @@ const ProfileSetup = () => {
           <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
             Total Years of Experience <span className="text-red-500">*</span>
           </label>
-          <select
+          <input
+            type="number"
             name="total_years_experience"
             value={formData.total_years_experience}
             onChange={handleInputChange}
-            className={`w-full px-3 md:px-4 py-2 md:py-3 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] text-sm md:text-base ${
+            min="0"
+            step="0.5"
+            className={`w-full px-3 md:px-4 py-2 md:py-3 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
               errors.total_years_experience ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
             }`}
-          >
-            <option value="">Select experience</option>
-            <option value="0">0 years</option>
-            <option value="1">1 year</option>
-            <option value="2">2 years</option>
-            <option value="3">3 years</option>
-            <option value="4">4 years</option>
-            <option value="5">5 years</option>
-            <option value="6">6 years</option>
-            <option value="7">7 years</option>
-            <option value="8">8 years</option>
-            <option value="9">9 years</option>
-            <option value="10">10 years</option>
-            <option value="15">15 years</option>
-            <option value="20">20 years</option>
-            <option value="25">25 years</option>
-            <option value="30">30 years</option>
-          </select>
+            placeholder="Enter years of experience (e.g., 5)"
+          />
           {errors.total_years_experience && (
             <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
               <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
-              Please select your years of experience
+              Please enter your years of experience
             </p>
           )}
         </div>

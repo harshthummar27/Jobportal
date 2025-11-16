@@ -82,9 +82,10 @@ const RecruiterDashboard = () => {
         per_page: '25' // static as requested
       });
 
-      // Add search filters if they have values
-      const f = filters || searchParams;
-      const jobRole = titleCase(f.job_role);
+      // Use provided filters if available, otherwise use empty filters (not searchParams)
+      // This ensures initial load shows all candidates without any filters
+      const f = filters !== undefined && filters !== null ? filters : {};
+      const jobRole = titleCase(f.job_role || '');
       if (jobRole) params.append('job_role', jobRole);
       if (f.preferred_locations) {
         const locationsArray = f.preferred_locations
@@ -106,7 +107,7 @@ const RecruiterDashboard = () => {
       if (f.salary_max) params.append('salary_max', normalizeText(f.salary_max));
       if (f.visa_status) params.append('visa_status', normalizeText(f.visa_status));
       if (f.candidate_score_min) params.append('candidate_score_min', normalizeText(f.candidate_score_min));
-      if (f.willing_to_join_startup !== '') {
+      if (f.willing_to_join_startup !== undefined && f.willing_to_join_startup !== null && f.willing_to_join_startup !== '') {
         params.append('willing_to_join_startup', f.willing_to_join_startup === '1' ? '1' : '0');
       }
 
@@ -143,7 +144,9 @@ const RecruiterDashboard = () => {
       
       // Handle the API response structure: { candidates: { data: [...], ... }, filters_applied: {...} }
       if (data.candidates) {
-        setCandidates(data.candidates.data || []);
+        // Ensure candidates array is properly formatted
+        const candidatesData = Array.isArray(data.candidates.data) ? data.candidates.data : [];
+        setCandidates(candidatesData);
         setPagination({
           current_page: data.candidates.current_page || 1,
           per_page: data.candidates.per_page || 25,
@@ -151,6 +154,17 @@ const RecruiterDashboard = () => {
           last_page: data.candidates.last_page || 1,
           from: data.candidates.from,
           to: data.candidates.to
+        });
+      } else if (Array.isArray(data)) {
+        // Handle case where API returns array directly
+        setCandidates(data);
+        setPagination({
+          current_page: 1,
+          per_page: 25,
+          total: data.length,
+          last_page: 1,
+          from: 1,
+          to: data.length
         });
       } else {
         throw new Error(data.message || 'Failed to search candidates');
@@ -168,7 +182,20 @@ const RecruiterDashboard = () => {
   const fetchCandidates = async () => {
     try {
       setLoading(true);
-      await searchCandidates({});
+      // Use empty filters object with all properties to ensure no filters are applied
+      const emptyFilters = {
+        job_role: '',
+        preferred_locations: '',
+        skills: '',
+        years_experience_min: '',
+        years_experience_max: '',
+        salary_min: '',
+        salary_max: '',
+        visa_status: '',
+        candidate_score_min: '',
+        willing_to_join_startup: ''
+      };
+      await searchCandidates(emptyFilters);
     } finally {
       setLoading(false);
     }
@@ -378,7 +405,23 @@ const RecruiterDashboard = () => {
 
   // Fetch candidates on component mount
   useEffect(() => {
-    fetchCandidates();
+    let isMounted = true;
+    
+    const loadCandidates = async () => {
+      try {
+        await fetchCandidates();
+      } catch (error) {
+        if (isMounted) {
+          console.error('Error loading candidates:', error);
+        }
+      }
+    };
+    
+    loadCandidates();
+    
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // Format candidate data for display (supports both old and new shapes)
@@ -392,8 +435,19 @@ const RecruiterDashboard = () => {
       if (typeof skill === 'object' && skill !== null) {
         return skill.name || skill.skill || JSON.stringify(skill);
       }
-      return skill;
-    });
+      return String(skill || '');
+    }).filter(Boolean);
+    
+    // Normalize desired roles: convert objects to strings
+    const normalizeRole = (role) => {
+      if (typeof role === 'object' && role !== null) {
+        return role.name || role.role || role.title || JSON.stringify(role);
+      }
+      return String(role || '');
+    };
+    const firstRole = desiredRoles?.[0];
+    const role = firstRole ? normalizeRole(firstRole) : "Software Engineer";
+    
     const yearsExp = profile?.total_years_experience ?? candidate.total_years_experience ?? 0;
     const city = profile?.city || candidate.city || 'N/A';
     const state = profile?.state || candidate.state || 'N/A';
@@ -404,7 +458,7 @@ const RecruiterDashboard = () => {
     return {
       id: candidate.id,
       code,
-      role: desiredRoles?.[0] || "Software Engineer",
+      role,
       score: profile?.candidate_score ?? candidate.candidate_score ?? 0,
       shortlistedDate: new Date(candidate.created_at).toLocaleDateString(),
       experience: `${yearsExp} years`,
@@ -691,14 +745,19 @@ const RecruiterDashboard = () => {
                             <div>
                               <div className="text-[10px] sm:text-xs text-gray-500 mb-1">Skills</div>
                               <div className="flex flex-wrap gap-1">
-                                {formattedCandidate.skills.slice(0, 4).map((skill, idx) => (
-                                  <span
-                                    key={idx}
-                                    className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] sm:text-xs bg-blue-50 text-blue-700 border border-blue-100"
-                                  >
-                                    {skill}
-                                  </span>
-                                ))}
+                                {formattedCandidate.skills.slice(0, 4).map((skill, idx) => {
+                                  const skillName = typeof skill === 'object' && skill !== null
+                                    ? (skill.name || skill.skill || JSON.stringify(skill))
+                                    : String(skill || '');
+                                  return (
+                                    <span
+                                      key={idx}
+                                      className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] sm:text-xs bg-blue-50 text-blue-700 border border-blue-100"
+                                    >
+                                      {skillName}
+                                    </span>
+                                  );
+                                })}
                                 {formattedCandidate.skills.length > 4 && (
                                   <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] sm:text-xs bg-gray-50 text-gray-600 border border-gray-200">
                                     +{formattedCandidate.skills.length - 4}
@@ -888,11 +947,16 @@ const RecruiterDashboard = () => {
                         <div>
                           <label className="block text-xs font-medium text-gray-600 mb-1">Desired Job Roles</label>
                           <div className="flex flex-wrap gap-1.5">
-                            {profileCandidate.desired_job_roles.map((role, idx) => (
-                              <span key={idx} className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-medium">
-                                {role}
-                              </span>
-                            ))}
+                            {profileCandidate.desired_job_roles.map((role, idx) => {
+                              const roleName = typeof role === 'object' && role !== null 
+                                ? (role.name || role.role || role.title || JSON.stringify(role))
+                                : String(role || '');
+                              return (
+                                <span key={idx} className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-medium">
+                                  {roleName}
+                                </span>
+                              );
+                            })}
                           </div>
                         </div>
                       )}
@@ -900,11 +964,16 @@ const RecruiterDashboard = () => {
                         <div>
                           <label className="block text-xs font-medium text-gray-600 mb-1">Preferred Locations</label>
                           <div className="flex flex-wrap gap-1.5">
-                            {profileCandidate.preferred_locations.map((loc, idx) => (
-                              <span key={idx} className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs font-medium">
-                                {loc}
-                              </span>
-                            ))}
+                            {profileCandidate.preferred_locations.map((loc, idx) => {
+                              const locName = typeof loc === 'object' && loc !== null 
+                                ? (loc.name || loc.location || loc.city || JSON.stringify(loc))
+                                : String(loc || '');
+                              return (
+                                <span key={idx} className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs font-medium">
+                                  {locName}
+                                </span>
+                              );
+                            })}
                           </div>
                         </div>
                       )}
@@ -920,10 +989,23 @@ const RecruiterDashboard = () => {
                       </h4>
                       <div className="flex flex-wrap gap-1.5">
                         {profileCandidate.skills.map((skill, idx) => {
-                          const skillName = typeof skill === 'object' && skill !== null ? (skill.name || skill.skill || JSON.stringify(skill)) : skill;
+                          let skillName = '';
+                          let experience = '';
+                          
+                          if (typeof skill === 'object' && skill !== null) {
+                            skillName = skill.name || skill.skill || '';
+                            experience = skill.experience || skill.years_experience || '';
+                          } else {
+                            skillName = String(skill || '');
+                          }
+                          
+                          const displayText = experience 
+                            ? `${skillName} (${experience} ${experience === '1' ? 'year' : 'year'})`
+                            : skillName;
+                          
                           return (
                             <span key={idx} className="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-medium">
-                              {skillName}
+                              {displayText}
                             </span>
                           );
                         })}
@@ -941,6 +1023,7 @@ const RecruiterDashboard = () => {
                           const formatDate = (dateString) => {
                             if (!dateString) return null;
                             try {
+                              // Handle both date string formats
                               const date = new Date(dateString);
                               return isNaN(date.getTime()) ? null : date.toLocaleDateString('en-US', { 
                                 year: 'numeric', 
@@ -952,36 +1035,62 @@ const RecruiterDashboard = () => {
                             }
                           };
 
+                          // Safely extract job data
+                          const position = job.position || job.title || '';
+                          const company = job.company || job.company_name || '';
                           const startDate = formatDate(job.start_date);
                           const endDate = formatDate(job.end_date);
                           const hasStartDate = startDate !== null;
                           const hasEndDate = endDate !== null;
+                          const hasEndDateValue = job.end_date !== null && job.end_date !== undefined && job.end_date !== '';
+                          const description = job.description || job.job_description || '';
+
+                          // Check if we have any data to display
+                          const hasAnyData = position || company || hasStartDate || hasEndDate || description;
+
+                          // If no data at all, show friendly message
+                          if (!hasAnyData) {
+                            return (
+                              <div key={idx} className="border border-gray-200 rounded-lg p-3 bg-white">
+                                <p className="text-xs text-gray-500 italic">Job history information not available for this entry</p>
+                              </div>
+                            );
+                          }
 
                           return (
                             <div key={idx} className="border border-gray-200 rounded-lg p-3 bg-white">
-                              <div className="font-medium text-xs sm:text-sm text-gray-900">{job.position} @ {job.company}</div>
-                              <div className="text-xs text-gray-500 mt-1">
-                                {hasStartDate ? (
-                                  <>
-                                    <span className="font-medium">Start Date:</span> {startDate}
-                                    {hasEndDate ? (
+                              {(position || company) ? (
+                                <div className="font-medium text-xs sm:text-sm text-gray-900 mb-2">
+                                  {position ? position : 'Position not specified'} {company ? `at ${company}` : ''}
+                                </div>
+                              ) : null}
+                              <div className="text-xs text-gray-500 space-y-1">
+                                {hasStartDate || hasEndDateValue ? (
+                                  <div className="flex flex-wrap items-center gap-2">
+                                    {hasStartDate && (
                                       <>
-                                        {' • '}
-                                        <span className="font-medium">End Date:</span> {endDate}
-                                      </>
-                                    ) : (
-                                      <>
-                                        {' • '}
-                                        <span className="font-medium">End Date:</span> <span className="text-green-600 font-semibold">Present</span>
+                                        <span>
+                                          <span className="font-medium">Start:</span> {startDate}
+                                        </span>
+                                        <span>•</span>
                                       </>
                                     )}
-                                  </>
+                                    {hasEndDate ? (
+                                      <span>
+                                        <span className="font-medium">End:</span> {endDate}
+                                      </span>
+                                    ) : hasStartDate && !hasEndDateValue ? (
+                                      <span>
+                                        <span className="font-medium">End:</span> <span className="text-green-600 font-semibold">Present</span>
+                                      </span>
+                                    ) : null}
+                                  </div>
                                 ) : (
-                                  <span className="text-gray-400">Date information not available</span>
+                                  <span className="text-gray-400 italic">Date information not available</span>
                                 )}
                               </div>
-                              {job.description && (
-                                <p className="text-xs text-gray-700 mt-1">{job.description}</p>
+                              {description && (
+                                <p className="text-xs text-gray-700 mt-2">{description}</p>
                               )}
                             </div>
                           );
