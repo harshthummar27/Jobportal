@@ -183,7 +183,7 @@ const InternalTeamLayout = ({ children }) => {
         
         // Redirect to login page after a short delay
         setTimeout(() => {
-          window.location.href = '/login';
+          window.location.href = '/admin/login';
         }, 1500);
       } else {
         console.error('Logout failed:', response.statusText);

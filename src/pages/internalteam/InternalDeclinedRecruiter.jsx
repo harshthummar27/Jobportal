@@ -13,7 +13,6 @@ const DeclinedRecruitersIT = () => {
   const [sortDirection, setSortDirection] = useState("asc");
 
   const [meta, setMeta] = useState({ current_page: 1, per_page: 25, total: 0, last_page: 1, from: null, to: null });
-  const [links, setLinks] = useState({ first: null, last: null, prev: null, next: null });
 
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
 
@@ -46,7 +45,6 @@ const DeclinedRecruitersIT = () => {
       const json = await response.json();
       setRecruiters(Array.isArray(json.data) ? json.data : []);
       if (json.meta) setMeta(json.meta);
-      if (json.links) setLinks(json.links);
     } catch (err) {
       console.error('Error fetching declined recruiters:', err);
       setError('Failed to fetch declined recruiters. Please try again.');
@@ -57,6 +55,8 @@ const DeclinedRecruitersIT = () => {
   };
 
   const searchDebounceRef = useRef(null);
+  const prevSearchRef = useRef(undefined);
+  const isFirstRender = useRef(true);
 
   useEffect(() => {
     fetchRecruiters();
@@ -64,14 +64,37 @@ const DeclinedRecruitersIT = () => {
   }, [page, sortBy, sortDirection]);
 
   useEffect(() => {
+    // Skip on first render to prevent double loading on mount
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      prevSearchRef.current = search;
+      return;
+    }
+
+    // Skip if search hasn't actually changed
+    if (prevSearchRef.current === search) {
+      return;
+    }
+    
+    // Update previous search value
+    prevSearchRef.current = search;
+
+    // Clear existing timeout
     if (searchDebounceRef.current) {
       clearTimeout(searchDebounceRef.current);
     }
+
+    // Set debounced timeout
     searchDebounceRef.current = setTimeout(() => {
       setPage(1);
       fetchRecruiters();
     }, 400);
-    return () => clearTimeout(searchDebounceRef.current);
+
+    return () => {
+      if (searchDebounceRef.current) {
+        clearTimeout(searchDebounceRef.current);
+      }
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
 
@@ -165,16 +188,8 @@ const DeclinedRecruitersIT = () => {
         </form>
       </div>
 
-      {loading && (
-        <div className="flex items-center justify-center h-48">
-          <div className="flex items-center gap-2 text-gray-600">
-            <RefreshCw className="h-5 w-5 animate-spin text-emerald-600" />
-            <span>Loading recruiters...</span>
-          </div>
-        </div>
-      )}
-
-      {!loading && error && (
+      {/* Error */}
+      {error && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
           <div className="flex items-center gap-2 text-red-700">
             <AlertCircle className="h-5 w-5" />
@@ -183,6 +198,88 @@ const DeclinedRecruitersIT = () => {
         </div>
       )}
 
+      {/* Loading Skeleton */}
+      {loading && (
+        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  {[...Array(6)].map((_, idx) => (
+                    <th key={idx} className="px-4 py-3 text-left">
+                      <div 
+                        className="h-4 bg-gray-200 rounded w-24"
+                        style={{
+                          background: 'linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)',
+                          backgroundSize: '200% 100%',
+                          animation: 'shimmer 1.5s infinite',
+                        }}
+                      ></div>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {[...Array(8)].map((_, rowIdx) => (
+                  <tr key={rowIdx}>
+                    {[...Array(6)].map((_, colIdx) => (
+                      <td key={colIdx} className="px-4 py-3">
+                        <div 
+                          className={`h-4 rounded ${
+                            colIdx === 0 ? 'w-32' : 
+                            colIdx === 1 ? 'w-40' : 
+                            colIdx === 2 ? 'w-28' : 
+                            colIdx === 3 ? 'w-24' : 
+                            colIdx === 4 ? 'w-36' : 
+                            'w-20'
+                          }`}
+                          style={{
+                            background: 'linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)',
+                            backgroundSize: '200% 100%',
+                            animation: 'shimmer 1.5s infinite',
+                            animationDelay: `${rowIdx * 0.1 + colIdx * 0.05}s`,
+                          }}
+                        ></div>
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="p-3 border-t border-gray-200 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+            <div 
+              className="h-4 rounded w-48"
+              style={{
+                background: 'linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)',
+                backgroundSize: '200% 100%',
+                animation: 'shimmer 1.5s infinite',
+              }}
+            ></div>
+            <div className="flex items-center gap-2">
+              <div 
+                className="h-8 rounded w-20"
+                style={{
+                  background: 'linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)',
+                  backgroundSize: '200% 100%',
+                  animation: 'shimmer 1.5s infinite',
+                }}
+              ></div>
+              <div 
+                className="h-8 rounded w-20"
+                style={{
+                  background: 'linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)',
+                  backgroundSize: '200% 100%',
+                  animation: 'shimmer 1.5s infinite',
+                  animationDelay: '0.2s',
+                }}
+              ></div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Results */}
       {!loading && !error && (
         <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
           <div className="overflow-x-auto">

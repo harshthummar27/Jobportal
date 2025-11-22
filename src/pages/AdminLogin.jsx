@@ -1,12 +1,12 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { User, Building2, Shield, Eye, EyeOff, ArrowRight } from "lucide-react";
+import { Users, Shield, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { toast } from 'react-toastify';
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
 
-const Login = () => {
+const AdminLogin = () => {
   const location = useLocation();
   const [selectedRole, setSelectedRole] = useState("");
   const [email, setEmail] = useState("");
@@ -17,10 +17,10 @@ const Login = () => {
 
   // Auto-select role based on URL path
   useEffect(() => {
-    if (location.pathname === "/candidate/login") {
-      setSelectedRole("candidate");
-    } else if (location.pathname === "/recruiter/login") {
-      setSelectedRole("recruiter");
+    if (location.pathname === "/admin/login/staff") {
+      setSelectedRole("staff");
+    } else if (location.pathname === "/admin/login/superadmin") {
+      setSelectedRole("superadmin");
     }
   }, [location.pathname]);
 
@@ -40,10 +40,10 @@ const Login = () => {
 
   const userTypes = [
     {
-      id: "candidate",
-      title: "Candidate",
-      description: "Find your dream job",
-      icon: User,
+      id: "staff",
+      title: "Staff",
+      description: "Internal team access",
+      icon: Users,
       color: "from-blue-500 to-blue-600",
       hoverColor: "hover:from-blue-600 hover:to-blue-700",
       bgColor: "bg-blue-50",
@@ -51,10 +51,10 @@ const Login = () => {
       textColor: "text-blue-700"
     },
     {
-      id: "recruiter",
-      title: "Recruiter",
-      description: "Hire top talent",
-      icon: Building2,
+      id: "superadmin",
+      title: "Super Admin",
+      description: "Full system access",
+      icon: Shield,
       color: "from-purple-500 to-purple-600",
       hoverColor: "hover:from-purple-600 hover:to-purple-700",
       bgColor: "bg-purple-50",
@@ -68,10 +68,11 @@ const Login = () => {
     if (!role || typeof role !== "string") return "";
     const r = role.toLowerCase().replace(/\s+/g, "_").replace(/-/g, "_");
     switch (r) {
-      case "candidate":
-        return "candidate";
-      case "recruiter":
-        return "recruiter";
+      case "staff":
+        return "staff";
+      case "superadmin":
+      case "super_admin":
+        return "superadmin";
       default:
         return r;
     }
@@ -79,12 +80,12 @@ const Login = () => {
 
   const getRedirectPath = (role) => {
     switch (role) {
-      case "candidate":
-        return "/candidate/dashboard";
-      case "recruiter":
-        return "/recruiter/dashboard";
+      case "staff":
+        return "/internal-team/dashboard";
+      case "superadmin":
+        return "/superadmin/dashboard";
       default:
-        return "/candidate/dashboard";
+        return "/internal-team/dashboard";
     }
   };
 
@@ -188,14 +189,14 @@ const Login = () => {
             <div className="text-center mb-8 md:mb-12">
               <div className="inline-flex items-center px-3 py-2 md:px-4 md:py-4 rounded-full bg-purple-accent text-primary-color text-xs md:text-sm font-medium mb-3 md:mb-4">
                 <Shield className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-                Secure Access Portal
+                Admin Access Portal
               </div>
               <h1 className="text-xl md:text-2xl lg:text-5xl font-black mb-2 text-primary leading-tight">
                 Welcome to
                 <span className=" text-primary-color">VettedPool</span>
               </h1>
               <p className="text-sm md:text-base lg:text-lg text-secondary max-w-3xl mx-auto leading-relaxed px-4">
-                Choose your role to access the platform and continue your journey
+                Choose your role to access the admin platform and continue your journey
               </p>
             </div>
 
@@ -328,14 +329,12 @@ const Login = () => {
                 {/* Footer */}
                 <div className="mt-6 md:mt-8 text-center">
                   <p className="text-sm md:text-base text-[#30343f]">
-                    Don't have an account?{" "}
+                    Need help?{" "}
                     <Link
-                      to={selectedRole === "candidate" ? "/candidate/register" : 
-                           selectedRole === "recruiter" ? "/recruiter/register" : 
-                           "/signup"}
+                      to="/contact-us"
                       className="text-[#273469] hover:text-[#1e2749] font-bold hover:underline transition-colors"
                     >
-                      Sign up here
+                      Contact support
                     </Link>
                   </p>
                 </div>
@@ -351,4 +350,5 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default AdminLogin;
+

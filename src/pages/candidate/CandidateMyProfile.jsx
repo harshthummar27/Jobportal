@@ -20,6 +20,7 @@ const CandidateMyProfile = () => {
   const [currentSkill, setCurrentSkill] = useState({ name: "", experience: "" });
   const [editingSkillIndex, setEditingSkillIndex] = useState(null);
   const [editingSkill, setEditingSkill] = useState({ name: "", experience: "" });
+  const [errors, setErrors] = useState({});
   const hasShownErrorToastRef = useRef(false);
 
   // Fetch profile data from API
@@ -144,6 +145,7 @@ const CandidateMyProfile = () => {
     return `${number} year`;
   };
 
+
   // Calculate profile completeness dynamically
   const calculateProfileCompleteness = () => {
     if (!profileData) return 0;
@@ -247,6 +249,7 @@ const CandidateMyProfile = () => {
   const handleCancelEdit = () => {
     setIsEditMode(false);
     setEditFormData({});
+    setErrors({});
     setCurrentSkill({ name: "", experience: "" });
     setEditingSkillIndex(null);
     setEditingSkill({ name: "", experience: "" });
@@ -258,6 +261,13 @@ const CandidateMyProfile = () => {
       ...prev,
       [field]: value
     }));
+    // Clear error for this field when user starts typing
+    if (errors[field]) {
+      setErrors(prev => ({
+        ...prev,
+        [field]: ""
+      }));
+    }
   };
 
   // Handle array field changes (add/remove items)
@@ -359,6 +369,9 @@ const CandidateMyProfile = () => {
   // Handle save profile
   const handleSaveProfile = async () => {
     try {
+      // Clear previous errors
+      setErrors({});
+      
       // Transform skills to ensure correct format (array of objects with name and experience)
       const formattedSkills = (editFormData.skills || []).map(skill => {
         if (typeof skill === 'string') {
@@ -410,6 +423,7 @@ const CandidateMyProfile = () => {
       if (result.success) {
         setIsEditMode(false);
         setEditFormData({});
+        setErrors({});
       }
     } catch (error) {
       console.error("Error saving profile:", error);
@@ -455,6 +469,7 @@ const CandidateMyProfile = () => {
         if (data.errors && typeof data.errors === 'object') {
           Object.keys(data.errors).forEach(field => {
             const fieldErrors = data.errors[field];
+            // Handle array of error messages (take first one) or single string
             if (Array.isArray(fieldErrors) && fieldErrors.length > 0) {
               newErrors[field] = fieldErrors[0];
             } else if (typeof fieldErrors === 'string') {
@@ -464,6 +479,11 @@ const CandidateMyProfile = () => {
             }
             hasFieldErrors = true;
           });
+        }
+        
+        // Set field-specific errors
+        if (hasFieldErrors) {
+          setErrors(newErrors);
         }
         
         // Handle general error messages
@@ -482,10 +502,19 @@ const CandidateMyProfile = () => {
           return { success: false, errors: newErrors };
         }
         
-        // Only show toast once to prevent duplicates
-        if (!hasShownErrorToastRef.current) {
-          toast.error(errorMessage);
-          hasShownErrorToastRef.current = true;
+        // Show general error message if no field-specific errors
+        if (!hasFieldErrors) {
+          // Only show toast once to prevent duplicates
+          if (!hasShownErrorToastRef.current) {
+            toast.error(errorMessage);
+            hasShownErrorToastRef.current = true;
+          }
+        } else {
+          // Show general error message for field errors
+          if (!hasShownErrorToastRef.current) {
+            toast.error("Failed to update profile. Please check the errors below.");
+            hasShownErrorToastRef.current = true;
+          }
         }
         setIsUpdating(false);
         return { success: false, errors: newErrors };
@@ -715,17 +744,29 @@ const CandidateMyProfile = () => {
                       <div className="min-w-0 flex-1">
                         <p className="text-[10px] sm:text-xs font-medium text-gray-500">Gender</p>
                         {isEditMode ? (
-                          <select
-                            value={editFormData.gender || ""}
-                            onChange={(e) => handleEditInputChange('gender', e.target.value)}
-                            className="w-full mt-0.5 px-2 py-1 text-[10px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          >
-                            <option value="">Select gender</option>
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                            <option value="other">Other</option>
-                            <option value="prefer_not_to_say">Prefer not to say</option>
-                          </select>
+                          <div>
+                            <select
+                              value={editFormData.gender || ""}
+                              onChange={(e) => handleEditInputChange('gender', e.target.value)}
+                              className={`w-full mt-0.5 px-2 py-1 text-[10px] sm:text-xs border rounded focus:outline-none focus:ring-1 ${
+                                errors.gender 
+                                  ? 'border-red-300 bg-red-50 focus:ring-red-500' 
+                                  : 'border-gray-300 focus:ring-indigo-500'
+                              }`}
+                            >
+                              <option value="">Select gender</option>
+                              <option value="male">Male</option>
+                              <option value="female">Female</option>
+                              <option value="other">Other</option>
+                              <option value="prefer_not_to_say">Prefer not to say</option>
+                            </select>
+                            {errors.gender && (
+                              <p className="mt-1 text-[10px] text-red-600 flex items-center gap-1">
+                                <AlertCircle className="h-3 w-3" />
+                                {errors.gender}
+                              </p>
+                            )}
+                          </div>
                         ) : (
                           <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">
                             {profileData.gender 
@@ -754,21 +795,47 @@ const CandidateMyProfile = () => {
                       <div className="min-w-0 flex-1">
                         <p className="text-[10px] sm:text-xs font-medium text-gray-500">Location</p>
                         {isEditMode ? (
-                          <div className="flex gap-1 mt-0.5">
-                            <input
-                              type="text"
-                              placeholder="City"
-                              value={editFormData.city || ""}
-                              onChange={(e) => handleEditInputChange('city', e.target.value)}
-                              className="flex-1 px-2 py-1 text-[10px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                            />
-                            <input
-                              type="text"
-                              placeholder="State"
-                              value={editFormData.state || ""}
-                              onChange={(e) => handleEditInputChange('state', e.target.value)}
-                              className="flex-1 px-2 py-1 text-[10px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                            />
+                          <div>
+                            <div className="flex gap-1 mt-0.5">
+                              <div className="flex-1">
+                                <input
+                                  type="text"
+                                  placeholder="City"
+                                  value={editFormData.city || ""}
+                                  onChange={(e) => handleEditInputChange('city', e.target.value)}
+                                  className={`w-full px-2 py-1 text-[10px] sm:text-xs border rounded focus:outline-none focus:ring-1 ${
+                                    errors.city 
+                                      ? 'border-red-300 bg-red-50 focus:ring-red-500' 
+                                      : 'border-gray-300 focus:ring-indigo-500'
+                                  }`}
+                                />
+                              </div>
+                              <div className="flex-1">
+                                <input
+                                  type="text"
+                                  placeholder="State"
+                                  value={editFormData.state || ""}
+                                  onChange={(e) => handleEditInputChange('state', e.target.value)}
+                                  className={`w-full px-2 py-1 text-[10px] sm:text-xs border rounded focus:outline-none focus:ring-1 ${
+                                    errors.state 
+                                      ? 'border-red-300 bg-red-50 focus:ring-red-500' 
+                                      : 'border-gray-300 focus:ring-indigo-500'
+                                  }`}
+                                />
+                              </div>
+                            </div>
+                            {errors.city && (
+                              <p className="mt-1 text-[10px] text-red-600 flex items-center gap-1">
+                                <AlertCircle className="h-3 w-3" />
+                                {errors.city}
+                              </p>
+                            )}
+                            {errors.state && (
+                              <p className="mt-1 text-[10px] text-red-600 flex items-center gap-1">
+                                <AlertCircle className="h-3 w-3" />
+                                {errors.state}
+                              </p>
+                            )}
                           </div>
                         ) : (
                           <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">
@@ -784,13 +851,25 @@ const CandidateMyProfile = () => {
                       <div className="min-w-0 flex-1">
                         <p className="text-[10px] sm:text-xs font-medium text-gray-500">Current Employer</p>
                         {isEditMode ? (
-                          <input
-                            type="text"
-                            value={editFormData.current_employer || ""}
-                            onChange={(e) => handleEditInputChange('current_employer', e.target.value)}
-                            className="w-full mt-0.5 px-2 py-1 text-[10px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                            placeholder="Current Employer"
-                          />
+                          <div>
+                            <input
+                              type="text"
+                              value={editFormData.current_employer || ""}
+                              onChange={(e) => handleEditInputChange('current_employer', e.target.value)}
+                              className={`w-full mt-0.5 px-2 py-1 text-[10px] sm:text-xs border rounded focus:outline-none focus:ring-1 ${
+                                errors.current_employer 
+                                  ? 'border-red-300 bg-red-50 focus:ring-red-500' 
+                                  : 'border-gray-300 focus:ring-indigo-500'
+                              }`}
+                              placeholder="Current Employer"
+                            />
+                            {errors.current_employer && (
+                              <p className="mt-1 text-[10px] text-red-600 flex items-center gap-1">
+                                <AlertCircle className="h-3 w-3" />
+                                {errors.current_employer}
+                              </p>
+                            )}
+                          </div>
                         ) : (
                           <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">{profileData.current_employer || "Not Defined"}</p>
                         )}
@@ -801,14 +880,26 @@ const CandidateMyProfile = () => {
                       <div className="min-w-0 flex-1">
                         <p className="text-[10px] sm:text-xs font-medium text-gray-500">Experience</p>
                         {isEditMode ? (
-                          <input
-                            type="number"
-                            value={editFormData.total_years_experience || ""}
-                            onChange={(e) => handleEditInputChange('total_years_experience', e.target.value)}
-                            className="w-full mt-0.5 px-2 py-1 text-[10px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                            placeholder="Years of experience"
-                            min="0"
-                          />
+                          <div>
+                            <input
+                              type="number"
+                              value={editFormData.total_years_experience || ""}
+                              onChange={(e) => handleEditInputChange('total_years_experience', e.target.value)}
+                              className={`w-full mt-0.5 px-2 py-1 text-[10px] sm:text-xs border rounded focus:outline-none focus:ring-1 ${
+                                errors.total_years_experience 
+                                  ? 'border-red-300 bg-red-50 focus:ring-red-500' 
+                                  : 'border-gray-300 focus:ring-indigo-500'
+                              }`}
+                              placeholder="Years of experience"
+                              min="0"
+                            />
+                            {errors.total_years_experience && (
+                              <p className="mt-1 text-[10px] text-red-600 flex items-center gap-1">
+                                <AlertCircle className="h-3 w-3" />
+                                {errors.total_years_experience}
+                              </p>
+                            )}
+                          </div>
                         ) : (
                           <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">
                             {profileData.total_years_experience 
@@ -823,15 +914,27 @@ const CandidateMyProfile = () => {
                       <div className="min-w-0 flex-1">
                         <p className="text-[10px] sm:text-xs font-medium text-gray-500">Desired Package</p>
                         {isEditMode ? (
-                          <input
-                            type="number"
-                            value={editFormData.desired_annual_package || ""}
-                            onChange={(e) => handleEditInputChange('desired_annual_package', e.target.value)}
-                            className="w-full mt-0.5 px-2 py-1 text-[10px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                            placeholder="Desired annual package (USD)"
-                            min="0"
-                            step="1000"
-                          />
+                          <div>
+                            <input
+                              type="number"
+                              value={editFormData.desired_annual_package || ""}
+                              onChange={(e) => handleEditInputChange('desired_annual_package', e.target.value)}
+                              className={`w-full mt-0.5 px-2 py-1 text-[10px] sm:text-xs border rounded focus:outline-none focus:ring-1 ${
+                                errors.desired_annual_package 
+                                  ? 'border-red-300 bg-red-50 focus:ring-red-500' 
+                                  : 'border-gray-300 focus:ring-indigo-500'
+                              }`}
+                              placeholder="Desired annual package (USD)"
+                              min="0"
+                              step="1000"
+                            />
+                            {errors.desired_annual_package && (
+                              <p className="mt-1 text-[10px] text-red-600 flex items-center gap-1">
+                                <AlertCircle className="h-3 w-3" />
+                                {errors.desired_annual_package}
+                              </p>
+                            )}
+                          </div>
                         ) : (
                           <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">
                             {profileData.desired_annual_package 
@@ -885,13 +988,28 @@ const CandidateMyProfile = () => {
                                 if (e.key === 'Enter') {
                                   e.preventDefault();
                                   const value = e.target.value.trim();
-                                  if (value) handleArrayFieldChange('desired_job_roles', 'add', value);
+                                  if (value) {
+                                    handleArrayFieldChange('desired_job_roles', 'add', value);
+                                    if (errors.desired_job_roles) {
+                                      setErrors(prev => ({ ...prev, desired_job_roles: "" }));
+                                    }
+                                  }
                                   e.target.value = '';
                                 }
                               }}
-                              className="flex-1 px-2 py-1 text-[10px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                              className={`flex-1 px-2 py-1 text-[10px] sm:text-xs border rounded focus:outline-none focus:ring-1 ${
+                                errors.desired_job_roles 
+                                  ? 'border-red-300 bg-red-50 focus:ring-red-500' 
+                                  : 'border-gray-300 focus:ring-indigo-500'
+                              }`}
                             />
                           </div>
+                          {errors.desired_job_roles && (
+                            <p className="text-[10px] text-red-600 flex items-center gap-1">
+                              <AlertCircle className="h-3 w-3" />
+                              {errors.desired_job_roles}
+                            </p>
+                          )}
                           <div className="flex flex-wrap gap-1">
                             {(editFormData.desired_job_roles || profileData.desired_job_roles || []).map((role, index) => (
                               <span key={index} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-green-100 text-green-800 rounded-md text-[10px] sm:text-xs font-medium">
@@ -933,13 +1051,28 @@ const CandidateMyProfile = () => {
                                 if (e.key === 'Enter') {
                                   e.preventDefault();
                                   const value = e.target.value.trim();
-                                  if (value) handleArrayFieldChange('preferred_industries', 'add', value);
+                                  if (value) {
+                                    handleArrayFieldChange('preferred_industries', 'add', value);
+                                    if (errors.preferred_industries) {
+                                      setErrors(prev => ({ ...prev, preferred_industries: "" }));
+                                    }
+                                  }
                                   e.target.value = '';
                                 }
                               }}
-                              className="flex-1 px-2 py-1 text-[10px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                              className={`flex-1 px-2 py-1 text-[10px] sm:text-xs border rounded focus:outline-none focus:ring-1 ${
+                                errors.preferred_industries 
+                                  ? 'border-red-300 bg-red-50 focus:ring-red-500' 
+                                  : 'border-gray-300 focus:ring-indigo-500'
+                              }`}
                             />
                           </div>
+                          {errors.preferred_industries && (
+                            <p className="text-[10px] text-red-600 flex items-center gap-1">
+                              <AlertCircle className="h-3 w-3" />
+                              {errors.preferred_industries}
+                            </p>
+                          )}
                           <div className="flex flex-wrap gap-1">
                             {(editFormData.preferred_industries || profileData.preferred_industries || []).map((industry, index) => (
                               <span key={index} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-blue-100 text-blue-800 rounded-md text-[10px] sm:text-xs font-medium">
@@ -981,13 +1114,28 @@ const CandidateMyProfile = () => {
                                 if (e.key === 'Enter') {
                                   e.preventDefault();
                                   const value = e.target.value.trim();
-                                  if (value) handleArrayFieldChange('employment_types', 'add', value);
+                                  if (value) {
+                                    handleArrayFieldChange('employment_types', 'add', value);
+                                    if (errors.employment_types) {
+                                      setErrors(prev => ({ ...prev, employment_types: "" }));
+                                    }
+                                  }
                                   e.target.value = '';
                                 }
                               }}
-                              className="flex-1 px-2 py-1 text-[10px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                              className={`flex-1 px-2 py-1 text-[10px] sm:text-xs border rounded focus:outline-none focus:ring-1 ${
+                                errors.employment_types 
+                                  ? 'border-red-300 bg-red-50 focus:ring-red-500' 
+                                  : 'border-gray-300 focus:ring-indigo-500'
+                              }`}
                             />
                           </div>
+                          {errors.employment_types && (
+                            <p className="text-[10px] text-red-600 flex items-center gap-1">
+                              <AlertCircle className="h-3 w-3" />
+                              {errors.employment_types}
+                            </p>
+                          )}
                           <div className="flex flex-wrap gap-1">
                             {(editFormData.employment_types || profileData.employment_types || []).map((type, index) => (
                               <span key={index} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-purple-100 text-purple-800 rounded-md text-[10px] sm:text-xs font-medium">
@@ -1022,16 +1170,28 @@ const CandidateMyProfile = () => {
                       <div className="min-w-0 flex-1">
                         <p className="text-[10px] sm:text-xs font-medium text-gray-500">Relocation</p>
                         {isEditMode ? (
-                          <select
-                            value={editFormData.relocation_willingness || ""}
-                            onChange={(e) => handleEditInputChange('relocation_willingness', e.target.value)}
-                            className="w-full mt-0.5 px-2 py-1 text-[10px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          >
-                            <option value="">Select relocation preference</option>
-                            <option value="by_self">Yes, I can relocate by myself</option>
-                            <option value="if_employer_covers">Yes, if employer covers relocation costs</option>
-                            <option value="not_willing">Not willing to relocate</option>
-                          </select>
+                          <div>
+                            <select
+                              value={editFormData.relocation_willingness || ""}
+                              onChange={(e) => handleEditInputChange('relocation_willingness', e.target.value)}
+                              className={`w-full mt-0.5 px-2 py-1 text-[10px] sm:text-xs border rounded focus:outline-none focus:ring-1 ${
+                                errors.relocation_willingness 
+                                  ? 'border-red-300 bg-red-50 focus:ring-red-500' 
+                                  : 'border-gray-300 focus:ring-indigo-500'
+                              }`}
+                            >
+                              <option value="">Select relocation preference</option>
+                              <option value="by_self">Yes, I can relocate by myself</option>
+                              <option value="if_employer_covers">Yes, if employer covers relocation costs</option>
+                              <option value="not_willing">Not willing to relocate</option>
+                            </select>
+                            {errors.relocation_willingness && (
+                              <p className="mt-1 text-[10px] text-red-600 flex items-center gap-1">
+                                <AlertCircle className="h-3 w-3" />
+                                {errors.relocation_willingness}
+                              </p>
+                            )}
+                          </div>
                         ) : (
                           <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">{profileData.relocation_willingness || "Not Defined"}</p>
                         )}
@@ -1391,18 +1551,30 @@ const CandidateMyProfile = () => {
                         <div className="min-w-0 flex-1">
                           <p className="text-[10px] sm:text-xs font-medium text-gray-500">Visa Status</p>
                           {isEditMode ? (
-                            <select
-                              value={editFormData.visa_status || ""}
-                              onChange={(e) => handleEditInputChange('visa_status', e.target.value)}
-                              className="w-full mt-0.5 px-2 py-1 text-[10px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                            >
-                              <option value="">Select visa status</option>
-                              <option value="us_citizen">US Citizen</option>
-                              <option value="permanent_resident">Permanent Resident</option>
-                              <option value="h1b">H1B</option>
-                              <option value="opt_cpt">OPT/CPT</option>
-                              <option value="other">Other</option>
-                            </select>
+                            <div>
+                              <select
+                                value={editFormData.visa_status || ""}
+                                onChange={(e) => handleEditInputChange('visa_status', e.target.value)}
+                                className={`w-full mt-0.5 px-2 py-1 text-[10px] sm:text-xs border rounded focus:outline-none focus:ring-1 ${
+                                  errors.visa_status 
+                                    ? 'border-red-300 bg-red-50 focus:ring-red-500' 
+                                    : 'border-gray-300 focus:ring-indigo-500'
+                                }`}
+                              >
+                                <option value="">Select visa status</option>
+                                <option value="us_citizen">US Citizen</option>
+                                <option value="permanent_resident">Permanent Resident</option>
+                                <option value="h1b">H1B</option>
+                                <option value="opt_cpt">OPT/CPT</option>
+                                <option value="other">Other</option>
+                              </select>
+                              {errors.visa_status && (
+                                <p className="mt-1 text-[10px] text-red-600 flex items-center gap-1">
+                                  <AlertCircle className="h-3 w-3" />
+                                  {errors.visa_status}
+                                </p>
+                              )}
+                            </div>
                           ) : (
                             <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">
                               {profileData.visa_status 
@@ -1417,16 +1589,28 @@ const CandidateMyProfile = () => {
                         <div className="min-w-0 flex-1">
                           <p className="text-[10px] sm:text-xs font-medium text-gray-500">Job Seeking Status</p>
                           {isEditMode ? (
-                            <select
-                              value={editFormData.job_seeking_status || ""}
-                              onChange={(e) => handleEditInputChange('job_seeking_status', e.target.value)}
-                              className="w-full mt-0.5 px-2 py-1 text-[10px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                            >
-                              <option value="">Select status</option>
-                              <option value="actively_looking">Actively Looking</option>
-                              <option value="open_to_offers">Open to Offers</option>
-                              <option value="not_looking">Not Looking</option>
-                            </select>
+                            <div>
+                              <select
+                                value={editFormData.job_seeking_status || ""}
+                                onChange={(e) => handleEditInputChange('job_seeking_status', e.target.value)}
+                                className={`w-full mt-0.5 px-2 py-1 text-[10px] sm:text-xs border rounded focus:outline-none focus:ring-1 ${
+                                  errors.job_seeking_status 
+                                    ? 'border-red-300 bg-red-50 focus:ring-red-500' 
+                                    : 'border-gray-300 focus:ring-indigo-500'
+                                }`}
+                              >
+                                <option value="">Select status</option>
+                                <option value="actively_looking">Actively Looking</option>
+                                <option value="open_to_offers">Open to Offers</option>
+                                <option value="not_looking">Not Looking</option>
+                              </select>
+                              {errors.job_seeking_status && (
+                                <p className="mt-1 text-[10px] text-red-600 flex items-center gap-1">
+                                  <AlertCircle className="h-3 w-3" />
+                                  {errors.job_seeking_status}
+                                </p>
+                              )}
+                            </div>
                           ) : (
                             <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">
                               {profileData.job_seeking_status 

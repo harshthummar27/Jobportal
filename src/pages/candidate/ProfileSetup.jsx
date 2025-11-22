@@ -62,19 +62,15 @@ const ProfileSetup = () => {
     city: "",
     state: "",
     willing_to_relocate: false,
-    preferred_locations: [],
     
     // Personal Information
     gender: "",
     
     // Job Preferences
-    desired_job_roles: [],
     preferred_industries: [],
-    employment_types: [],
     willing_to_join_startup: false,
     
     // Work Experience
-    total_years_experience: "",
     job_history: [],
     current_employer: "",
     
@@ -159,15 +155,6 @@ const ProfileSetup = () => {
 
   const [currentSkill, setCurrentSkill] = useState({ name: "", experience: "" });
   const [currentLanguage, setCurrentLanguage] = useState("");
-  const [currentPreferredLocation, setCurrentPreferredLocation] = useState("");
-
-  const employmentTypes = [
-    "Full-time",
-    "Part-time", 
-    "Contract",
-    "Internship",
-    "Freelance"
-  ];
 
   const visaStatuses = [
     "us_citizen",
@@ -209,7 +196,7 @@ const ProfileSetup = () => {
     const { name, value, type, checked } = e.target;
     
     if (type === 'checkbox') {
-      if (name === 'employment_types' || name === 'preferred_industries' || name === 'desired_job_roles') {
+      if (name === 'preferred_industries') {
         setFormData(prev => ({
           ...prev,
           [name]: checked 
@@ -446,23 +433,6 @@ const ProfileSetup = () => {
     }));
   };
 
-  const addPreferredLocation = () => {
-    if (currentPreferredLocation && !(formData.preferred_locations || []).includes(currentPreferredLocation)) {
-      setFormData(prev => ({
-        ...prev,
-        preferred_locations: [...(prev.preferred_locations || []), currentPreferredLocation]
-      }));
-      setCurrentPreferredLocation("");
-    }
-  };
-
-  const removePreferredLocation = (location) => {
-    setFormData(prev => ({
-      ...prev,
-      preferred_locations: (prev.preferred_locations || []).filter(l => l !== location)
-    }));
-  };
-
   const validateStep = (step) => {
     const newErrors = {};
 
@@ -470,17 +440,13 @@ const ProfileSetup = () => {
       if (!formData.city.trim()) newErrors.city = "City is required";
       if (!formData.state.trim()) newErrors.state = "State is required";
       if (!formData.gender.trim()) newErrors.gender = "Gender is required";
-      if ((formData.preferred_locations || []).length === 0) newErrors.preferred_locations = "At least one preferred location is required";
     }
 
     if (step === 2) {
-      if ((formData.desired_job_roles || []).length === 0) newErrors.desired_job_roles = "At least one job role is required";
       if ((formData.preferred_industries || []).length === 0) newErrors.preferred_industries = "At least one industry is required";
-      if ((formData.employment_types || []).length === 0) newErrors.employment_types = "At least one employment type is required";
     }
 
     if (step === 3) {
-      if (!formData.total_years_experience) newErrors.total_years_experience = "Total years of experience is required";
       if (!formData.visa_status) newErrors.visa_status = "Visa status is required";
       if (!formData.job_seeking_status) newErrors.job_seeking_status = "Job seeking status is required";
       if (!formData.relocation_willingness) newErrors.relocation_willingness = "Relocation willingness is required";
@@ -567,12 +533,8 @@ const ProfileSetup = () => {
         state: formData.state,
         gender: formData.gender,
         willing_to_relocate: formData.willing_to_relocate,
-        preferred_locations: formData.preferred_locations || [],
-        desired_job_roles: formData.desired_job_roles || [],
         preferred_industries: formData.preferred_industries || [],
-        employment_types: formData.employment_types || [],
         willing_to_join_startup: formData.willing_to_join_startup,
-        total_years_experience: parseInt(formData.total_years_experience),
         job_history: formData.job_history || [],
         current_employer: formData.current_employer,
         skills: formattedSkills,
@@ -650,13 +612,9 @@ const ProfileSetup = () => {
               state: 1,
               gender: 1,
               willing_to_relocate: 1,
-              preferred_locations: 1,
               relocation_willingness: 1,
               availability_date: 1,
-              desired_job_roles: 2,
               preferred_industries: 2,
-              employment_types: 2,
-              total_years_experience: 3,
               job_history: 3,
               current_employer: 3,
               skills: 3,
@@ -869,52 +827,6 @@ const ProfileSetup = () => {
         </div>
       </div>
 
-      <div>
-        <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
-          Preferred Locations <span className="text-red-500">*</span>
-        </label>
-        <div className="flex gap-2 mb-2">
-          <input
-            type="text"
-            value={currentPreferredLocation}
-            onChange={(e) => setCurrentPreferredLocation(e.target.value)}
-            onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addPreferredLocation())}
-            className="flex-1 px-3 py-2 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
-            placeholder="Add preferred location"
-          />
-          <button
-            type="button"
-            onClick={addPreferredLocation}
-            className="px-3 md:px-4 py-2 bg-[#273469] text-white rounded-xl hover:bg-[#1e2749] transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
-          >
-            <Plus className="h-3 w-3 md:h-4 md:w-4" />
-          </button>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {(formData.preferred_locations || []).map((location) => (
-            <span
-              key={location}
-              className="inline-flex items-center gap-1 bg-indigo-100 text-indigo-800 px-2 md:px-3 py-1 rounded-full text-xs md:text-sm"
-            >
-              {location}
-              <button
-                type="button"
-                onClick={() => removePreferredLocation(location)}
-                className="hover:text-indigo-600"
-              >
-                <X className="h-2 w-2 md:h-3 md:w-3" />
-              </button>
-            </span>
-          ))}
-        </div>
-        {errors.preferred_locations && (
-          <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
-            <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
-            Please add at least one preferred location
-          </p>
-        )}
-      </div>
-
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
         <div>
           <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
@@ -986,38 +898,6 @@ const ProfileSetup = () => {
 
       <div>
         <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
-          Desired Job Roles <span className="text-red-500">*</span>
-        </label>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-          {[
-            "Software Engineer", "Product Manager", "Data Scientist", "Designer",
-            "Marketing Manager", "Sales Representative", "Operations Manager", "Finance Analyst",
-            "HR Specialist", "Customer Success", "DevOps Engineer", "Business Analyst",
-            "Project Manager", "UX Designer", "QA Engineer", "System Administrator"
-          ].map((role) => (
-            <label key={role} className="flex items-center gap-2 p-2 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
-              <input
-                type="checkbox"
-                name="desired_job_roles"
-                value={role}
-                checked={(formData.desired_job_roles || []).includes(role)}
-                onChange={handleInputChange}
-                className="h-3 w-3 md:h-4 md:w-4 text-[#273469] focus:ring-[#273469] border-[#e4d9ff] rounded"
-              />
-              <span className="text-xs md:text-sm text-gray-700">{role}</span>
-            </label>
-          ))}
-        </div>
-        {errors.desired_job_roles && (
-          <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
-            <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
-            Please select at least one job role
-          </p>
-        )}
-      </div>
-
-      <div>
-        <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
           Preferred Industries <span className="text-red-500">*</span>
         </label>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -1045,33 +925,6 @@ const ProfileSetup = () => {
           </p>
         )}
       </div>
-
-      <div>
-        <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
-          Employment Types <span className="text-red-500">*</span>
-        </label>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-          {employmentTypes.map((type) => (
-            <label key={type} className="flex items-center gap-2 p-2 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
-              <input
-                type="checkbox"
-                name="employment_types"
-                value={type}
-                checked={(formData.employment_types || []).includes(type)}
-                onChange={handleInputChange}
-                className="h-3 w-3 md:h-4 md:w-4 text-[#273469] focus:ring-[#273469] border-[#e4d9ff] rounded"
-              />
-              <span className="text-xs md:text-sm text-gray-700">{type}</span>
-            </label>
-          ))}
-        </div>
-        {errors.employment_types && (
-          <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
-            <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
-            Please select at least one employment type
-          </p>
-        )}
-      </div>
     </div>
   );
 
@@ -1089,30 +942,6 @@ const ProfileSetup = () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
-        <div>
-          <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
-            Total Years of Experience <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="number"
-            name="total_years_experience"
-            value={formData.total_years_experience}
-            onChange={handleInputChange}
-            min="0"
-            step="0.5"
-            className={`w-full px-3 md:px-4 py-2 md:py-3 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
-              errors.total_years_experience ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
-            }`}
-            placeholder="Enter years of experience (e.g., 5)"
-          />
-          {errors.total_years_experience && (
-            <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
-              <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
-              Please enter your years of experience
-            </p>
-          )}
-        </div>
-
         <div>
           <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
             Current Employer

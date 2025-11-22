@@ -4,6 +4,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
+import AdminLogin from "./pages/AdminLogin";
 import CandidateInfo from "./pages/CandidateInfo";
 import RecruiterInfo from "./pages/RecruiterInfo";
 import AboutUs from "./pages/AboutUs";
@@ -90,6 +91,14 @@ export default function App() {
           } 
         />
         <Route 
+          path="/admin/login" 
+          element={
+            <PublicRoute>
+              <AdminLogin />
+            </PublicRoute>
+          } 
+        />
+        <Route 
           path="/candidate/register" 
           element={
             <PublicRoute>
@@ -110,7 +119,7 @@ export default function App() {
         <Route 
           path="/candidate/profile-setup" 
           element={
-            <PrivateRoute>
+            <PrivateRoute requiredRole="candidate">
               <ProfileSetup />
             </PrivateRoute>
           } 
@@ -118,7 +127,7 @@ export default function App() {
         <Route 
           path="/candidate/dashboard" 
           element={
-            <PrivateRoute>
+            <PrivateRoute requiredRole="candidate">
               <CandidateDashboard />
             </PrivateRoute>
           } 
@@ -126,7 +135,7 @@ export default function App() {
         <Route 
           path="/candidate/profile" 
           element={
-            <PrivateRoute>
+            <PrivateRoute requiredRole="candidate">
               <CandidateMyProfile />
             </PrivateRoute>
           } 
@@ -134,7 +143,7 @@ export default function App() {
         <Route 
           path="/candidate/offers" 
           element={
-            <PrivateRoute>
+            <PrivateRoute requiredRole="candidate">
               <CandidateOffers />
             </PrivateRoute>
           } 
@@ -144,7 +153,7 @@ export default function App() {
         <Route 
           path="/recruiter/dashboard" 
           element={
-            <PrivateRoute>
+            <PrivateRoute requiredRole="recruiter">
               <RecruiterDashboard />
             </PrivateRoute>
           } 
@@ -152,7 +161,7 @@ export default function App() {
         <Route 
           path="/recruiter/candidate/:code" 
           element={
-            <PrivateRoute>
+            <PrivateRoute requiredRole="recruiter">
               <CandidateProfile />
             </PrivateRoute>
           } 
@@ -161,7 +170,7 @@ export default function App() {
         <Route 
           path="/recruiter/shortlisted" 
           element={
-            <PrivateRoute>
+            <PrivateRoute requiredRole="recruiter">
               <ShortlistedCandidates />
             </PrivateRoute>
           } 
@@ -170,7 +179,7 @@ export default function App() {
         <Route 
           path="/recruiter/offered-candidates" 
           element={
-            <PrivateRoute>
+            <PrivateRoute requiredRole="recruiter">
               <OfferedCandidates />
             </PrivateRoute>
           } 
@@ -179,7 +188,7 @@ export default function App() {
         <Route 
           path="/recruiter/profile" 
           element={
-            <PrivateRoute>
+            <PrivateRoute requiredRole="recruiter">
               <RecruiterProfile />
             </PrivateRoute>
           } 
@@ -189,7 +198,7 @@ export default function App() {
         <Route 
           path="/superadmin/dashboard" 
           element={
-            <PrivateRoute>
+            <PrivateRoute requiredRole="superadmin">
               <SuperAdminLayout>
                 <SuperAdminDashboard />
               </SuperAdminLayout>
@@ -199,7 +208,7 @@ export default function App() {
         <Route 
           path="/superadmin/internal-team" 
           element={
-            <PrivateRoute>
+            <PrivateRoute requiredRole="superadmin">
               <SuperAdminLayout>
                 <InternalTeam />
               </SuperAdminLayout>
@@ -209,7 +218,7 @@ export default function App() {
         <Route 
           path="/superadmin/inquiries" 
           element={
-            <PrivateRoute>
+            <PrivateRoute requiredRole="superadmin">
               <SuperAdminLayout>
                 <Inquiries />
               </SuperAdminLayout>
@@ -221,7 +230,7 @@ export default function App() {
         <Route 
           path="/internal-team/dashboard" 
           element={
-            <PrivateRoute>
+            <PrivateRoute requiredRole="staff">
               <InternalTeamLayout>
                 <InternalTeamDashboard />
               </InternalTeamLayout>
@@ -231,7 +240,7 @@ export default function App() {
         <Route 
           path="/internal-team/notifications" 
           element={
-            <PrivateRoute>
+            <PrivateRoute requiredRole="staff">
               <InternalTeamLayout>
                 <Notifications />
               </InternalTeamLayout>
@@ -242,7 +251,7 @@ export default function App() {
         <Route 
           path="/internal-team/pending-offers" 
           element={
-            <PrivateRoute>
+            <PrivateRoute requiredRole="staff">
               <InternalTeamLayout>
                 <PendingOffers />
               </InternalTeamLayout>
@@ -252,7 +261,7 @@ export default function App() {
         <Route 
           path="/internal-team/approved-offers" 
           element={
-            <PrivateRoute>
+            <PrivateRoute requiredRole="staff">
               <InternalTeamLayout>
                 <ApprovedOffers />
               </InternalTeamLayout>
@@ -262,7 +271,7 @@ export default function App() {
         <Route 
           path="/internal-team/declined-offers" 
           element={
-            <PrivateRoute>
+            <PrivateRoute requiredRole="staff">
               <InternalTeamLayout>
                 <DeclinedOffers />
               </InternalTeamLayout>
@@ -272,7 +281,7 @@ export default function App() {
         <Route 
           path="/internal-team/withdrawn-offers" 
           element={
-            <PrivateRoute>
+            <PrivateRoute requiredRole="staff">
               <InternalTeamLayout>
                 <WithdrawnOffers />
               </InternalTeamLayout>
@@ -283,7 +292,7 @@ export default function App() {
         <Route 
           path="/internal-team/all-candidates" 
           element={
-            <PrivateRoute>
+            <PrivateRoute requiredRole="staff">
               <InternalTeamLayout>
                 <AllCandidates />
               </InternalTeamLayout>
@@ -293,7 +302,7 @@ export default function App() {
         <Route 
           path="/internal-team/candidate/:code" 
           element={
-            <PrivateRoute>
+            <PrivateRoute requiredRole="staff">
               <InternalTeamLayout>
                 <InternalCandidateProfile />
               </InternalTeamLayout>
@@ -303,7 +312,7 @@ export default function App() {
         <Route 
           path="/internal-team/approved-candidates" 
           element={
-            <PrivateRoute>
+            <PrivateRoute requiredRole="staff">
               <InternalTeamLayout>
                 <InternalApprovedCandidate />
               </InternalTeamLayout>
@@ -313,7 +322,7 @@ export default function App() {
         <Route 
           path="/internal-team/declined-candidates" 
           element={
-            <PrivateRoute>
+            <PrivateRoute requiredRole="staff">
               <InternalTeamLayout>
                 <InternalDeclinedCandidate />
               </InternalTeamLayout>
@@ -323,7 +332,7 @@ export default function App() {
         <Route 
           path="/internal-team/pending-candidates" 
           element={
-            <PrivateRoute>
+            <PrivateRoute requiredRole="staff">
               <InternalTeamLayout>
                 <InternalPendingCandidate />
               </InternalTeamLayout>
@@ -333,7 +342,7 @@ export default function App() {
         <Route 
           path="/internal-team/all-recruiters" 
           element={
-            <PrivateRoute>
+            <PrivateRoute requiredRole="staff">
               <InternalTeamLayout>
                 <AllRecruiters />
               </InternalTeamLayout>
@@ -343,7 +352,7 @@ export default function App() {
         <Route 
           path="/internal-team/pending-recruiters" 
           element={
-            <PrivateRoute>
+            <PrivateRoute requiredRole="staff">
               <InternalTeamLayout>
                 <InternalPendingRecruiter />
               </InternalTeamLayout>
@@ -353,7 +362,7 @@ export default function App() {
         <Route 
           path="/internal-team/approved-recruiters" 
           element={
-            <PrivateRoute>
+            <PrivateRoute requiredRole="staff">
               <InternalTeamLayout>
                 <InternalApprovedRecruiter />
               </InternalTeamLayout>
@@ -363,7 +372,7 @@ export default function App() {
         <Route 
           path="/internal-team/declined-recruiters" 
           element={
-            <PrivateRoute>
+            <PrivateRoute requiredRole="staff">
               <InternalTeamLayout>
                 <InternalDeclinedRecruiter />
               </InternalTeamLayout>
