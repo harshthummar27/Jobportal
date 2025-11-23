@@ -122,13 +122,19 @@ const OfferedCandidates = () => {
   };
 
   const formatCurrency = (amount) => {
-    if (!amount) return 'N/A';
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2
-    }).format(parseFloat(amount));
+    try {
+      if (!amount) return 'N/A';
+      const numAmount = parseFloat(amount);
+      if (isNaN(numAmount)) return 'N/A';
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+      }).format(numAmount);
+    } catch {
+      return 'N/A';
+    }
   };
 
   return (
@@ -216,7 +222,7 @@ const OfferedCandidates = () => {
             ) : (
               <div className="p-2 sm:p-3">
                 <div className="space-y-3">
-                  {offers.map((offer) => (
+                  {offers.filter(offer => offer && offer.offer_id).map((offer) => (
                     <div
                       key={offer.offer_id}
                       className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden"
@@ -237,39 +243,31 @@ const OfferedCandidates = () => {
                                 <div className="text-[10px] sm:text-xs text-gray-600 font-medium truncate">
                                   {offer.candidate?.candidate_code || 'N/A'}
                                 </div>
-                                {offer.candidate?.total_years_experience !== null && (
+                                {offer.candidate && offer.candidate.total_years_experience != null && (
                                   <>
                                     <span className="text-[10px] sm:text-xs text-gray-400">•</span>
                                     <span className="text-[10px] sm:text-xs text-gray-600">{offer.candidate.total_years_experience} yrs</span>
                                   </>
                                 )}
-                                {offer.candidate?.visa_status && (
+                                {offer.candidate && offer.candidate.visa_status && (
                                   <>
                                     <span className="text-[10px] sm:text-xs text-gray-400">•</span>
                                     <span className="text-[10px] sm:text-xs text-gray-600">{offer.candidate.visa_status}</span>
                                   </>
                                 )}
-                                {offer.candidate?.candidate_score !== null && (
+                                {offer.candidate && offer.candidate.candidate_score != null && (
                                   <>
                                     <span className="text-[10px] sm:text-xs text-gray-400">•</span>
                                     <span className="text-[10px] sm:text-xs font-semibold text-yellow-700">Score: {offer.candidate.candidate_score}</span>
                                   </>
                                 )}
                               </div>
-                              <div className="flex items-center gap-2 sm:gap-3 mt-1 flex-wrap text-[10px] sm:text-xs text-gray-600">
-                                {offer.candidate?.email && (
-                                  <span className="truncate">{offer.candidate.email}</span>
-                                )}
-                                {offer.candidate?.mobile_number && (
-                                  <span className="truncate">{offer.candidate.mobile_number}</span>
-                                )}
-                                {offer.candidate?.city && offer.candidate?.state && (
-                                  <div className="flex items-center gap-1">
-                                    <MapPin className="h-3 w-3 text-gray-400" />
-                                    <span>{offer.candidate.city}, {offer.candidate.state}</span>
-                                  </div>
-                                )}
-                              </div>
+                              {offer.candidate && offer.candidate.city && offer.candidate.state && (
+                                <div className="flex items-center gap-1 mt-1 text-[10px] sm:text-xs text-gray-600">
+                                  <MapPin className="h-3 w-3 text-gray-400" />
+                                  <span>{offer.candidate.city}, {offer.candidate.state}</span>
+                                </div>
+                              )}
                             </div>
                           </div>
                           <div className="flex-shrink-0">
@@ -311,11 +309,11 @@ const OfferedCandidates = () => {
                                     </span>
                                   )}
                                 </div>
-                                {offer.benefits && offer.benefits.length > 0 && (
+                                {Array.isArray(offer.benefits) && offer.benefits.length > 0 && (
                                   <div className="flex flex-wrap gap-1 mt-1.5">
                                     {offer.benefits.slice(0, 3).map((benefit, idx) => (
                                       <span key={idx} className="text-[10px] sm:text-xs bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded border border-blue-100">
-                                        {benefit}
+                                        {benefit || 'N/A'}
                                       </span>
                                     ))}
                                     {offer.benefits.length > 3 && (
@@ -349,14 +347,14 @@ const OfferedCandidates = () => {
                               <div className="pb-2 border-b border-gray-100">
                                 <div className="text-[10px] sm:text-xs font-semibold text-gray-700 mb-0.5">Status:</div>
                                 <div className="text-[10px] sm:text-xs font-semibold text-gray-900 mb-0.5">
-                                  {offer.candidate_status.status_display || offer.candidate_status.status || 'N/A'}
+                                  {offer.candidate_status?.status_display || offer.candidate_status?.status || 'N/A'}
                                 </div>
-                                {offer.candidate_status.notes && (
+                                {offer.candidate_status?.notes && (
                                   <div className="text-[10px] sm:text-xs text-gray-500 line-clamp-1">
                                     {offer.candidate_status.notes}
                                   </div>
                                 )}
-                                {offer.candidate_status.status_date && (
+                                {offer.candidate_status?.status_date && (
                                   <div className="text-[10px] sm:text-xs text-gray-500 mt-0.5">
                                     {formatDateTime(offer.candidate_status.status_date)}
                                   </div>
@@ -393,8 +391,8 @@ const OfferedCandidates = () => {
                               <div className="pt-2 border-t border-gray-100 space-y-1">
                                 {offer.offered_by && (
                                   <div className="text-[10px] sm:text-xs text-gray-600">
-                                    <div className="font-semibold text-gray-700">By: {offer.offered_by.name}</div>
-                                    <div className="text-gray-500 truncate">{offer.offered_by.email}</div>
+                                    <div className="font-semibold text-gray-700">By: {offer.offered_by?.name || 'N/A'}</div>
+                                    <div className="text-gray-500 truncate">{offer.offered_by?.email || 'N/A'}</div>
                                   </div>
                                 )}
                                 {offer.selection_id && (

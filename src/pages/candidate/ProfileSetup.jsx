@@ -88,9 +88,6 @@ const ProfileSetup = () => {
     resume_file_name: "",
     resume_mime_type: "",
     
-    // Visa Status
-    visa_status: "",
-    
     // Relocation
     relocation_willingness: "",
     
@@ -155,23 +152,6 @@ const ProfileSetup = () => {
 
   const [currentSkill, setCurrentSkill] = useState({ name: "", experience: "" });
   const [currentLanguage, setCurrentLanguage] = useState("");
-
-  const visaStatuses = [
-    "us_citizen",
-    "permanent_resident",
-    "h1b",
-    "opt_cpt",
-    "other"
-  ];
-
-  // Visa status display labels mapping
-  const visaStatusLabels = {
-    "us_citizen": "US Citizen",
-    "permanent_resident": "Permanent Resident",
-    "h1b": "H1B",
-    "opt_cpt": "OPT/CPT",
-    "other": "Other"
-  };
 
   const jobSeekingStatuses = [
     "actively_looking",
@@ -447,16 +427,15 @@ const ProfileSetup = () => {
     }
 
     if (step === 3) {
-      if (!formData.visa_status) newErrors.visa_status = "Visa status is required";
       if (!formData.job_seeking_status) newErrors.job_seeking_status = "Job seeking status is required";
       if (!formData.relocation_willingness) newErrors.relocation_willingness = "Relocation willingness is required";
       if (!formData.desired_annual_package) newErrors.desired_annual_package = "Desired annual package is required";
-      if ((formData.job_history || []).length === 0) newErrors.job_history = "At least one job history entry is required";
       if ((formData.skills || []).length === 0) newErrors.skills = "At least one skill is required";
     }
 
     if (step === 4) {
       if ((formData.education || []).length === 0) newErrors.education = "At least one education entry is required";
+      if (!resumeFile && !formData.resume_file_path) newErrors.resume = "Resume upload is required";
     }
 
     setErrors(newErrors);
@@ -543,7 +522,6 @@ const ProfileSetup = () => {
         resume_file_path: formData.resume_file_path,
         resume_file_name: formData.resume_file_name,
         resume_mime_type: formData.resume_mime_type,
-        visa_status: formData.visa_status,
         relocation_willingness: formData.relocation_willingness,
         job_seeking_status: formData.job_seeking_status,
         desired_annual_package: formData.desired_annual_package ? parseFloat(formData.desired_annual_package) : null,
@@ -557,8 +535,8 @@ const ProfileSetup = () => {
         additional_notes: formData.additional_notes
       };
 
-      // Make API call to create profile
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/profile/create`, {
+      // Make API call to update profile
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/profile/update`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -618,7 +596,6 @@ const ProfileSetup = () => {
               job_history: 3,
               current_employer: 3,
               skills: 3,
-              visa_status: 3,
               job_seeking_status: 3,
               desired_annual_package: 3,
               ethnicity: 3,
@@ -740,7 +717,7 @@ const ProfileSetup = () => {
               className={`w-full pl-9 md:pl-10 pr-3 md:pr-4 py-2 md:py-3 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
                 errors.city ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
               }`}
-              placeholder="Mumbai"
+              placeholder="Enter your city"
             />
           </div>
           {errors.city && (
@@ -763,7 +740,7 @@ const ProfileSetup = () => {
             className={`w-full px-3 md:px-4 py-2 md:py-3 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
               errors.state ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
             }`}
-            placeholder="Maharashtra"
+            placeholder="Enter your state"
           />
           {errors.state && (
             <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
@@ -952,35 +929,8 @@ const ProfileSetup = () => {
             value={formData.current_employer}
             onChange={handleInputChange}
             className="w-full px-3 md:px-4 py-2 md:py-3 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
-            placeholder="Tech Corp"
+            placeholder="Enter your current employer"
           />
-        </div>
-
-        <div>
-          <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
-            Visa Status <span className="text-red-500">*</span>
-          </label>
-          <select
-            name="visa_status"
-            value={formData.visa_status}
-            onChange={handleInputChange}
-            className={`w-full px-3 md:px-4 py-2 md:py-3 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] text-sm md:text-base ${
-              errors.visa_status ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
-            }`}
-          >
-            <option value="">Select visa status</option>
-            {visaStatuses.map((status) => (
-              <option key={status} value={status}>
-                {visaStatusLabels[status]}
-              </option>
-            ))}
-          </select>
-          {errors.visa_status && (
-            <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
-              <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
-              Please select your visa status
-            </p>
-          )}
         </div>
 
         <div>
@@ -1045,7 +995,7 @@ const ProfileSetup = () => {
             value={formData.ethnicity}
             onChange={handleInputChange}
             className="w-full px-3 md:px-4 py-2 md:py-3 border-2 border-[#e4d9ff] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base"
-            placeholder="Asian"
+            placeholder="Enter your ethnicity"
           />
         </div>
       </div>
@@ -1053,7 +1003,7 @@ const ProfileSetup = () => {
       {/* Job History */}
       <div>
         <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
-          Job History <span className="text-red-500">*</span>
+          Job History
         </label>
         <div className="space-y-3">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -1195,12 +1145,6 @@ const ProfileSetup = () => {
             </div>
           ))}
         </div>
-        {errors.job_history && (
-          <p className="mt-1 text-xs md:text-sm text-red-600 flex items-center gap-1">
-            <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
-            Please add at least one job history entry
-          </p>
-        )}
       </div>
 
       {/* Skills */}
@@ -1518,7 +1462,7 @@ const ProfileSetup = () => {
       {/* Resume Upload */}
       <div>
         <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
-          Resume Upload
+          Resume Upload <span className="text-red-500">*</span>
         </label>
         <div className="flex items-center gap-3 md:gap-4">
           {resumeFile ? (

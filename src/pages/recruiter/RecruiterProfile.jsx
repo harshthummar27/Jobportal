@@ -26,22 +26,6 @@ const BoolBadge = ({ value, trueText = 'Yes', falseText = 'No' }) => (
   </span>
 );
 
-const formatDateTime = (dateString) => {
-  if (!dateString) return '—';
-  try {
-    const date = new Date(dateString);
-    return date.toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
-    });
-  } catch (error) {
-    return dateString;
-  }
-};
 
 const RecruiterProfile = () => {
   const [data, setData] = useState(null);
@@ -435,23 +419,6 @@ const RecruiterProfile = () => {
               </div>
 
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6 space-y-2 sm:space-y-3">
-                <h2 className="text-xs sm:text-sm font-semibold text-gray-800">Agreement Details</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
-                  <div>
-                    <span className="text-[10px] sm:text-xs text-gray-500">Agreement Accepted</span>
-                    <div className="mt-0.5 sm:mt-1"><BoolBadge value={Boolean(profile.agreement_accepted)} /></div>
-                  </div>
-                  <Field label="Agreement Version" value={profile.agreement_version} />
-                  <Field label="Agreement Accepted At" value={formatDateTime(profile.agreement_accepted_at)} />
-                  <Field label="Email Verified At" value={formatDateTime(profile.email_verified_at)} />
-                </div>
-                <div>
-                  <span className="text-[10px] sm:text-xs text-gray-500">Agreement Terms</span>
-                  <p className="mt-0.5 sm:mt-1 text-[10px] sm:text-xs text-gray-800 whitespace-pre-wrap">{profile.agreement_terms ?? '—'}</p>
-                </div>
-              </div>
-
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6 space-y-2 sm:space-y-3">
                 <h2 className="text-xs sm:text-sm font-semibold text-gray-800">Contact Information</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                   <Field 
@@ -480,22 +447,6 @@ const RecruiterProfile = () => {
                     onChange={(value) => handleEditInputChange('contact_phone', value)}
                     type="tel"
                   />
-                </div>
-              </div>
-
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6 space-y-2 sm:space-y-2.5">
-                <h2 className="text-xs sm:text-sm font-semibold text-gray-800">Account Status</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] sm:text-xs text-gray-500">Email Verified (Profile)</span>
-                    <BoolBadge value={Boolean(profile.email_verified)} />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] sm:text-xs text-gray-500">Active</span>
-                    <BoolBadge value={Boolean(profile.is_active)} />
-                  </div>
-                  <Field label="Created At" value={formatDateTime(profile.created_at)} />
-                  <Field label="Updated At" value={formatDateTime(profile.updated_at)} />
                 </div>
               </div>
             </div>

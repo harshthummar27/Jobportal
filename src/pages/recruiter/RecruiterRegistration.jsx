@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, Mail, Lock, User, Building, Phone, CheckCircle, AlertCircle, ArrowLeft, Sparkles, Users, Briefcase, FileText } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, User, Building, Phone, CheckCircle, AlertCircle, ArrowLeft, Sparkles, Users, Briefcase, FileText, KeyRound, RotateCcw, Clock } from "lucide-react";
 import { toast } from 'react-toastify';
 import Header from "../../Components/Header";
 
@@ -159,65 +159,108 @@ const RecruiterRegistration = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [showOtpVerification, setShowOtpVerification] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [otpError, setOtpError] = useState("");
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+  const [isResendingOtp, setIsResendingOtp] = useState(false);
+  const [otpExpiresAt, setOtpExpiresAt] = useState(null);
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const [timeRemaining, setTimeRemaining] = useState(null);
+  
+  const otpInputRefs = useRef([]);
 
   const totalSteps = 5;
 
-  // Scroll to top when step changes
   useEffect(() => {
-    // Use requestAnimationFrame for better timing with DOM updates
     requestAnimationFrame(() => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   }, [currentStep]);
 
-  const handleInputChange = useCallback((e) => {
+  // OTP expiry countdown
+  useEffect(() => {
+    if (!otpExpiresAt) return;
+
+    const interval = setInterval(() => {
+      const now = new Date().getTime();
+      const expiry = new Date(otpExpiresAt).getTime();
+      const remaining = Math.max(0, Math.floor((expiry - now) / 1000));
+      
+      setTimeRemaining(remaining);
+      
+      if (remaining === 0) {
+        clearInterval(interval);
+        setTimeRemaining(null);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [otpExpiresAt]);
+
+  // Resend cooldown countdown
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+
+    const interval = setInterval(() => {
+      setResendCooldown(prev => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [resendCooldown]);
+
+  const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
     
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ""
-      }));
-    }
-  }, []);
+    setErrors(prev => {
+      if (prev[name]) {
+        return {
+          ...prev,
+          [name]: ""
+        };
+      }
+      return prev;
+    });
+  };
 
   const validateStep = (step) => {
     const newErrors = {};
 
     switch (step) {
-      case 1: // Personal Information
+      case 1:
         if (!formData.name.trim()) newErrors.name = "Name is required";
         if (!formData.email.trim()) newErrors.email = "Email is required";
         if (!formData.password) newErrors.password = "Password is required";
         if (!formData.mobile_number.trim()) newErrors.mobile_number = "Mobile number is required";
 
-        // Email validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (formData.email && !emailRegex.test(formData.email)) {
           newErrors.email = "Please enter a valid email address";
         }
 
-        // Mobile number validation
         const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
         if (formData.mobile_number && !phoneRegex.test(formData.mobile_number.replace(/[\s\-\(\)]/g, ''))) {
           newErrors.mobile_number = "Please enter a valid mobile number";
         }
 
-        // Password validation
         if (formData.password && formData.password.length < 8) {
           newErrors.password = "Password must be at least 8 characters long";
         }
         break;
 
-      case 2: // Company Information
+      case 2:
         if (!formData.company_name.trim()) newErrors.company_name = "Company name is required";
 
-        // Website URL validation (if provided)
         if (formData.company_website && formData.company_website.trim()) {
           const urlRegex = /^https?:\/\/.+/;
           if (!urlRegex.test(formData.company_website)) {
@@ -226,7 +269,7 @@ const RecruiterRegistration = () => {
         }
         break;
 
-      case 3: // Contact Information
+      case 3:
         if (!formData.contact_person_name.trim()) newErrors.contact_person_name = "Contact person name is required";
         if (!formData.contact_email.trim()) newErrors.contact_email = "Contact email is required";
         if (!formData.contact_phone.trim()) newErrors.contact_phone = "Contact phone is required";
@@ -244,10 +287,10 @@ const RecruiterRegistration = () => {
         }
         break;
 
-      case 4: // Office Address - No required fields, all optional
+      case 4:
         break;
 
-      case 5: // Agreement
+      case 5:
         if (!formData.agreement_accepted) {
           newErrors.agreement_accepted = "You must accept the terms and conditions to continue";
         }
@@ -263,8 +306,6 @@ const RecruiterRegistration = () => {
 
   const validateForm = () => {
     const newErrors = {};
-
-    // Validate all required fields
     if (!formData.name.trim()) newErrors.name = "Name is required";
     if (!formData.email.trim()) newErrors.email = "Email is required";
     if (!formData.password) newErrors.password = "Password is required";
@@ -330,7 +371,6 @@ const RecruiterRegistration = () => {
     setIsLoading(true);
     
     try {
-      // Prepare registration data
       const registrationData = {
         name: formData.name,
         email: formData.email,
@@ -354,12 +394,10 @@ const RecruiterRegistration = () => {
         agreement_terms: formData.agreement_accepted ? "I agree to the terms and conditions." : ""
       };
 
-      // Check for empty required fields
       const requiredFields = ['name', 'email', 'password', 'mobile_number', 'company_name', 'contact_person_name', 'contact_email', 'contact_phone'];
       const emptyFields = requiredFields.filter(field => !registrationData[field] || registrationData[field].trim() === '');
       
       if (emptyFields.length > 0) {
-        console.error("Empty required fields:", emptyFields);
         setErrors(prev => ({
           ...prev,
           submit: `Please fill in all required fields: ${emptyFields.join(', ')}`
@@ -368,7 +406,6 @@ const RecruiterRegistration = () => {
         return;
       }
 
-      // Make API call to register recruiter
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/recruiter/register`, {
         method: 'POST',
         headers: {
@@ -378,30 +415,21 @@ const RecruiterRegistration = () => {
         body: JSON.stringify(registrationData),
       });
 
-      // Parse response JSON
       let data;
       try {
         const text = await response.text();
         data = text ? JSON.parse(text) : {};
       } catch (parseError) {
-        console.error("JSON Parse Error:", parseError);
         throw new Error("Invalid response from server. Please try again.");
       }
 
       if (!response.ok) {
-        console.error("API Error Response:", data);
-        console.error("Response Status:", response.status);
-        
-        // Handle validation errors from backend
         const newErrors = {};
         let hasFieldErrors = false;
         
-        // Check if backend returns errors object with field-specific errors
         if (data.errors && typeof data.errors === 'object') {
-          // Map each field error to form errors
           Object.keys(data.errors).forEach(field => {
             const fieldErrors = data.errors[field];
-            // Handle array of error messages (take first one) or single string
             if (Array.isArray(fieldErrors) && fieldErrors.length > 0) {
               newErrors[field] = fieldErrors[0];
             } else if (typeof fieldErrors === 'string') {
@@ -412,11 +440,9 @@ const RecruiterRegistration = () => {
             hasFieldErrors = true;
           });
           
-          // Set field-specific errors
           if (hasFieldErrors) {
             setErrors(prev => ({ ...prev, ...newErrors }));
             
-            // Navigate to the appropriate step based on which field has error
             const fieldToStepMap = {
               name: 1,
               email: 1,
@@ -439,53 +465,51 @@ const RecruiterRegistration = () => {
               agreement_accepted: 5
             };
             
-            // Find the first step that has an error
             const errorStep = Object.keys(newErrors).reduce((minStep, field) => {
               const step = fieldToStepMap[field] || 1;
               return step < minStep ? step : minStep;
             }, 5);
             
             setCurrentStep(errorStep);
-            
-            // Show general error message
-            const generalMessage = data.message || 'Please correct the errors below and try again.';
             toast.error("Registration failed. Please try again.");
-            
             setIsLoading(false);
             return;
           }
         }
         
-        // Handle general error messages
         const errorMessage = data.message || data.error || 'Registration failed';
         toast.error(errorMessage);
         setIsLoading(false);
         return;
       }
 
-      console.log("Registration response:", data);
-      
-      // Show success toast
-      toast.success("Registration successful! Please login to continue.");
-      
-      // Navigate to login page after successful registration
-      navigate("/recruiter/login", { 
-        state: { 
-          email: formData.email, 
-          message: "Registration successful! Please login to continue.",
-          role: "recruiter"
-        }
-      });
+      if (data && data.message && typeof data.message === 'string' && data.message.includes("OTP")) {
+        setOtpExpiresAt(data.expires_at || null);
+        setShowOtpVerification(true);
+        setOtp("");
+        setOtpError("");
+        setResendCooldown(60);
+        toast.success("OTP sent to your email/mobile. Please verify to complete registration.");
+        setTimeout(() => {
+          if (otpInputRefs.current && otpInputRefs.current[0]) {
+            otpInputRefs.current[0].focus();
+          }
+        }, 100);
+      } else {
+        toast.success("Registration successful! Please login to continue.");
+        navigate("/recruiter/login", { 
+          state: { 
+            email: formData.email, 
+            message: "Registration successful! Please login to continue.",
+            role: "recruiter"
+          }
+        });
+      }
     } catch (error) {
-      console.error("Registration error:", error);
-      
-      // Handle network errors or other exceptions
       if (error.message) {
-        // Check if it's a JSON parse error or network error
         if (error.message.includes('JSON') || error.message.includes('Failed to fetch')) {
           toast.error("Network error. Please check your connection and try again.");
         } else {
-          // For other errors, check if they contain field information
           const newErrors = {};
           if (error.message.toLowerCase().includes("email")) {
             newErrors.email = "Email already exists. Please use a different email.";
@@ -506,6 +530,160 @@ const RecruiterRegistration = () => {
       }
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleOtpChange = (index, value) => {
+    if (value && !/^\d$/.test(value)) return;
+    const newOtp = otp.split('');
+    newOtp[index] = value;
+    setOtp(newOtp.join('').slice(0, 4));
+    setOtpError("");
+    if (value && index < 3 && otpInputRefs.current[index + 1]) {
+      otpInputRefs.current[index + 1].focus();
+    }
+  };
+
+  const handleOtpKeyDown = (index, e) => {
+    if (e.key === 'Backspace' && !otp[index] && index > 0 && otpInputRefs.current[index - 1]) {
+      otpInputRefs.current[index - 1].focus();
+    }
+  };
+
+  const handleOtpPaste = (e) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData('text').trim();
+    if (/^\d{4}$/.test(pastedData)) {
+      setOtp(pastedData);
+      setOtpError("");
+      if (otpInputRefs.current[3]) {
+        otpInputRefs.current[3].focus();
+      }
+    }
+  };
+
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    
+    if (!showOtpVerification) {
+      return;
+    }
+    
+    if (!otp || otp.length !== 4 || !/^\d{4}$/.test(otp)) {
+      setOtpError("Please enter a valid 4-digit OTP");
+      return;
+    }
+
+    if (!formData.email) {
+      setOtpError("Email is required for verification");
+      return;
+    }
+
+    setIsVerifyingOtp(true);
+    setOtpError("");
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/recruiter/verify-otp`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          otp: otp
+        }),
+      });
+
+      let data;
+      try {
+        const text = await response.text();
+        data = text ? JSON.parse(text) : {};
+      } catch (parseError) {
+        toast.error("Invalid response from server. Please try again.");
+        return;
+      }
+
+      if (!response.ok) {
+        const otpErrorMsg = data.errors?.otp 
+          ? (Array.isArray(data.errors.otp) ? data.errors.otp[0] : data.errors.otp)
+          : data.message || "Invalid or expired OTP";
+        setOtpError(otpErrorMsg);
+        toast.error("OTP verification failed. Please check and try again.");
+        return;
+      }
+
+      toast.success("Registration completed successfully! Redirecting to login...");
+      
+      setTimeout(() => {
+        navigate("/recruiter/login", { 
+          state: { 
+            email: formData.email, 
+            message: "Registration successful! Please login to continue.",
+            role: "recruiter"
+          }
+        });
+      }, 1500);
+    } catch (error) {
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        toast.error("Network error. Please check your internet connection and try again.");
+      } else {
+        toast.error("OTP verification failed. Please try again.");
+      }
+    } finally {
+      setIsVerifyingOtp(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    if (resendCooldown > 0) return;
+
+    setIsResendingOtp(true);
+    setOtpError("");
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/recruiter/resend-otp`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email
+        }),
+      });
+
+      let data;
+      try {
+        const text = await response.text();
+        data = text ? JSON.parse(text) : {};
+      } catch (parseError) {
+        toast.error("Invalid response from server. Please try again.");
+        return;
+      }
+
+      if (!response.ok) {
+        toast.error(data.message || data.error || "Failed to resend OTP. Please try again.");
+        return;
+      }
+
+      setOtpExpiresAt(data.expires_at || null);
+      setOtp("");
+      setResendCooldown(60);
+      toast.success("OTP resent successfully. Please check your email/mobile.");
+      setTimeout(() => {
+        if (otpInputRefs.current[0]) {
+          otpInputRefs.current[0].focus();
+        }
+      }, 100);
+    } catch (error) {
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        toast.error("Network error. Please check your internet connection and try again.");
+      } else {
+        toast.error("Failed to resend OTP. Please try again.");
+      }
+    } finally {
+      setIsResendingOtp(false);
     }
   };
 
@@ -608,7 +786,7 @@ const RecruiterRegistration = () => {
               className={`w-full pl-10 md:pl-12 pr-4 md:pr-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
                 errors.mobile_number ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
               }`}
-              placeholder="+919876543210"
+              placeholder="Enter your mobile number"
             />
           </div>
           {errors.mobile_number && (
@@ -867,7 +1045,7 @@ const RecruiterRegistration = () => {
                 className={`w-full pl-10 md:pl-12 pr-4 md:pr-6 py-3 md:py-4 border-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#273469] focus:border-[#273469] transition-all duration-300 text-[#30343f] placeholder-[#30343f] text-sm md:text-base ${
                   errors.contact_phone ? 'border-red-300 bg-red-50' : 'border-[#e4d9ff]'
                 }`}
-                placeholder="+919876543210"
+                placeholder="Enter your mobile number"
               />
             </div>
             {errors.contact_phone && (
@@ -1040,7 +1218,6 @@ const RecruiterRegistration = () => {
     <div className="min-h-screen bg-[#fafaff] text-[#1e2749] overflow-x-hidden">
       <Header />
       
-      {/* Animated Background Elements */}
       <div className="hidden md:block absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-32 h-32 bg-[#e4d9ff] rounded-full opacity-20 animate-pulse"></div>
         <div className="absolute top-40 right-20 w-24 h-24 bg-[#30343f] rounded-full opacity-15 animate-pulse" style={{ animationDelay: '1s' }}></div>
@@ -1049,7 +1226,6 @@ const RecruiterRegistration = () => {
       
       <div className="relative pt-24 pb-20 lg:pt-32 lg:pb-32">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Header */}
           <div className="text-center mb-8 md:mb-12">
             <div className="inline-flex items-center px-3 py-2 md:px-4 md:py-2 rounded-full bg-[#e4d9ff] text-[#273469] text-xs md:text-sm font-medium mb-4 md:mb-6">
               <Sparkles className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
@@ -1067,7 +1243,6 @@ const RecruiterRegistration = () => {
             </p>
           </div>
 
-          {/* Back Button */}
           <div className="mb-6 md:mb-8">
             <Link
               to="/recruiter-info"
@@ -1078,21 +1253,21 @@ const RecruiterRegistration = () => {
             </Link>
           </div>
 
-          {/* Progress Bar */}
-          <div className="mb-6 md:mb-8">
-            <div className="flex items-center justify-between mb-2 md:mb-3">
-              <span className="text-xs md:text-sm font-semibold text-[#1e2749]">Step {currentStep} of {totalSteps}</span>
-              <span className="text-xs md:text-sm text-[#30343f]">{Math.round((currentStep / totalSteps) * 100)}% Complete</span>
-            </div>
-            <div className="w-full bg-[#e4d9ff] rounded-full h-2 md:h-3">
-              <div 
-                className="bg-gradient-to-r from-[#273469] to-[#1e2749] h-2 md:h-3 rounded-full transition-all duration-300"
-                style={{ width: `${(currentStep / totalSteps) * 100}%` }}
-              ></div>
-            </div>
-          </div>
+          {!showOtpVerification && (
+            <>
+              <div className="mb-6 md:mb-8">
+                <div className="flex items-center justify-between mb-2 md:mb-3">
+                  <span className="text-xs md:text-sm font-semibold text-[#1e2749]">Step {currentStep} of {totalSteps}</span>
+                  <span className="text-xs md:text-sm text-[#30343f]">{Math.round((currentStep / totalSteps) * 100)}% Complete</span>
+                </div>
+                <div className="w-full bg-[#e4d9ff] rounded-full h-2 md:h-3">
+                  <div 
+                    className="bg-gradient-to-r from-[#273469] to-[#1e2749] h-2 md:h-3 rounded-full transition-all duration-300"
+                    style={{ width: `${(currentStep / totalSteps) * 100}%` }}
+                  ></div>
+                </div>
+              </div>
 
-          {/* Form */}
           <div className="bg-white rounded-xl md:rounded-2xl shadow-2xl border-2 border-[#e4d9ff] overflow-hidden">
             <div className="p-3 sm:p-4 md:p-6 lg:p-8">
               <form onSubmit={handleSubmit}>
@@ -1102,7 +1277,6 @@ const RecruiterRegistration = () => {
                 {currentStep === 4 && Step4()}
                 {currentStep === 5 && Step5()}
 
-                {/* Submit Error */}
                 {errors.submit && (
                   <div className="mt-6 bg-red-50 border border-red-200 rounded-lg p-4">
                     <p className="text-sm text-red-600 flex items-center gap-2">
@@ -1112,7 +1286,6 @@ const RecruiterRegistration = () => {
                   </div>
                 )}
 
-                {/* Navigation Buttons */}
                 <div className="flex justify-between mt-6 md:mt-8">
                   <button
                     type="button"
@@ -1157,36 +1330,174 @@ const RecruiterRegistration = () => {
             </div>
           </div>
 
-          {/* Benefits */}
-          <div className="mt-12 md:mt-16">
-            <MobileSlider>
-              <div className="text-center p-4 md:p-6 bg-white rounded-xl md:rounded-2xl shadow-lg border-2 border-[#e4d9ff] hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 h-full">
-                <div className="inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-[#e4d9ff] rounded-xl md:rounded-2xl mb-3 md:mb-4">
-                  <User className="h-5 w-5 md:h-6 md:w-6 text-[#273469]" />
-                </div>
-                <h3 className="text-base md:text-lg font-bold text-[#1e2749] mb-2">Pre-vetted Candidates</h3>
-                <p className="text-[#30343f] leading-relaxed text-xs md:text-sm">Access to thoroughly screened and qualified professionals</p>
+              <div className="mt-12 md:mt-16">
+                <MobileSlider>
+                  <div className="text-center p-4 md:p-6 bg-white rounded-xl md:rounded-2xl shadow-lg border-2 border-[#e4d9ff] hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 h-full">
+                    <div className="inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-[#e4d9ff] rounded-xl md:rounded-2xl mb-3 md:mb-4">
+                      <User className="h-5 w-5 md:h-6 md:w-6 text-[#273469]" />
+                    </div>
+                    <h3 className="text-base md:text-lg font-bold text-[#1e2749] mb-2">Pre-vetted Candidates</h3>
+                    <p className="text-[#30343f] leading-relaxed text-xs md:text-sm">Access to thoroughly screened and qualified professionals</p>
+                  </div>
+                  
+                  <div className="text-center p-4 md:p-6 bg-white rounded-xl md:rounded-2xl shadow-lg border-2 border-[#e4d9ff] hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 h-full">
+                    <div className="inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-[#e4d9ff] rounded-xl md:rounded-2xl mb-3 md:mb-4">
+                      <Building className="h-5 w-5 md:h-6 md:w-6 text-[#273469]" />
+                    </div>
+                    <h3 className="text-base md:text-lg font-bold text-[#1e2749] mb-2">Streamlined Process</h3>
+                    <p className="text-[#30343f] leading-relaxed text-xs md:text-sm">Reduce time-to-hire with our efficient matching system</p>
+                  </div>
+                  
+                  <div className="text-center p-4 md:p-6 bg-white rounded-xl md:rounded-2xl shadow-lg border-2 border-[#e4d9ff] hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 h-full">
+                    <div className="inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-[#e4d9ff] rounded-xl md:rounded-2xl mb-3 md:mb-4">
+                      <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-[#273469]" />
+                    </div>
+                    <h3 className="text-base md:text-lg font-bold text-[#1e2749] mb-2">Quality Guarantee</h3>
+                    <p className="text-[#30343f] leading-relaxed text-xs md:text-sm">All candidates are verified and ready for immediate placement</p>
+                  </div>
+                </MobileSlider>
               </div>
-              
-              <div className="text-center p-4 md:p-6 bg-white rounded-xl md:rounded-2xl shadow-lg border-2 border-[#e4d9ff] hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 h-full">
-                <div className="inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-[#e4d9ff] rounded-xl md:rounded-2xl mb-3 md:mb-4">
-                  <Building className="h-5 w-5 md:h-6 md:w-6 text-[#273469]" />
-                </div>
-                <h3 className="text-base md:text-lg font-bold text-[#1e2749] mb-2">Streamlined Process</h3>
-                <p className="text-[#30343f] leading-relaxed text-xs md:text-sm">Reduce time-to-hire with our efficient matching system</p>
-              </div>
-              
-              <div className="text-center p-4 md:p-6 bg-white rounded-xl md:rounded-2xl shadow-lg border-2 border-[#e4d9ff] hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 h-full">
-                <div className="inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-[#e4d9ff] rounded-xl md:rounded-2xl mb-3 md:mb-4">
-                  <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-[#273469]" />
-                </div>
-                <h3 className="text-base md:text-lg font-bold text-[#1e2749] mb-2">Quality Guarantee</h3>
-                <p className="text-[#30343f] leading-relaxed text-xs md:text-sm">All candidates are verified and ready for immediate placement</p>
-              </div>
-            </MobileSlider>
-          </div>
+            </>
+          )}
         </div>
       </div>
+
+      {showOtpVerification && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl border-2 border-[#e4d9ff] max-w-md w-full p-6 md:p-8 animate-in fade-in zoom-in duration-300">
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-[#e4d9ff] rounded-2xl mb-4">
+                <KeyRound className="h-8 w-8 text-[#273469]" />
+              </div>
+              <h2 className="text-2xl md:text-3xl font-bold text-[#1e2749] mb-2">
+                Verify Your Email
+              </h2>
+              <p className="text-sm md:text-base text-[#30343f]">
+                We've sent a 4-digit OTP to
+              </p>
+              <p className="text-sm md:text-base font-semibold text-[#273469] mt-1">
+                {formData.email}
+              </p>
+            </div>
+
+            <form onSubmit={handleVerifyOtp} className="space-y-6" onKeyDown={(e) => {
+              if (e.key === 'Enter' && otp.length !== 4) {
+                e.preventDefault();
+              }
+            }}>
+              <div>
+                <label className="block text-sm font-semibold text-[#1e2749] mb-3 text-center">
+                  Enter OTP Code
+                </label>
+                <div className="flex justify-center gap-3">
+                  {[0, 1, 2, 3].map((index) => (
+                    <input
+                      key={index}
+                      ref={(el) => (otpInputRefs.current[index] = el)}
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={1}
+                      value={otp[index] || ""}
+                      onChange={(e) => handleOtpChange(index, e.target.value)}
+                      onKeyDown={(e) => {
+                        handleOtpKeyDown(index, e);
+                        if (e.key === 'Enter' && otp.length !== 4) {
+                          e.preventDefault();
+                        }
+                      }}
+                      onPaste={index === 0 ? handleOtpPaste : undefined}
+                      className={`w-14 h-14 md:w-16 md:h-16 text-center text-xl md:text-2xl font-bold border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#273469]/20 focus:border-[#273469] transition-all duration-300 ${
+                        otpError
+                          ? 'border-red-300 bg-red-50/50'
+                          : 'border-[#e4d9ff] hover:border-[#273469]/30'
+                      }`}
+                    />
+                  ))}
+                </div>
+                {otpError && (
+                  <p className="mt-3 text-sm text-red-600 flex items-center justify-center gap-1.5">
+                    <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                    <span>{otpError}</span>
+                  </p>
+                )}
+              </div>
+
+              {timeRemaining !== null && timeRemaining > 0 && (
+                <div className="flex items-center justify-center gap-2 text-sm text-[#30343f]">
+                  <Clock className="h-4 w-4" />
+                  <span>OTP expires in <span className="font-semibold text-[#273469]">{Math.floor(timeRemaining / 60)}:{(timeRemaining % 60).toString().padStart(2, '0')}</span></span>
+                </div>
+              )}
+
+              {timeRemaining === 0 && (
+                <div className="text-center">
+                  <p className="text-sm text-red-600 mb-2">OTP has expired</p>
+                  <button
+                    type="button"
+                    onClick={handleResendOtp}
+                    disabled={isResendingOtp || resendCooldown > 0}
+                    className="text-sm text-[#273469] hover:text-[#1e2749] font-semibold transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 mx-auto"
+                  >
+                    <RotateCcw className={`h-4 w-4 ${isResendingOtp ? 'animate-spin' : ''}`} />
+                    {isResendingOtp
+                      ? "Resending..."
+                      : resendCooldown > 0
+                      ? `Resend OTP (${resendCooldown}s)`
+                      : "Resend OTP"}
+                  </button>
+                </div>
+              )}
+
+              <div className="space-y-3">
+                <button
+                  type="submit"
+                  disabled={isVerifyingOtp || otp.length !== 4}
+                  className="w-full flex items-center justify-center gap-3 py-3.5 px-6 rounded-xl font-bold text-base text-white transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] bg-[#273469] hover:bg-[#1e2749] shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none focus:outline-none focus:ring-4 focus:ring-[#273469]/20"
+                >
+                  {isVerifyingOtp ? (
+                    <>
+                      <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+                      <span>Verifying...</span>
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="h-5 w-5" />
+                      <span>Verify OTP</span>
+                    </>
+                  )}
+                </button>
+
+                {resendCooldown === 0 && timeRemaining !== 0 && (
+                  <button
+                    type="button"
+                    onClick={handleResendOtp}
+                    disabled={isResendingOtp}
+                    className="w-full flex items-center justify-center gap-2 py-2.5 px-6 rounded-xl font-medium text-sm text-[#273469] hover:text-[#1e2749] transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <RotateCcw className={`h-4 w-4 ${isResendingOtp ? 'animate-spin' : ''}`} />
+                    {isResendingOtp ? "Resending..." : "Didn't receive OTP? Resend"}
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowOtpVerification(false);
+                    setOtp("");
+                    setOtpError("");
+                    setOtpExpiresAt(null);
+                    setTimeRemaining(null);
+                    setResendCooldown(0);
+                  }}
+                  className="w-full py-2.5 px-6 rounded-xl font-medium text-sm text-[#30343f] hover:text-[#1e2749] transition-colors duration-300"
+                >
+                  Back to Registration
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

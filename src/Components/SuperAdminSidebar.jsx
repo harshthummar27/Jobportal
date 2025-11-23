@@ -3,7 +3,9 @@ import { Link, useLocation } from "react-router-dom";
 import { 
   LayoutDashboard,
   Shield,
-  Mail
+  Mail,
+  Users,
+  Briefcase
 } from "lucide-react";
 
 const SuperAdminSidebar = ({ isCollapsed, setIsCollapsed, onMobileClose, isMobile, mobileSidebarOpen }) => {
@@ -14,19 +16,26 @@ const SuperAdminSidebar = ({ isCollapsed, setIsCollapsed, onMobileClose, isMobil
       name: "Dashboard",
       path: "/superadmin/dashboard",
       icon: LayoutDashboard,
-      description: "Overview and statistics"
     },
     {
       name: "Internal Team",
       path: "/superadmin/internal-team",
       icon: Shield,
-      description: "Manage team members"
     },
     {
       name: "Inquiries",
       path: "/superadmin/inquiries",
       icon: Mail,
-      description: "View contact inquiries"
+    },
+    {
+      name: "All Candidates",
+      path: "/superadmin/all-candidates",
+      icon: Users,
+    },
+    {
+      name: "All Recruiters",
+      path: "/superadmin/all-recruiters",
+      icon: Briefcase,
     }
   ];
 

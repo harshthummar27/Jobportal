@@ -1015,7 +1015,7 @@ const Notifications = () => {
                         className={`w-full px-3 py-2 border rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-transparent ${
                           offerErrors.location ? 'border-red-300 bg-red-50' : 'border-gray-300'
                         }`}
-                        placeholder="Mumbai, India"
+                        placeholder="Enter your location"
                       />
                       {offerErrors.location && (
                         <p className="mt-1 text-xs text-red-600 flex items-center gap-1">

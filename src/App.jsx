@@ -26,6 +26,8 @@ import RecruiterProfile from "./pages/recruiter/RecruiterProfile";
 import SuperAdminDashboard from "./pages/superadmin/SuperAdminDashboard";
 import InternalTeam from "./pages/superadmin/InternalTeam";
 import Inquiries from "./pages/superadmin/Inquiries";
+import AdminAllCandidates from "./pages/superadmin/AdminAllCandidates";
+import AdminAllRecruiters from "./pages/superadmin/AdminAllRecruiters";
 import NotFound from "./pages/NotFound";
 import SuperAdminLayout from "./Components/SuperAdminLayout";
 import InternalTeamLayout from "./Components/InternalTeamLayout";
@@ -221,6 +223,26 @@ export default function App() {
             <PrivateRoute requiredRole="superadmin">
               <SuperAdminLayout>
                 <Inquiries />
+              </SuperAdminLayout>
+            </PrivateRoute>
+          } 
+        />
+        <Route 
+          path="/superadmin/all-candidates" 
+          element={
+            <PrivateRoute requiredRole="superadmin">
+              <SuperAdminLayout>
+                <AdminAllCandidates />
+              </SuperAdminLayout>
+            </PrivateRoute>
+          } 
+        />
+        <Route 
+          path="/superadmin/all-recruiters" 
+          element={
+            <PrivateRoute requiredRole="superadmin">
+              <SuperAdminLayout>
+                <AdminAllRecruiters />
               </SuperAdminLayout>
             </PrivateRoute>
           } 
