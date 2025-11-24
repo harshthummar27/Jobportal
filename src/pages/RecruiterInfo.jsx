@@ -138,8 +138,9 @@ const RecruiterInfo = () => {
                 {[
                   { step: 1, title: "Complete Registration", desc: "Register your company with email verification—no payment required." },
                   { step: 2, title: "Setup Your Profile", desc: "Complete your company profile and hiring preferences." },
-                  { step: 3, title: "Accept Agreement", desc: "Review and accept our recruiter service agreement." },
-                  { step: 4, title: "Search & Select Candidates", desc: "Use our advanced filters to find the perfect match for your role." },
+                   { step: 3, title: "Search & Select Candidates", desc: "Use our advanced filters to find the perfect match for your role." },
+                  { step: 4, title: "Accept Agreement", desc: "Review and accept our recruiter service agreement." },
+                 
                   { step: 5, title: "Arrange Interview & Hire", desc: "Schedule interviews with selected candidates and make your hire." },
                   { step: 6, title: "Minimum Salary Requirement", desc: "The minimum salary will be written on each profile, offers below it will be auto-declined." },
                 ].map((item) => (

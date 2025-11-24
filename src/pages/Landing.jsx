@@ -859,18 +859,10 @@ const Landing = () => {
                   <h3 className="text-2xl md:text-3xl font-bold text-[#1e2749]">For Recruiters</h3>
                 </div>
                 <div className="space-y-4">
+                 
                   <div className="flex items-start gap-3">
                     <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-[#30343f] text-white flex items-center justify-center font-bold text-sm md:text-base flex-shrink-0">
                       1
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-[#1e2749] mb-1 text-sm md:text-base">Sign Agreement</h4>
-                      <p className="text-[#30343f] text-xs md:text-sm">Complete registration and sign our recruitment agreement.</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-[#30343f] text-white flex items-center justify-center font-bold text-sm md:text-base flex-shrink-0">
-                      2
                     </div>
                     <div>
                       <h4 className="font-semibold text-[#1e2749] mb-1 text-sm md:text-base">Search & Filter</h4>
@@ -879,11 +871,20 @@ const Landing = () => {
                   </div>
                   <div className="flex items-start gap-3">
                     <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-[#30343f] text-white flex items-center justify-center font-bold text-sm md:text-base flex-shrink-0">
-                      3
+                      2
                     </div>
                     <div>
                       <h4 className="font-semibold text-[#1e2749] mb-1 text-sm md:text-base">Select Candidates</h4>
                       <p className="text-[#30343f] text-xs md:text-sm">Choose candidates and we will arrange interviews with you.</p>
+                    </div>
+                  </div>
+                   <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-[#30343f] text-white flex items-center justify-center font-bold text-sm md:text-base flex-shrink-0">
+                      3
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-[#1e2749] mb-1 text-sm md:text-base">Sign Agreement</h4>
+                      <p className="text-[#30343f] text-xs md:text-sm">Complete registration and sign our recruitment agreement.</p>
                     </div>
                   </div>
                 </div>
