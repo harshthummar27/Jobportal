@@ -528,12 +528,83 @@ const PendingOffers = () => {
         </div>
       </div>
 
-      {/* Loading State */}
+      {/* Loading Skeleton */}
       {loading && (
-        <div className="flex items-center justify-center h-48 sm:h-64 bg-white rounded-lg border border-gray-200 shadow-sm">
-          <div className="flex flex-col items-center gap-2 sm:gap-3 text-gray-600">
-            <RefreshCw className="h-6 w-6 sm:h-8 sm:w-8 animate-spin text-emerald-600" />
-            <span className="text-xs sm:text-sm font-medium">Loading offers...</span>
+        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 text-[10px] sm:text-xs table-fixed">
+              <thead className="bg-gray-50">
+                <tr>
+                  {[...Array(6)].map((_, idx) => (
+                    <th key={idx} className="px-1.5 sm:px-2 py-1 text-left">
+                      <div 
+                        className="h-4 bg-gray-200 rounded w-24"
+                        style={{
+                          background: 'linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)',
+                          backgroundSize: '200% 100%',
+                          animation: 'shimmer 1.5s infinite',
+                        }}
+                      ></div>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {[...Array(8)].map((_, rowIdx) => (
+                  <tr key={rowIdx}>
+                    {[...Array(6)].map((_, colIdx) => (
+                      <td key={colIdx} className="px-1.5 sm:px-2 py-1">
+                        <div 
+                          className={`h-4 rounded ${
+                            colIdx === 0 ? 'w-32' : 
+                            colIdx === 1 ? 'w-40' : 
+                            colIdx === 2 ? 'w-28' : 
+                            colIdx === 3 ? 'w-24' : 
+                            colIdx === 4 ? 'w-36' : 
+                            'w-20'
+                          }`}
+                          style={{
+                            background: 'linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)',
+                            backgroundSize: '200% 100%',
+                            animation: 'shimmer 1.5s infinite',
+                            animationDelay: `${rowIdx * 0.1 + colIdx * 0.05}s`,
+                          }}
+                        ></div>
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="p-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 border-t border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
+            <div 
+              className="h-4 rounded w-48"
+              style={{
+                background: 'linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)',
+                backgroundSize: '200% 100%',
+                animation: 'shimmer 1.5s infinite',
+              }}
+            ></div>
+            <div className="flex items-center gap-2">
+              <div 
+                className="h-8 rounded w-20"
+                style={{
+                  background: 'linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)',
+                  backgroundSize: '200% 100%',
+                  animation: 'shimmer 1.5s infinite',
+                }}
+              ></div>
+              <div 
+                className="h-8 rounded w-20"
+                style={{
+                  background: 'linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)',
+                  backgroundSize: '200% 100%',
+                  animation: 'shimmer 1.5s infinite',
+                  animationDelay: '0.2s',
+                }}
+              ></div>
+            </div>
           </div>
         </div>
       )}

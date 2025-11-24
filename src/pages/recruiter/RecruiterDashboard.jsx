@@ -17,14 +17,13 @@ const RecruiterDashboard = () => {
   // Search state (for api/candidates/search)
   const [searchParams, setSearchParams] = useState({
     job_role: '',
-    preferred_locations: '', // comma separated
-    skills: '', // comma separated
+    preferred_locations: '',
+    skills: '',
     years_experience_min: '',
     years_experience_max: '',
     salary_min: '',
     salary_max: '',
     visa_status: '',
-    candidate_score_min: '',
     willing_to_join_startup: ''
   });
   const [isSearching, setIsSearching] = useState(false);
@@ -51,9 +50,22 @@ const RecruiterDashboard = () => {
   });
   const [isSelecting, setIsSelecting] = useState(false);
 
-
   const normalizeText = (value) => value?.toString().trim().replace(/\s+/g, ' ') || '';
   const titleCase = (value) => normalizeText(value).toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+  
+  const formatDate = (dateString) => {
+    if (!dateString) return null;
+    try {
+      const date = new Date(dateString);
+      return isNaN(date.getTime()) ? null : date.toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric' 
+      });
+    } catch (e) {
+      return null;
+    }
+  };
 
   // Visa status options
   const visaStatuses = [
@@ -66,7 +78,7 @@ const RecruiterDashboard = () => {
   ];
 
   // Search candidates using the new search API
-  const searchCandidates = async (filters) => {
+  const searchCandidates = async (filters, page = 1) => {
     try {
       setIsSearching(true);
       setError(null);
@@ -76,15 +88,12 @@ const RecruiterDashboard = () => {
         throw new Error('No authentication token found');
       }
 
-      // Build search parameters
       const params = new URLSearchParams({
-        page: '1', // static as requested
-        per_page: '25' // static as requested
+        page: page.toString(),
+        per_page: '25'
       });
 
-      // Use provided filters if available, otherwise use empty filters (not searchParams)
-      // This ensures initial load shows all candidates without any filters
-      const f = filters !== undefined && filters !== null ? filters : {};
+      const f = filters || {};
       const jobRole = titleCase(f.job_role || '');
       if (jobRole) params.append('job_role', jobRole);
       if (f.preferred_locations) {
@@ -106,7 +115,6 @@ const RecruiterDashboard = () => {
       if (f.salary_min) params.append('salary_min', normalizeText(f.salary_min));
       if (f.salary_max) params.append('salary_max', normalizeText(f.salary_max));
       if (f.visa_status) params.append('visa_status', normalizeText(f.visa_status));
-      if (f.candidate_score_min) params.append('candidate_score_min', normalizeText(f.candidate_score_min));
       if (f.willing_to_join_startup !== undefined && f.willing_to_join_startup !== null && f.willing_to_join_startup !== '') {
         params.append('willing_to_join_startup', f.willing_to_join_startup === '1' ? '1' : '0');
       }
@@ -125,7 +133,6 @@ const RecruiterDashboard = () => {
         const text = await response.text();
         data = text ? JSON.parse(text) : {};
       } catch (parseError) {
-        console.error('Error parsing response:', parseError);
         throw new Error('Invalid response from server. Please try again.');
       }
 
@@ -139,10 +146,7 @@ const RecruiterDashboard = () => {
         // Handle other error responses
         throw new Error(data.message || data.error || `HTTP error! status: ${response.status}`);
       }
-      console.log('Search API Response:', data); // Debug log
-      // Handle the API response structure: { candidates: { data: [...], ... }, filters_applied: {...} }
       if (data.candidates) {
-        // Ensure candidates array is properly formatted
         const candidatesData = Array.isArray(data.candidates.data) ? data.candidates.data : [];
         setCandidates(candidatesData);
         setPagination({
@@ -154,7 +158,6 @@ const RecruiterDashboard = () => {
           to: data.candidates.to
         });
       } else if (Array.isArray(data)) {
-        // Handle case where API returns array directly
         setCandidates(data);
         setPagination({
           current_page: 1,
@@ -168,7 +171,6 @@ const RecruiterDashboard = () => {
         throw new Error(data.message || 'Failed to search candidates');
       }
     } catch (error) {
-      console.error('Error searching candidates:', error);
       setError(error.message);
       toast.error(error.message || 'Failed to search candidates. Please try again.');
     } finally {
@@ -176,11 +178,9 @@ const RecruiterDashboard = () => {
     }
   };
 
-  // Initial/refresh fetch now uses search endpoint as well
   const fetchCandidates = async () => {
     try {
       setLoading(true);
-      // Use empty filters object with all properties to ensure no filters are applied
       const emptyFilters = {
         job_role: '',
         preferred_locations: '',
@@ -190,7 +190,6 @@ const RecruiterDashboard = () => {
         salary_min: '',
         salary_max: '',
         visa_status: '',
-        candidate_score_min: '',
         willing_to_join_startup: ''
       };
       await searchCandidates(emptyFilters);
@@ -199,10 +198,8 @@ const RecruiterDashboard = () => {
     }
   };
 
-  // Helper functions
   const handleSearch = () => {
-    const current = { ...searchParams };
-    searchCandidates(current);
+    searchCandidates(searchParams);
   };
 
   const handleClearSearch = () => {
@@ -215,7 +212,6 @@ const RecruiterDashboard = () => {
       salary_min: '',
       salary_max: '',
       visa_status: '',
-      candidate_score_min: '',
       willing_to_join_startup: ''
     };
     setSearchParams(cleared);
@@ -226,7 +222,6 @@ const RecruiterDashboard = () => {
     setSearchParams(prev => ({ ...prev, [key]: value }));
   };
 
-  // Select candidate API function
   const selectCandidate = async () => {
     try {
       setIsSelecting(true);
@@ -236,11 +231,9 @@ const RecruiterDashboard = () => {
         throw new Error('No authentication token found');
       }
 
-      // Parse salary values, ensuring they're valid numbers
       const salaryMin = selectFormData.offered_salary_min ? parseInt(selectFormData.offered_salary_min, 10) : null;
       const salaryMax = selectFormData.offered_salary_max ? parseInt(selectFormData.offered_salary_max, 10) : null;
 
-      // Validate required fields
       if (!selectFormData.job_title?.trim() || 
           !selectFormData.job_description?.trim() || 
           salaryMin === null || 
@@ -252,12 +245,10 @@ const RecruiterDashboard = () => {
         throw new Error('Please fill all required fields with valid values');
       }
 
-      // Validate salary range
       if (salaryMin > salaryMax) {
         throw new Error('Minimum salary cannot be greater than maximum salary');
       }
 
-      // Build payload matching Postman format exactly
       const payload = {
         candidate_code: selectedCandidate?.candidate_profile?.candidate_code || selectedCandidate?.candidate_code || `CAND${selectedCandidate?.id}`,
         selection_status: selectFormData.selection_status || 'shortlisted',
@@ -271,7 +262,6 @@ const RecruiterDashboard = () => {
         is_priority: Boolean(selectFormData.is_priority)
       };
 
-
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/candidates/select`, {
         method: 'POST',
         headers: {
@@ -284,19 +274,13 @@ const RecruiterDashboard = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        // Log the full error response for debugging
-        console.error('API Error Response:', data);
-        
-        // Handle Laravel validation errors (422)
         if (response.status === 422 && data.errors) {
           const errorMessages = Object.values(data.errors).flat().join(', ');
           throw new Error(errorMessages || data.message || 'Validation error');
         }
-        
         throw new Error(data.message || data.error || `HTTP error! status: ${response.status}`);
       }
 
-      // Handle successful response (API returns message and selection object)
       if (data.selection || data.message) {
         toast.success(data.message || 'Candidate selected successfully!');
         setShowSelectModal(false);
@@ -312,20 +296,17 @@ const RecruiterDashboard = () => {
           selection_status: 'shortlisted',
           is_priority: false
         });
-        // Refresh candidates list
         fetchCandidates();
       } else {
         throw new Error(data.message || 'Failed to select candidate');
       }
     } catch (error) {
-      console.error('Error selecting candidate:', error);
       toast.error(`Error: ${error.message}`);
     } finally {
       setIsSelecting(false);
     }
   };
 
-  // Fetch full candidate details for profile modal
   const fetchCandidateDetails = async (code) => {
     try {
       setProfileLoading(true);
@@ -358,7 +339,6 @@ const RecruiterDashboard = () => {
         throw new Error(data.message || 'Failed to fetch candidate details');
       }
     } catch (error) {
-      console.error('Error fetching candidate details:', error);
       setProfileError(error.message);
       toast.error(error.message || 'Failed to load candidate profile');
     } finally {
@@ -366,7 +346,6 @@ const RecruiterDashboard = () => {
     }
   };
 
-  // Handle view profile click
   const handleViewProfile = (candidate) => {
     const code = candidate.candidate_profile?.candidate_code || candidate.candidate_code || `CAND${candidate.id}`;
     setProfileCandidate(null);
@@ -376,19 +355,15 @@ const RecruiterDashboard = () => {
   };
 
   // Handle select candidate click (from profile modal)
-  const handleSelectCandidate = (candidate) => {
-    // Use profileCandidate if available, otherwise use the passed candidate
-    const candidateToUse = candidate || profileCandidate;
-    if (!candidateToUse) return;
+  const handleSelectCandidate = () => {
+    if (!profileCandidate) return;
     
-    // Handle both data structures (nested candidate_profile or flat)
-    const profile = candidateToUse.candidate_profile || candidateToUse;
-    const code = profile?.candidate_code || candidateToUse.candidate_code || `CAND${candidateToUse.id}`;
+    const profile = profileCandidate.candidate_profile || profileCandidate;
     
-    setSelectedCandidate(candidateToUse);
+    setSelectedCandidate(profileCandidate);
     
     // Normalize job title to ensure it's always a string
-    const firstRole = profile?.desired_job_roles?.[0] || candidateToUse.desired_job_roles?.[0];
+    const firstRole = profile?.desired_job_roles?.[0] || profileCandidate.desired_job_roles?.[0];
     let jobTitle = '';
     if (firstRole) {
       if (typeof firstRole === 'object' && firstRole !== null) {
@@ -401,46 +376,28 @@ const RecruiterDashboard = () => {
     setSelectFormData(prev => ({
       ...prev,
       job_title: jobTitle,
-      location: `${profile?.city || candidateToUse.city || ''}, ${profile?.state || candidateToUse.state || ''}`
+      location: `${profile?.city || profileCandidate.city || ''}, ${profile?.state || profileCandidate.state || ''}`
         .replace(', ,', '')
         .replace(/^,\s*/, '')
         .replace(/,\s*$/, ''),
-      offered_salary_min: profile?.desired_annual_package || candidateToUse.desired_annual_package || '',
-      offered_salary_max: profile?.desired_annual_package || candidateToUse.desired_annual_package || '',
+      offered_salary_min: profile?.desired_annual_package || profileCandidate.desired_annual_package || '',
+      offered_salary_max: profile?.desired_annual_package || profileCandidate.desired_annual_package || '',
       selection_status: 'shortlisted'
     }));
     setShowSelectModal(true);
-    setShowProfileModal(false); // Close profile modal when opening select modal
+    setShowProfileModal(false);
   };
 
   // Fetch candidates on component mount
   useEffect(() => {
-    let isMounted = true;
-    
-    const loadCandidates = async () => {
-      try {
-        await fetchCandidates();
-      } catch (error) {
-        if (isMounted) {
-          console.error('Error loading candidates:', error);
-        }
-      }
-    };
-    
-    loadCandidates();
-    
-    return () => {
-      isMounted = false;
-    };
+    fetchCandidates();
   }, []);
 
-  // Format candidate data for display (supports both old and new shapes)
   const formatCandidateData = (candidate) => {
     const profile = candidate.candidate_profile;
     const code = profile?.candidate_code || candidate.candidate_code || `CAND${candidate.id}`;
     const desiredRoles = profile?.desired_job_roles || candidate.desired_job_roles || [];
     const skillsRaw = profile?.skills || candidate.skills || [];
-    // Normalize skills: convert objects to strings
     const skills = skillsRaw.map(skill => {
       if (typeof skill === 'object' && skill !== null) {
         return skill.name || skill.skill || JSON.stringify(skill);
@@ -448,7 +405,6 @@ const RecruiterDashboard = () => {
       return String(skill || '');
     }).filter(Boolean);
     
-    // Normalize desired roles: convert objects to strings
     const normalizeRole = (role) => {
       if (typeof role === 'object' && role !== null) {
         return role.name || role.role || role.title || JSON.stringify(role);
@@ -626,16 +582,6 @@ const RecruiterDashboard = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Min Score</label>
-                    <input
-                      type="number"
-                      placeholder="0"
-                      value={searchParams.candidate_score_min}
-                      onChange={(e) => handleSearchParamChange('candidate_score_min', e.target.value)}
-                      className="w-full px-1.5 py-1 sm:px-2 sm:py-1.5 text-[10px] sm:text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500/30 focus:border-blue-500"
-                    />
-                  </div>
-                  <div>
                     <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">Willing to Join Startup</label>
                     <select
                       value={searchParams.willing_to_join_startup}
@@ -651,7 +597,6 @@ const RecruiterDashboard = () => {
               </div>
             </div>
           </div>
-
 
           {/* Approved Candidates Table */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
@@ -830,8 +775,11 @@ const RecruiterDashboard = () => {
                   </div>
                   <div className="flex items-center gap-1.5 sm:gap-2">
                     <button
-                      onClick={() => setPagination(prev => ({ ...prev, current_page: prev.current_page - 1 }))}
-                      disabled={pagination.current_page === 1}
+                      onClick={() => {
+                        const newPage = pagination.current_page - 1;
+                        searchCandidates(searchParams, newPage);
+                      }}
+                      disabled={pagination.current_page === 1 || isSearching}
                       className="px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex items-center gap-1"
                     >
                       <span className="hidden sm:inline">Previous</span>
@@ -840,8 +788,11 @@ const RecruiterDashboard = () => {
                       Page {pagination.current_page} of {pagination.last_page}
                     </span>
                     <button
-                      onClick={() => setPagination(prev => ({ ...prev, current_page: prev.current_page + 1 }))}
-                      disabled={pagination.current_page === pagination.last_page}
+                      onClick={() => {
+                        const newPage = pagination.current_page + 1;
+                        searchCandidates(searchParams, newPage);
+                      }}
+                      disabled={pagination.current_page === pagination.last_page || isSearching}
                       className="px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex items-center gap-1"
                     >
                       <span className="hidden sm:inline">Next</span>
@@ -929,6 +880,17 @@ const RecruiterDashboard = () => {
                         <div>
                           <label className="block text-xs font-medium text-gray-600 mb-1">State</label>
                           <p className="text-xs sm:text-sm text-gray-900">{profileCandidate.state}</p>
+                        </div>
+                      )}
+                      {(profileCandidate.gender || profileCandidate.candidate_profile?.gender) && (
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">Gender</label>
+                          <p className="text-xs sm:text-sm text-gray-900">
+                            {(profileCandidate.gender || profileCandidate.candidate_profile?.gender || '')
+                              .split('_')
+                              .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                              .join(' ')}
+                          </p>
                         </div>
                       )}
                       {profileCandidate.total_years_experience !== undefined && (
@@ -1034,23 +996,6 @@ const RecruiterDashboard = () => {
                       <h4 className="text-sm sm:text-base font-semibold text-gray-900 mb-3 sm:mb-4">Job History</h4>
                       <div className="space-y-2">
                         {profileCandidate.job_history.map((job, idx) => {
-                          // Format dates properly
-                          const formatDate = (dateString) => {
-                            if (!dateString) return null;
-                            try {
-                              // Handle both date string formats
-                              const date = new Date(dateString);
-                              return isNaN(date.getTime()) ? null : date.toLocaleDateString('en-US', { 
-                                year: 'numeric', 
-                                month: 'short', 
-                                day: 'numeric' 
-                              });
-                            } catch (e) {
-                              return null;
-                            }
-                          };
-
-                          // Safely extract job data
                           const position = job.position || job.title || '';
                           const company = job.company || job.company_name || '';
                           const startDate = formatDate(job.start_date);
@@ -1059,11 +1004,8 @@ const RecruiterDashboard = () => {
                           const hasEndDate = endDate !== null;
                           const hasEndDateValue = job.end_date !== null && job.end_date !== undefined && job.end_date !== '';
                           const description = job.description || job.job_description || '';
-
-                          // Check if we have any data to display
                           const hasAnyData = position || company || hasStartDate || hasEndDate || description;
 
-                          // If no data at all, show friendly message
                           if (!hasAnyData) {
                             return (
                               <div key={idx} className="border border-gray-200 rounded-lg p-3 bg-white">
@@ -1120,28 +1062,12 @@ const RecruiterDashboard = () => {
                       <h4 className="text-sm sm:text-base font-semibold text-gray-900 mb-3 sm:mb-4">Education</h4>
                       <div className="space-y-3 sm:space-y-4">
                         {profileCandidate.education.map((edu, idx) => {
-                          // Format date if available
-                          const formatDate = (dateString) => {
-                            if (!dateString) return null;
-                            try {
-                              const date = new Date(dateString);
-                              return isNaN(date.getTime()) ? null : date.toLocaleDateString('en-US', { 
-                                year: 'numeric', 
-                                month: 'short', 
-                                day: 'numeric' 
-                              });
-                            } catch (e) {
-                              return null;
-                            }
-                          };
-
                           const startDate = formatDate(edu.start_date);
                           const endDate = formatDate(edu.end_date);
                           const graduationDate = formatDate(edu.graduation_date);
 
                           return (
                             <div key={idx} className="border border-gray-200 rounded-lg p-3 sm:p-4 bg-white">
-                              {/* Degree and Major */}
                               <div className="mb-2">
                                 {edu.degree && (
                                   <div className="font-semibold text-xs sm:text-sm text-gray-900">
@@ -1156,7 +1082,6 @@ const RecruiterDashboard = () => {
                                 )}
                               </div>
 
-                              {/* Institution */}
                               {edu.institution && (
                                 <div className="mb-2">
                                   <div className="flex items-start gap-2">
@@ -1166,7 +1091,6 @@ const RecruiterDashboard = () => {
                                 </div>
                               )}
 
-                              {/* Location */}
                               {edu.location && (
                                 <div className="mb-2">
                                   <div className="flex items-start gap-2">
@@ -1176,7 +1100,6 @@ const RecruiterDashboard = () => {
                                 </div>
                               )}
 
-                              {/* Dates */}
                               <div className="mb-2 space-y-1">
                                 {startDate && (
                                   <div className="flex items-start gap-2">
@@ -1204,7 +1127,6 @@ const RecruiterDashboard = () => {
                                 )}
                               </div>
 
-                              {/* GPA */}
                               {edu.gpa !== null && edu.gpa !== undefined && (
                                 <div className="mb-2">
                                   <div className="flex items-start gap-2">
@@ -1217,7 +1139,6 @@ const RecruiterDashboard = () => {
                                 </div>
                               )}
 
-                              {/* Honors/Awards */}
                               {edu.honors && (
                                 <div className="mb-2">
                                   <div className="flex items-start gap-2">
@@ -1227,7 +1148,6 @@ const RecruiterDashboard = () => {
                                 </div>
                               )}
 
-                              {/* Description */}
                               {edu.description && (
                                 <div className="mb-2">
                                   <div className="flex items-start gap-2">
@@ -1279,7 +1199,7 @@ const RecruiterDashboard = () => {
                   Close
                 </button>
                 <button
-                  onClick={() => handleSelectCandidate(null)}
+                  onClick={handleSelectCandidate}
                   className="px-3 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors flex items-center justify-center gap-2 order-1 sm:order-2"
                 >
                   <CheckCircle className="h-4 w-4" />

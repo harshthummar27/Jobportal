@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { 
   User, Briefcase, CheckCircle, TrendingUp, Calendar, MapPin, 
   Award, Users, DollarSign, Shield, Phone, Mail, 
-  Building, Star, AlertCircle, RefreshCw, Clock, FileText, Edit, X, Save
+  Building, Star, AlertCircle, RefreshCw, Clock, FileText, Edit, X, Save, Download
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from 'react-toastify';
@@ -145,6 +145,18 @@ const CandidateMyProfile = () => {
     return `${number} year`;
   };
 
+  // Helper function to format relocation willingness for display
+  const formatRelocationWillingness = (value) => {
+    if (!value || value.trim() === '') return 'Not Defined';
+    
+    const relocationMap = {
+      'by_self': 'Yes, I can relocate by myself',
+      'if_employer_covers': 'Yes, if employer covers relocation costs',
+      'not_willing': 'Not willing to relocate'
+    };
+    
+    return relocationMap[value] || value;
+  };
 
   // Calculate profile completeness dynamically
   const calculateProfileCompleteness = () => {
@@ -231,8 +243,7 @@ const CandidateMyProfile = () => {
         disability_status: profileData.disability_status || false,
         willing_to_relocate: profileData.willing_to_relocate || false,
         additional_notes: profileData.additional_notes || "",
-        references: profileData.references || [],
-        blocked_companies: profileData.blocked_companies || []
+        references: profileData.references || []
       });
     }
   };
@@ -366,6 +377,56 @@ const CandidateMyProfile = () => {
     setEditingSkill({ name: "", experience: "" });
   };
 
+  // Handle resume download
+  const handleResumeDownload = async () => {
+    if (!profileData.resume_file_path) {
+      toast.error("Resume file not available");
+      return;
+    }
+
+    try {
+      const baseURL = import.meta.env.VITE_API_BASE_URL;
+      // Construct the download URL
+      const downloadUrl = profileData.resume_file_path.startsWith('http') 
+        ? profileData.resume_file_path 
+        : `${baseURL}${profileData.resume_file_path.startsWith('/') ? '' : '/'}${profileData.resume_file_path}`;
+      
+      // Fetch the file with authentication headers
+      const response = await fetch(downloadUrl, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to download resume');
+      }
+
+      // Get the blob from the response
+      const blob = await response.blob();
+      
+      // Create a temporary URL for the blob
+      const url = window.URL.createObjectURL(blob);
+      
+      // Create a temporary anchor element to trigger download
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = profileData.resume_file_name || 'resume.pdf';
+      document.body.appendChild(link);
+      link.click();
+      
+      // Clean up
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      toast.success("Resume downloaded successfully");
+    } catch (error) {
+      console.error("Error downloading resume:", error);
+      toast.error("Failed to download resume. Please try again.");
+    }
+  };
+
   // Handle save profile
   const handleSaveProfile = async () => {
     try {
@@ -415,8 +476,7 @@ const CandidateMyProfile = () => {
         disability_status: editFormData.disability_status || false,
         willing_to_relocate: editFormData.willing_to_relocate || false,
         additional_notes: editFormData.additional_notes || "",
-        references: editFormData.references || [],
-        blocked_companies: editFormData.blocked_companies || []
+        references: editFormData.references || []
       };
 
       const result = await updateProfileData(updateData);
@@ -964,6 +1024,21 @@ const CandidateMyProfile = () => {
                         )}
                       </div>
                     </div>
+                    {profileData.resume_file_path && (
+                      <div className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 bg-gray-50 rounded-lg">
+                        <FileText className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-blue-600 flex-shrink-0" />
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[10px] sm:text-xs font-medium text-gray-500 mb-1">Resume</p>
+                          <button
+                            onClick={handleResumeDownload}
+                            className="w-full flex items-center justify-center gap-1.5 px-3 py-1.5 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-all duration-200 text-[10px] sm:text-xs font-medium shadow-sm hover:shadow-md"
+                          >
+                            <Download className="h-3 w-3 flex-shrink-0" />
+                            <span className="truncate">{profileData.resume_file_name || 'Download Resume'}</span>
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -1193,7 +1268,9 @@ const CandidateMyProfile = () => {
                             )}
                           </div>
                         ) : (
-                          <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">{profileData.relocation_willingness || "Not Defined"}</p>
+                          <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">
+                            {formatRelocationWillingness(profileData.relocation_willingness)}
+                          </p>
                         )}
                       </div>
                     </div>
@@ -1489,39 +1566,6 @@ const CandidateMyProfile = () => {
                   </div>
                 </div>
 
-                {/* Resume Information */}
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6 hover:shadow-md transition-all duration-200">
-                  <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-cyan-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-cyan-600" />
-                    </div>
-                    <h3 className="text-sm sm:text-base font-semibold text-gray-900">Resume Information</h3>
-                  </div>
-                  <div className="space-y-1.5 sm:space-y-2">
-                    <div className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 bg-gray-50 rounded-lg">
-                      <FileText className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-cyan-600 flex-shrink-0" />
-                      <div className="min-w-0 flex-1">
-                        <p className="text-[10px] sm:text-xs font-medium text-gray-500">Resume File</p>
-                        <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">{profileData.resume_file_name || "Not Defined"}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 bg-gray-50 rounded-lg">
-                      <FileText className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-cyan-600 flex-shrink-0" />
-                      <div className="min-w-0 flex-1">
-                        <p className="text-[10px] sm:text-xs font-medium text-gray-500">File Type</p>
-                        <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">{profileData.resume_mime_type || "Not Defined"}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 bg-gray-50 rounded-lg">
-                      <FileText className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-cyan-600 flex-shrink-0" />
-                      <div className="min-w-0 flex-1">
-                        <p className="text-[10px] sm:text-xs font-medium text-gray-500">File Path</p>
-                        <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">{profileData.resume_file_path || "Not Defined"}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
                 {/* Additional Information */}
                 <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6 hover:shadow-md transition-all duration-200 lg:col-span-2">
                   <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
@@ -1530,22 +1574,8 @@ const CandidateMyProfile = () => {
                     </div>
                     <h3 className="text-sm sm:text-base font-semibold text-gray-900">Additional Information</h3>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3">
                     <div className="space-y-1.5 sm:space-y-2">
-                      <div className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 bg-gray-50 rounded-lg">
-                        <User className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gray-600 flex-shrink-0" />
-                        <div className="min-w-0 flex-1">
-                          <p className="text-[10px] sm:text-xs font-medium text-gray-500">Profile ID</p>
-                          <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">{profileData.id || "Not Defined"}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 bg-gray-50 rounded-lg">
-                        <User className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gray-600 flex-shrink-0" />
-                        <div className="min-w-0 flex-1">
-                          <p className="text-[10px] sm:text-xs font-medium text-gray-500">User ID</p>
-                          <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">{profileData.user_id || "Not Defined"}</p>
-                        </div>
-                      </div>
                       <div className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 bg-gray-50 rounded-lg">
                         <Shield className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gray-600 flex-shrink-0" />
                         <div className="min-w-0 flex-1">
@@ -1673,44 +1703,6 @@ const CandidateMyProfile = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="space-y-1.5 sm:space-y-2">
-                      <div className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 bg-gray-50 rounded-lg">
-                        <Star className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gray-600 flex-shrink-0" />
-                        <div className="min-w-0 flex-1">
-                          <p className="text-[10px] sm:text-xs font-medium text-gray-500">Candidate Score</p>
-                          <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">{profileData.candidate_score || "Not Defined"}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 bg-gray-50 rounded-lg">
-                        <User className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gray-600 flex-shrink-0" />
-                        <div className="min-w-0 flex-1">
-                          <p className="text-[10px] sm:text-xs font-medium text-gray-500">Scored By</p>
-                          <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">{profileData.scored_by || "Not Defined"}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 bg-gray-50 rounded-lg">
-                        <Calendar className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gray-600 flex-shrink-0" />
-                        <div className="min-w-0 flex-1">
-                          <p className="text-[10px] sm:text-xs font-medium text-gray-500">Created At</p>
-                          <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">
-                            {profileData.created_at 
-                              ? new Date(profileData.created_at).toLocaleDateString() 
-                              : "Not Defined"}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 bg-gray-50 rounded-lg">
-                        <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gray-600 flex-shrink-0" />
-                        <div className="min-w-0 flex-1">
-                          <p className="text-[10px] sm:text-xs font-medium text-gray-500">Updated At</p>
-                          <p className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">
-                            {profileData.updated_at 
-                              ? new Date(profileData.updated_at).toLocaleDateString() 
-                              : "Not Defined"}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
                   </div>
                   
                   {profileData.score_notes && (
@@ -1758,23 +1750,6 @@ const CandidateMyProfile = () => {
                     </div>
                   )}
 
-                  {profileData.blocked_companies && profileData.blocked_companies.length > 0 ? (
-                    <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-gray-200">
-                      <p className="text-[10px] sm:text-xs font-medium text-gray-500 mb-1">Blocked Companies</p>
-                      <div className="flex flex-wrap gap-1">
-                        {profileData.blocked_companies.map((company, index) => (
-                          <span key={index} className="px-1.5 py-0.5 bg-red-100 text-red-800 rounded-md text-[10px] sm:text-xs font-medium">
-                            {getArrayItemDisplay(company)}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-gray-200">
-                      <p className="text-[10px] sm:text-xs font-medium text-gray-500 mb-1">Blocked Companies</p>
-                      <span className="text-[10px] sm:text-xs text-gray-500 italic">Not Defined</span>
-                    </div>
-                  )}
                 </div>
               </div>
             </div>

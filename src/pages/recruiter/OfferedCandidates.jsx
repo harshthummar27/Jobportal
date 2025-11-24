@@ -64,7 +64,6 @@ const OfferedCandidates = () => {
 
       setOffers(Array.isArray(data.data) ? data.data : []);
     } catch (error) {
-      console.error('Error fetching offered candidates:', error);
       setError(error.message || 'Failed to fetch offered candidates');
       setOffers([]);
     } finally {
@@ -237,10 +236,6 @@ const OfferedCandidates = () => {
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 flex-wrap">
                                 <div className="text-xs sm:text-sm font-bold text-gray-900 truncate">
-                                  {offer.candidate?.name || 'N/A'}
-                                </div>
-                                <span className="text-[10px] sm:text-xs text-gray-500">•</span>
-                                <div className="text-[10px] sm:text-xs text-gray-600 font-medium truncate">
                                   {offer.candidate?.candidate_code || 'N/A'}
                                 </div>
                                 {offer.candidate && offer.candidate.total_years_experience != null && (
@@ -418,5 +413,3 @@ const OfferedCandidates = () => {
 };
 
 export default OfferedCandidates;
-
-

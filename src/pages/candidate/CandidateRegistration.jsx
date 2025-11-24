@@ -327,7 +327,7 @@ const CandidateRegistration = () => {
         if (Object.keys(backendErrors).length > 0) {
           setErrors(prev => ({ ...prev, ...backendErrors }));
         }
-        toast.error(data.message || "Registration failed. Please try again.");
+        toast.error("Registration failed. Please try again.");
         return;
       }
       
