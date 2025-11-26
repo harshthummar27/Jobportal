@@ -298,49 +298,6 @@ const Inquiries = () => {
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl shadow-md border border-indigo-200 p-4 sm:p-5 lg:p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs sm:text-sm font-medium text-indigo-700 mb-1">Total Inquiries</p>
-              <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-indigo-600">{total}</p>
-            </div>
-            <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-indigo-500 rounded-xl flex items-center justify-center shadow-lg">
-              <Mail className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl shadow-md border border-green-200 p-4 sm:p-5 lg:p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs sm:text-sm font-medium text-green-700 mb-1">This Page</p>
-              <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-green-600">
-                {from}-{to} of {total}
-              </p>
-            </div>
-            <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-green-500 rounded-xl flex items-center justify-center shadow-lg">
-              <MessageSquare className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-md border border-blue-200 p-4 sm:p-5 lg:p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 sm:col-span-2 lg:col-span-1">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs sm:text-sm font-medium text-blue-700 mb-1">Showing</p>
-              <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-blue-600">
-                {inquiries.length} inquiry{inquiries.length !== 1 ? 'ies' : 'y'}
-              </p>
-            </div>
-            <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-blue-500 rounded-xl flex items-center justify-center shadow-lg">
-              <Filter className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Search Bar */}
       <div className="bg-white rounded-xl shadow-md border border-gray-200 p-4 sm:p-5">
         <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3">
@@ -409,11 +366,92 @@ const Inquiries = () => {
         {/* Mobile Card View */}
         <div className="sm:hidden">
           {loading ? (
-            <div className="px-2 py-6 text-center">
-              <div className="flex items-center justify-center gap-1.5">
-                <Loader2 className="h-4 w-4 animate-spin text-indigo-600" />
-                <span className="text-[10px] text-gray-600">Loading inquiries...</span>
-              </div>
+            <div className="divide-y divide-gray-100">
+              {[...Array(5)].map((_, idx) => (
+                <div key={idx} className="p-4 bg-white">
+                  {/* Header Skeleton */}
+                  <div className="flex items-center gap-3 mb-3">
+                    <div 
+                      className="w-4 h-4 rounded"
+                      style={{
+                        background: 'linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)',
+                        backgroundSize: '200% 100%',
+                        animation: 'shimmer 1.5s infinite',
+                        animationDelay: `${idx * 0.1}s`,
+                      }}
+                    ></div>
+                    <div 
+                      className="w-10 h-10 rounded-lg"
+                      style={{
+                        background: 'linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)',
+                        backgroundSize: '200% 100%',
+                        animation: 'shimmer 1.5s infinite',
+                        animationDelay: `${idx * 0.1 + 0.05}s`,
+                      }}
+                    ></div>
+                    <div className="flex-1 min-w-0">
+                      <div 
+                        className="h-4 rounded mb-1"
+                        style={{
+                          background: 'linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)',
+                          backgroundSize: '200% 100%',
+                          animation: 'shimmer 1.5s infinite',
+                          animationDelay: `${idx * 0.1 + 0.1}s`,
+                        }}
+                      ></div>
+                      <div 
+                        className="h-3 rounded w-32"
+                        style={{
+                          background: 'linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)',
+                          backgroundSize: '200% 100%',
+                          animation: 'shimmer 1.5s infinite',
+                          animationDelay: `${idx * 0.1 + 0.15}s`,
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+                  {/* Data Fields Skeleton */}
+                  <div className="grid grid-cols-1 gap-3 mb-4">
+                    {[...Array(4)].map((_, fieldIdx) => (
+                      <div key={fieldIdx} className="bg-gray-50 rounded-lg p-2 border border-gray-200">
+                        <div 
+                          className="h-3 rounded w-20 mb-1"
+                          style={{
+                            background: 'linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)',
+                            backgroundSize: '200% 100%',
+                            animation: 'shimmer 1.5s infinite',
+                            animationDelay: `${idx * 0.1 + fieldIdx * 0.05}s`,
+                          }}
+                        ></div>
+                        <div 
+                          className="h-3 rounded"
+                          style={{
+                            background: 'linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)',
+                            backgroundSize: '200% 100%',
+                            animation: 'shimmer 1.5s infinite',
+                            animationDelay: `${idx * 0.1 + fieldIdx * 0.05 + 0.05}s`,
+                          }}
+                        ></div>
+                      </div>
+                    ))}
+                  </div>
+                  {/* Action Buttons Skeleton */}
+                  <div className="flex items-center gap-2 mt-4 pt-4 border-t border-gray-200">
+                    {[...Array(2)].map((_, btnIdx) => (
+                      <div 
+                        key={btnIdx}
+                        className="flex-1 h-8 rounded-lg"
+                        style={{
+                          background: 'linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)',
+                          backgroundSize: '200% 100%',
+                          animation: 'shimmer 1.5s infinite',
+                          animationDelay: `${idx * 0.1 + btnIdx * 0.05}s`,
+                        }}
+                      ></div>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           ) : inquiries.length === 0 ? (
             <div className="px-2 py-6 text-center">
@@ -523,14 +561,31 @@ const Inquiries = () => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {loading ? (
-                <tr>
-                  <td colSpan="6" className="px-2 py-6 sm:py-8 text-center">
-                    <div className="flex items-center justify-center gap-1.5 sm:gap-2">
-                      <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin text-indigo-600" />
-                      <span className="text-[10px] sm:text-xs lg:text-sm text-gray-600">Loading inquiries...</span>
-                    </div>
-                  </td>
-                </tr>
+                <>
+                  {[...Array(8)].map((_, rowIdx) => (
+                    <tr key={rowIdx}>
+                      {[...Array(5)].map((_, colIdx) => (
+                        <td key={colIdx} className="px-4 py-3">
+                          <div 
+                            className={`h-4 rounded ${
+                              colIdx === 0 ? 'w-40' : 
+                              colIdx === 1 ? 'w-48' : 
+                              colIdx === 2 ? 'w-64' : 
+                              colIdx === 3 ? 'w-32' : 
+                              'w-24'
+                            }`}
+                            style={{
+                              background: 'linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)',
+                              backgroundSize: '200% 100%',
+                              animation: 'shimmer 1.5s infinite',
+                              animationDelay: `${rowIdx * 0.1 + colIdx * 0.05}s`,
+                            }}
+                          ></div>
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </>
               ) : inquiries.length === 0 ? (
                 <tr>
                   <td colSpan="6" className="px-2 py-6 sm:py-8 text-center">

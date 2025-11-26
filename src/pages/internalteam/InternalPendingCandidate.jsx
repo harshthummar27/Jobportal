@@ -224,12 +224,40 @@ const PendingCandidatesIT = () => {
   const columns = useMemo(() => {
     if (!candidates || candidates.length === 0) return [];
     const first = candidates[0];
-    const excludedColumns = ['candidate_profile', 'candidate_status', 'is_blocked', 'block_info', 'letest_offer', 'latest_offer'];
+    const excludedColumns = ['id', 'candidate_profile', 'candidate_status', 'is_blocked', 'block_info', 'letest_offer', 'latest_offer'];
     return Object.keys(first).filter(col => {
       const colLower = col.toLowerCase();
       return !excludedColumns.some(excluded => excluded.toLowerCase() === colLower);
     });
   }, [candidates]);
+
+  // Get candidate code from row data
+  const getCandidateCode = (row) => {
+    // Try to get from candidate_profile object
+    if (row.candidate_profile && typeof row.candidate_profile === 'object') {
+      const profileData = row.candidate_profile;
+      if (profileData.candidate_code || profileData.candidateCode) {
+        return profileData.candidate_code || profileData.candidateCode;
+      }
+    }
+    // Try to get from candidate_profile string
+    if (row.candidate_profile && typeof row.candidate_profile === 'string') {
+      try {
+        const profileData = JSON.parse(row.candidate_profile);
+        if (profileData.candidate_code || profileData.candidateCode) {
+          return profileData.candidate_code || profileData.candidateCode;
+        }
+      } catch (e) {
+        // Not valid JSON, ignore
+      }
+    }
+    // Try other common fields
+    if (row.candidate_code) return row.candidate_code;
+    if (row.code) return row.code;
+    // Fallback to ID
+    if (row.id) return `CAND${row.id}`;
+    return null;
+  };
 
   return (
     <div className="w-full max-w-none">
@@ -372,6 +400,9 @@ const PendingCandidatesIT = () => {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50 sticky top-0">
                   <tr>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Candidate Code
+                    </th>
                     {columns.map((col) => (
                       <th
                         key={col}
@@ -398,6 +429,9 @@ const PendingCandidatesIT = () => {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {candidates.map((row, idx) => (
                     <tr key={idx} className="hover:bg-gray-50">
+                      <td className="px-4 py-2 text-sm text-gray-700">
+                        {getCandidateCode(row) || '-'}
+                      </td>
                       {columns.map((col) => {
                         const formattedValue = formatValue(row[col]);
                         return (

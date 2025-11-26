@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Search, RefreshCw, ChevronLeft, ChevronRight, AlertCircle, Users, ChevronUp, ChevronDown, Eye } from "lucide-react";
 
-const EXCLUDED_FIELDS = ['candidate_status', 'is_blocked', 'block_info', 'latest_offer', 'letest_offer'];
+const EXCLUDED_FIELDS = ['id', 'candidate_status', 'is_blocked', 'block_info', 'latest_offer', 'letest_offer'];
 
 const ApprovedCandidatesIT = () => {
   const [candidates, setCandidates] = useState([]);
@@ -340,6 +340,9 @@ const ApprovedCandidatesIT = () => {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50 sticky top-0">
                   <tr>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Candidate Code
+                    </th>
                     {columns.map((col) => (
                       <th
                         key={col}
@@ -360,6 +363,9 @@ const ApprovedCandidatesIT = () => {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {candidates.map((row, idx) => (
                     <tr key={idx} className="hover:bg-gray-50">
+                      <td className="px-4 py-2 text-sm text-gray-700">
+                        {getCandidateCode(row) || '-'}
+                      </td>
                       {columns.map((col) => {
                         const formattedValue = formatValue(row[col], col);
                         const candidateCode = getCandidateCode(row);

@@ -1,14 +1,20 @@
 import React, { useState, useEffect, useRef } from "react";
-import { User, Briefcase, AlertCircle, RefreshCw, Loader2, Clock, FileCheck, XCircle, X, CheckCircle2, Mail, Send, Ban } from "lucide-react";
+import { User, Briefcase, AlertCircle, RefreshCw, Loader2, Clock, FileCheck, XCircle, CheckCircle2, Mail, Send, Ban } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from 'react-toastify';
 import CandidateLayout from "../../Components/CandidateLayout";
 
 const CandidateDashboard = () => {
   const [dashboardStats, setDashboardStats] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  // Initialize hasProfile immediately from localStorage to prevent flicker
+  const initialHasProfile = (() => {
+    const hasProfileStatus = localStorage.getItem('has_profile');
+    return hasProfileStatus === 'true';
+  })();
+  // Only show loading if we have a profile (need to fetch data)
+  const [isLoading, setIsLoading] = useState(initialHasProfile);
   const [error, setError] = useState(null);
-  const [hasProfile, setHasProfile] = useState(false);
+  const [hasProfile, setHasProfile] = useState(initialHasProfile);
   const hasShownErrorToastRef = useRef(false);
 
   // Fetch dashboard stats from API
@@ -159,8 +165,9 @@ const CandidateDashboard = () => {
             </div>
           )}
 
-          {/* Loading State */}
-          {isLoading ? (
+          {/* Loading State - Only show if we have a profile and are loading */}
+          {/* If no profile, show the "Complete Profile Setup" option immediately below */}
+          {isLoading && hasProfile ? (
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 sm:p-12 text-center">
               <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin mx-auto text-indigo-600 mb-2 sm:mb-3" />
               <p className="text-xs sm:text-sm text-gray-500 font-medium">Loading dashboard statistics...</p>
@@ -179,7 +186,7 @@ const CandidateDashboard = () => {
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-2 sm:gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
                   <div className="bg-gray-50 rounded-lg p-2 sm:p-3 border border-gray-200">
                     <div className="flex items-center gap-1 sm:gap-1.5 mb-1 sm:mb-1.5">
                       <FileCheck className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gray-600" />
@@ -210,22 +217,6 @@ const CandidateDashboard = () => {
                       <span className="text-[10px] sm:text-xs font-medium text-red-700">Declined</span>
                     </div>
                     <p className="text-lg sm:text-xl lg:text-2xl font-bold text-red-900">{dashboardStats.offers?.declined || 0}</p>
-                  </div>
-                  
-                  <div className="bg-gray-50 rounded-lg p-2 sm:p-3 border border-gray-200">
-                    <div className="flex items-center gap-1 sm:gap-1.5 mb-1 sm:mb-1.5">
-                      <X className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gray-600" />
-                      <span className="text-[10px] sm:text-xs font-medium text-gray-600">Withdrawn</span>
-                    </div>
-                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">{dashboardStats.offers?.withdrawn || 0}</p>
-                  </div>
-                  
-                  <div className="bg-orange-50 rounded-lg p-2 sm:p-3 border border-orange-200">
-                    <div className="flex items-center gap-1 sm:gap-1.5 mb-1 sm:mb-1.5">
-                      <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-orange-600" />
-                      <span className="text-[10px] sm:text-xs font-medium text-orange-700">Expired</span>
-                    </div>
-                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-orange-900">{dashboardStats.offers?.expired || 0}</p>
                   </div>
                   
                   <div className="bg-indigo-50 rounded-lg p-2 sm:p-3 border border-indigo-200">

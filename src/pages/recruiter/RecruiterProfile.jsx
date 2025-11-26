@@ -3,17 +3,32 @@ import RecruiterLayout from "../../Components/RecruiterLayout";
 import { Loader2, Edit, Save, X } from "lucide-react";
 import { toast } from 'react-toastify';
 
-const Field = ({ label, value, isEditMode, editValue, onChange, type = "text" }) => (
+const Field = ({ label, value, isEditMode, editValue, onChange, type = "text", options = null }) => (
   <div className="flex flex-col">
     <span className="text-[10px] sm:text-xs text-gray-500">{label}</span>
     {isEditMode ? (
-      <input
-        type={type}
-        value={editValue ?? ''}
-        onChange={(e) => onChange(e.target.value)}
-        className="mt-0.5 px-2 py-1 text-[10px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
-        placeholder={label}
-      />
+      options && Array.isArray(options) ? (
+        <select
+          value={editValue ?? ''}
+          onChange={(e) => onChange(e.target.value)}
+          className="mt-0.5 px-2 py-1 text-[10px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white"
+        >
+          <option value="">Select {label}</option>
+          {options.map((option) => (
+            <option key={option} value={option}>
+              {option} {label.toLowerCase().includes('size') ? 'employees' : ''}
+            </option>
+          ))}
+        </select>
+      ) : (
+        <input
+          type={type}
+          value={editValue ?? ''}
+          onChange={(e) => onChange(e.target.value)}
+          className="mt-0.5 px-2 py-1 text-[10px] sm:text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          placeholder={label}
+        />
+      )
     ) : (
       <span className="text-[10px] sm:text-xs font-semibold text-gray-900 break-all">{value ?? '—'}</span>
     )}
@@ -26,6 +41,14 @@ const BoolBadge = ({ value, trueText = 'Yes', falseText = 'No' }) => (
   </span>
 );
 
+const companySizes = [
+  "1-10",
+  "11-50", 
+  "51-100",
+  "101-500",
+  "501-1000",
+  "1000+"
+];
 
 const RecruiterProfile = () => {
   const [data, setData] = useState(null);
@@ -333,6 +356,7 @@ const RecruiterProfile = () => {
                       isEditMode={isEditMode}
                       editValue={editFormData.company_size}
                       onChange={(value) => handleEditInputChange('company_size', value)}
+                      options={companySizes}
                     />
                     <Field 
                       label="Industry" 

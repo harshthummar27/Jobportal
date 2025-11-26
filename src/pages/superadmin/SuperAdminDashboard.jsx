@@ -11,7 +11,6 @@ import {
   XCircle, 
   CheckCircle2, 
   Mail, 
-  Ban,
   TrendingUp,
   Shield,
   X
@@ -434,45 +433,6 @@ const SuperAdminDashboard = () => {
                     <span className="text-[10px] sm:text-xs font-medium text-gray-600 truncate">Withdrawn</span>
                   </div>
                   <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">{dashboardStats.offers?.withdrawn || 0}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Blocks Statistics */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6 mb-3 sm:mb-4">
-              <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Ban className="h-4 w-4 sm:h-5 sm:w-5 text-red-600" />
-                </div>
-                <div>
-                  <h2 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900">Blocks</h2>
-                  <p className="text-xs text-gray-600 hidden sm:block">Block statistics</p>
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-3 gap-2 sm:gap-3">
-                <div className="bg-gray-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-gray-200">
-                  <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
-                    <FileCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-600 flex-shrink-0" />
-                    <span className="text-[10px] sm:text-xs font-medium text-gray-600 truncate">Total</span>
-                  </div>
-                  <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">{dashboardStats.blocks?.total || 0}</p>
-                </div>
-                
-                <div className="bg-red-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-red-200">
-                  <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
-                    <Ban className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-red-600 flex-shrink-0" />
-                    <span className="text-[10px] sm:text-xs font-medium text-red-700 truncate">Active</span>
-                  </div>
-                  <p className="text-lg sm:text-xl lg:text-2xl font-bold text-red-900">{dashboardStats.blocks?.active || 0}</p>
-                </div>
-                
-                <div className="bg-gray-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-gray-200">
-                  <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
-                    <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-600 flex-shrink-0" />
-                    <span className="text-[10px] sm:text-xs font-medium text-gray-600 truncate">Inactive</span>
-                  </div>
-                  <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">{dashboardStats.blocks?.inactive || 0}</p>
                 </div>
               </div>
             </div>

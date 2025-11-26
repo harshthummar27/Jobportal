@@ -121,7 +121,7 @@ const AllCandidates = () => {
   };
 
   // Define necessary/default fields to show in table
-  const defaultColumns = ['id', 'name', 'email', 'mobile_number', 'status'];
+  const defaultColumns = ['name', 'email', 'mobile_number', 'status'];
   
   // Get candidate code from profile for display
   const getCandidateCode = (candidate) => {
@@ -431,7 +431,7 @@ const AllCandidates = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  {[...Array(6)].map((_, idx) => (
+                  {[...Array(5)].map((_, idx) => (
                     <th key={idx} className="px-4 py-3 text-left">
                       <div 
                         className="h-4 bg-gray-200 rounded w-24"
@@ -448,15 +448,14 @@ const AllCandidates = () => {
               <tbody className="bg-white divide-y divide-gray-200">
                 {[...Array(8)].map((_, rowIdx) => (
                   <tr key={rowIdx}>
-                    {[...Array(6)].map((_, colIdx) => (
+                    {[...Array(5)].map((_, colIdx) => (
                       <td key={colIdx} className="px-4 py-3">
                         <div 
                           className={`h-4 rounded ${
-                            colIdx === 0 ? 'w-32' : 
+                            colIdx === 0 ? 'w-28' : 
                             colIdx === 1 ? 'w-40' : 
                             colIdx === 2 ? 'w-28' : 
                             colIdx === 3 ? 'w-24' : 
-                            colIdx === 4 ? 'w-36' : 
                             'w-20'
                           }`}
                           style={{
@@ -515,6 +514,9 @@ const AllCandidates = () => {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50 sticky top-0">
                   <tr>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Candidate Code
+                    </th>
                     {defaultColumns.map((col) => (
                       <th
                         key={col}
@@ -531,9 +533,6 @@ const AllCandidates = () => {
                       </th>
                     ))}
                     <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Candidate Code
-                    </th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
@@ -541,6 +540,9 @@ const AllCandidates = () => {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {candidates.map((row, idx) => (
                     <tr key={idx} className="hover:bg-gray-50">
+                      <td className="px-4 py-2 text-sm text-gray-700">
+                        {getCandidateCode(row)}
+                      </td>
                       {defaultColumns.map((col) => {
                         const formattedValue = formatValue(row[col], col);
                         return (
@@ -549,9 +551,6 @@ const AllCandidates = () => {
                           </td>
                         );
                       })}
-                      <td className="px-4 py-2 text-sm text-gray-700">
-                        {getCandidateCode(row)}
-                      </td>
                       <td className="px-4 py-2 text-sm">
                         <button
                           onClick={() => handleViewDetails(row)}

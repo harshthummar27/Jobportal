@@ -17,9 +17,15 @@ import CandidateLayout from "../../Components/CandidateLayout";
 
 const CandidateOffers = () => {
   const [offers, setOffers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // Initialize hasProfile immediately from localStorage to prevent flicker
+  const initialHasProfile = (() => {
+    const hasProfileStatus = localStorage.getItem('has_profile');
+    return hasProfileStatus === 'true';
+  })();
+  // Only show loading if we have a profile (need to fetch data)
+  const [loading, setLoading] = useState(initialHasProfile);
   const [error, setError] = useState(null);
-  const [hasProfile, setHasProfile] = useState(false);
+  const [hasProfile, setHasProfile] = useState(initialHasProfile);
   const hasShownErrorToastRef = useRef(false);
 
   // Filter and sort states - all null by default

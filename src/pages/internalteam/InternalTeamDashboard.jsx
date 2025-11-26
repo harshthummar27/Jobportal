@@ -10,12 +10,10 @@ import {
   Clock, 
   FileCheck, 
   XCircle, 
-  X, 
+  X,
   CheckCircle2, 
   Mail, 
-  Ban,
-  TrendingUp,
-  UserX
+  TrendingUp
 } from "lucide-react";
 import { toast } from 'react-toastify';
 
@@ -139,7 +137,7 @@ const InternalTeamDashboard = () => {
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3">
                   <div className="bg-gray-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-gray-200">
                     <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
                       <FileCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-600 flex-shrink-0" />
@@ -162,14 +160,6 @@ const InternalTeamDashboard = () => {
                       <span className="text-[10px] sm:text-xs font-medium text-green-700 truncate">Read</span>
                     </div>
                     <p className="text-lg sm:text-xl lg:text-2xl font-bold text-green-900">{dashboardStats.notifications?.read || 0}</p>
-                  </div>
-                  
-                  <div className="bg-red-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-red-200">
-                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
-                      <AlertCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-red-600 flex-shrink-0" />
-                      <span className="text-[10px] sm:text-xs font-medium text-red-700 truncate">Urgent</span>
-                    </div>
-                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-red-900">{dashboardStats.notifications?.urgent || 0}</p>
                   </div>
                   
                   <div className="bg-orange-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-orange-200">
@@ -241,7 +231,7 @@ const InternalTeamDashboard = () => {
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-2 sm:gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
                   <div className="bg-gray-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-gray-200">
                     <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
                       <FileCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-600 flex-shrink-0" />
@@ -274,14 +264,6 @@ const InternalTeamDashboard = () => {
                     <p className="text-lg sm:text-xl lg:text-2xl font-bold text-red-900">{dashboardStats.candidates?.declined || 0}</p>
                   </div>
                   
-                  <div className="bg-gray-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-gray-200">
-                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
-                      <Ban className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-600 flex-shrink-0" />
-                      <span className="text-[10px] sm:text-xs font-medium text-gray-600 truncate">Blocked</span>
-                    </div>
-                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">{dashboardStats.candidates?.blocked || 0}</p>
-                  </div>
-                  
                   <div className="bg-orange-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-orange-200">
                     <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
                       <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-orange-600 flex-shrink-0" />
@@ -312,7 +294,7 @@ const InternalTeamDashboard = () => {
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
                   <div className="bg-gray-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-gray-200">
                     <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
                       <FileCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-600 flex-shrink-0" />
@@ -352,14 +334,6 @@ const InternalTeamDashboard = () => {
                     </div>
                     <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">{dashboardStats.offers?.withdrawn || 0}</p>
                   </div>
-                  
-                  <div className="bg-orange-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-orange-200">
-                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
-                      <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-orange-600 flex-shrink-0" />
-                      <span className="text-[10px] sm:text-xs font-medium text-orange-700 truncate">Expired</span>
-                    </div>
-                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-orange-900">{dashboardStats.offers?.expired || 0}</p>
-                  </div>
                 </div>
               </div>
 
@@ -390,93 +364,6 @@ const InternalTeamDashboard = () => {
                       <span className="text-[10px] sm:text-xs font-medium text-green-700 truncate">Active</span>
                     </div>
                     <p className="text-lg sm:text-xl lg:text-2xl font-bold text-green-900">{dashboardStats.staff?.active || 0}</p>
-                  </div>
-                </div>
-              </div>
-        
-              {/* Candidate Statuses Statistics */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6">
-                <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-cyan-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-cyan-600" />
-                  </div>
-                  <div>
-                    <h2 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900">Candidate Statuses</h2>
-                    <p className="text-xs text-gray-600 hidden sm:block">Candidate status breakdown</p>
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-9 gap-2 sm:gap-3">
-                  <div className="bg-blue-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-blue-200">
-                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
-                      <Mail className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-blue-600 flex-shrink-0" />
-                      <span className="text-[10px] sm:text-xs font-medium text-blue-700 truncate">Contacted</span>
-                    </div>
-                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-900">{dashboardStats.candidate_statuses?.contacted || 0}</p>
-                  </div>
-                  
-                  <div className="bg-indigo-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-indigo-200">
-                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
-                      <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-indigo-600 flex-shrink-0" />
-                      <span className="text-[10px] sm:text-xs font-medium text-indigo-700 truncate">Interview Scheduled</span>
-                    </div>
-                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-indigo-900">{dashboardStats.candidate_statuses?.interview_scheduled || 0}</p>
-                  </div>
-                  
-                  <div className="bg-purple-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-purple-200">
-                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
-                      <UserCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-purple-600 flex-shrink-0" />
-                      <span className="text-[10px] sm:text-xs font-medium text-purple-700 truncate">Interviewed</span>
-                    </div>
-                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-purple-900">{dashboardStats.candidate_statuses?.interviewed || 0}</p>
-                  </div>
-                  
-                  <div className="bg-orange-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-orange-200">
-                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
-                      <Briefcase className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-orange-600 flex-shrink-0" />
-                      <span className="text-[10px] sm:text-xs font-medium text-orange-700 truncate">Offer Made</span>
-                    </div>
-                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-orange-900">{dashboardStats.candidate_statuses?.offer_made || 0}</p>
-                  </div>
-                  
-                  <div className="bg-green-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-green-200">
-                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
-                      <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-600 flex-shrink-0" />
-                      <span className="text-[10px] sm:text-xs font-medium text-green-700 truncate">Offer Accepted</span>
-                    </div>
-                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-green-900">{dashboardStats.candidate_statuses?.offer_accepted || 0}</p>
-                  </div>
-                  
-                  <div className="bg-red-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-red-200">
-                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
-                      <XCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-red-600 flex-shrink-0" />
-                      <span className="text-[10px] sm:text-xs font-medium text-red-700 truncate">Offer Declined</span>
-                    </div>
-                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-red-900">{dashboardStats.candidate_statuses?.offer_declined || 0}</p>
-                  </div>
-                  
-                  <div className="bg-yellow-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-yellow-200">
-                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
-                      <XCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-yellow-600 flex-shrink-0" />
-                      <span className="text-[10px] sm:text-xs font-medium text-yellow-700 truncate">Not Interested</span>
-                    </div>
-                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-yellow-900">{dashboardStats.candidate_statuses?.not_interested || 0}</p>
-                  </div>
-                  
-                  <div className="bg-gray-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-gray-200">
-                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
-                      <UserX className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-600 flex-shrink-0" />
-                      <span className="text-[10px] sm:text-xs font-medium text-gray-600 truncate">Unavailable</span>
-                    </div>
-                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">{dashboardStats.candidate_statuses?.unavailable || 0}</p>
-                  </div>
-                  
-                  <div className="bg-gray-50 rounded-lg p-2 sm:p-3 lg:p-4 border border-gray-200">
-                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
-                      <Ban className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-600 flex-shrink-0" />
-                      <span className="text-[10px] sm:text-xs font-medium text-gray-600 truncate">Blocked</span>
-                    </div>
-                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">{dashboardStats.candidate_statuses?.blocked || 0}</p>
                   </div>
                 </div>
               </div>

@@ -205,29 +205,39 @@ const ShortlistedCandidates = () => {
               </div>
             )}
             
-            {/* Pagination */}
-            {!loading && selectedCandidates.length > 0 && pagination.last_page > 1 && (
+            {/* Pagination - Show all the time when there are candidates */}
+            {!loading && selectedCandidates.length > 0 && (
               <div className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 border-t border-gray-200 bg-gray-50">
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-0">
                   <div className="text-xs sm:text-sm text-gray-700">
                     <span className="font-medium">
-                      Showing {pagination.from} to {pagination.to} of {pagination.total} results
+                      Showing {pagination.from || 0} to {pagination.to || 0} of {pagination.total || 0} results
                     </span>
                   </div>
                   <div className="flex items-center gap-1.5 sm:gap-2">
                     <button
-                      onClick={() => setPagination(prev => ({ ...prev, current_page: prev.current_page - 1 }))}
-                      disabled={pagination.current_page === 1}
+                      onClick={() => {
+                        const newPage = pagination.current_page - 1;
+                        if (newPage >= 1) {
+                          setPagination(prev => ({ ...prev, current_page: newPage }));
+                        }
+                      }}
+                      disabled={pagination.current_page <= 1}
                       className="px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex items-center gap-1"
                     >
                       <span className="hidden sm:inline">Previous</span>
                     </button>
                     <span className="px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm text-gray-700">
-                      Page {pagination.current_page} of {pagination.last_page}
+                      Page {pagination.current_page || 1} of {pagination.last_page || 1}
                     </span>
                     <button
-                      onClick={() => setPagination(prev => ({ ...prev, current_page: prev.current_page + 1 }))}
-                      disabled={pagination.current_page === pagination.last_page}
+                      onClick={() => {
+                        const newPage = pagination.current_page + 1;
+                        if (newPage <= pagination.last_page) {
+                          setPagination(prev => ({ ...prev, current_page: newPage }));
+                        }
+                      }}
+                      disabled={pagination.current_page >= pagination.last_page}
                       className="px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex items-center gap-1"
                     >
                       <span className="hidden sm:inline">Next</span>

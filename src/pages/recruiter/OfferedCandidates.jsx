@@ -15,6 +15,14 @@ const OfferedCandidates = () => {
   const [offers, setOffers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [pagination, setPagination] = useState({
+    current_page: 1,
+    per_page: 25,
+    total: 0,
+    last_page: 1,
+    from: 0,
+    to: 0,
+  });
   
   // Filters
   const [sortDirection, setSortDirection] = useState("desc");
@@ -30,10 +38,10 @@ const OfferedCandidates = () => {
         throw new Error('No authentication token found');
       }
 
-      // Static pagination params
+      // Pagination params
       const params = new URLSearchParams({
-        page: '1',
-        per_page: '25'
+        page: pagination.current_page.toString(),
+        per_page: pagination.per_page.toString()
       });
 
       if (sortDirection) {
@@ -62,7 +70,29 @@ const OfferedCandidates = () => {
         throw new Error(data.message || 'Failed to fetch offered candidates');
       }
 
-      setOffers(Array.isArray(data.data) ? data.data : []);
+      // Handle paginated response
+      if (data.data && data.data.data) {
+        // Paginated response
+        setOffers(Array.isArray(data.data.data) ? data.data.data : []);
+        setPagination({
+          current_page: data.data.current_page ?? 1,
+          per_page: Number(data.data.per_page) || pagination.per_page,
+          total: data.data.total ?? 0,
+          last_page: data.data.last_page ?? 1,
+          from: data.data.from ?? 0,
+          to: data.data.to ?? 0,
+        });
+      } else {
+        // Non-paginated response (backward compatibility)
+        setOffers(Array.isArray(data.data) ? data.data : []);
+        setPagination(prev => ({
+          ...prev,
+          total: Array.isArray(data.data) ? data.data.length : 0,
+          last_page: 1,
+          from: 1,
+          to: Array.isArray(data.data) ? data.data.length : 0,
+        }));
+      }
     } catch (error) {
       setError(error.message || 'Failed to fetch offered candidates');
       setOffers([]);
@@ -72,9 +102,19 @@ const OfferedCandidates = () => {
   };
 
   useEffect(() => {
-    fetchOfferedCandidates();
+    // Reset to page 1 when filters change
+    if (pagination.current_page !== 1) {
+      setPagination(prev => ({ ...prev, current_page: 1 }));
+    } else {
+      fetchOfferedCandidates();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortDirection, offerStatus]);
+
+  useEffect(() => {
+    fetchOfferedCandidates();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pagination.current_page]);
 
   const getStatusBadge = (status) => {
     const statusLower = status?.toLowerCase();
@@ -402,6 +442,48 @@ const OfferedCandidates = () => {
                       </div>
                     </div>
                   ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Pagination - Show all the time when there are offers */}
+            {!loading && offers.length > 0 && (
+              <div className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 border-t border-gray-200 bg-gray-50">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-0">
+                  <div className="text-xs sm:text-sm text-gray-700">
+                    <span className="font-medium">
+                      Showing {pagination.from || 0} to {pagination.to || 0} of {pagination.total || 0} results
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <button
+                      onClick={() => {
+                        const newPage = pagination.current_page - 1;
+                        if (newPage >= 1) {
+                          setPagination(prev => ({ ...prev, current_page: newPage }));
+                        }
+                      }}
+                      disabled={pagination.current_page <= 1}
+                      className="px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex items-center gap-1"
+                    >
+                      <span className="hidden sm:inline">Previous</span>
+                    </button>
+                    <span className="px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm text-gray-700">
+                      Page {pagination.current_page || 1} of {pagination.last_page || 1}
+                    </span>
+                    <button
+                      onClick={() => {
+                        const newPage = pagination.current_page + 1;
+                        if (newPage <= pagination.last_page) {
+                          setPagination(prev => ({ ...prev, current_page: newPage }));
+                        }
+                      }}
+                      disabled={pagination.current_page >= pagination.last_page}
+                      className="px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex items-center gap-1"
+                    >
+                      <span className="hidden sm:inline">Next</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             )}

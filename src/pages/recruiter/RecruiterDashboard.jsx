@@ -51,7 +51,13 @@ const RecruiterDashboard = () => {
   const [isSelecting, setIsSelecting] = useState(false);
 
   const normalizeText = (value) => value?.toString().trim().replace(/\s+/g, ' ') || '';
-  const titleCase = (value) => normalizeText(value).toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+  // Preserve spaces in titleCase - convert underscores to spaces, then apply title case
+  const titleCase = (value) => {
+    if (!value) return '';
+    // Replace underscores with spaces first, then normalize
+    const withSpaces = value.toString().replace(/_/g, ' ');
+    return normalizeText(withSpaces).toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+  };
   
   const formatDate = (dateString) => {
     if (!dateString) return null;
@@ -94,19 +100,20 @@ const RecruiterDashboard = () => {
       });
 
       const f = filters || {};
+      // Normalize all text search fields consistently for case-insensitive matching
       const jobRole = titleCase(f.job_role || '');
       if (jobRole) params.append('job_role', jobRole);
       if (f.preferred_locations) {
         const locationsArray = f.preferred_locations
           .split(',')
-          .map(loc => loc.trim())
+          .map(loc => titleCase(loc))
           .filter(Boolean);
         locationsArray.forEach(loc => params.append('preferred_locations[]', loc));
       }
       if (f.skills) {
         const skillsArray = f.skills
           .split(',')
-          .map(skill => skill.trim())
+          .map(skill => titleCase(skill))
           .filter(Boolean);
         skillsArray.forEach(skill => params.append('skills[]', skill));
       }
@@ -764,35 +771,39 @@ const RecruiterDashboard = () => {
               </div>
             )}
             
-            {/* Pagination */}
-            {!loading && candidates.length > 0 && pagination.last_page > 1 && (
+            {/* Pagination - Show all the time when there are candidates */}
+            {!loading && candidates.length > 0 && (
               <div className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 border-t border-gray-200 bg-gray-50">
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-0">
                   <div className="text-xs sm:text-sm text-gray-700">
                     <span className="font-medium">
-                      Showing {pagination.from} to {pagination.to} of {pagination.total} results
+                      Showing {pagination.from || 0} to {pagination.to || 0} of {pagination.total || 0} results
                     </span>
                   </div>
                   <div className="flex items-center gap-1.5 sm:gap-2">
                     <button
                       onClick={() => {
                         const newPage = pagination.current_page - 1;
-                        searchCandidates(searchParams, newPage);
+                        if (newPage >= 1 && !isSearching) {
+                          searchCandidates(searchParams, newPage);
+                        }
                       }}
-                      disabled={pagination.current_page === 1 || isSearching}
+                      disabled={pagination.current_page <= 1 || isSearching}
                       className="px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex items-center gap-1"
                     >
                       <span className="hidden sm:inline">Previous</span>
                     </button>
                     <span className="px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm text-gray-700">
-                      Page {pagination.current_page} of {pagination.last_page}
+                      Page {pagination.current_page || 1} of {pagination.last_page || 1}
                     </span>
                     <button
                       onClick={() => {
                         const newPage = pagination.current_page + 1;
-                        searchCandidates(searchParams, newPage);
+                        if (newPage <= pagination.last_page && !isSearching) {
+                          searchCandidates(searchParams, newPage);
+                        }
                       }}
-                      disabled={pagination.current_page === pagination.last_page || isSearching}
+                      disabled={pagination.current_page >= pagination.last_page || isSearching}
                       className="px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex items-center gap-1"
                     >
                       <span className="hidden sm:inline">Next</span>
@@ -976,9 +987,27 @@ const RecruiterDashboard = () => {
                           // Ensure skillName is always a string
                           skillName = String(skillName || '');
                           
-                          const displayText = experience && experience.trim()
-                            ? `${skillName} (${experience} ${experience === '1' ? 'year' : 'years'})`
-                            : skillName;
+                          // Format experience text - check if it already contains "year" or "years"
+                          let displayText = skillName;
+                          if (experience && experience.trim()) {
+                            const expLower = experience.toLowerCase().trim();
+                            const hasYear = expLower.includes('year');
+                            
+                            if (hasYear) {
+                              // Experience already contains "year" or "years", use as-is
+                              displayText = `${skillName} (${experience})`;
+                            } else {
+                              // Extract numeric value and append "year" or "years"
+                              const numValue = parseFloat(experience);
+                              if (!isNaN(numValue)) {
+                                const yearText = numValue === 1 ? 'year' : 'years';
+                                displayText = `${skillName} (${numValue} ${yearText})`;
+                              } else {
+                                // If not a number, just append the experience as-is
+                                displayText = `${skillName} (${experience})`;
+                              }
+                            }
+                          }
                           
                           return (
                             <span key={idx} className="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-medium">
