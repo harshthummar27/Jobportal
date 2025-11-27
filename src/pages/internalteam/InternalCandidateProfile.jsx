@@ -1098,9 +1098,22 @@ const InternalCandidateProfile = () => {
                           
                           skillName = String(skillName || '');
                           
-                          const displayText = experience && experience.trim()
-                            ? `${skillName} (${experience} ${experience === '1' ? 'year' : 'years'})`
-                            : skillName;
+                          const displayText = (() => {
+                            if (!experience || !experience.trim()) return skillName;
+                          
+                            const expTrim = experience.trim();
+                            const hasYearWord = /\byears?\b/i.test(expTrim); // checks for "year" or "years"
+                          
+                            // If DB already gives "1 year" / "2 years", use as-is
+                            if (hasYearWord) {
+                              return `${skillName} (${expTrim})`;
+                            }
+                          
+                            // If DB gives just "1" / "2", then add "year/years"
+                            const isOne = expTrim === '1';
+                            return `${skillName} (${expTrim} ${isOne ? 'year' : 'years'})`;
+                          })();
+                          
                           
                           return (
                             <span key={idx} className="bg-gray-100 text-gray-800 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium">

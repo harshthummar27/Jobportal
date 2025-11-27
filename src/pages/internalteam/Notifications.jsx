@@ -663,9 +663,18 @@ const Notifications = () => {
               const candidateSelection = notification.candidate_selection;
               const candidateProfile = candidateSelection?.candidate_profile;
               const recruiterProfile = candidateSelection?.recruiter?.recruiter_profile;
-              const displayTitle = candidateSelection && candidateProfile
-                ? `Recruiter ${candidateSelection?.recruiter?.name || ''} selected candidate ${candidateProfile?.candidate_code || ''}`
-                : notification.title;
+              const displayTitle = (() => {
+                if (candidateSelection && candidateProfile && candidateSelection?.recruiter) {
+                  return `Recruiter ${candidateSelection.recruiter.name || 'N/A'} selected candidate ${candidateProfile.candidate_code || 'N/A'}`;
+                }
+              
+                // If custom title from API exists, use that
+                if (notification.title) return notification.title;
+              
+                // Last fallback
+                return 'Candidate selection notification';
+              })();
+              
               
               // LinkedIn-style styling: unread = blue background, read = white background
               const isUnread = !notification.is_read;
@@ -753,60 +762,98 @@ const Notifications = () => {
                       {isExpanded && (
                         <div className="mt-2">
                           {/* Candidate and Recruiter Info */}
-                          {candidateSelection && (
-                            <div className={`rounded-lg p-2 sm:p-3 mb-2 ${
-                              isUnread ? 'bg-blue-100/50 border-2 sm:border border-blue-200' : 'bg-gray-50'
-                            }`}>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3">
-                                <div>
-                                  <h4 className="font-medium text-gray-900 mb-1 sm:mb-2 flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs lg:text-sm">
-                                    <User className="h-3 w-3 sm:h-4 sm:w-4" />
-                                    Candidate Details
-                                  </h4>
-                                  {candidateProfile && (
-                                    <div className="space-y-0.5 sm:space-y-1 text-[9px] sm:text-[10px] lg:text-xs">
-                                      <p><strong>Code:</strong> {candidateProfile.candidate_code}</p>
-                                      <p><strong>Email:</strong> {candidateProfile.contact_email}</p>
-                                      <p><strong>Phone:</strong> {candidateProfile.contact_phone}</p>
-                                      <p><strong>Location:</strong> {candidateProfile.city}, {candidateProfile.state}</p>
-                                    </div>
-                                  )}
-                                </div>
-                                
-                                <div>
-                                  <h4 className="font-medium text-gray-900 mb-1 sm:mb-2 flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs lg:text-sm">
-                                    <Building2 className="h-3 w-3 sm:h-4 sm:w-4" />
-                                    Recruiter Details
-                                  </h4>
-                                  {recruiterProfile && (
-                                    <div className="space-y-0.5 sm:space-y-1 text-[9px] sm:text-[10px] lg:text-xs">
-                                      <p><strong>Company:</strong> {recruiterProfile.company_name}</p>
-                                      <p><strong>Contact:</strong> {candidateSelection.recruiter.name}</p>
-                                      <p><strong>Email:</strong> {candidateSelection.recruiter.email}</p>
-                                      <p><strong>Phone:</strong> {candidateSelection.recruiter.mobile_number}</p>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                              
-                              <div className="mt-2 pt-2 border-t border-gray-200">
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-[9px] sm:text-[10px] lg:text-xs">
-                                  <div>
-                                    <p><strong>Job Title:</strong> {candidateSelection.job_title}</p>
-                                    <p><strong>Location:</strong> {candidateSelection.location}</p>
-                                  </div>
-                                  <div>
-                                    <p><strong>Salary Range:</strong> ${candidateSelection.offered_salary_min} - ${candidateSelection.offered_salary_max}</p>
-                                    <p><strong>Priority:</strong> {candidateSelection.is_priority ? 'Yes' : 'No'}</p>
-                                  </div>
-                                  <div>
-                                    <p><strong>Status:</strong> {candidateSelection.selection_status}</p>
-                                    <p><strong>Notes:</strong> {candidateSelection.notes || 'None'}</p>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          )}
+                          {candidateSelection ? (
+  <div
+    className={`rounded-lg p-2 sm:p-3 mb-2 ${
+      isUnread ? 'bg-blue-100/50 border-2 sm:border border-blue-200' : 'bg-gray-50'
+    }`}
+  >
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3">
+      {/* Candidate */}
+      <div>
+        <h4 className="font-medium text-gray-900 mb-1 sm:mb-2 flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs lg:text-sm">
+          <User className="h-3 w-3 sm:h-4 sm:w-4" />
+          Candidate Details
+        </h4>
+
+        {candidateProfile ? (
+          <div className="space-y-0.5 sm:space-y-1 text-[9px] sm:text-[10px] lg:text-xs">
+            <p><strong>Code:</strong> {candidateProfile.candidate_code}</p>
+            <p><strong>Email:</strong> {candidateProfile.contact_email}</p>
+            <p><strong>Phone:</strong> {candidateProfile.contact_phone}</p>
+            <p><strong>Location:</strong> {candidateProfile.city}, {candidateProfile.state}</p>
+          </div>
+        ) : (
+          <p className="text-[9px] sm:text-[10px] lg:text-xs text-gray-500 italic">
+            Candidate details are not available for this notification.
+            This may happen if the candidate profile was deleted or not linked correctly.
+          </p>
+        )}
+      </div>
+
+      {/* Recruiter */}
+      <div>
+        <h4 className="font-medium text-gray-900 mb-1 sm:mb-2 flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs lg:text-sm">
+          <Building2 className="h-3 w-3 sm:h-4 sm:w-4" />
+          Recruiter Details
+        </h4>
+
+        {recruiterProfile ? (
+          <div className="space-y-0.5 sm:space-y-1 text-[9px] sm:text-[10px] lg:text-xs">
+            <p><strong>Company:</strong> {recruiterProfile.company_name}</p>
+            <p><strong>Contact:</strong> {candidateSelection.recruiter?.name}</p>
+            <p><strong>Email:</strong> {candidateSelection.recruiter?.email}</p>
+            <p><strong>Phone:</strong> {candidateSelection.recruiter?.mobile_number}</p>
+          </div>
+        ) : (
+          <p className="text-[9px] sm:text-[10px] lg:text-xs text-gray-500 italic">
+            Recruiter details are not available for this notification.
+            This may happen if the recruiter account or profile was removed.
+          </p>
+        )}
+      </div>
+    </div>
+
+    {/* Job / selection info – with safe fallbacks */}
+    <div className="mt-2 pt-2 border-t border-gray-200">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-[9px] sm:text-[10px] lg:text-xs">
+        <div>
+          <p><strong>Job Title:</strong> {candidateSelection.job_title || 'Not provided'}</p>
+          <p><strong>Location:</strong> {candidateSelection.location || 'Not provided'}</p>
+        </div>
+        <div>
+          <p>
+            <strong>Salary Range:</strong>{" "}
+            {candidateSelection.offered_salary_min && candidateSelection.offered_salary_max
+              ? `₹${candidateSelection.offered_salary_min} - ₹${candidateSelection.offered_salary_max}`
+              : 'Not provided'}
+          </p>
+          <p><strong>Priority:</strong> {candidateSelection.is_priority ? 'Yes' : 'No'}</p>
+        </div>
+        <div>
+          <p><strong>Status:</strong> {candidateSelection.selection_status || 'Not provided'}</p>
+          <p><strong>Notes:</strong> {candidateSelection.notes || 'No notes available'}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+) : (
+  // No candidateSelection at all → show nice warning box
+  <div className="mt-2 rounded-lg border border-yellow-200 bg-yellow-50 p-2 sm:p-3 text-[9px] sm:text-[10px] lg:text-xs text-yellow-800">
+    <p className="font-medium mb-1">Detailed selection data is not available.</p>
+    <p className="mb-1">
+      This notification was created without a linked candidate selection record, or
+      that record has been removed.
+    </p>
+    {notification.message && (
+      <p className="text-yellow-900">
+        <span className="font-semibold">System message: </span>
+        {notification.message}
+      </p>
+    )}
+  </div>
+)}
+
 
                           {/* Action Buttons (expanded) */}
                           <div className="flex items-center gap-1.5 sm:gap-2">
